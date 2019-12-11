@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static net.nahknarmi.arch.TestHelper.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 public class ArchitectureDataStructurePublishingE2ETest {
 
@@ -26,7 +26,10 @@ public class ArchitectureDataStructurePublishingE2ETest {
         //then
         StructurizrAdapter adapter = new StructurizrAdapter();
         Workspace workspace = adapter.load(TEST_WORKSPACE_ID);
-        assertThat(workspace.getDocumentation().getSections().size(), equalTo(2));
-        assertThat(workspace.getDocumentation().getDecisions().size(), equalTo(2));
+        assertThat(workspace.getDocumentation().getSections(), hasSize(2));
+        assertThat(workspace.getDocumentation().getDecisions(), hasSize(2));
+        assertThat(workspace.getModel().getSoftwareSystems(), hasSize(3));
+        assertThat(workspace.getModel().getPeople(), hasSize(2));
+        assertThat(workspace.getModel().getRelationships(), hasSize(3));
     }
 }
