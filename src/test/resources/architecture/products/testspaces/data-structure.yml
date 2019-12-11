@@ -18,6 +18,9 @@ model:
   persons:
     - name: "Developer"
       description: "Developer building software"
+      relationships:
+        - name: "USES"
+          with: "GitHub"
 
   systems:
     - name: "GitHub"

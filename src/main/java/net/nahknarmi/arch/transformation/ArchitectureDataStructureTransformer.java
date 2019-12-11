@@ -4,7 +4,13 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.AutomaticDocumentationTemplate;
 import com.structurizr.documentation.DecisionStatus;
 import com.structurizr.model.Model;
+import com.structurizr.model.Person;
+import com.structurizr.model.SoftwareSystem;
+import com.structurizr.view.SystemContextView;
+import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.model.ArchitectureDataStructure;
+import net.nahknarmi.arch.model.C4Model;
+import net.nahknarmi.arch.model.C4Person;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +39,37 @@ public class ArchitectureDataStructureTransformer {
         addDecisions(workspace, dataStructure);
 
         Model model = workspace.getModel();
-        dataStructure.getModel().getPersons().forEach(p -> model.addPerson(p.getName(), p.getDescription()));
-        dataStructure.getModel().getSystems().forEach(s -> model.addSoftwareSystem(s.getName(), s.getDescription()));
+        C4Model dataStructureModel = dataStructure.getModel();
+        dataStructureModel.getPersons().forEach(p -> model.addPerson(p.getName(), p.getDescription()));
+        dataStructureModel.getSystems().forEach(s -> model.addSoftwareSystem(s.getName(), s.getDescription()));
+        dataStructureModel.relationships().forEach(r -> {
+            String fromName = r.getFrom().getName();
+            String toName = r.getTo().getName();
+
+            if (r.getFrom() instanceof C4Person) {
+                Person fromPerson = ofNullable(model.getPersonWithName(fromName))
+                        .orElseThrow(() -> new IllegalStateException("Person with name " + fromName + " not found."));
+
+                SoftwareSystem toSystem = ofNullable(model.getSoftwareSystemWithName(toName))
+                        .orElseThrow(() -> new IllegalStateException("System with name " + toName + " not found."));
+
+                switch (r.getRelationshipType()){
+                    case USES:
+                        fromPerson.uses(toSystem, "fill me in");
+                        break;
+                    case INTERACTS_WITH: //person to person relationship
+//                        fromPerson.int
+                        break;
+                    case DELIVERS: //person to person relationship
+//                        fromPerson.delivers()
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Unexpected relationship type " + r.getRelationshipType());
+                }
+            }
+        });
+
 
 //        Person user = model.addPerson("Merchant", "Merchant");
 //        SoftwareSystem paymentTerminal = model.addSoftwareSystem(
@@ -43,11 +78,19 @@ public class ArchitectureDataStructureTransformer {
 //        SoftwareSystem fraudDetector = model.addSoftwareSystem(
 //                "Fraud Detector", "Fraud Detector");
 //        paymentTerminal.uses(fraudDetector, "Obtains fraud score");
-//
-//        ViewSet viewSet = workspace.getViews();
-//
+
+
+        ViewSet viewSet = workspace.getViews();
+
+        model.getSoftwareSystems().forEach(ss -> {
+            SystemContextView context = viewSet.createSystemContextView(ss, "context", ss.getName() + " Diagram");
+            context.addAllSoftwareSystems();
+            context.addAllPeople();
+        });
+
+
 //        SystemContextView contextView = viewSet.createSystemContextView(
-//                paymentTerminal, "context", "Payment Gateway Diagram");
+//                paymentTerminal, "context", "GitHub Diagram");
 //        contextView.addAllSoftwareSystems();
 //        contextView.addAllPeople();
 
