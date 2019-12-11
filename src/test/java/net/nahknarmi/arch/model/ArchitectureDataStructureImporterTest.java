@@ -41,7 +41,7 @@ public class ArchitectureDataStructureImporterTest {
 
     private LocalDate decisionDate(ImportantTechnicalDecision decision) {
         return Instant.ofEpochMilli(decision.getDate().getTime())
-                    .atZone(ZoneId.systemDefault())
+                    .atZone(ZoneId.of("UTC"))
                     .toLocalDate();
     }
 }
