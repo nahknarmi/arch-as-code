@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.DecisionStatus;
-import net.nahknarmi.arch.model.ArchitectureDataStructure;
-import net.nahknarmi.arch.model.C4Model;
-import net.nahknarmi.arch.model.C4Person;
-import net.nahknarmi.arch.model.ImportantTechnicalDecision;
+import net.nahknarmi.arch.model.*;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,6 +36,8 @@ public class ArchitectureDataStructureTransformerTest {
         assertThat(workspace.getName(), equalTo(PRODUCT_NAME));
         assertThat(workspace.getDescription(), equalTo(PRODUCT_DESCRIPTION));
         assertThat(workspace.getDocumentation().getSections().size(), equalTo(2));
+        assertThat(workspace.getModel().getPeople().size(), equalTo(1));
+        assertThat(workspace.getModel().getSoftwareSystems().size(), equalTo(1));
     }
 
     @Test
@@ -91,7 +90,9 @@ public class ArchitectureDataStructureTransformerTest {
     }
 
     private C4Model buildModel() {
-        return new C4Model(new C4Person("Foo", "Bar"));
+        return new C4Model(
+                ImmutableList.of(new C4Person("Foo", "Bar")),
+                ImmutableList.of(new C4SoftwareSystem("J2EE Server", "Application server")));
     }
 
     //handle id being absent, name, description.

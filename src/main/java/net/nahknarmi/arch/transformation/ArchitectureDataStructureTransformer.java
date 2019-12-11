@@ -4,10 +4,6 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.AutomaticDocumentationTemplate;
 import com.structurizr.documentation.DecisionStatus;
 import com.structurizr.model.Model;
-import com.structurizr.model.Person;
-import com.structurizr.model.SoftwareSystem;
-import com.structurizr.view.SystemContextView;
-import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.model.ArchitectureDataStructure;
 
 import java.io.File;
@@ -37,20 +33,23 @@ public class ArchitectureDataStructureTransformer {
         addDecisions(workspace, dataStructure);
 
         Model model = workspace.getModel();
-        Person user = model.addPerson("Merchant", "Merchant");
-        SoftwareSystem paymentTerminal = model.addSoftwareSystem(
-                "Payment Terminal", "Payment Terminal");
-        user.uses(paymentTerminal, "Makes payment");
-        SoftwareSystem fraudDetector = model.addSoftwareSystem(
-                "Fraud Detector", "Fraud Detector");
-        paymentTerminal.uses(fraudDetector, "Obtains fraud score");
+        dataStructure.getModel().getPersons().forEach(p -> model.addPerson(p.getName(), p.getDescription()));
+        dataStructure.getModel().getSystems().forEach(s -> model.addSoftwareSystem(s.getName(), s.getDescription()));
 
-        ViewSet viewSet = workspace.getViews();
-
-        SystemContextView contextView = viewSet.createSystemContextView(
-                paymentTerminal, "context", "Payment Gateway Diagram");
-        contextView.addAllSoftwareSystems();
-        contextView.addAllPeople();
+//        Person user = model.addPerson("Merchant", "Merchant");
+//        SoftwareSystem paymentTerminal = model.addSoftwareSystem(
+//                "Payment Terminal", "Payment Terminal");
+//        user.uses(paymentTerminal, "Makes payment");
+//        SoftwareSystem fraudDetector = model.addSoftwareSystem(
+//                "Fraud Detector", "Fraud Detector");
+//        paymentTerminal.uses(fraudDetector, "Obtains fraud score");
+//
+//        ViewSet viewSet = workspace.getViews();
+//
+//        SystemContextView contextView = viewSet.createSystemContextView(
+//                paymentTerminal, "context", "Payment Gateway Diagram");
+//        contextView.addAllSoftwareSystems();
+//        contextView.addAllPeople();
 
         return workspace;
     }

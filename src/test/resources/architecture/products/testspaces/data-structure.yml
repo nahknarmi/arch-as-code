@@ -15,6 +15,10 @@ decisions:
     status: Accepted
     content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
 model:
-  person:
-    name: "Developer"
-    description: "Developer building software"
+  persons:
+    - name: "Developer"
+      description: "Developer building software"
+
+  systems:
+    - name: "GitHub"
+      description: "Hosts code and used for identity management"

@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 import static net.nahknarmi.arch.TestHelper.TEST_SPACES_MANIFEST_PATH;
 import static net.nahknarmi.arch.TestHelper.TEST_WORKSPACE_ID;
@@ -42,7 +43,10 @@ public class ArchitectureDataStructureImporterTest {
         assertThat(dataStructure.getModel(), notNullValue());
 
         //it should have persons
-        C4Person person = dataStructure.getModel().getPerson();
+        List<C4Person> persons = dataStructure.getModel().getPersons();
+
+        assertThat(persons.size(), equalTo(1));
+        C4Person person = persons.get(0);
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));
