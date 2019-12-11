@@ -4,19 +4,19 @@ description: "DevSpaces is a tool"
 businessUnit: "DevFactory"
 decisions:
   - id: "1"
-    date: 2018-11-29T16:04:32Z
+    date: 2018-11-29
     title: "Docker as the containerization technology platform"
     status: Accepted
     content: "## Context\nWe need to choose the default containerization technology that DevSpaces will support\n\n## Decision\nWe will choose Docker as the default platform\n\n## Consequences\nWe will only be able to support Linux based environments for the moment until Docker is able to support full Windows workspaces"
 
   - id: "2"
-    date: 2019-11-19T19:07:15Z
+    date: 2019-11-19
     title: "Kubernetes as the container management platform"
     status: Accepted
     content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
 
   - id: "3"
-    date: 2019-12-19T19:07:15Z
+    date: 2019-12-19
     title: "AngularJS as frontend technology"
     status: Rejected
     content: "## Context\nWe need to decide which SPA framework to proceed with.\n\n## Decision\nAngular is the framework currently being adopted \n\n## Consequences."
