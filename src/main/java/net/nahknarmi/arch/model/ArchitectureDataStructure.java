@@ -16,6 +16,7 @@ public class ArchitectureDataStructure {
     @NonNull private String businessUnit;
     @NonNull private String description;
     @NonNull private List<ImportantTechnicalDecision> decisions = ImmutableList.of();
+    @NonNull private C4Model model;
 
     ArchitectureDataStructure() {
     }

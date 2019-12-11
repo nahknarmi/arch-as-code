@@ -11,8 +11,7 @@ import java.time.ZoneId;
 
 import static net.nahknarmi.arch.TestHelper.TEST_SPACES_MANIFEST_PATH;
 import static net.nahknarmi.arch.TestHelper.TEST_WORKSPACE_ID;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
@@ -37,6 +36,21 @@ public class ArchitectureDataStructureImporterTest {
         assertThat(decisionDate(dataStructure.getDecisions().get(0)), is(equalTo(LocalDate.of(2018, 11, 29))));
         assertThat(dataStructure.getDecisions().get(1).getTitle(), is(equalTo("Kubernetes as the container management platform")));
         assertThat(decisionDate(dataStructure.getDecisions().get(1)), is(equalTo(LocalDate.of(2019, 11, 19))));
+
+
+        //it should have model
+        assertThat(dataStructure.getModel(), notNullValue());
+
+        //it should have persons
+        C4Person person = dataStructure.getModel().getPerson();
+        assertThat(person, notNullValue());
+        assertThat(person.getName(), is(equalTo("Developer")));
+        assertThat(person.getDescription(), is(equalTo("Developer building software")));
+
+        //it should have systems
+
+        //it should have relationships
+
     }
 
     private LocalDate decisionDate(ImportantTechnicalDecision decision) {

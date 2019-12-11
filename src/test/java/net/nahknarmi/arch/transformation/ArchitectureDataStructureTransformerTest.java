@@ -5,6 +5,8 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.DecisionStatus;
 import net.nahknarmi.arch.model.ArchitectureDataStructure;
+import net.nahknarmi.arch.model.C4Model;
+import net.nahknarmi.arch.model.C4Person;
 import net.nahknarmi.arch.model.ImportantTechnicalDecision;
 import org.junit.Test;
 
@@ -26,7 +28,7 @@ public class ArchitectureDataStructureTransformerTest {
     @Test
     public void should_transform_architecture_yaml_to_structurizr_workspace() throws IOException {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure(PRODUCT_NAME, 1L, "DevFactory", PRODUCT_DESCRIPTION, emptyList());
+                new ArchitectureDataStructure(PRODUCT_NAME, 1L, "DevFactory", PRODUCT_DESCRIPTION, emptyList(), buildModel());
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = new ArchitectureDataStructureTransformer(documentationRoot);
@@ -76,7 +78,7 @@ public class ArchitectureDataStructureTransformerTest {
     private void checkStatus(DecisionStatus decisionStatus, String statusString) throws IOException {
         ArchitectureDataStructure dataStructure =
                 new ArchitectureDataStructure(PRODUCT_NAME, 1L, "DevFactory", PRODUCT_DESCRIPTION,
-                        ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")));
+                        ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")), buildModel());
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = new ArchitectureDataStructureTransformer(documentationRoot);
@@ -86,6 +88,10 @@ public class ArchitectureDataStructureTransformerTest {
         DecisionStatus result = decisions.get(0).getStatus();
 
         assertThat(result, equalTo(decisionStatus));
+    }
+
+    private C4Model buildModel() {
+        return new C4Model(new C4Person("Foo", "Bar"));
     }
 
     //handle id being absent, name, description.
