@@ -14,6 +14,7 @@ import net.nahknarmi.arch.model.C4Person;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.structurizr.documentation.DecisionStatus.Deprecated;
@@ -50,18 +51,26 @@ public class ArchitectureDataStructureTransformer {
                 Person fromPerson = ofNullable(model.getPersonWithName(fromName))
                         .orElseThrow(() -> new IllegalStateException("Person with name " + fromName + " not found."));
 
-                SoftwareSystem toSystem = ofNullable(model.getSoftwareSystemWithName(toName))
-                        .orElseThrow(() -> new IllegalStateException("System with name " + toName + " not found."));
-
                 switch (r.getRelationshipType()){
                     case USES:
-                        fromPerson.uses(toSystem, "fill me in");
+                        SoftwareSystem toSystem = ofNullable(model.getSoftwareSystemWithName(toName))
+                                .orElseThrow(() -> new IllegalStateException("System with name " + toName + " not found."));
+
+                        fromPerson.uses(toSystem, "uses");
                         break;
+
                     case INTERACTS_WITH: //person to person relationship
-//                        fromPerson.int
+                        Person interactsWith = ofNullable(model.getPersonWithName(toName))
+                                .orElseThrow(() -> new IllegalStateException("Person with name " + fromName + " not found."));
+
+                        fromPerson.interactsWith(interactsWith, "interacts with");
                         break;
+
                     case DELIVERS: //person to person relationship
-//                        fromPerson.delivers()
+                        Person deliversTo = ofNullable(model.getPersonWithName(toName))
+                                .orElseThrow(() -> new IllegalStateException("Person with name " + fromName + " not found."));
+
+                        fromPerson.delivers(deliversTo, "delivers");
                         break;
 
                     default:
@@ -70,29 +79,13 @@ public class ArchitectureDataStructureTransformer {
             }
         });
 
-
-//        Person user = model.addPerson("Merchant", "Merchant");
-//        SoftwareSystem paymentTerminal = model.addSoftwareSystem(
-//                "Payment Terminal", "Payment Terminal");
-//        user.uses(paymentTerminal, "Makes payment");
-//        SoftwareSystem fraudDetector = model.addSoftwareSystem(
-//                "Fraud Detector", "Fraud Detector");
-//        paymentTerminal.uses(fraudDetector, "Obtains fraud score");
-
-
         ViewSet viewSet = workspace.getViews();
 
         model.getSoftwareSystems().forEach(ss -> {
-            SystemContextView context = viewSet.createSystemContextView(ss, "context", ss.getName() + " Diagram");
+            SystemContextView context = viewSet.createSystemContextView(ss, "context" + new Random().nextInt(), ss.getName() + " Diagram");
             context.addAllSoftwareSystems();
             context.addAllPeople();
         });
-
-
-//        SystemContextView contextView = viewSet.createSystemContextView(
-//                paymentTerminal, "context", "GitHub Diagram");
-//        contextView.addAllSoftwareSystems();
-//        contextView.addAllPeople();
 
         return workspace;
     }
