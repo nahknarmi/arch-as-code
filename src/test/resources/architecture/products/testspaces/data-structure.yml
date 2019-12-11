@@ -34,5 +34,8 @@ model:
       description: "Hosts code and used for identity management"
     - name: "DevSpaces CLI"
       description: "Command Line Interface for interacting with DevSpaces Backend"
+      relationships:
+        - name: "USES"
+          with: "DevSpaces Backend"
     - name: "DevSpaces Backend"
       description: "Restful API providing capabilities for interacting with a DevSpace"

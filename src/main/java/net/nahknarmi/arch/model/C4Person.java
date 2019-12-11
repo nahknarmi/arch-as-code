@@ -22,7 +22,7 @@ public class C4Person implements Relatable {
     }
 
     @Override
-    public List<Relatable> relations() {
-        return null;
+    public List<RelationshipPair> relations() {
+        return relationships;
     }
 }

@@ -22,8 +22,12 @@ public class C4Model {
     }
 
     public List<C4Relationship> relationships() {
-        return persons.stream().flatMap(from -> from.getRelationships().stream().map(rp -> {
-            Relatable to = Stream.concat(systems.stream(), persons.stream())
+        return fromRelationships(Stream.concat(systems.stream(), this.persons.stream()));
+    }
+
+    private List<C4Relationship> fromRelationships(@NonNull Stream<Relatable> stream) {
+        return stream.flatMap(from -> from.relations().stream().map(rp -> {
+            Relatable to = Stream.concat(systems.stream(), this.persons.stream())
                     .filter(x -> x.getName().equals(rp.getWith()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Unable to find system or person named " + rp.getWith()));

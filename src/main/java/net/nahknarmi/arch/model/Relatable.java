@@ -5,5 +5,7 @@ import java.util.List;
 public interface Relatable {
     String getName();
 
-    List<Relatable> relations();
+    List<RelationshipPair> relations();
+
+    String getDescription();
 }

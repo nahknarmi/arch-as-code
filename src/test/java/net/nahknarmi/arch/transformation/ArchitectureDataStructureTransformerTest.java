@@ -92,7 +92,7 @@ public class ArchitectureDataStructureTransformerTest {
     private C4Model buildModel() {
         return new C4Model(
                 ImmutableList.of(new C4Person("Foo", "Bar", emptyList())),
-                ImmutableList.of(new C4SoftwareSystem("J2EE Server", "Application server")));
+                ImmutableList.of(new C4SoftwareSystem("J2EE Server", "Application server", emptyList())));
     }
 
     //handle id being absent, name, description.

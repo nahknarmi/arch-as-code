@@ -47,7 +47,7 @@ public class ArchitectureDataStructureImporterTest {
         List<C4Person> persons = model.getPersons();
 
         assertThat(persons.size(), equalTo(2));
-        C4Person person = persons.get(0);
+        C4Person person = (C4Person) persons.get(0);
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));
@@ -56,7 +56,7 @@ public class ArchitectureDataStructureImporterTest {
         assertThat(model.getSystems().size(), is(equalTo(3)));
 
         //it should have relationships
-        assertThat(model.relationships().size(), is(equalTo(3)));
+        assertThat(model.relationships().size(), is(equalTo(4)));
     }
 
     private LocalDate decisionDate(ImportantTechnicalDecision decision) {

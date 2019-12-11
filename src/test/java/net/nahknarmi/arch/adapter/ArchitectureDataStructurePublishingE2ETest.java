@@ -30,6 +30,6 @@ public class ArchitectureDataStructurePublishingE2ETest {
         assertThat(workspace.getDocumentation().getDecisions(), hasSize(2));
         assertThat(workspace.getModel().getSoftwareSystems(), hasSize(3));
         assertThat(workspace.getModel().getPeople(), hasSize(2));
-        assertThat(workspace.getModel().getRelationships(), hasSize(3));
+        assertThat(workspace.getModel().getRelationships(), hasSize(4));
     }
 }
