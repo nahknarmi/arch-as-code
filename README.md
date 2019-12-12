@@ -14,7 +14,9 @@ Specifically we are making use of the [Structurizr](https://structurizr.com/) to
 
 ## Build Pre-requisites
 - Java 1.8 or greater.
-- Create [Structurizr](https://structurizr.com/) credentials file under /src/main/resources/credentials.json with structure found in `src/main/resources/sample_credentials.json` and update with contents from [https://structurizr.com/dashboard](https://structurizr.com/) 
+- Create [Structurizr](https://structurizr.com/) credentials file under `.arch-as-code/structurizr/credentials.json`. 
+You can find sample file under `src/main/resources/sample_credentials.json` and update with contents. 
+You can find workspaces specific keys from [https://structurizr.com/dashboard](https://structurizr.com/) 
 
 ## Build
 

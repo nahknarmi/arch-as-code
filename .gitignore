@@ -9,3 +9,5 @@ build
 
 # Ignore credentials.json
 credentials.json
+
+.arch-as-code/
