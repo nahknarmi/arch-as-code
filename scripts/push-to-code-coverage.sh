@@ -2,9 +2,9 @@
 set -eux
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    curl https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 --output /tmp/test-reporter
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/test-reporter
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 --output /tmp/test-reporter
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 > /tmp/test-reporter
 else
     echo "Unsupported OS"
     exit 1
