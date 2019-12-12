@@ -47,6 +47,12 @@ model:
         - name: "USES"
           with: "GitHub"
           description: "Raise Pull Request to update architecture"
+    - name: "QA"
+      description: "Test the product"
+      relationships:
+        - name: "USES"
+          with: "Structurizr Cloud Service Web Interface"
+          description: "Reads"
 
   systems:
     - name: "GitHub"
