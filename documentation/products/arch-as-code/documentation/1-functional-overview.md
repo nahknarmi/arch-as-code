@@ -8,4 +8,6 @@ Specifically we are making use of the [Structurizr](https://structurizr.com/) to
 
 ### Use Cases
 
-1. Manual Testers should read product architecture before beginning testing. 
+1. Manual Testers should read product architecture before beginning testing.
+1. TPMs should also be reading product architecture.
+ 
