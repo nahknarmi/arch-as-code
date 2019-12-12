@@ -69,4 +69,12 @@ jacocoTestCoverageVerification {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+        csv.enabled false
+    }
+}
+
 check.dependsOn jacocoTestCoverageVerification
