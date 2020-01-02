@@ -51,7 +51,7 @@ dependencies {
     //Makesure hamcrest is above junit see - https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.mockito:mockito-all:2.0.2-beta'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 }
 
 jacocoTestCoverageVerification {
