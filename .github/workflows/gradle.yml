@@ -34,7 +34,7 @@ jobs:
 
     - name: Publish
       if: github.ref == 'refs/heads/master'
-      run: ./gradlew run --args="./documentation/products/ arch-as-code"
+      run: ./gradlew run --args="./documentation/products/arch-as-code"
       env:
         STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
         STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}

@@ -11,8 +11,6 @@ import net.nahknarmi.arch.transformation.TransformerFactory;
 import java.io.File;
 import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class ArchitectureDataStructurePublisher {
     private final File productDocumentationRoot;
     private final ArchitectureDataStructureReader dataStructureReader;
@@ -29,10 +27,8 @@ public class ArchitectureDataStructurePublisher {
         this.structurizrAdapter = structurizrAdapter;
     }
 
-    public void publish(String productName) throws StructurizrClientException, IOException {
-        checkNotNull(productName, "Product name must not be null.");
-
-        File manifestFile = new File(productDocumentationRoot + File.separator + productName.toLowerCase() + File.separator + "data-structure.yml");
+    public void publish() throws StructurizrClientException, IOException {
+        File manifestFile = new File(productDocumentationRoot + File.separator + "data-structure.yml");
 
         ArchitectureDataStructure dataStructure = dataStructureReader.load(manifestFile);
         Workspace workspace = dataStructureTransformer.toWorkSpace(dataStructure);

@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
-import static net.nahknarmi.arch.TestHelper.PRODUCT_NAME;
 import static net.nahknarmi.arch.TestHelper.TEST_PRODUCT_DOCUMENTATION_ROOT_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -282,7 +281,7 @@ public class ParsedYamlToModelIntegrationTest {
 
     private Workspace getWorkspace() throws FileNotFoundException {
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
-        File manifestFile = new File(documentationRoot + File.separator + PRODUCT_NAME.toLowerCase() + File.separator + "data-structure.yml");
+        File manifestFile = new File(documentationRoot + File.separator + "data-structure.yml");
 
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader().load(manifestFile);
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);

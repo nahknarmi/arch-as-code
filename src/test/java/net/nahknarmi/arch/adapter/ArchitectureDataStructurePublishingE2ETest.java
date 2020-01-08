@@ -8,7 +8,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static net.nahknarmi.arch.TestHelper.*;
+import static net.nahknarmi.arch.TestHelper.TEST_PRODUCT_DOCUMENTATION_ROOT_PATH;
+import static net.nahknarmi.arch.TestHelper.TEST_WORKSPACE_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -22,7 +23,7 @@ public class ArchitectureDataStructurePublishingE2ETest {
                 new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
 
         //when
-        ArchitectureDataStructurePublisher.create(documentationRoot).publish(PRODUCT_NAME);
+        ArchitectureDataStructurePublisher.create(documentationRoot).publish();
 
         //then
         StructurizrAdapter adapter = new StructurizrAdapter();

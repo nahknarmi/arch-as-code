@@ -14,15 +14,12 @@ public class Bootstrap {
 
     @CommandLine.Command(name = "arc", description = "Architecture as code")
     static class Cli implements Callable<Integer> {
-        @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_ROOT")
+        @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
         private File productDocumentationRoot;
-
-        @CommandLine.Parameters(index = "1", paramLabel = "PRODUCT_NAME")
-        private String productName;
 
         @Override
         public Integer call() throws Exception {
-            ArchitectureDataStructurePublisher.create(productDocumentationRoot).publish(productName);
+            ArchitectureDataStructurePublisher.create(productDocumentationRoot).publish();
             return 0;
         }
     }
