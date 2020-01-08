@@ -1,15 +1,29 @@
 package net.nahknarmi.arch;
 
 import net.nahknarmi.arch.publish.ArchitectureDataStructurePublisher;
+import picocli.CommandLine;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 
 public class Bootstrap {
-    private static final String PRODUCT_DOCUMENTATION_ROOT = "./documentation/products/";
-    private static final String PRODUCT_NAME = "arch-as-code";
 
-    public static void main(String[] args) throws Exception {
-        File root = new File(PRODUCT_DOCUMENTATION_ROOT);
-        ArchitectureDataStructurePublisher.create(root).publish(PRODUCT_NAME);
+    public static void main(String[] args) {
+        new CommandLine(new Cli()).execute(args);
+    }
+
+    @CommandLine.Command(name = "arc", description = "Architecture as code")
+    static class Cli implements Callable<Integer> {
+        @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_ROOT")
+        private File productDocumentationRoot;
+
+        @CommandLine.Parameters(index = "1", paramLabel = "PRODUCT_NAME")
+        private String productName;
+
+        @Override
+        public Integer call() throws Exception {
+            ArchitectureDataStructurePublisher.create(productDocumentationRoot).publish(productName);
+            return 0;
+        }
     }
 }

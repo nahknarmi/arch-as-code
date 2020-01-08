@@ -47,6 +47,10 @@ dependencies {
     //Yaml
     implementation 'org.yaml:snakeyaml:1.25'
 
+    //Command line arguments
+    implementation 'info.picocli:picocli:4.1.4'
+    annotationProcessor 'info.picocli:picocli-codegen:4.1.4'
+
     //Testing
     //Makesure hamcrest is above junit see - https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
