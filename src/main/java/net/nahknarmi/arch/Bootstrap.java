@@ -9,11 +9,11 @@ import java.util.concurrent.Callable;
 public class Bootstrap {
 
     public static void main(String[] args) {
-        new CommandLine(new Cli()).execute(args);
+        new CommandLine(new PublishCommand()).execute(args);
     }
 
     @CommandLine.Command(name = "arc", description = "Architecture as code")
-    static class Cli implements Callable<Integer> {
+    static class PublishCommand implements Callable<Integer> {
         @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
         private File productDocumentationRoot;
 
