@@ -42,7 +42,8 @@ By default the documentation is store under `documentation/products/`.
 ## Install Prebuilt Binary
 
 ```
-brew tap nahknarmi/arch-as-code git@github.com:nahknarmi/arch-as-code.git
+brew tap nahknarmi/arch-as-code https://github.com/nahknarmi/arch-as-code.git
+
 brew install nahknarmi/arch-as-code/arch-as-code
 ```
 

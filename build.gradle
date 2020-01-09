@@ -14,7 +14,6 @@ buildscript {
     }
     dependencies {
         classpath "io.freefair.gradle:lombok-plugin:4.1.6"
-//        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
     }
 }
 
@@ -23,7 +22,6 @@ apply plugin: 'application'
 //See https://www.baeldung.com/lombok-ide for how to configure intellij to work with lombok
 apply plugin: "io.freefair.lombok"
 apply plugin: 'jacoco'
-//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'distribution'
 
 
@@ -87,30 +85,6 @@ jacocoTestReport {
 }
 
 check.dependsOn jacocoTestCoverageVerification
-
-//jar {
-//    manifest {
-//        attributes(
-//                'Main-Class': 'net.nahknarmi.arch.Bootstrap'
-//        )
-//    }
-//    from {
-//        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-//    }
-//}
-
-//////create a single Jar with all dependencies
-//task fatJar(type: Jar) {
-//    manifest {
-//        attributes 'Implementation-Title': 'Gradle Jar File Example',
-//                'Main-Class': 'net.nahknarmi.arch.Bootstrap'
-//    }
-//    baseName = project.name + '-all'
-//    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-//    with jar
-//}
-
-//distZip.enabled = false
 
 plugins.withType(DistributionPlugin) {
     distTar {
