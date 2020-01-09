@@ -18,6 +18,11 @@ decisions:
     title: "No cyclical dependencies"
     status: Accepted
     content: "## Context\nProposed change\n"
+  - id: "4"
+    date: 2020-01-09
+    title: "Move Arch-as-Code solution to AWS"
+    status: Proposed
+    content: "## Context\nProposed change\n"
 
 model:
   persons:
