@@ -25,7 +25,7 @@ Builds and tests application code for publishing architecture data structure to 
 Tests operate against a "test" Structurizr workspace.
 
 ```bash
-./gradle build
+./gradlew build
 ```
 
 
