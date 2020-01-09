@@ -9,11 +9,11 @@ class ArchAsCode < Formula
 
   depends_on :java => "1.8+"
 
-  bottle :unneeded           
+  bottle :unneeded
 
   def install
-    libexec.install Dir['*']                                              
-    bin.write_exec_script Dir["#{libexec}/bin/arch-as-code"]    
+    libexec.install Dir['*']
+    bin.write_exec_script Dir["#{libexec}/bin/arch-as-code"]
   end
 
 end
