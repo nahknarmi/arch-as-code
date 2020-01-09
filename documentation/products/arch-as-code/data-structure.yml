@@ -49,9 +49,6 @@ model:
         - name: "GitHub Actions"
           description: "Continuous Integration & Continuous Deployment of Architecture Artificats"
 
-        - name: "GitHub VCS"
-          description: "Hosted Git server"
-
     - name: "Structurizr"
       description: "Software Architecture Visualizationa and Workspace Hosting"
       containers:
@@ -124,24 +121,6 @@ model:
 
     containerView:
       containers:
-        - name: "GitHub Container"
-          system: "GitHub"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "GitHub VCS"
-              description: "To store code"
-
-            - name: "Developer"
-              action: "USES"
-              with: "GitHub Actions"
-              description: "To run CI pipeline"
-
-            - name: "GitHub VCS"
-              action: "USES"
-              with: "GitHub Actions"
-              description: "To start CI pipeline on code merge"
-
         - name: "Structurizr Container"
           system: "Structurizr"
           relationships:
