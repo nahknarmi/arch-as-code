@@ -36,7 +36,7 @@ Publishes documentation to "production" Structurizr workspace.
 By default the documentation is store under `documentation/products/`.
 
 ```bash
-./gradle run
+./gradlew run
 ```
 
 ## Continuous Integration & Continuous Deployment
