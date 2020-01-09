@@ -8,12 +8,11 @@ class ArchAsCode < Formula
   sha256 "0fd11d35d307e4a28c2a68c5ac4e10418ede36a44a4ff8e344c0b2cae012bbbd"
 
   depends_on :java => "1.8+"
-
   bottle :unneeded
-
+  
   def install
-    libexec.install Dir['*']
-    bin.write_exec_script Dir["#{libexec}/bin/arch-as-code"]
+    libexec.install Dir['*']                                              
+    bin.write_exec_script Dir["#{libexec}/bin/arch-as-code"]    
   end
 
 end
