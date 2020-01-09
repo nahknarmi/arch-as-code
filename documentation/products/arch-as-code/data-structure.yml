@@ -124,6 +124,11 @@ model:
               with: "GitHub"
               description: "Read, commit and collaboration on source code"
 
+            - name: "Technical Product Manager"
+              action: "USES"
+              with: "GitHub"
+              description: "Read, commit and collaboration on source code"
+
     containerView:
       containers:
         - name: "Structurizr Container"
@@ -135,6 +140,11 @@ model:
               description: "Read current Product Architecture"
 
             - name: "Engineering Architect"
+              action: "USES"
+              with: "Structurizr Cloud Service Web Interface"
+              description: "Read and modify Product Architecture"
+
+            - name: "Technical Product Manager"
               action: "USES"
               with: "Structurizr Cloud Service Web Interface"
               description: "Read and modify Product Architecture"
