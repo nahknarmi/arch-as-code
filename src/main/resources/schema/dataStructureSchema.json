@@ -1,0 +1,20 @@
+{
+  "required": [ "name", "description", "businessUnit"],
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "product name"
+    },
+
+    "description": {
+      "type": "string",
+      "description": "description"
+    },
+
+    "businessUnit": {
+      "type": "string",
+      "description": "business unit"
+    }
+  }
+}
