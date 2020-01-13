@@ -31,23 +31,6 @@ arch-as-code --help
 Download the latest binary [here](https://github.com/nahknarmi/arch-as-code/releases/latest).
 
 ```powershell
-$repo = "nahknarmi/arch-as-code"
-$file = "CodeFormatter.zip"
-
-$releases = "https://api.github.com/repos/$repo/releases"
-
-Write-Host Determining latest release
-$tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
-
-$download = "https://github.com/$repo/releases/download/$tag/$file"
-$name = $file.Split(".")[0]
-$zip = "$name-$tag.zip"
-$dir = "$name-$tag"
-
-Write-Host Dowloading latest release
-Invoke-WebRequest $download -Out $zip
-
-
 
 ```
 
