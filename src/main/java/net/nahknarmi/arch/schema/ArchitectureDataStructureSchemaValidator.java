@@ -7,31 +7,24 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
 public class ArchitectureDataStructureSchemaValidator {
 
-    public boolean validate(File productDocumentationRoot) {
+    public Set<ValidationMessage> validate(InputStream manifestInputStream) {
         JsonSchema schema = getJsonSchemaFromClasspath();
+        Set<ValidationMessage> errors;
 
         try {
-            JsonNode node = getYamlFromFile(productDocumentationRoot);
-            Set<ValidationMessage> errors = schema.validate(node);
-
-            errors.forEach(e -> System.err.println(e.getMessage()));
-
-            if (!errors.isEmpty()) {
-                return false;
-            }
-
+            JsonNode node = getYamlFromFile(manifestInputStream);
+            errors = schema.validate(node);
         } catch (IOException e) {
             throw new IllegalStateException("Product documentation data structure yaml file could not be found.", e);
         }
 
-        return true;
+        return errors;
     }
 
     private JsonSchema getJsonSchemaFromClasspath() {
@@ -41,9 +34,8 @@ public class ArchitectureDataStructureSchemaValidator {
         return factory.getSchema(is);
     }
 
-    private JsonNode getYamlFromFile(File productArchitecturePath) throws IOException {
+    private JsonNode getYamlFromFile(InputStream manifestInputStream) throws IOException {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        File dataStructureFile = new File(productArchitecturePath.getAbsolutePath() + File.separator + "data-structure.yml");
-        return mapper.readTree(dataStructureFile);
+        return mapper.readTree(manifestInputStream);
     }
 }
