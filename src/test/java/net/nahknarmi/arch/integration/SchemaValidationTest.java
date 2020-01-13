@@ -2,7 +2,6 @@ package net.nahknarmi.arch.integration;
 
 import com.networknt.schema.ValidationMessage;
 import net.nahknarmi.arch.schema.ArchitectureDataStructureSchemaValidator;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.File;

@@ -6,69 +6,43 @@ import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
 import net.nahknarmi.arch.domain.c4.C4View;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelValidatorTest {
-
-    @Test
-    public void missing_model_validation() {
-        ArchitectureDataStructure dataStructure = getDataStructure(C4Model.NONE);
-
-        Exception exception = assertThrows(DataStructureValidationException.class, () -> {
-            new ModelValidator().validate(dataStructure);
-        });
-
-        String expectedMessage = "Missing model";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
-    }
 
     @Test
     public void missing_system_validation() {
         ArchitectureDataStructure dataStructure = getDataStructure(noSystemModel());
 
-        Exception exception = assertThrows(DataStructureValidationException.class, () -> {
-            new ModelValidator().validate(dataStructure);
-        });
+        List<String> validationMessages = new ModelValidator().validate(dataStructure);
 
-        String expectedMessage = "Missing at least one system";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
+        assertThat(validationMessages, Matchers.containsInAnyOrder("Missing at least one system"));
     }
 
     @Test
     public void missing_person_validation() {
         ArchitectureDataStructure dataStructure = getDataStructure(noPersonModel());
 
-        Exception exception = assertThrows(DataStructureValidationException.class, () -> {
-            new ModelValidator().validate(dataStructure);
-        });
+        List<String> validationMessages = new ModelValidator().validate(dataStructure);
 
-        String expectedMessage = "Missing at least one person";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
+        assertThat(validationMessages, Matchers.containsInAnyOrder("Missing at least one person"));
     }
 
     @Test
     public void missing_system_and_person_validation() {
         ArchitectureDataStructure dataStructure = getDataStructure(noSystemNoPersonModel());
 
-        Exception exception = assertThrows(DataStructureValidationException.class, () -> {
-            new ModelValidator().validate(dataStructure);
-        });
+        List<String> validationMessages = new ModelValidator().validate(dataStructure);
 
-        String expectedMessage = "Missing at least one system\nMissing at least one person";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
+        assertThat(validationMessages, Matchers.containsInAnyOrder(
+                "Missing at least one system",
+                "Missing at least one person"));
     }
 
     private ArchitectureDataStructure getDataStructure(C4Model model) {

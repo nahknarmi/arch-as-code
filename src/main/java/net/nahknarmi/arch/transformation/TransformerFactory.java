@@ -3,7 +3,6 @@ package net.nahknarmi.arch.transformation;
 import com.google.common.collect.ImmutableList;
 import net.nahknarmi.arch.adapter.WorkspaceIdFinder;
 import net.nahknarmi.arch.transformation.enhancer.*;
-import net.nahknarmi.arch.transformation.validator.ModelValidator;
 
 import java.io.File;
 
@@ -20,9 +19,6 @@ public abstract class TransformerFactory {
                         new ContainerContextViewEnhancer(),
                         new ComponentContextViewEnhancer(),
                         new SystemLandscapeViewEnhancer()
-                ),
-                ImmutableList.of(
-                        new ModelValidator()
                 ),
                 new WorkspaceIdFinder());
     }

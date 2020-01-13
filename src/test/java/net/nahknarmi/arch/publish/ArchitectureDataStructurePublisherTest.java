@@ -32,5 +32,4 @@ public class ArchitectureDataStructurePublisherTest {
         verify(transformer, times(1)).toWorkSpace(any(ArchitectureDataStructure.class));
         verify(adapter, times(1)).publish(any(Workspace.class));
     }
-
 }
