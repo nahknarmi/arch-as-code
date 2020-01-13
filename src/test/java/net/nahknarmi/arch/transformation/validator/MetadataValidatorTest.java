@@ -11,12 +11,10 @@ import static org.junit.Assert.assertThrows;
 
 public class MetadataValidatorTest {
 
-    public static final long ID = 99999L;
-
     @Test
     public void missing_name_validation() {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure("", ID, "business unit", "desc", Collections.emptyList(), C4Model.NONE);
+                new ArchitectureDataStructure("", "business unit", "desc", Collections.emptyList(), C4Model.NONE);
 
         Exception exception = assertThrows(DataStructureValidationException.class, () -> {
             new MetadataValidator().validate(dataStructure);
@@ -31,7 +29,7 @@ public class MetadataValidatorTest {
     @Test
     public void missing_business_unit_validation() {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure("name", ID, "", "desc", Collections.emptyList(), C4Model.NONE);
+                new ArchitectureDataStructure("name", "", "desc", Collections.emptyList(), C4Model.NONE);
 
         Exception exception = assertThrows(DataStructureValidationException.class, () -> {
             new MetadataValidator().validate(dataStructure);
@@ -46,7 +44,7 @@ public class MetadataValidatorTest {
     @Test
     public void missing_name_and_business_unit_validation() {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure("", ID, "", "desc", Collections.emptyList(), C4Model.NONE);
+                new ArchitectureDataStructure("", "", "desc", Collections.emptyList(), C4Model.NONE);
 
         Exception exception = assertThrows(DataStructureValidationException.class, () -> {
             new MetadataValidator().validate(dataStructure);
