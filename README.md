@@ -14,7 +14,7 @@ Specifically we are making use of the [Structurizr](https://structurizr.com/) to
 
 # Getting Started 
 
-## 1. Install arch-as-code 
+## 1. Install arch-as-code cli
 
 ### Mac OSX & Linux
 
@@ -30,8 +30,29 @@ arch-as-code --help
 
 Download the latest binary [here](https://github.com/nahknarmi/arch-as-code/releases/latest).
 
+```powershell
+$repo = "nahknarmi/arch-as-code"
+$file = "CodeFormatter.zip"
 
-## 2. Export Structurizr Workspace details
+$releases = "https://api.github.com/repos/$repo/releases"
+
+Write-Host Determining latest release
+$tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
+
+$download = "https://github.com/$repo/releases/download/$tag/$file"
+$name = $file.Split(".")[0]
+$zip = "$name-$tag.zip"
+$dir = "$name-$tag"
+
+Write-Host Dowloading latest release
+Invoke-WebRequest $download -Out $zip
+
+
+
+```
+
+
+## 2. Configure Structurizr workspace details
 
 Export below Structurizr workspace details (available from [dashboard]([dashboard](https://structurizr.com/dashboard))) as environment variables:
 1. Workspace id
@@ -56,7 +77,7 @@ arch-as-code samples/markdown
 ```
 
 ## 4. View your changes on Structurizr
-,
+
 Go to [https://structurizr.com/workspace/<YOUR_WORKSPACE_ID>] to view changes you've made.
 
 # Development
