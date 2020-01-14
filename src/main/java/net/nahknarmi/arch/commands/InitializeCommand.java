@@ -1,16 +1,17 @@
 package net.nahknarmi.arch.commands;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
+import net.nahknarmi.arch.domain.ArchitectureDataStructure;
+import org.yaml.snakeyaml.Yaml;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static net.nahknarmi.arch.adapter.Credentials.createCredentials;
 
 @CommandLine.Command(name = "init", description = "Initializes project")
 public class InitializeCommand implements Callable<Integer> {
@@ -30,7 +31,7 @@ public class InitializeCommand implements Callable<Integer> {
     public Integer call() throws Exception {
         System.out.println(String.format("Architecture as code initialized under - %s\n", productDocumentationRoot.getAbsolutePath()));
 
-        createCredentials();
+        createCredentials(productDocumentationRoot, workspaceId, apiKey, apiSecret);
         createManifest();
 
         //create documentation directory with sample file
@@ -42,28 +43,17 @@ public class InitializeCommand implements Callable<Integer> {
 
     private void createManifest() throws IOException {
         File manifestFile = new File(productDocumentationRoot.getAbsolutePath() + File.separator + "data-structure.yml");
-        checkArgument(manifestFile.createNewFile(), String.format("Manifest file %s already exists.", manifestFile.getAbsolutePath()));
 
-        Files.write(Paths.get(manifestFile.toURI()), "name: my-awesome-product\ndescription: arch as code".getBytes());
+        ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
+        dataStructure.setDescription("Architecture as code");
+        dataStructure.setName("Hello World!!!");
+        dataStructure.setBusinessUnit("DevFactory");
 
+        Path targetManifestPath = Paths.get(manifestFile.toURI());
+
+        try (FileWriter fw = new FileWriter(targetManifestPath.toFile())) {
+            new Yaml().dump(dataStructure, fw);
+        }
         System.out.println(String.format("Manifest file written to - %s", manifestFile.getAbsolutePath()));
-    }
-
-    //TODO: move this to credentials file reader
-    private void createCredentials() throws IOException {
-        String configPath = String.format("%s%s.arch-as-code%s%s", productDocumentationRoot, File.separator, File.separator, "structurizr");
-        checkArgument(new File(configPath).mkdirs(), String.format("Unable to create directory %s", configPath));
-
-        File credentialsFile = new File(configPath + File.separator + "credentials.json");
-
-        new ObjectMapper()
-                .writeValue(credentialsFile,
-                        ImmutableMap.of(
-                                "workspace_id", workspaceId,
-                                "api_key", apiKey,
-                                "api_secret", apiSecret
-                        )
-                );
-        System.out.println(String.format("Credentials written to - %s", credentialsFile.getAbsolutePath()));
     }
 }

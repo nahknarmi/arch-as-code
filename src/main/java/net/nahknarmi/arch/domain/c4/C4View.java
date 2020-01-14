@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class C4View {
-    private C4SystemView systemView;
+    private C4SystemView systemView = C4SystemView.NONE;
     private C4ContainerView containerView;
     private C4ComponentView componentView;
+
+    public static final C4View NONE = new C4View();
 }

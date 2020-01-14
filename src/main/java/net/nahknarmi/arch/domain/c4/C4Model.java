@@ -20,5 +20,5 @@ public class C4Model {
     @NonNull
     private List<C4SoftwareSystem> systems = emptyList();
     @NonNull
-    private C4View views;
+    private C4View views = C4View.NONE;
 }

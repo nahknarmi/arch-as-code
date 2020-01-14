@@ -7,10 +7,14 @@ import lombok.NonNull;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class C4ContainerView {
     @NonNull
-    private List<ContainerContext> containers;
+    private List<ContainerContext> containers = emptyList();
+
+    public static final C4ContainerView NONE = new C4ContainerView();
 }
