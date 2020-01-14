@@ -11,6 +11,7 @@ public class Bootstrap {
     public static void main(String[] args) {
         int exitCode = new CommandLine(new ParentCommand())
                 .addSubcommand(new PublishCommand())
+                .addSubcommand(new ValidateCommand())
                 .addSubcommand(new InitializeCommand())
                 .addSubcommand(new ValidateCommand())
                 .execute(args);
