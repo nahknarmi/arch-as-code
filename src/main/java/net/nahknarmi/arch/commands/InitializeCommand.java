@@ -15,7 +15,7 @@ import static net.nahknarmi.arch.adapter.Credentials.createCredentials;
 
 @CommandLine.Command(name = "init", description = "Initializes project")
 public class InitializeCommand implements Callable<Integer> {
-    @CommandLine.Option(names = {"-w", "--workspace-id"}, description = "Structurizr workspace id", required = true)
+    @CommandLine.Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
     String workspaceId;
 
     @CommandLine.Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
