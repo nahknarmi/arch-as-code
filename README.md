@@ -14,6 +14,10 @@ Specifically we are making use of the [Structurizr](https://structurizr.com/) to
 
 # Getting Started 
 
+## 0. Create Structurizr Account
+
+See Structurizr [getting started](https://structurizr.com/help/getting-started) guide on how to setup a new account and get a free workspace.
+
 ## 1. Install arch-as-code cli
 
 ### Mac OSX & Linux
@@ -31,32 +35,23 @@ arch-as-code --help
 Download the latest binary [here](https://github.com/nahknarmi/arch-as-code/releases/latest).
 
 ```powershell
-
+TBD
 ```
 
 
 ## 2. Configure Structurizr workspace details
 
-Export below Structurizr workspace details (available from [dashboard]([dashboard](https://structurizr.com/dashboard))) as environment variables:
-1. Workspace id
-1. Workspace api key
-1. Workspace api secret
+Initialize arch-as-code using information available Structurizr workspace (available from [dashboard]([dashboard](https://structurizr.com/dashboard))):
 
 ```
-export STRUCTURIZR_WORKSPACE_ID=<WORKSPACE_ID>
+mkdir -p <PATH_TO_STORE_ARCHITECTURE_DOCUMENTATION>
 
-export STRUCTURIZR_API_KEY=<WORKSPACE_API_KEY>
-
-export STRUCTURIZR_API_SECRET=<WORKSPACE_API_SECRET>
+arch-as-code init -w <WORKSPACE_ID> -k <WORKSPACE_API_KEY> -s <WORKSPACE_API_SECRET> <PATH_TO_STORE_ARCHITECTURE_DOCUMENTATION>
 ```
 
 ## 3. Publish changes to Structurizr
 ```
-git clone https://github.com/nahknarmi/arch-as-code.git
-
-cd arch-as-code
-
-arch-as-code samples/markdown
+arch-as-code publish <PATH_TO_STORE_ARCHITECTURE_DOCUMENTATION>
 ```
 
 ## 4. View your changes on Structurizr

@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "publish", description = "Publishes to structurizr")
 public class PublishCommand implements Callable<Integer> {
-    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
+    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.", defaultValue = "./")
     private File productDocumentationRoot;
 
     @Override
