@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -16,6 +18,8 @@ import static net.nahknarmi.arch.adapter.Credentials.createCredentials;
 
 @CommandLine.Command(name = "init", description = "Initializes project")
 public class InitializeCommand implements Callable<Integer> {
+    private static final Log logger = LogFactory.getLog(ValidateCommand.class);
+
     @CommandLine.Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
     String workspaceId;
 
@@ -30,14 +34,12 @@ public class InitializeCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        System.out.println(String.format("Architecture as code initialized under - %s\n", productDocumentationRoot.getAbsolutePath()));
+        logger.info(String.format("Architecture as code initialized under - %s\n", productDocumentationRoot.getAbsolutePath()));
 
         createCredentials(productDocumentationRoot, workspaceId, apiKey, apiSecret);
         createManifest();
 
-        //create documentation directory with sample file
-
-        System.out.println("\nYou're ready to go!!");
+        logger.info("You're ready to go!!");
 
         return 0;
     }
@@ -55,6 +57,6 @@ public class InitializeCommand implements Callable<Integer> {
         new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
                 .writeValue(targetManifestPath.toFile(), dataStructure);
 
-        System.out.println(String.format("Manifest file written to - %s", manifestFile.getAbsolutePath()));
+        logger.info(String.format("Manifest file written to - %s", manifestFile.getAbsolutePath()));
     }
 }

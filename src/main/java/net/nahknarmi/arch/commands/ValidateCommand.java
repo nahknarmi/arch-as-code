@@ -2,6 +2,8 @@ package net.nahknarmi.arch.commands;
 
 import com.networknt.schema.ValidationMessage;
 import net.nahknarmi.arch.schema.ArchitectureDataStructureSchemaValidator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -14,6 +16,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @CommandLine.Command(name = "validate", description = "Validate product architecture yaml")
 public class ValidateCommand implements Callable<Integer> {
+    private static final Log logger = LogFactory.getLog(ValidateCommand.class);
+
     @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
     File productDocumentationRoot;
     private final String manifestFileName;
@@ -38,10 +42,10 @@ public class ValidateCommand implements Callable<Integer> {
         Set<ValidationMessage> messageSet = new ArchitectureDataStructureSchemaValidator().validate(new FileInputStream(manifestFile));
 
         if (messageSet.isEmpty()) {
-            System.out.println(manifestFileName + " is valid.");
+            logger.info(manifestFileName + " is valid.");
         } else {
-            System.out.println(manifestFileName + " is invalid.");
-            messageSet.forEach(x -> System.err.println(x.getMessage()));
+            logger.error(manifestFileName + " is invalid.");
+            messageSet.forEach(x -> logger.error(x.getMessage()));
             return 1;
         }
 
