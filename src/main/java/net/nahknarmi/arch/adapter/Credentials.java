@@ -12,7 +12,8 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public abstract class Credentials {
-    private static final String CREDENTIALS_FILE_PATH = ".arch-as-code" + File.separator + "structurizr" + File.separator + "credentials.json";
+    private static final String STRUCTURIZR_PATH = ".arch-as-code" + File.separator + "structurizr";
+    private static final String CREDENTIALS_FILE_PATH = STRUCTURIZR_PATH + File.separator + "credentials.json";
 
     static Optional<FileInputStream> credentialsAsStream() {
         return Try.of(() -> new FileInputStream(new File(CREDENTIALS_FILE_PATH)))
@@ -20,9 +21,8 @@ public abstract class Credentials {
                 .getOrElse(Optional.empty());
     }
 
-
     public static void createCredentials(File productDocumentationRoot, String workspaceId, String apiKey, String apiSecret) throws IOException {
-        String configPath = String.format("%s%s%s", productDocumentationRoot.getAbsolutePath(), File.separator, CREDENTIALS_FILE_PATH);
+        String configPath = String.format("%s%s%s", productDocumentationRoot.getAbsolutePath(), File.separator, STRUCTURIZR_PATH);
         checkArgument(new File(configPath).mkdirs(), String.format("Unable to create directory %s.", configPath));
 
         File credentialsFile = new File(configPath + File.separator + "credentials.json");

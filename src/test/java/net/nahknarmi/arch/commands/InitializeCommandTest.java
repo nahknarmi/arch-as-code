@@ -37,7 +37,9 @@ public class InitializeCommandTest {
         assertThat(command.call(), equalTo(0));
 
         //check that credentials.json file created
-        assertTrue(tempProductDirectory.resolve(".arch-as-code/structurizr/credentials.json").toFile().exists());
+        File credentialsFile = tempProductDirectory.resolve(".arch-as-code/structurizr/credentials.json").toFile();
+        assertTrue(credentialsFile.exists());
+        assertTrue(credentialsFile.isFile());
 
         //check that data-structure.yml file created
         assertTrue(tempProductDirectory.resolve("data-structure.yml").toFile().exists());
