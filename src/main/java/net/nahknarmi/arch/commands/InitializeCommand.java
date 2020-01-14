@@ -1,11 +1,12 @@
 package net.nahknarmi.arch.commands;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
-import org.yaml.snakeyaml.Yaml;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,9 +52,9 @@ public class InitializeCommand implements Callable<Integer> {
 
         Path targetManifestPath = Paths.get(manifestFile.toURI());
 
-        try (FileWriter fw = new FileWriter(targetManifestPath.toFile())) {
-            new Yaml().dump(dataStructure, fw);
-        }
+        new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER))
+                .writeValue(targetManifestPath.toFile(), dataStructure);
+
         System.out.println(String.format("Manifest file written to - %s", manifestFile.getAbsolutePath()));
     }
 }
