@@ -20,7 +20,6 @@ public abstract class TransformerFactory {
                         new ComponentContextViewEnhancer(),
                         new SystemLandscapeViewEnhancer()
                 ),
-                new WorkspaceIdFinder()
-        );
+                new WorkspaceIdFinder());
     }
 }

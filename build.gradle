@@ -46,6 +46,13 @@ dependencies {
     //vavr
     implementation 'io.vavr:vavr:0.10.2'
 
+    //Schema Validation
+    implementation 'com.networknt:json-schema-validator:1.0.29'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.1'
+
+    //logging
+    implementation 'org.slf4j:slf4j-nop:1.7.30'
+
     //Testing
     //Makesure hamcrest is above junit see - https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
     testImplementation 'org.hamcrest:hamcrest-all:1.3'

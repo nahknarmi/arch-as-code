@@ -1,7 +1,9 @@
-package net.nahknarmi.arch.adapter;
+package net.nahknarmi.arch.e2e;
 
 import com.structurizr.Workspace;
 import com.structurizr.api.StructurizrClientException;
+import net.nahknarmi.arch.adapter.StructurizrAdapter;
+import net.nahknarmi.arch.adapter.WorkspaceIdFinder;
 import net.nahknarmi.arch.publish.ArchitectureDataStructurePublisher;
 import org.junit.Test;
 
