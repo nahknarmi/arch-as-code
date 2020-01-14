@@ -13,7 +13,6 @@ public class Bootstrap {
                 .addSubcommand(new PublishCommand())
                 .addSubcommand(new ValidateCommand())
                 .addSubcommand(new InitializeCommand())
-                .addSubcommand(new ValidateCommand())
                 .execute(args);
         System.exit(exitCode);
     }
