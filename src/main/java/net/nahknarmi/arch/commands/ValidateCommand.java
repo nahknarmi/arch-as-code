@@ -1,6 +1,5 @@
 package net.nahknarmi.arch.commands;
 
-import com.google.common.base.Preconditions;
 import com.networknt.schema.ValidationMessage;
 import net.nahknarmi.arch.schema.ArchitectureDataStructureSchemaValidator;
 import picocli.CommandLine;
