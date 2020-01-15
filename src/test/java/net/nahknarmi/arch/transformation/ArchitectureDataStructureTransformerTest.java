@@ -97,18 +97,18 @@ public class ArchitectureDataStructureTransformerTest {
 
     private C4Model buildModel() {
         return new C4Model(
-                ImmutableList.of(new C4Person(new C4Path("@person"), "Foo", null, emptyList(), emptyList())),
-                ImmutableList.of(new C4SoftwareSystem(new C4Path("c4://sys"), "J2EE Server", C4Location.INTERNAL, emptyList(), emptyList())),
-                emptyList(),
-                emptyList()
+                ImmutableList.of(new C4Person("Foo", "Bar", emptyList())),
+                ImmutableList.of(new C4SoftwareSystem("J2EE Server", "Application server", emptyList(), emptyList())),
+                buildView()
         );
     }
 
-    private C4ViewContainer buildView() {
-        return new C4ViewContainer(
-                emptyList(),
-                emptyList(),
-                emptyList()
+    private C4View buildView() {
+        return new C4View(
+                null,
+                null,
+                null
         );
     }
+
 }

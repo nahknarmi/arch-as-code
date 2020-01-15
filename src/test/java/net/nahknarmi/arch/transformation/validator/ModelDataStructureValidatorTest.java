@@ -1,6 +1,6 @@
 package net.nahknarmi.arch.transformation.validator;
 
-import com.google.common.collect.ImmutableList;
+import net.nahknarmi.arch.TestHelper;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Person;
@@ -18,7 +18,7 @@ public class ModelDataStructureValidatorTest {
 
     @Test
     public void missing_system_validation() {
-        ArchitectureDataStructure dataStructure = getDataStructure(noSystemModel());
+        ArchitectureDataStructure dataStructure = getDataStructure(TestHelper.noSystemModel());
 
         List<String> validationMessages = new ModelValidator().validate(dataStructure);
 
