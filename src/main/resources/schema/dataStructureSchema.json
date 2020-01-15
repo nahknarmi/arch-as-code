@@ -1,20 +1,340 @@
 {
-  "required": [ "name", "description", "businessUnit"],
   "type": "object",
+  "required": [
+    "name",
+    "description",
+    "businessUnit"
+  ],
   "properties": {
     "name": {
-      "type": "string",
-      "description": "product name"
+      "type": "string"
     },
-
     "description": {
-      "type": "string",
-      "description": "description"
+      "type": "string"
     },
-
     "businessUnit": {
-      "type": "string",
-      "description": "business unit"
+      "type": "string"
+    },
+    "decisions": {
+      "type": "array",
+      "items": [
+        {
+          "required": [
+            "id",
+            "date",
+            "title",
+            "status",
+            "content"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "decision id"
+            },
+            "date": {
+              "type": "string",
+              "description": "date"
+            },
+            "title": {
+              "type": "string",
+              "description": "decision title"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "Accepted",
+                "Superseded",
+                "Deprecated",
+                "Rejected",
+                "Proposed"
+              ]
+            },
+            "content": {
+              "type": "string",
+              "description": "markdown formatted decision"
+            }
+          }
+        }
+      ]
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "persons",
+        "systems"
+      ],
+      "properties": {
+        "persons": {
+          "type": "array",
+          "items": [
+            {
+              "required": [
+                "name",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "systems": {
+          "type": "array",
+          "items": [
+            {
+              "required": [
+                "name",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "containers": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "description",
+                        "technology"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "technology": {
+                          "type": "string"
+                        },
+                        "components": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "required": [
+                                "name",
+                                "description",
+                                "technology"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "technology": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "views": {
+          "type": "object",
+          "properties": {
+            "systemView": {
+              "type": "object",
+              "required": [
+                "systems"
+              ],
+              "properties": {
+                "systems": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "description",
+                        "relationships"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "action",
+                                "with",
+                                "description"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "action": {
+                                  "type": "string"
+                                },
+                                "with": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "containerView": {
+              "type": "object",
+              "required": [
+                "containers"
+              ],
+              "properties": {
+                "containers": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "description",
+                        "system",
+                        "relationships"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "system": {
+                          "type": "string"
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "action",
+                                "with",
+                                "description"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "action": {
+                                  "type": "string"
+                                },
+                                "with": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "componentView": {
+              "type": "object",
+              "required": [
+                "components"
+              ],
+              "properties": {
+                "containers": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "description",
+                        "container",
+                        "relationships"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "container": {
+                          "type": "string"
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "action",
+                                "with",
+                                "description"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "action": {
+                                  "type": "string"
+                                },
+                                "with": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

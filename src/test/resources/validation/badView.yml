@@ -1,0 +1,16 @@
+name: "TestSpaces"
+description: "TestSpaces is a tool!"
+businessUnit: "DevFactory"
+model:
+  persons: []
+  systems: []
+  views:
+    systemView:
+      systems:
+        - {}
+    containerView:
+      containers:
+        - {}
+    componentView:
+      components:
+        - {}

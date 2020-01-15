@@ -1,0 +1,176 @@
+name: "TestSpaces"
+description: "TestSpaces is a tool!"
+businessUnit: "DevFactory"
+decisions:
+  - id: "1"
+    date: 2018-11-29T16:04:32Z
+    title: "Docker as the containerization technology platform"
+    status: Accepted
+    content: "## Context\nWe need to choose the default containerization technology that DevSpaces will support\n\n## Decision\nWe will choose Docker as the default platform\n\n## Consequences\nWe will only be able to support Linux based environments for the moment until Docker is able to support full Windows workspaces"
+
+  - id: "2"
+    date: 2019-11-19T19:07:15Z
+    title: "Kubernetes as the container management platform"
+    status: Accepted
+    content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
+
+model:
+  persons:
+    - name: "Developer"
+      description: "Developer building software"
+
+    - name: "SaasOps"
+      description: "SaasOps operating system"
+
+    - name: "PCA"
+      description: "Product Chief Architect"
+
+  systems:
+    - name: "XO Chat"
+      description: "Realtime team communication"
+
+    - name: "Trilogy Google G Suite"
+      description: "Team collaboration via sheets, docs and presentations"
+
+    - name: "GitHub"
+      description: "Hosts code and used for identity management"
+
+    - name: "DevSpaces"
+      description: "allows developers to collaborate"
+      containers:
+        - name: "DevSpaces CLI"
+          description: "Command Line Interface for interacting with DevSpaces Backend"
+          technology: "C++"
+        - name: "DevSpaces Backend"
+          description: "Restful API providing capabilities for interacting with a DevSpace"
+          technology: "Spring Boot"
+        - name: "DevSpaces Web Application"
+          description: "Manage dev spaces"
+          technology: "Angular"
+        - name: "DevSpaces API"
+          description: "API to programmatically create/manage dev spaces"
+          technology: "Spring Boot"
+          components:
+            - name: "Sign In Controller"
+              description: "Allows users to sign in"
+              technology: "Spring MVC Rest Controller"
+
+            - name: "Security Component"
+              description: "Provides functionality related to signing in, changing passwords, permissions, etc."
+              technology: "Spring Bean"
+
+            - name: "Reset Password Controller"
+              description: "Allows users to reset their passwords"
+              technology: "Spring MVC Rest Controller"
+
+            - name: "E-mail component"
+              description: "Sends emails to users"
+              technology: "Spring MVC Rest Controller"
+
+
+  views:
+    systemView:
+      systems:
+        - name: "DevSpaces"
+          description: "Internal Trilogy Users view of DevSpaces system"
+          relationships:
+            - name: "Developer"
+              action: "USES"
+              with: "GitHub"
+              description: "as a version control system"
+
+            - name: "SaasOps"
+              action: "USES"
+              with: "GitHub"
+              description: "as a version control system"
+
+            - name: "Developer"
+              action: "USES"
+              with: "DevSpaces"
+              description: "to devolop software"
+
+            - name: "SaasOps"
+              action: "USES"
+              with: "DevSpaces"
+              description: "to manage cluster"
+
+        - name: "Trilogy Google G Suite"
+          relationships:
+            - name: "PCA"
+              action: "USES"
+              with: "XO Chat"
+              description: "to communicate with team"
+
+            - name: "Developer"
+              action: "USES"
+              with: "DevSpaces"
+              description: "to create dev spaces"
+
+            - name: "Developer"
+              action: "USES"
+              with: "Trilogy Google G Suite"
+              description: "inter-team collaboration"
+
+            - name: "PCA"
+              action: "USES"
+              with: "Trilogy Google G Suite"
+              description: "inter-team collaboration"
+
+            - name: "SaasOps"
+              action: "USES"
+              with: "Trilogy Google G Suite"
+              description: "inter-team collaboration"
+
+    containerView:
+      containers:
+        - name: "DevSpaces Container"
+          description: "DevSpaces Container"
+          system: "DevSpaces"
+          relationships:
+            - name: "Developer"
+              action: "USES"
+              with: "GitHub"
+              description: "pushes code changes"
+
+            - name: "Developer"
+              action: "USES"
+              with: "DevSpaces CLI"
+              description: "creates and manages dev spaces"
+
+            - name: "SaasOps"
+              action: "USES"
+              with: "DevSpaces Web Application"
+              description: "to manage instances"
+
+            - name: "DevSpaces Web Application"
+              action: "USES"
+              with: "DevSpaces Backend"
+              description: "Frontend queries backend"
+
+            - name: "DevSpaces CLI"
+              action: "USES"
+              with: "DevSpaces API"
+              description: "to manipulate dev spaces"
+
+            - name: "DevSpaces Backend"
+              action: "USES"
+              with: "DevSpaces CLI"
+              description: "to manipulate dev spaces"
+
+    componentView:
+      components:
+        - name: "DevSpaces API Components"
+          container: "DevSpaces API"
+          description: "DevSpaces API Components"
+          relationships:
+            - name: "Sign In Controller"
+              action: "USES"
+              with: "Security Component"
+
+            - name: "Reset Password Controller"
+              action: "USES"
+              with: "Security Component"
+
+            - name: "Reset Password Controller"
+              action: "USES"
+              with: "E-mail component"
