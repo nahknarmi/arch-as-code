@@ -1,6 +1,6 @@
 package net.nahknarmi.arch.e2e;
 
-import net.nahknarmi.arch.commands.ValidateCommand;
+import net.nahknarmi.arch.commands.PublishCommand;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,24 +11,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
-public class ValidateCommandE2ETest {
+public class PublishCommandE2ETest {
 
     @Test
-    public void validate() throws Exception {
+    public void publish() throws Exception {
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
-        ValidateCommand validateCommand = new ValidateCommand(documentationRoot, "data-structure.yml");
+        PublishCommand publishCommand = new PublishCommand(documentationRoot, "data-structure.yml");
 
-        Integer statusCode = validateCommand.call();
+        Integer statusCode = publishCommand.call();
 
         assertThat(statusCode, equalTo(0));
     }
 
     @Test
-    public void validate_missing_metadata() throws Exception {
-        File file = new File(getClass().getResource(TEST_VALIDATION_ROOT_PATH).getPath());
-        ValidateCommand validateCommand = new ValidateCommand(file, "missingMetadata.yml");
+    public void publish_invalid_manifest() throws Exception {
+        File documentationRoot = new File(getClass().getResource(TEST_VALIDATION_ROOT_PATH).getPath());
+        PublishCommand publishCommand = new PublishCommand(documentationRoot, "missingMetadata.yml");
 
-        Integer statusCode = validateCommand.call();
+        Integer statusCode = publishCommand.call();
 
         assertThat(statusCode, not(equalTo(0)));
     }

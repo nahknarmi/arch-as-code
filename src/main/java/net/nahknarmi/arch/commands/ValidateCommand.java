@@ -34,9 +34,9 @@ public class ValidateCommand implements Callable<Integer> {
         List<String> messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productDocumentationRoot, this.manifestFileName);
 
         if (messageSet.isEmpty()) {
-            logger.info(manifestFileName + " is valid.");
+            logger.info("Manifest file " + manifestFileName + " is valid.");
         } else {
-            logger.error(manifestFileName + " is invalid.");
+            logger.error("Manifest file " + manifestFileName + " is invalid.");
             messageSet.forEach(logger::error);
         }
 
