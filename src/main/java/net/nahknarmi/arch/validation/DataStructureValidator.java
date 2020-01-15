@@ -1,9 +1,9 @@
-package net.nahknarmi.arch.transformation.validator;
+package net.nahknarmi.arch.validation;
 
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 
 import java.util.List;
 
-public interface ArchitectureDataStructureValidator {
+interface DataStructureValidator {
     List<String> validate(ArchitectureDataStructure dataStructure);
 }

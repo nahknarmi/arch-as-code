@@ -1,18 +1,14 @@
 package net.nahknarmi.arch.commands;
 
-import com.networknt.schema.ValidationMessage;
-import net.nahknarmi.arch.schema.ArchitectureDataStructureSchemaValidator;
+import net.nahknarmi.arch.validation.ArchitectureDataStructureValidatorFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.Callable;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @CommandLine.Command(name = "validate", description = "Validate product architecture yaml")
 public class ValidateCommand implements Callable<Integer> {
@@ -33,22 +29,17 @@ public class ValidateCommand implements Callable<Integer> {
         this.manifestFileName = "data-structure.yml";
     }
 
-
     @Override
     public Integer call() throws FileNotFoundException {
-        File manifestFile = new File(productDocumentationRoot.getAbsolutePath() + File.separator + manifestFileName);
-        checkArgument(manifestFile.exists(), "Product Architecture data-structure.yml file does not exist.");
-
-        Set<ValidationMessage> messageSet = new ArchitectureDataStructureSchemaValidator().validate(new FileInputStream(manifestFile));
+        List<String> messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productDocumentationRoot, this.manifestFileName);
 
         if (messageSet.isEmpty()) {
             logger.info(manifestFileName + " is valid.");
         } else {
             logger.error(manifestFileName + " is invalid.");
-            messageSet.forEach(x -> logger.error(x.getMessage()));
-            return 1;
+            messageSet.forEach(logger::error);
         }
 
-        return 0;
+        return messageSet.size();
     }
 }

@@ -6,6 +6,7 @@ import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
 import net.nahknarmi.arch.domain.c4.C4View;
+import net.nahknarmi.arch.validation.ModelValidator;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ModelValidatorTest {
+public class ModelDataStructureValidatorTest {
 
     @Test
     public void missing_system_validation() {

@@ -9,6 +9,7 @@ import static net.nahknarmi.arch.TestHelper.TEST_PRODUCT_DOCUMENTATION_ROOT_PATH
 import static net.nahknarmi.arch.TestHelper.TEST_VALIDATION_ROOT_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 public class ValidateCommandE2ETest {
 
@@ -29,6 +30,6 @@ public class ValidateCommandE2ETest {
 
         Integer statusCode = validateCommand.call();
 
-        assertThat(statusCode, equalTo(1));
+        assertThat(statusCode, not(equalTo(0)));
     }
 }
