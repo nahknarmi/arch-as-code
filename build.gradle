@@ -48,7 +48,7 @@ dependencies {
 
     //Schema Validation
     implementation 'com.networknt:json-schema-validator:1.0.29'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.2'
 
     //logging
     implementation 'org.slf4j:slf4j-nop:1.7.30'
