@@ -14,10 +14,9 @@ import java.util.concurrent.Callable;
 public class ValidateCommand implements Callable<Integer> {
     private static final Log logger = LogFactory.getLog(ValidateCommand.class);
 
-    private final String manifestFileName;
-
     @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
-    private File productDocumentationRoot;
+    File productDocumentationRoot;
+    private final String manifestFileName;
 
     // Only for testing purposes
     public ValidateCommand(File productDocumentationRoot, String manifestFileName) {
@@ -35,9 +34,9 @@ public class ValidateCommand implements Callable<Integer> {
         List<String> messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productDocumentationRoot, this.manifestFileName);
 
         if (messageSet.isEmpty()) {
-            logger.info("Manifest file " + manifestFileName + " is valid.");
+            logger.info(manifestFileName + " is valid.");
         } else {
-            logger.error("Manifest file " + manifestFileName + " is invalid.");
+            logger.error(manifestFileName + " is invalid.");
             messageSet.forEach(logger::error);
         }
 
