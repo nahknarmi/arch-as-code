@@ -1,25 +1,21 @@
 package net.nahknarmi.arch.transformation.validator;
 
-import com.google.common.collect.ImmutableList;
+import net.nahknarmi.arch.TestHelper;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
-import net.nahknarmi.arch.domain.c4.C4Model;
-import net.nahknarmi.arch.domain.c4.C4Person;
-import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
-import net.nahknarmi.arch.domain.c4.C4View;
 import net.nahknarmi.arch.validation.ModelValidator;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
 
+import static net.nahknarmi.arch.TestHelper.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelDataStructureValidatorTest {
 
     @Test
     public void missing_system_validation() {
-        ArchitectureDataStructure dataStructure = getDataStructure(noSystemModel());
+        ArchitectureDataStructure dataStructure = getDataStructure(TestHelper.noSystemModel());
 
         List<String> validationMessages = new ModelValidator().validate(dataStructure);
 
@@ -46,19 +42,4 @@ public class ModelDataStructureValidatorTest {
                 "Missing at least one person"));
     }
 
-    private ArchitectureDataStructure getDataStructure(C4Model model) {
-        return new ArchitectureDataStructure("name", "business unit", "desc", Collections.emptyList(), model);
-    }
-
-    private C4Model noPersonModel() {
-        return new C4Model(Collections.emptyList(), ImmutableList.of(new C4SoftwareSystem()), new C4View());
-    }
-
-    private C4Model noSystemModel() {
-        return new C4Model(ImmutableList.of(new C4Person()), Collections.emptyList(), new C4View());
-    }
-
-    private C4Model noSystemNoPersonModel() {
-        return new C4Model(Collections.emptyList(), Collections.emptyList(), new C4View());
-    }
 }
