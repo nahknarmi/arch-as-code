@@ -1,5 +1,6 @@
-package net.nahknarmi.arch.commands;
+package net.nahknarmi.arch.e2e;
 
+import net.nahknarmi.arch.commands.InitializeCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
 
-public class InitializeCommandTest {
+public class InitializeCommandE2ETest {
     private Path tempProductDirectory;
 
     @Before
@@ -28,12 +29,7 @@ public class InitializeCommandTest {
 
     @Test
     public void initialize() throws Exception {
-        InitializeCommand command = new InitializeCommand();
-        command.apiKey = "key";
-        command.apiSecret = "secret";
-        command.workspaceId = "1234";
-        command.productDocumentationRoot = tempProductDirectory.toFile();
-
+        InitializeCommand command = new InitializeCommand("key", "secret", "1234", tempProductDirectory.toFile());
         assertThat(command.call(), equalTo(0));
 
         //check that credentials.json file created

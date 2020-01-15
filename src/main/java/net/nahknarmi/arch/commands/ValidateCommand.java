@@ -14,9 +14,10 @@ import java.util.concurrent.Callable;
 public class ValidateCommand implements Callable<Integer> {
     private static final Log logger = LogFactory.getLog(ValidateCommand.class);
 
-    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
-    File productDocumentationRoot;
     private final String manifestFileName;
+
+    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
+    private File productDocumentationRoot;
 
     // Only for testing purposes
     public ValidateCommand(File productDocumentationRoot, String manifestFileName) {

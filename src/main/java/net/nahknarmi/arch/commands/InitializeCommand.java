@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,16 +21,28 @@ public class InitializeCommand implements Callable<Integer> {
     private static final Log logger = LogFactory.getLog(ValidateCommand.class);
 
     @CommandLine.Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
-    String workspaceId;
+    private String workspaceId;
 
     @CommandLine.Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
-    String apiKey;
+    private String apiKey;
 
     @CommandLine.Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
-    String apiSecret;
+    private String apiSecret;
 
     @CommandLine.Parameters(description = "Product documentation root directory", defaultValue = "./")
-    File productDocumentationRoot;
+    private File productDocumentationRoot;
+
+    // for testing purposes
+    public InitializeCommand(String workspaceId, String apiKey, String apiSecret, File productDocumentationRoot) {
+        this.workspaceId = workspaceId;
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.productDocumentationRoot = productDocumentationRoot;
+    }
+
+    public InitializeCommand() {
+
+    }
 
     @Override
     public Integer call() throws Exception {

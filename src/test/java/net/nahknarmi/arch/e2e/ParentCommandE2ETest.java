@@ -1,12 +1,13 @@
-package net.nahknarmi.arch.commands;
+package net.nahknarmi.arch.e2e;
 
+import net.nahknarmi.arch.commands.ParentCommand;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 
-public class ParentCommandTest {
+public class ParentCommandE2ETest {
 
     @Test
     public void parent() {
