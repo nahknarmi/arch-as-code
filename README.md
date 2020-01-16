@@ -20,6 +20,8 @@ See Structurizr [getting started](https://structurizr.com/help/getting-started) 
 
 ## 1. Install arch-as-code cli
 
+Arch as code required java 8 or greater to be installed.
+
 ### Mac OSX & Linux
 
 ```bash
