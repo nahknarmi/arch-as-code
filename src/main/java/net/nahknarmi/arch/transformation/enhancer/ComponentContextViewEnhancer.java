@@ -26,13 +26,14 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
 
                 ComponentView context = viewSet.createComponentView(container, c.getName(), c.getDescription());
 
-                c.getRelationships().forEach(r -> {
-                    String description = r.getDescription();
-                    Element fromElement = TransformationHelper.getElementWithName(workspace, r.getName());
-                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
-
-                    addRelationshipToContext(context, fromElement, toElement, description);
-                });
+                  // Now iterate through entities, in view, not relationships
+//                c.getRelationships().forEach(r -> {
+//                    String description = r.getDescription();
+//                    Element fromElement = TransformationHelper.getElementWithName(workspace, c.getName());
+//                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
+//
+//                    addRelationshipToContext(context, fromElement, toElement, description);
+//                });
 
                 context.addNearestNeighbours(container);
                 context.setAutomaticLayout(true);

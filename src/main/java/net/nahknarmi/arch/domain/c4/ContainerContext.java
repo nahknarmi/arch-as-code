@@ -18,5 +18,5 @@ public class ContainerContext {
     @NonNull
     private String description;
     @NonNull
-    private List<RelationshipPair> relationships;
+    private List<C4Entity> entities;
 }

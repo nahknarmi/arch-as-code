@@ -20,7 +20,7 @@ public class ModelEnhancerTest {
         C4Model model = mock(C4Model.class);
 
         when(dataStructure.getModel()).thenReturn(model);
-        when(model.getPersons()).thenReturn(ImmutableList.of());
+        when(model.getPeople()).thenReturn(ImmutableList.of());
 
         new ModelEnhancer().enhance(workspace, dataStructure);
 

@@ -43,11 +43,11 @@ public class ArchitectureDataStructureReaderTest {
         C4Model model = dataStructure.getModel();
         assertThat(model, notNullValue());
 
-        //it should have persons
-        List<C4Person> persons = model.getPersons();
+        //it should have people
+        List<C4Person> people = model.getPeople();
 
-        assertThat(persons.size(), equalTo(3));
-        C4Person person = (C4Person) persons.get(0);
+        assertThat(people.size(), equalTo(3));
+        C4Person person = (C4Person) people.get(0);
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));

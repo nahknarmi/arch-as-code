@@ -13,14 +13,14 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         Model model = workspace.getModel();
         C4Model dataStructureModel = dataStructure.getModel();
-        addPersons(model, dataStructureModel);
+        addPeople(model, dataStructureModel);
         addSystems(model, dataStructureModel);
     }
 
-    private void addPersons(Model model, C4Model dataStructureModel) {
+    private void addPeople(Model model, C4Model dataStructureModel) {
         ofNullable(dataStructureModel)
                 .orElse(NONE)
-                .getPersons()
+                .getPeople()
                 .forEach(p -> model.addPerson(p.getName(), p.getDescription()));
     }
 

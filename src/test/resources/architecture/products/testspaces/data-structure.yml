@@ -15,15 +15,70 @@ decisions:
     content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
 
 model:
-  persons:
+  people:
     - name: "Developer"
       description: "Developer building software"
+      relationships:
+        - action: USES
+          with: "GitHub"
+          type: system
+          description: "as a version control system"
+
+        - action: USES
+          with: "DevSpaces"
+          type: system
+          description: "to devolop software"
+
+        - action: USES
+          type: system
+          with: "Trilogy Google G Suite"
+          description: "inter-team collaboration"
+
+        - action: USES
+          with: "DevSpaces CLI"
+          type: container
+          description: "creates and manages dev spaces"
 
     - name: "SaasOps"
       description: "SaasOps operating system"
+      relationships:
+        - action: USES
+          with: "GitHub"
+          type: system
+          description: "as a version control system"
+
+        - action: USES
+          with: "DevSpaces"
+          type: system
+          description: "to manage cluster"
+
+        - action: USES
+          with: "Trilogy Google G Suite"
+          type: system
+          description: "inter-team collaboration"
+
+        - action: USES
+          with: "DevSpaces Web Application"
+          type: container
+          description: "to manage instances"
 
     - name: "PCA"
       description: "Product Chief Architect"
+      relationships:
+        - action: USES
+          with: "GitHub"
+          type: system
+          description: "as a version control system"
+
+        - action: USES
+          with: "XO Chat"
+          type: system
+          description: "to communicate with team"
+
+        - action: USES
+          type: system
+          with: "Trilogy Google G Suite"
+          description: "inter-team collaboration"
 
   systems:
     - name: "XO Chat"
@@ -41,12 +96,30 @@ model:
         - name: "DevSpaces CLI"
           description: "Command Line Interface for interacting with DevSpaces Backend"
           technology: "C++"
+          relationships:
+            - action: USES
+              with: "DevSpaces API"
+              type: container
+              description: "to manipulate dev spaces"
+
         - name: "DevSpaces Backend"
           description: "Restful API providing capabilities for interacting with a DevSpace"
           technology: "Spring Boot"
+          relationships:
+            - action: USES
+              with: "DevSpaces API"
+              type: container
+              description: "to manipulate dev spaces"
+
         - name: "DevSpaces Web Application"
           description: "Manage dev spaces"
           technology: "Angular"
+          relationships:
+            - action: USES
+              with: "DevSpaces Backend"
+              type: container
+              description: "Frontend queries backend"
+
         - name: "DevSpaces API"
           description: "API to programmatically create/manage dev spaces"
           technology: "Spring Boot"
@@ -54,6 +127,11 @@ model:
             - name: "Sign In Controller"
               description: "Allows users to sign in"
               technology: "Spring MVC Rest Controller"
+              relationships:
+                - action: USES
+                  with: "Security Component"
+                  type: component
+
 
             - name: "Security Component"
               description: "Provides functionality related to signing in, changing passwords, permissions, etc."
@@ -62,115 +140,90 @@ model:
             - name: "Reset Password Controller"
               description: "Allows users to reset their passwords"
               technology: "Spring MVC Rest Controller"
+              relationships:
+                - action: USES
+                  with: "Security Component"
+                  type: component
+
+                - action: USES
+                  with: "E-mail component"
+                  type: component
 
             - name: "E-mail component"
               description: "Sends emails to users"
               technology: "Spring MVC Rest Controller"
 
-
   views:
     systemView:
       systems:
         - name: "DevSpaces"
-          description: "Internal Trilogy Users view of DevSpaces system"
-          relationships:
+          description: "Internal Trilogy users view of DevSpaces system"
+          entities:
             - name: "Developer"
-              action: "USES"
-              with: "GitHub"
-              description: "as a version control system"
+              type: person
 
             - name: "SaasOps"
-              action: "USES"
-              with: "GitHub"
-              description: "as a version control system"
+              type: person
 
-            - name: "Developer"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to devolop software"
+            - name: "GitHub"
+              type: system
 
-            - name: "SaasOps"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to manage cluster"
+            - name: "DevSpaces"
+              type: system
 
         - name: "Trilogy Google G Suite"
-          relationships:
-            - name: "PCA"
-              action: "USES"
-              with: "XO Chat"
-              description: "to communicate with team"
-
+          description: "Trilogy inter-team communication"
+          entities:
             - name: "Developer"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to create dev spaces"
-
-            - name: "Developer"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
-
-            - name: "PCA"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
+              type: person
 
             - name: "SaasOps"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
+              type: person
+
+            - name: "PCA"
+              type: person
+
+            - name: "Trilogy Google G Suite"
+              type: system
+
+            - name: "XO Chat"
+              type: system
 
     containerView:
       containers:
         - name: "DevSpaces Container"
           description: "DevSpaces Container"
-          system: "DevSpaces"
-          relationships:
+          entities:
             - name: "Developer"
-              action: "USES"
-              with: "GitHub"
-              description: "pushes code changes"
-
-            - name: "Developer"
-              action: "USES"
-              with: "DevSpaces CLI"
-              description: "creates and manages dev spaces"
+              type: person
 
             - name: "SaasOps"
-              action: "USES"
-              with: "DevSpaces Web Application"
-              description: "to manage instances"
+              type: person
+
+            - name: "GitHub"
+              type: system
 
             - name: "DevSpaces Web Application"
-              action: "USES"
-              with: "DevSpaces Backend"
-              description: "Frontend queries backend"
-
-            - name: "DevSpaces CLI"
-              action: "USES"
-              with: "DevSpaces API"
-              description: "to manipulate dev spaces"
+              type: container
 
             - name: "DevSpaces Backend"
-              action: "USES"
-              with: "DevSpaces CLI"
-              description: "to manipulate dev spaces"
+              type: container
+
 
     componentView:
       components:
         - name: "DevSpaces API Components"
           container: "DevSpaces API"
           description: "DevSpaces API Components"
-          relationships:
+          entities:
             - name: "Sign In Controller"
-              action: "USES"
-              with: "Security Component"
+              type: component
+
+            - name: "Security Controller"
+              type: "component"
 
             - name: "Reset Password Controller"
-              action: "USES"
-              with: "Security Component"
+              type: "component"
 
-            - name: "Reset Password Controller"
-              action: "USES"
-              with: "E-mail component"
+            - name: "E-mail component"
+              type: "component"

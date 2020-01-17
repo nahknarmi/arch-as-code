@@ -1,21 +1,20 @@
 package net.nahknarmi.arch.domain.c4;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import java.util.List;
-
-import static java.util.Collections.emptyList;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Person implements Relatable {
+public class Relationship {
     @NonNull
-    private String name;
+    private C4Action action;
     @NonNull
+    private String with;
+    @NonNull
+    private C4Type type;
     private String description;
-    private List<Relationship> relationships = emptyList();
 }

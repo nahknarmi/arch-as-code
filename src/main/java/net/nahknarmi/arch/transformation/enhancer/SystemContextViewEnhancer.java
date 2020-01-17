@@ -26,13 +26,14 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
                 //TODO: deal with softwareSystem potentially being null!!
                 SystemContextView context = viewSet.createSystemContextView(softwareSystem, s.getName(), s.getDescription());
 
-                s.getRelationships().forEach(r -> {
-                    String description = r.getDescription();
-                    Element fromElement = TransformationHelper.getElementWithName(workspace, r.getName());
-                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
-
-                    addRelationshipToContext(context, fromElement, toElement, description);
-                });
+                // Now iterate through entities, in view, not relationships
+//                s.getRelationships().forEach(r -> {
+//                    String description = r.getDescription();
+//                    Element fromElement = TransformationHelper.getElementWithName(workspace, s.getName());
+//                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
+//
+//                    addRelationshipToContext(context, fromElement, toElement, description);
+//                });
 
                 context.setAutomaticLayout(true);
             });

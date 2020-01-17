@@ -17,13 +17,6 @@ public class C4SoftwareSystem implements Relatable {
     private String name;
     @NonNull
     private String description;
-    @NonNull
     private List<C4Container> containers = emptyList();
-
-    private List<RelationshipPair> relationships = emptyList();
-
-    @Override
-    public List<RelationshipPair> relations() {
-        return relationships;
-    }
+    private List<Relationship> relationships = emptyList();
 }

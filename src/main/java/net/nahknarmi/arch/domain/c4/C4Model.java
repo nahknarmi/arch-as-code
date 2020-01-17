@@ -16,7 +16,7 @@ public class C4Model {
     public static final C4Model NONE = new C4Model();
 
     @NonNull
-    private List<C4Person> persons = emptyList();
+    private List<C4Person> people = emptyList();
     @NonNull
     private List<C4SoftwareSystem> systems = emptyList();
     @NonNull

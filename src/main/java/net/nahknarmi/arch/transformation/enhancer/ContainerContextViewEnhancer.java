@@ -29,13 +29,14 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
                 Container container = softwareSystem.getContainerWithName(c.getName());
                 ContainerView context = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
 
-                c.getRelationships().forEach(r -> {
-                    String description = r.getDescription();
-                    Element fromElement = TransformationHelper.getElementWithName(workspace, r.getName());
-                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
-
-                    addRelationshipToContext(context, fromElement, toElement, description);
-                });
+                // Now iterate through entities, in view, not relationships
+//                c.getRelationships().forEach(r -> {
+//                    String description = r.getDescription();
+//                    Element fromElement = TransformationHelper.getElementWithName(workspace, c.getName());
+//                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
+//
+//                    addRelationshipToContext(context, fromElement, toElement, description);
+//                });
 
                 //TODO: deal with container potentially being null
                 context.addNearestNeighbours(container);

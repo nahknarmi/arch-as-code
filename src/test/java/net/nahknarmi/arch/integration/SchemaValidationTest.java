@@ -58,7 +58,7 @@ public class SchemaValidationTest {
         Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("badModel.yml");
 
         assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
-                containsInAnyOrder("$.model.persons: is missing but it is required",
+                containsInAnyOrder("$.model.people: is missing but it is required",
                         "$.model.systems: is missing but it is required"
                 ));
     }
