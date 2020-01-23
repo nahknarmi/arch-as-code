@@ -16,5 +16,6 @@ public class Relationship {
     private String with;
     @NonNull
     private C4Type type;
+    private C4Path path;
     private String description;
 }

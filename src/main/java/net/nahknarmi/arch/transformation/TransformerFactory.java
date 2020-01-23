@@ -15,9 +15,9 @@ public abstract class TransformerFactory {
                         new DecisionEnhancer(),
                         new ModelEnhancer(),
                         new StyleViewEnhancer(),
-                        new SystemContextViewEnhancer(),
-                        new ContainerContextViewEnhancer(),
-                        new ComponentContextViewEnhancer(),
+//                        new SystemContextViewEnhancer(),
+//                        new ContainerContextViewEnhancer(),
+//                        new ComponentContextViewEnhancer(),
                         new SystemLandscapeViewEnhancer()
                 ),
                 new WorkspaceIdFinder());

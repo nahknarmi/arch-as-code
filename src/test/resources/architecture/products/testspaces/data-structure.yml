@@ -37,6 +37,7 @@ model:
         - action: USES
           with: "DevSpaces CLI"
           type: container
+          path: "DevSpaces/DevSpaces CLI"
           description: "creates and manages dev spaces"
 
     - name: "SaasOps"
@@ -60,6 +61,7 @@ model:
         - action: USES
           with: "DevSpaces Web Application"
           type: container
+          path: "DevSpaces/DevSpaces Web Application"
           description: "to manage instances"
 
     - name: "PCA"
@@ -100,6 +102,7 @@ model:
             - action: USES
               with: "DevSpaces API"
               type: container
+              path: "DevSpaces/DevSpaces API"
               description: "to manipulate dev spaces"
 
         - name: "DevSpaces Backend"
@@ -109,6 +112,7 @@ model:
             - action: USES
               with: "DevSpaces API"
               type: container
+              path: "DevSpaces/DevSpaces API"
               description: "to manipulate dev spaces"
 
         - name: "DevSpaces Web Application"
@@ -118,6 +122,7 @@ model:
             - action: USES
               with: "DevSpaces Backend"
               type: container
+              path: "DevSpaces/DevSpaces Backend"
               description: "Frontend queries backend"
 
         - name: "DevSpaces API"
@@ -131,6 +136,7 @@ model:
                 - action: USES
                   with: "Security Component"
                   type: component
+                  path: "DevSpaces/DevSpaces API/Security Component"
 
 
             - name: "Security Component"
@@ -144,10 +150,12 @@ model:
                 - action: USES
                   with: "Security Component"
                   type: component
+                  path: "DevSpaces/DevSpaces API/Security Component"
 
                 - action: USES
                   with: "E-mail component"
                   type: component
+                  path: "DevSpaces/DevSpaces API/E-mail Component"
 
             - name: "E-mail component"
               description: "Sends emails to users"

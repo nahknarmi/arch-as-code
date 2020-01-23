@@ -31,7 +31,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<Relationship> relationships = person.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
 
-        assertThat(relationships, hasSize(6));
+        assertThat(relationships, hasSize(4));
         assertTrue(relationshipNames.contains("GitHub"));
         assertTrue(relationshipNames.contains("DevSpaces"));
         assertTrue(relationshipNames.contains("DevSpaces CLI"));
@@ -66,7 +66,8 @@ public class ParsedYamlToModelIntegrationTest {
         Set<Relationship> relationships = person.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
 
-        assertThat(relationships, hasSize(2));
+        assertThat(relationships, hasSize(3));
+        assertTrue(relationshipNames.contains("GitHub"));
         assertTrue(relationshipNames.contains("XO Chat"));
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
         assertEquals(person.getDescription(), "Product Chief Architect");
@@ -148,7 +149,7 @@ public class ParsedYamlToModelIntegrationTest {
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
 
         assertThat(relationships, hasSize(1));
-        assertTrue(relationshipNames.contains("DevSpaces CLI"));
+        assertTrue(relationshipNames.contains("DevSpaces API"));
 
         assertEquals(container.getDescription(), "Restful API providing capabilities for interacting with a DevSpace");
         assertEquals(container.getTechnology(), "Spring Boot");
