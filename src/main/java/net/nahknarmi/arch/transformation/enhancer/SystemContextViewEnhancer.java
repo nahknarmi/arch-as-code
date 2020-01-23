@@ -1,54 +1,78 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.Element;
+import com.structurizr.model.Model;
 import com.structurizr.model.Person;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.SystemContextView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
-import net.nahknarmi.arch.transformation.TransformationHelper;
+import net.nahknarmi.arch.domain.c4.C4Person;
+import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
+import net.nahknarmi.arch.domain.c4.view.C4EntityReference;
+import net.nahknarmi.arch.domain.c4.view.C4SystemView;
+import net.nahknarmi.arch.domain.c4.view.SystemContext;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class SystemContextViewEnhancer implements WorkspaceEnhancer {
     @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
-        ViewSet viewSet = workspace.getViews();
-
         if (dataStructure.getModel().equals(C4Model.NONE)) {
             return;
         }
+        ViewSet viewSet = workspace.getViews();
+        C4SystemView systemView = dataStructure.getModel().getViews().getSystemView();
+        if (systemView != null) {
+            systemView.getSystems().forEach(systemContext -> {
+                List<C4EntityReference> entities = Optional.ofNullable(systemContext.getEntities()).orElse(Collections.emptyList());
+                Model workspaceModel = workspace.getModel();
+                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemContext.getName());
+                SystemContextView context = viewSet.createSystemContextView(softwareSystem, systemContext.getName(), systemContext.getDescription());
 
-        if (dataStructure.getModel().getViews().getSystemView() != null) {
-            dataStructure.getModel().getViews().getSystemView().getSystems().forEach(s -> {
-                SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithName(s.getName());
-
-                //TODO: deal with softwareSystem potentially being null!!
-                SystemContextView context = viewSet.createSystemContextView(softwareSystem, s.getName(), s.getDescription());
-
-                // Now iterate through entities, in view, not relationships
-//                s.getRelationships().forEach(r -> {
-//                    String description = r.getDescription();
-//                    Element fromElement = TransformationHelper.getElementWithName(workspace, s.getName());
-//                    Element toElement = TransformationHelper.getElementWithName(workspace, r.getWith());
-//
-//                    addRelationshipToContext(context, fromElement, toElement, description);
-//                });
+                addEntities(entities, workspaceModel, context);
+                addTaggedEntities(dataStructure, systemContext, workspaceModel, context);
 
                 context.setAutomaticLayout(true);
             });
         }
     }
 
-    private void addRelationshipToContext(SystemContextView context, Element fromElement, Element toElement, String description) {
-        // TODO: Clean up, currently only Person.uses interaction type supported
-        if (fromElement instanceof Person) {
-            Person fromPerson = (Person) fromElement;
-            SoftwareSystem toSystem = (SoftwareSystem) toElement;
+    private void addTaggedEntities(ArchitectureDataStructure dataStructure, SystemContext s, Model workspaceModel, SystemContextView context) {
+        s.getTags()
+                .forEach(tag -> dataStructure.getAllWithTag(tag)
+                                .forEach(x -> {
+                            if (x instanceof C4Person) {
+                                Person person = workspaceModel.getPersonWithName(((C4Person) x).getName());
+                                context.add(person);
+                            } else if (x instanceof C4SoftwareSystem) {
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) x).getName());
+                                context.add(system);
+                            }
+                        }));
+    }
 
-            fromPerson.uses(toSystem, description);
-            context.add(fromPerson);
-            context.add(toSystem);
+    private void addEntities(List<C4EntityReference> entities, Model workspaceModel, SystemContextView context) {
+        entities.forEach(e -> {
+            addElementToSystemContext(workspaceModel, context, e);
+        });
+    }
+
+    private void addElementToSystemContext(Model workspaceModel, SystemContextView context, C4EntityReference e) {
+        switch (e.getType()) {
+            case person:
+                Person person = workspaceModel.getPersonWithName(e.getName());
+                context.add(person);
+                break;
+            case system:
+                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(e.getName());
+                context.add(system);
+                break;
+            default:
+                throw new IllegalStateException("Unsupported relationship type " + e.getType());
         }
     }
 }

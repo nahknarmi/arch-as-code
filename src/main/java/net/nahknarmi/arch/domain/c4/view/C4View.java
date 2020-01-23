@@ -1,4 +1,4 @@
-package net.nahknarmi.arch.domain.c4;
+package net.nahknarmi.arch.domain.c4.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

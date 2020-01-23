@@ -9,7 +9,7 @@ import net.nahknarmi.arch.domain.ImportantTechnicalDecision;
 import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
-import net.nahknarmi.arch.domain.c4.C4View;
+import net.nahknarmi.arch.domain.c4.view.C4View;
 import org.junit.Test;
 
 import java.io.File;

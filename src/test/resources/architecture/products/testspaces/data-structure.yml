@@ -98,6 +98,9 @@ model:
       tags:
         - "Trilogy System View"
 
+    - name: "SAP"
+      description: "SAP rules"
+
     - name: "Trilogy Google G Suite"
       description: "Team collaboration via sheets, docs and presentations"
       tags:
@@ -200,7 +203,18 @@ model:
         - name: "DevSpaces"
           description: "Internal Trilogy users view of DevSpaces system"
           tags:
-            - "DevSpaces System View"=
+            - "DevSpaces System View"
+          entities:
+            - name: "Developer"
+              type: person
+            - name: "PCA"
+              type: person
+            - name: "GitHub"
+              type: system
+            - name: "Trilogy Google G Suite"
+              type: system
+            - name: "SAP"
+              type: system
 
         - name: "Trilogy Google G Suite"
           description: "Trilogy inter-team communication"
@@ -210,9 +224,11 @@ model:
     containerView:
       containers:
         - name: "DevSpaces Container"
+          system: "DevSpaces"
           description: "DevSpaces Container"
           tags:
             - "DevSpaces Container View"
+
 
     componentView:
       components:

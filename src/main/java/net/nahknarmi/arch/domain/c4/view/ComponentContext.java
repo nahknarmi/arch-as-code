@@ -1,9 +1,10 @@
-package net.nahknarmi.arch.domain.c4;
+package net.nahknarmi.arch.domain.c4.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.nahknarmi.arch.domain.c4.C4Tag;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public class ComponentContext {
     @NonNull
     private String description;
     private List<C4Tag> tags;
-    private List<C4Entity> entities;
+    private List<C4EntityReference> entities;
 }
