@@ -12,12 +12,14 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Container implements Relatable {
+public class C4Container implements Relatable, Tagable {
     @NonNull
     private String name;
     @NonNull
-    private String description;
     private String technology;
+    @NonNull
+    private String description;
+    private List<C4Tag> tags = emptyList();
     private List<C4Component> components = emptyList();
-    private List<Relationship> relationships = emptyList();
+    private List<C4Relationship> relationships = emptyList();
 }

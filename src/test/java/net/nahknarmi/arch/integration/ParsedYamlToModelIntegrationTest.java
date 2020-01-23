@@ -28,8 +28,13 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         Person person = workspace.getModel().getPersonWithName(personName);
+        Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+
+        assertTrue(tagSet.contains("DevSpaces System View"));
+        assertTrue(tagSet.contains("Trilogy System View"));
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         assertThat(relationships, hasSize(4));
         assertTrue(relationshipNames.contains("GitHub"));
@@ -46,8 +51,13 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         Person person = workspace.getModel().getPersonWithName(personName);
+        Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+
+        assertTrue(tagSet.contains("DevSpaces System View"));
+        assertTrue(tagSet.contains("Trilogy System View"));
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         assertThat(relationships, hasSize(4));
         assertTrue(relationshipNames.contains("GitHub"));
@@ -63,8 +73,11 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         Person person = workspace.getModel().getPersonWithName(personName);
+        Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+
+        assertTrue(tagSet.contains("Trilogy System View"));
 
         assertThat(relationships, hasSize(3));
         assertTrue(relationshipNames.contains("GitHub"));
@@ -79,7 +92,10 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
+
+        assertTrue(tagSet.contains("Trilogy System View"));
 
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
@@ -93,7 +109,10 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
+
+        assertTrue(tagSet.contains("Trilogy System View"));
 
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
@@ -107,7 +126,11 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
+
+        assertTrue(tagSet.contains("DevSpaces System View"));
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
@@ -121,9 +144,12 @@ public class ParsedYamlToModelIntegrationTest {
         Workspace workspace = getWorkspace();
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
         Set<Container> containers = system.getContainers();
         List<String> containerNames = system.getContainers().stream().map(c -> c.getName()).collect(Collectors.toList());
+
+        assertTrue(tagSet.contains("DevSpaces System View"));
 
         assertThat(relationships, hasSize(0));
 
@@ -144,6 +170,9 @@ public class ParsedYamlToModelIntegrationTest {
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
+        Set<String> tagSet = container.getTagsAsSet();
+
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         Set<Relationship> relationships = container.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
@@ -163,9 +192,12 @@ public class ParsedYamlToModelIntegrationTest {
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
+        Set<String> tagSet = container.getTagsAsSet();
 
         Set<Relationship> relationships = container.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("DevSpaces Backend"));
@@ -182,12 +214,15 @@ public class ParsedYamlToModelIntegrationTest {
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
+        Set<String> tagSet = container.getTagsAsSet();
         Set<Component> components = container.getComponents();
         List<String> componentNames = components.stream().map(c -> c.getName()).collect(Collectors.toList());
 
         Set<Relationship> relationships = container.getRelationships();
 
         assertThat(relationships, hasSize(0));
+
+        assertTrue(tagSet.contains("DevSpaces Container View"));
 
         assertThat(components, hasSize(4));
         assertTrue(componentNames.contains("Sign In Controller"));
@@ -200,7 +235,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_component_devspaces_api_signing_controller() throws FileNotFoundException {
+    public void should_build_component_devspaces_api_sign_in_controller() throws FileNotFoundException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         String componentName = "Sign In Controller";
@@ -209,12 +244,15 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
         Component component = container.getComponentWithName(componentName);
+        Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
 
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("Security Component"));
+
+        assertTrue(tagSet.contains("DevSpaces API Component View"));
 
         assertEquals(component.getDescription(), "Allows users to sign in");
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
@@ -230,10 +268,13 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
         Component component = container.getComponentWithName(componentName);
+        Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
 
         assertThat(relationships, hasSize(0));
+
+        assertTrue(tagSet.contains("DevSpaces API Component View"));
 
         assertEquals(component.getDescription(), "Provides functionality related to signing in, changing passwords, permissions, etc.");
         assertEquals(component.getTechnology(), "Spring Bean");
@@ -249,6 +290,7 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
         Component component = container.getComponentWithName(componentName);
+        Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
         List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
@@ -256,6 +298,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(2));
         assertTrue(relationshipNames.contains("Security Component"));
         assertTrue(relationshipNames.contains("E-mail component"));
+
+        assertTrue(tagSet.contains("DevSpaces API Component View"));
 
         assertEquals(component.getDescription(), "Allows users to reset their passwords");
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
@@ -271,10 +315,13 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Container container = system.getContainerWithName(containerName);
         Component component = container.getComponentWithName(componentName);
+        Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
 
         assertThat(relationships, hasSize(0));
+
+        assertTrue(tagSet.contains("DevSpaces API Component View"));
 
         assertEquals(component.getDescription(), "Sends emails to users");
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");

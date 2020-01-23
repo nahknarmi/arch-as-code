@@ -17,6 +17,6 @@ public class ContainerContext {
     private String system;
     @NonNull
     private String description;
-    @NonNull
+    private List<C4Tag> tags;
     private List<C4Entity> entities;
 }

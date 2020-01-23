@@ -18,6 +18,10 @@ model:
   people:
     - name: "Developer"
       description: "Developer building software"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
       relationships:
         - action: USES
           with: "GitHub"
@@ -42,6 +46,10 @@ model:
 
     - name: "SaasOps"
       description: "SaasOps operating system"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
       relationships:
         - action: USES
           with: "GitHub"
@@ -66,6 +74,8 @@ model:
 
     - name: "PCA"
       description: "Product Chief Architect"
+      tags:
+        - "Trilogy System View"
       relationships:
         - action: USES
           with: "GitHub"
@@ -85,15 +95,24 @@ model:
   systems:
     - name: "XO Chat"
       description: "Realtime team communication"
+      tags:
+        - "Trilogy System View"
 
     - name: "Trilogy Google G Suite"
       description: "Team collaboration via sheets, docs and presentations"
+      tags:
+        - "Trilogy System View"
 
     - name: "GitHub"
       description: "Hosts code and used for identity management"
+      tags:
+        - "DevSpaces System View"
+        - "DevSpaces Container View"
 
     - name: "DevSpaces"
       description: "allows developers to collaborate"
+      tags:
+        - "DevSpaces System View"
       containers:
         - name: "DevSpaces CLI"
           description: "Command Line Interface for interacting with DevSpaces Backend"
@@ -108,6 +127,8 @@ model:
         - name: "DevSpaces Backend"
           description: "Restful API providing capabilities for interacting with a DevSpace"
           technology: "Spring Boot"
+          tags:
+            - "DevSpaces Container View"
           relationships:
             - action: USES
               with: "DevSpaces API"
@@ -118,6 +139,8 @@ model:
         - name: "DevSpaces Web Application"
           description: "Manage dev spaces"
           technology: "Angular"
+          tags:
+            - "DevSpaces Container View"
           relationships:
             - action: USES
               with: "DevSpaces Backend"
@@ -128,10 +151,14 @@ model:
         - name: "DevSpaces API"
           description: "API to programmatically create/manage dev spaces"
           technology: "Spring Boot"
+          tags:
+            - "DevSpaces Container View"
           components:
             - name: "Sign In Controller"
               description: "Allows users to sign in"
               technology: "Spring MVC Rest Controller"
+              tags:
+                - "DevSpaces API Component View"
               relationships:
                 - action: USES
                   with: "Security Component"
@@ -142,10 +169,14 @@ model:
             - name: "Security Component"
               description: "Provides functionality related to signing in, changing passwords, permissions, etc."
               technology: "Spring Bean"
+              tags:
+                - "DevSpaces API Component View"
 
             - name: "Reset Password Controller"
               description: "Allows users to reset their passwords"
               technology: "Spring MVC Rest Controller"
+              tags:
+                - "DevSpaces API Component View"
               relationships:
                 - action: USES
                   with: "Security Component"
@@ -160,78 +191,33 @@ model:
             - name: "E-mail component"
               description: "Sends emails to users"
               technology: "Spring MVC Rest Controller"
+              tags:
+                - "DevSpaces API Component View"
 
   views:
     systemView:
       systems:
         - name: "DevSpaces"
           description: "Internal Trilogy users view of DevSpaces system"
-          entities:
-            - name: "Developer"
-              type: person
-
-            - name: "SaasOps"
-              type: person
-
-            - name: "GitHub"
-              type: system
-
-            - name: "DevSpaces"
-              type: system
+          tags:
+            - "DevSpaces System View"=
 
         - name: "Trilogy Google G Suite"
           description: "Trilogy inter-team communication"
-          entities:
-            - name: "Developer"
-              type: person
-
-            - name: "SaasOps"
-              type: person
-
-            - name: "PCA"
-              type: person
-
-            - name: "Trilogy Google G Suite"
-              type: system
-
-            - name: "XO Chat"
-              type: system
+          tags:
+            - "Trilogy System View"
 
     containerView:
       containers:
         - name: "DevSpaces Container"
           description: "DevSpaces Container"
-          entities:
-            - name: "Developer"
-              type: person
-
-            - name: "SaasOps"
-              type: person
-
-            - name: "GitHub"
-              type: system
-
-            - name: "DevSpaces Web Application"
-              type: container
-
-            - name: "DevSpaces Backend"
-              type: container
-
+          tags:
+            - "DevSpaces Container View"
 
     componentView:
       components:
         - name: "DevSpaces API Components"
           container: "DevSpaces API"
           description: "DevSpaces API Components"
-          entities:
-            - name: "Sign In Controller"
-              type: component
-
-            - name: "Security Controller"
-              type: "component"
-
-            - name: "Reset Password Controller"
-              type: "component"
-
-            - name: "E-mail component"
-              type: "component"
+          tags:
+            - "DevSpaces API Component View"

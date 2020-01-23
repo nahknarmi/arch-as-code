@@ -15,6 +15,6 @@ public class SystemContext {
     private String name;
     @NonNull
     private String description;
-    @NonNull
+    private List<C4Tag> tags;
     private List<C4Entity> entities;
 }

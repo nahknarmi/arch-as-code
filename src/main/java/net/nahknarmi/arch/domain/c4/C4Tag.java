@@ -8,10 +8,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Entity {
+public class C4Tag {
     @NonNull
-    private String name;
-    @NonNull
-    private C4Type type;
-    private C4Path path;
+    String tag;
 }

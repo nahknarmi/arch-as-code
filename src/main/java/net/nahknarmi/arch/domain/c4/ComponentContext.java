@@ -17,6 +17,6 @@ public class ComponentContext {
     private String container;
     @NonNull
     private String description;
-    @NonNull
+    private List<C4Tag> tags;
     private List<C4Entity> entities;
 }

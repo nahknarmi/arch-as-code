@@ -2,8 +2,12 @@ package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
+import lombok.NonNull;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static net.nahknarmi.arch.domain.c4.C4Model.NONE;
@@ -22,7 +26,15 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         ofNullable(dataStructureModel)
                 .orElse(NONE)
                 .getPeople()
-                .forEach(p -> model.addPerson(p.getName(), p.getDescription()));
+                .forEach(p -> {
+                    Person person = model.addPerson(p.getName(), p.getDescription());
+                    person.addTags(getTags(p));
+                });
+    }
+
+    private String[] getTags(Tagable t) {
+        List<@NonNull String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
+        return stringList.toArray(new String[stringList.size()]);
     }
 
     private void addSystems(Model model, C4Model dataStructureModel) {
@@ -34,6 +46,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addSystem(Model model, C4SoftwareSystem s) {
         SoftwareSystem softwareSystem = model.addSoftwareSystem(s.getName(), s.getDescription());
+        softwareSystem.addTags(getTags(s));
+
         s.getContainers().forEach(c -> addContainer(softwareSystem, c));
     }
 
@@ -41,12 +55,14 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         String containerName = c.getName();
         softwareSystem.addContainer(containerName, c.getDescription(), c.getTechnology());
         Container container = softwareSystem.getContainerWithName(containerName);
+        container.addTags(getTags(c));
 
         c.getComponents().forEach(comp -> addComponent(container, comp));
     }
 
     private void addComponent(Container container, C4Component c) {
-        container.addComponent(c.getName(), c.getDescription(), c.getTechnology());
+        Component component = container.addComponent(c.getName(), c.getDescription(), c.getTechnology());
+        component.addTags(getTags(c));
     }
 
     private void addRelationships(Model workspaceModel, C4Model dataStructureModel) {

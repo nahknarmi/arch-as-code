@@ -9,7 +9,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Relationship {
+public class C4Relationship {
     @NonNull
     private C4Action action;
     @NonNull
