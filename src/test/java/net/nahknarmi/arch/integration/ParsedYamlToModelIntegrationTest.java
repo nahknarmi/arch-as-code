@@ -228,7 +228,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(componentNames.contains("Sign In Controller"));
         assertTrue(componentNames.contains("Security Component"));
         assertTrue(componentNames.contains("Reset Password Controller"));
-        assertTrue(componentNames.contains("E-mail component"));
+        assertTrue(componentNames.contains("E-mail Component"));
 
         assertEquals(container.getDescription(), "API to programmatically create/manage dev spaces");
         assertEquals(container.getTechnology(), "Spring Boot");
@@ -297,7 +297,7 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertThat(relationships, hasSize(2));
         assertTrue(relationshipNames.contains("Security Component"));
-        assertTrue(relationshipNames.contains("E-mail component"));
+        assertTrue(relationshipNames.contains("E-mail Component"));
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 
@@ -309,7 +309,7 @@ public class ParsedYamlToModelIntegrationTest {
     public void should_build_component_devspaces_api_email_component() throws FileNotFoundException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
-        String componentName = "E-mail component";
+        String componentName = "E-mail Component";
         Workspace workspace = getWorkspace();
 
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);

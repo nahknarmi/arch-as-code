@@ -14,14 +14,16 @@ import static java.util.Collections.emptyList;
 @NoArgsConstructor
 public class C4Component implements Entity {
     @NonNull
-    private String name;
+    private C4Path path;
     @NonNull
     private String technology;
     @NonNull
     private String description;
-    @NonNull
-    private C4Path path;
 
     private List<C4Tag> tags = emptyList();
     private List<C4Relationship> relationships = emptyList();
+
+    public String getName() {
+        return path.getComponentName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!!"));
+    }
 }

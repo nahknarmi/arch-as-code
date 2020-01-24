@@ -8,15 +8,13 @@ import com.structurizr.view.SystemContextView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
+import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
-import net.nahknarmi.arch.domain.c4.view.C4EntityReference;
 import net.nahknarmi.arch.domain.c4.view.C4SystemView;
 import net.nahknarmi.arch.domain.c4.view.SystemContext;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class SystemContextViewEnhancer implements WorkspaceEnhancer {
     @Override
@@ -28,12 +26,12 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
         C4SystemView systemView = dataStructure.getModel().getViews().getSystemView();
         if (systemView != null) {
             systemView.getSystems().forEach(systemContext -> {
-                List<C4EntityReference> entities = Optional.ofNullable(systemContext.getEntities()).orElse(Collections.emptyList());
                 Model workspaceModel = workspace.getModel();
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemContext.getName());
-                SystemContextView context = viewSet.createSystemContextView(softwareSystem, systemContext.getName(), systemContext.getDescription());
+                String systemName = systemContext.getPath().getSystemName();
+                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+                SystemContextView context = viewSet.createSystemContextView(softwareSystem, systemName, systemContext.getDescription());
 
-                addEntities(entities, workspaceModel, context);
+                addEntities(systemContext.getEntities(), workspaceModel, context);
                 addTaggedEntities(dataStructure, systemContext, workspaceModel, context);
 
                 context.setAutomaticLayout(true);
@@ -44,7 +42,7 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
     private void addTaggedEntities(ArchitectureDataStructure dataStructure, SystemContext s, Model workspaceModel, SystemContextView context) {
         s.getTags()
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
-                                .forEach(x -> {
+                        .forEach(x -> {
                             if (x instanceof C4Person) {
                                 Person person = workspaceModel.getPersonWithName(((C4Person) x).getName());
                                 context.add(person);
@@ -55,20 +53,20 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
                         }));
     }
 
-    private void addEntities(List<C4EntityReference> entities, Model workspaceModel, SystemContextView context) {
+    private void addEntities(List<C4Path> entities, Model workspaceModel, SystemContextView context) {
         entities.forEach(e -> {
             addElementToSystemContext(workspaceModel, context, e);
         });
     }
 
-    private void addElementToSystemContext(Model workspaceModel, SystemContextView context, C4EntityReference e) {
+    private void addElementToSystemContext(Model workspaceModel, SystemContextView context, C4Path e) {
         switch (e.getType()) {
             case person:
-                Person person = workspaceModel.getPersonWithName(e.getName());
+                Person person = workspaceModel.getPersonWithName(e.getPersonName());
                 context.add(person);
                 break;
             case system:
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(e.getName());
+                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(e.getSystemName());
                 context.add(system);
                 break;
             default:

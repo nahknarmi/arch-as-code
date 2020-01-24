@@ -8,7 +8,6 @@ import com.structurizr.view.ComponentView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
-import net.nahknarmi.arch.transformation.TransformationHelper;
 
 public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
     @Override
@@ -21,10 +20,10 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
 
         if (dataStructure.getModel().getViews().getComponentView() != null) {
             dataStructure.getModel().getViews().getComponentView().getComponents().forEach(c -> {
-                String containerName = c.getContainer();
-                Container container = findContainerByName(workspace, containerName);
+//                String containerName = c.getContainer();
+//                Container container = findContainerByName(workspace, containerName);
 
-                ComponentView context = viewSet.createComponentView(container, c.getName(), c.getDescription());
+//                ComponentView context = viewSet.createComponentView(container, c.getName(), c.getDescription());
 
                   // Now iterate through entities, in view, not relationships
 //                c.getRelationships().forEach(r -> {
@@ -35,8 +34,8 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
 //                    addRelationshipToContext(context, fromElement, toElement, description);
 //                });
 
-                context.addNearestNeighbours(container);
-                context.setAutomaticLayout(true);
+//                context.addNearestNeighbours(container);
+//                context.setAutomaticLayout(true);
             });
         }
     }

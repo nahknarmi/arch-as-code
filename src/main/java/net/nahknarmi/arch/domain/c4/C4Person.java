@@ -16,10 +16,12 @@ public class C4Person implements Entity {
     @NonNull
     private C4Path path;
     @NonNull
-    private String name;
-    @NonNull
     private String description;
 
     private List<C4Tag> tags = emptyList();
     private List<C4Relationship> relationships = emptyList();
+
+    public String getName() {
+        return path.getPersonName();
+    }
 }

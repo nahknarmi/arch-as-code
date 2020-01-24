@@ -26,22 +26,22 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
         C4ContainerView containerView = dataStructure.getModel().getViews().getContainerView();
         if (containerView != null) {
             containerView.getContainers().forEach(c -> {
-                String s = c.getSystem();
+//                String s = c.getSystem();
                 Model workspaceModel = workspace.getModel();
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s);
+//                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s);
 
-                ContainerView context = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
+//                ContainerView context = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
 
-                addEntities(workspaceModel, softwareSystem, context, c);
-                addTaggedEntities(workspaceModel, dataStructure, c, context);
+//                addEntities(workspaceModel, softwareSystem, context, c);
+//                addTaggedEntities(workspaceModel, dataStructure, c, context);
 
-                context.setAutomaticLayout(true);
+//                context.setAutomaticLayout(true);
             });
         }
     }
 
     private void addEntities(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView context, ContainerContext c) {
-        c.getEntities().forEach(x -> addElementToSystemContext(workspaceModel, softwareSystem, context, x));
+//        c.getEntities().forEach(x -> addElementToSystemContext(workspaceModel, softwareSystem, context, x));
     }
 
     private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ContainerContext c, ContainerView context) {
@@ -49,15 +49,15 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
                         .forEach(t -> {
                             if (t instanceof C4Person) {
-                                Person person = workspaceModel.getPersonWithName(((C4Person) t).getName());
-                                context.add(person);
+//                                Person person = workspaceModel.getPersonWithName(((C4Person) t).getName());
+//                                context.add(person);
                             } else if (t instanceof C4SoftwareSystem) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
-                                context.add(system);
+//                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
+//                                context.add(system);
                             } else if (t instanceof C4Container) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4Container) t).getName());
-                                Container container = system.getContainerWithName(c.getName());
-                                context.add(container);
+//                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4Container) t).getName());
+//                                Container container = system.getContainerWithName(c.getName());
+//                                context.add(container);
                             }
                         }));
     }

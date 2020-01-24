@@ -13,9 +13,6 @@ public class C4Relationship {
     @NonNull
     private C4Action action;
     @NonNull
-    private String with;
-    @NonNull
-    private C4Type type;
-    private C4Path path;
+    private C4Path with;
     private String description;
 }

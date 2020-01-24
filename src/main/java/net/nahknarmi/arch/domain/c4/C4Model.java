@@ -21,5 +21,9 @@ public class C4Model {
     @NonNull
     private List<C4SoftwareSystem> systems = emptyList();
     @NonNull
+    private List<C4Container> containers = emptyList();
+    @NonNull
+    private List<C4Component> components = emptyList();
+    @NonNull
     private C4View views = C4View.NONE;
 }

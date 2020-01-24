@@ -17,8 +17,11 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         Model workspaceModel = workspace.getModel();
         C4Model dataStructureModel = dataStructure.getModel();
+
         addPeople(workspaceModel, dataStructureModel);
         addSystems(workspaceModel, dataStructureModel);
+        addContainers(workspaceModel, dataStructureModel);
+        addComponents(workspaceModel, dataStructureModel);
         addRelationships(workspaceModel, dataStructureModel);
     }
 
@@ -32,13 +35,9 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                 });
     }
 
-    private String[] getTags(Tagable t) {
-        List<@NonNull String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
-        return stringList.toArray(new String[stringList.size()]);
-    }
-
     private void addSystems(Model model, C4Model dataStructureModel) {
         ofNullable(dataStructureModel)
+
                 .orElse(NONE)
                 .getSystems()
                 .forEach(s -> addSystem(model, s));
@@ -47,22 +46,38 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     private void addSystem(Model model, C4SoftwareSystem s) {
         SoftwareSystem softwareSystem = model.addSoftwareSystem(s.getName(), s.getDescription());
         softwareSystem.addTags(getTags(s));
-
-        s.getContainers().forEach(c -> addContainer(softwareSystem, c));
     }
 
-    private void addContainer(SoftwareSystem softwareSystem, C4Container c) {
+    private void addContainers(Model workspaceModel, C4Model dataStructureModel) {
+        dataStructureModel.getContainers().stream().forEach(c -> addContainer(workspaceModel, c));
+    }
+
+    private void addContainer(Model model, C4Container c) {
+        String systemName = c.getPath().getSystemName();
         String containerName = c.getName();
-        softwareSystem.addContainer(containerName, c.getDescription(), c.getTechnology());
-        Container container = softwareSystem.getContainerWithName(containerName);
-        container.addTags(getTags(c));
+        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
 
-        c.getComponents().forEach(comp -> addComponent(container, comp));
+        Container container = softwareSystem.addContainer(containerName, c.getDescription(), c.getTechnology());
+        container.addTags(getTags(c));
     }
 
-    private void addComponent(Container container, C4Component c) {
+    private void addComponents(Model workspaceModel, C4Model dataStructureModel) {
+        dataStructureModel.getComponents().stream().forEach(c -> addComponent(workspaceModel, c));
+    }
+
+    private void addComponent(Model model, C4Component c) {
+        String systemName = c.getPath().getSystemName();
+        String containerName = c.getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
+        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
+        Container container = softwareSystem.getContainerWithName(containerName);
+
         Component component = container.addComponent(c.getName(), c.getDescription(), c.getTechnology());
         component.addTags(getTags(c));
+    }
+
+    private String[] getTags(Tagable t) {
+        List<@NonNull String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
+        return stringList.toArray(new String[stringList.size()]);
     }
 
     private void addRelationships(Model workspaceModel, C4Model dataStructureModel) {
@@ -72,83 +87,38 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         addComponentRelationships(workspaceModel, dataStructureModel);
     }
 
-    private void addComponentRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getSystems().stream().forEach(s -> {
-            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
+    private void addPeopleRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        dataStructureModel.getPeople().stream().forEach(p -> {
+            Person person = workspaceModel.getPersonWithName(p.getName());
 
-            s.getContainers().stream().forEach(cont -> {
-                Container container = softwareSystem.getContainerWithName(cont.getName());
+            p.getRelationships().stream()
+                    .forEach(r -> {
+                        String description = r.getDescription();
 
-                cont.getComponents().stream().forEach(comp -> {
-                    Component component = container.getComponentWithName(comp.getName());
-
-                    // Add component->system relationship
-                    comp.getRelationships().stream()
-                            .filter(r -> r.getType().equals(C4Type.system))
-                            .forEach(r -> {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith());
-                                String description = r.getDescription();
-                                component.uses(systemDestination, description);
-                            });
-
-                    // Add component->container relationship
-                    comp.getRelationships().stream()
-                            .filter(r -> r.getType().equals(C4Type.container))
-                            .forEach(r -> {
-                                String systemName = r.getPath().getSystemName();
-                                SoftwareSystem parentSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                                Container containerDestination = parentSystem.getContainerWithName(r.getWith());
-
-                                String description = r.getDescription();
-                                component.uses(containerDestination, description);
-                            });
-
-                    // Add component->component relationship
-                    comp.getRelationships().stream()
-                            .filter(r -> r.getType().equals(C4Type.component))
-                            .forEach(r -> {
-//                                String systemName = r.getPath().getSystemName();
-//                                String containerName = r.getPath().getContainerName();
-//                                SoftwareSystem parentSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-//                                Container parentContainer = parentSystem.getContainerWithName(containerName);
-//                                Component componentDestination = parentContainer.getComponentWithName(r.getWith());
-
-                                String description = r.getDescription();
-//                                component.uses(componentDestination, description);
-                            });
-                });
-            });
-        });
-    }
-
-    private void addContainerRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getSystems().stream().forEach(s -> {
-            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
-
-            s.getContainers().stream().forEach(c -> {
-                Container container = softwareSystem.getContainerWithName(c.getName());
-
-                // Add container->system relationship
-                c.getRelationships().stream()
-                        .filter(r -> r.getType().equals(C4Type.system))
-                        .forEach(r -> {
-                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith());
-                            String description = r.getDescription();
-                            container.uses(systemDestination, description);
-                        });
-
-                // Add container->container relationship
-                c.getRelationships().stream()
-                        .filter(r -> r.getType().equals(C4Type.container))
-                        .forEach(r -> {
-                            String systemName = r.getPath().getSystemName();
-                            SoftwareSystem parentSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                            Container containerDestination = parentSystem.getContainerWithName(r.getWith());
-
-                            String description = r.getDescription();
-                            container.uses(containerDestination, description);
-                        });
-            });
+                        switch (r.getWith().getType()) {
+                            // Add persons->system relationships
+                            case system: {
+                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                person.uses(softwareSystem, description);
+                                break;
+                            }
+                            // Add persons->containers relationships
+                            case container: {
+                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                Container container = softwareSystem.getContainerWithName(r.getWith().getName());
+                                person.uses(container, description);
+                                break;
+                            }
+                            // Add persons->component relationships
+                            case component: {
+                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                Container container = softwareSystem.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!")));
+                                Component component = container.getComponentWithName(r.getWith().getName());
+                                person.uses(component, description);
+                                break;
+                            }
+                        }
+                    });
         });
     }
 
@@ -157,60 +127,78 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
 
 
-            // Add system->system relationships
             s.getRelationships().stream()
-                    .filter(r -> r.getType().equals(C4Type.system))
                     .forEach(r -> {
-                        SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith());
                         String description = r.getDescription();
-                        softwareSystem.uses(systemDestination, description);
+                        switch (r.getWith().getType()) {
+                            // Add system->system relationships
+                            case system: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getName());
+                                softwareSystem.uses(systemDestination, description);
+                                break;
+                                // TODO: Add system->person `delivers` relationship (i.e. system emails user)
+                            }
+                        }
                     });
-
-            // TODO: Add system->person `delivers` relationship (i.e. system emails user)
         });
     }
 
-    private void addPeopleRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getPeople().stream().forEach(p -> {
-            Person person = workspaceModel.getPersonWithName(p.getName());
+    private void addContainerRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        dataStructureModel.getContainers().stream().forEach(c -> {
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(c.getPath().getSystemName());
+            Container container = softwareSystem.getContainerWithName(c.getName());
 
-            // Add persons->system relationships
-            p.getRelationships().stream()
-                    .filter(r -> r.getType().equals(C4Type.system))
+            c.getRelationships().stream()
                     .forEach(r -> {
-                        SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith());
                         String description = r.getDescription();
-                        person.uses(softwareSystem, description);
+                        switch (r.getWith().getType()) {
+                            case system: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                container.uses(systemDestination, description);
+                                break;
+                            }
+                            case container: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
+                                container.uses(containerDestination, description);
+                                break;
+                            }
+                        }
+                    });
+        });
+    }
+
+    private void addComponentRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        dataStructureModel.getComponents().stream().forEach(comp -> {
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(comp.getPath().getSystemName());
+            String containerName = comp.getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
+            Container container = softwareSystem.getContainerWithName(containerName);
+            Component component = container.getComponentWithName(comp.getName());
+            comp.getRelationships().stream()
+                    .forEach(r -> {
+                        String description = ofNullable(r.getDescription()).orElse("");
+                        switch (r.getWith().getType()) {
+                            case system: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                component.uses(systemDestination, description);
+                                break;
+                            }
+                            case container: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
+                                component.uses(containerDestination, description);
+                                break;
+                            }
+                            case component: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
+                                Component componentDestination = containerDestination.getComponentWithName(r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
+                                component.uses(componentDestination, description);
+                                break;
+                            }
+                        }
                     });
 
-            // Add persons->containers relationships
-            p.getRelationships().stream()
-                    .filter(r -> r.getType().equals(C4Type.container))
-                    .forEach(r -> {
-                        String systemName = r.getPath().getSystemName();
-                        // Note: Without reference check system may be null
-                        SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                        Container container = softwareSystem.getContainerWithName(r.getWith());
-
-                        String description = r.getDescription();
-                        person.uses(container, description);
-                    });
-
-            // Add persons->component relationships
-            p.getRelationships().stream()
-                    .filter(r -> r.getType().equals(C4Type.component))
-                    .forEach(r -> {
-                        String systemName = r.getPath().getSystemName();
-//                        String containerName = r.getPath().getContainerName();
-
-                        // Note: Without reference check system may be null
-                        SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-//                        Container container = softwareSystem.getContainerWithName(containerName);
-//                        Component component = container.getComponentWithName(r.getWith());
-
-                        String description = r.getDescription();
-//                        person.uses(component, description);
-                    });
         });
     }
 }
