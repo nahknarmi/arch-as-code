@@ -1,44 +1,96 @@
 package net.nahknarmi.arch.domain.c4;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Optional.empty;
 
 @Data
+@AllArgsConstructor
 public class C4Path {
+    private static final int COMPONENT_GROUP_NUMBER = 4;
+    private static final int CONTAINER_GROUP_NUMBER = 3;
+    private static final int SYSTEM_OR_PERSON_GROUP_NUMBER = 2;
+    private static final String URI_PREFIX = "c4://";
+    private static final String PERSON_PREFIX = "@";
     @NonNull
     private String path;
-    private String systemName;
-    private String containerName;
-    private String componentName;
 
-    public static final C4Path NONE = new C4Path("c4://");
+    private static final String regex = "(c4:\\/\\/|\\@)([\\w\\s\\-]+)\\/?([\\w\\s\\-]+)?\\/?([\\w\\s\\-]+)?";
+    private final Pattern pattern;
+    private final Matcher matcher;
 
-    C4Path(String path) {
+    public C4Path(String path) {
         this.path = path;
-        String[] splits = path.split("/", 3);
+        pattern = Pattern.compile(regex);
+        matcher = pattern.matcher(path);
+        boolean found = matcher.find();
 
-        switch (splits.length) {
-            case 2:
-                this.systemName = splits[0];
-                this.containerName = splits[1];
-                break;
-            case 3:
-                this.systemName = splits[0];
-                this.containerName = splits[1];
-                this.componentName = splits[2];
-                break;
-        }
+        checkArgument(found, "Path does not match expected pattern.");
     }
 
     public String getName() {
-        return Arrays.stream(path.split("//"))
+        return Arrays.stream(path.split("(/|//|\\@)"))
                 .reduce((first, second) -> second)
                 .orElse(null);
     }
 
-    public String getType() {
+    public C4Type getType() {
+        if (this.getPersonName() != null) {
+            return C4Type.person;
+        }
+
+        if (this.getComponentName().isPresent()) {
+            return C4Type.component;
+        }
+
+        if (this.getContainerName().isPresent()) {
+            return C4Type.container;
+        }
+
+        if (this.getSystemName() != null) {
+            return C4Type.system;
+        }
+
         return null;
+    }
+
+    public String getPersonName() {
+        if (this.path.startsWith(PERSON_PREFIX)) {
+            return matcher.group(SYSTEM_OR_PERSON_GROUP_NUMBER);
+        }
+
+        return null;
+    }
+
+    public String getSystemName() {
+        if (this.path.startsWith(URI_PREFIX)) {
+            return matcher.group(SYSTEM_OR_PERSON_GROUP_NUMBER);
+        }
+
+        return null;
+    }
+
+    public Optional<String> getContainerName() {
+        if (this.path.startsWith(URI_PREFIX)) {
+            return Optional.ofNullable(matcher.group(CONTAINER_GROUP_NUMBER));
+        }
+
+        return empty();
+    }
+
+    public Optional<String> getComponentName() {
+        if (this.path.startsWith(URI_PREFIX)) {
+            return Optional.ofNullable(matcher.group(COMPONENT_GROUP_NUMBER));
+        }
+
+        return empty();
     }
 }

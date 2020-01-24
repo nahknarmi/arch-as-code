@@ -107,14 +107,14 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                     comp.getRelationships().stream()
                             .filter(r -> r.getType().equals(C4Type.component))
                             .forEach(r -> {
-                                String systemName = r.getPath().getSystemName();
-                                String containerName = r.getPath().getContainerName();
-                                SoftwareSystem parentSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                                Container parentContainer = parentSystem.getContainerWithName(containerName);
-                                Component componentDestination = parentContainer.getComponentWithName(r.getWith());
+//                                String systemName = r.getPath().getSystemName();
+//                                String containerName = r.getPath().getContainerName();
+//                                SoftwareSystem parentSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+//                                Container parentContainer = parentSystem.getContainerWithName(containerName);
+//                                Component componentDestination = parentContainer.getComponentWithName(r.getWith());
 
                                 String description = r.getDescription();
-                                component.uses(componentDestination, description);
+//                                component.uses(componentDestination, description);
                             });
                 });
             });
@@ -201,15 +201,15 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                     .filter(r -> r.getType().equals(C4Type.component))
                     .forEach(r -> {
                         String systemName = r.getPath().getSystemName();
-                        String containerName = r.getPath().getContainerName();
+//                        String containerName = r.getPath().getContainerName();
 
                         // Note: Without reference check system may be null
                         SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                        Container container = softwareSystem.getContainerWithName(containerName);
-                        Component component = container.getComponentWithName(r.getWith());
+//                        Container container = softwareSystem.getContainerWithName(containerName);
+//                        Component component = container.getComponentWithName(r.getWith());
 
                         String description = r.getDescription();
-                        person.uses(component, description);
+//                        person.uses(component, description);
                     });
         });
     }
