@@ -8,12 +8,8 @@ import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ContainerView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
-import net.nahknarmi.arch.domain.c4.C4Container;
-import net.nahknarmi.arch.domain.c4.C4Model;
-import net.nahknarmi.arch.domain.c4.C4Person;
-import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
+import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.domain.c4.view.C4ContainerView;
-import net.nahknarmi.arch.domain.c4.view.C4EntityReference;
 import net.nahknarmi.arch.domain.c4.view.ContainerContext;
 
 public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
@@ -26,22 +22,22 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
         C4ContainerView containerView = dataStructure.getModel().getViews().getContainerView();
         if (containerView != null) {
             containerView.getContainers().forEach(c -> {
-//                String s = c.getSystem();
+                String systemName = c.getPath().getSystemName();
                 Model workspaceModel = workspace.getModel();
-//                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s);
+                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
 
-//                ContainerView context = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
+                ContainerView view = viewSet.createContainerView(softwareSystem, c.getPath().getName(), c.getDescription());
 
-//                addEntities(workspaceModel, softwareSystem, context, c);
-//                addTaggedEntities(workspaceModel, dataStructure, c, context);
+                addEntities(workspaceModel, softwareSystem, view, c);
+                addTaggedEntities(workspaceModel, dataStructure, c, view);
 
-//                context.setAutomaticLayout(true);
+                view.setAutomaticLayout(true);
             });
         }
     }
 
-    private void addEntities(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView context, ContainerContext c) {
-//        c.getEntities().forEach(x -> addElementToSystemContext(workspaceModel, softwareSystem, context, x));
+    private void addEntities(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView view, ContainerContext c) {
+        c.getEntities().forEach(x -> addElementToSystemContext(workspaceModel, softwareSystem, view, x));
     }
 
     private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ContainerContext c, ContainerView context) {
@@ -49,36 +45,36 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
                         .forEach(t -> {
                             if (t instanceof C4Person) {
-//                                Person person = workspaceModel.getPersonWithName(((C4Person) t).getName());
-//                                context.add(person);
+                                Person person = workspaceModel.getPersonWithName(((C4Person) t).getName());
+                                context.add(person);
                             } else if (t instanceof C4SoftwareSystem) {
-//                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
-//                                context.add(system);
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
+                                context.add(system);
                             } else if (t instanceof C4Container) {
-//                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4Container) t).getName());
-//                                Container container = system.getContainerWithName(c.getName());
-//                                context.add(container);
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(c.getPath().getSystemName());
+                                Container container = system.getContainerWithName(c.getPath().getName());
+                                context.add(container);
                             }
                         }));
     }
 
 
-    private void addElementToSystemContext(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView context, C4EntityReference entityReference) {
-        switch (entityReference.getType()) {
+    private void addElementToSystemContext(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView view, C4Path path) {
+        switch (path.getType()) {
             case person:
-                Person person = workspaceModel.getPersonWithName(entityReference.getName());
-                context.add(person);
+                Person person = workspaceModel.getPersonWithName(path.getName());
+                view.add(person);
                 break;
             case system:
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(entityReference.getName());
-                context.add(system);
+                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(path.getName());
+                view.add(system);
                 break;
             case container:
-                Container container = softwareSystem.getContainerWithName(entityReference.getName());
-                context.add(container);
+                Container container = softwareSystem.getContainerWithName(path.getName());
+                view.add(container);
                 break;
             default:
-                throw new IllegalStateException("Unsupported relationship type " + entityReference.getType());
+                throw new IllegalStateException("Unsupported relationship type " + path.getType());
         }
     }
 

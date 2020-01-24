@@ -177,7 +177,8 @@ model:
   views:
     systemView:
       systems:
-        - path: "c4://DevSpaces"
+        - name: "DevSpaces"
+          systemPath: "c4://DevSpaces"
           description: "Internal Trilogy users view of DevSpaces system"
           tags:
             - "DevSpaces System View"
@@ -195,15 +196,16 @@ model:
 
     containerView:
       containers:
-        - path: "c4://DevSpaces/DevSpaces Container"
+        - name: "DevSpaces API Container"
+          systemPath: "c4://DevSpaces"
           description: "DevSpaces Container"
           tags:
             - "DevSpaces Container View"
 
-
     componentView:
       components:
-        - path: "c4://DevSpaces/DevSpaces API Components"
+        - name: "DevSpaces API Components"
+          containerPath: "c4://DevSpaces/DevSpaces API"
           description: "DevSpaces API Components"
           tags:
             - "DevSpaces API Component View"
