@@ -148,6 +148,7 @@ model:
       relationships:
         - action: USES
           with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
 
 
     - path: "c4://DevSpaces/DevSpaces API/Security Component"
@@ -164,9 +165,11 @@ model:
       relationships:
         - action: USES
           with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
 
         - action: USES
           with: "c4://DevSpaces/DevSpaces API/E-mail Component"
+          description: "sends new password"
 
     - path: "c4://DevSpaces/DevSpaces API/E-mail Component"
       description: "Sends emails to users"
@@ -189,7 +192,8 @@ model:
             - path: "c4://Trilogy Google G Suite"
             - path: "c4://SalesForce"
 
-        - path: "c4://Trilogy Google G Suite"
+        - name: "Trilogy Google G Suite"
+          systemPath: "c4://Trilogy Google G Suite"
           description: "Trilogy inter-team communication"
           tags:
             - "Trilogy System View"

@@ -61,24 +61,52 @@
     "model": {
       "type": "object",
       "required": [
-        "persons",
+        "people",
         "systems"
       ],
       "properties": {
-        "persons": {
+        "people": {
           "type": "array",
           "items": [
             {
               "required": [
-                "name",
+                "path",
                 "description"
               ],
               "properties": {
-                "name": {
+                "path": {
                   "type": "string"
                 },
                 "description": {
                   "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "relationships": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "required": [
+                        "action",
+                        "with",
+                        "description"
+                      ],
+                      "properties": {
+                        "action": {
+                          "type": "string",
+                          "enum": [
+                            "USES"
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -89,57 +117,138 @@
           "items": [
             {
               "required": [
-                "name",
+                "path",
                 "description"
               ],
               "properties": {
-                "name": {
+                "path": {
                   "type": "string"
                 },
                 "description": {
                   "type": "string"
                 },
-                "containers": {
+                "tags": {
                   "type": "array",
                   "items": [
                     {
-                      "type": "object",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "relationships": {
+                  "type": "array",
+                  "items": [
+                    {
                       "required": [
-                        "name",
-                        "description",
-                        "technology"
+                        "action",
+                        "with",
+                        "description"
                       ],
                       "properties": {
-                        "name": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "technology": {
-                          "type": "string"
-                        },
-                        "components": {
-                          "type": "array",
-                          "items": [
-                            {
-                              "required": [
-                                "name",
-                                "description",
-                                "technology"
-                              ],
-                              "properties": {
-                                "name": {
-                                  "type": "string"
-                                },
-                                "description": {
-                                  "type": "string"
-                                },
-                                "technology": {
-                                  "type": "string"
-                                }
-                              }
-                            }
+                        "action": {
+                          "type": "string",
+                          "enum": [
+                            "USES"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "containers": {
+          "type": "array",
+          "items": [
+            {
+              "required": [
+                "path",
+                "description"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "technology": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "relationships": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "required": [
+                        "action",
+                        "with",
+                        "description"
+                      ],
+                      "properties": {
+                        "action": {
+                          "type": "string",
+                          "enum": [
+                            "USES"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "components": {
+          "type": "array",
+          "items": [
+            {
+              "required": [
+                "path",
+                "description"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "technology": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "relationships": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "required": [
+                        "action",
+                        "with",
+                        "description"
+                      ],
+                      "properties": {
+                        "action": {
+                          "type": "string",
+                          "enum": [
+                            "USES"
                           ]
                         }
                       }
@@ -166,38 +275,37 @@
                       "type": "object",
                       "required": [
                         "name",
-                        "description",
-                        "relationships"
+                        "systemPath",
+                        "description"
                       ],
                       "properties": {
                         "name": {
                           "type": "string"
                         },
+                        "systemPath": {
+                          "type": "string"
+                        },
                         "description": {
                           "type": "string"
                         },
-                        "relationships": {
+                        "tags": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "entities": {
                           "type": "array",
                           "items": [
                             {
                               "type": "object",
                               "required": [
-                                "name",
-                                "action",
-                                "with",
-                                "description"
+                                "path"
                               ],
                               "properties": {
-                                "name": {
-                                  "type": "string"
-                                },
-                                "action": {
-                                  "type": "string"
-                                },
-                                "with": {
-                                  "type": "string"
-                                },
-                                "description": {
+                                "path": {
                                   "type": "string"
                                 }
                               }
@@ -223,42 +331,37 @@
                       "type": "object",
                       "required": [
                         "name",
-                        "description",
-                        "system",
-                        "relationships"
+                        "systemPath",
+                        "description"
                       ],
                       "properties": {
                         "name": {
                           "type": "string"
                         },
+                        "systemPath": {
+                          "type": "string"
+                        },
                         "description": {
                           "type": "string"
                         },
-                        "system": {
-                          "type": "string"
+                        "tags": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "string"
+                            }
+                          ]
                         },
-                        "relationships": {
+                        "entities": {
                           "type": "array",
                           "items": [
                             {
                               "type": "object",
                               "required": [
-                                "name",
-                                "action",
-                                "with",
-                                "description"
+                                "path"
                               ],
                               "properties": {
-                                "name": {
-                                  "type": "string"
-                                },
-                                "action": {
-                                  "type": "string"
-                                },
-                                "with": {
-                                  "type": "string"
-                                },
-                                "description": {
+                                "path": {
                                   "type": "string"
                                 }
                               }
@@ -277,49 +380,44 @@
                 "components"
               ],
               "properties": {
-                "containers": {
+                "components": {
                   "type": "array",
                   "items": [
                     {
                       "type": "object",
                       "required": [
                         "name",
-                        "description",
-                        "container",
-                        "relationships"
+                        "containerPath",
+                        "description"
                       ],
                       "properties": {
                         "name": {
                           "type": "string"
                         },
+                        "containerPath": {
+                          "type": "string"
+                        },
                         "description": {
                           "type": "string"
                         },
-                        "container": {
-                          "type": "string"
+                        "tags": {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "string"
+                            }
+                          ]
                         },
-                        "relationships": {
+                        "entities": {
                           "type": "array",
                           "items": [
                             {
                               "type": "object",
                               "required": [
-                                "name",
-                                "action",
-                                "with",
-                                "description"
+                                "path"
                               ],
                               "properties": {
-                                "name": {
-                                  "type": "string"
-                                },
-                                "action": {
-                                  "type": "string"
-                                },
-                                "with": {
-                                  "type": "string"
-                                },
-                                "description": {
+                                "path": {
                                   "type": "string"
                                 }
                               }

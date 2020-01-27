@@ -53,7 +53,7 @@ public class ArchitectureDataStructureReaderTest {
         assertThat(person.getDescription(), is(equalTo("Developer building software")));
 
         //it should have systems
-        assertThat(model.getSystems().size(), is(equalTo(4)));
+        assertThat(model.getSystems().size(), is(equalTo(5)));
     }
 
     private LocalDate decisionDate(ImportantTechnicalDecision decision) {

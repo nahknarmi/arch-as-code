@@ -19,13 +19,13 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
         C4ComponentView componentView = dataStructure.getModel().getViews().getComponentView();
         if (componentView != null) {
             componentView.getComponents().forEach(c -> {
-                String systemName = c.getPath().getSystemName();
-                String containerName = c.getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                String systemName = c.getContainerPath().getSystemName();
+                String containerName = c.getContainerPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
                 Model workspaceModel = workspace.getModel();
                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
                 Container container = softwareSystem.getContainerWithName(containerName);
 
-                ComponentView view = viewSet.createComponentView(container, c.getPath().getName(), c.getDescription());
+                ComponentView view = viewSet.createComponentView(container, c.getName(), c.getDescription());
 
                 addEntities(workspaceModel, softwareSystem, view, c);
                 addTaggedEntities(workspaceModel, dataStructure, c, view);
@@ -50,8 +50,8 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
                     Container containerWithName = softwareSystemWithName.getContainerWithName(((C4Container) t).getName());
                     view.add(containerWithName);
                 } else if (t instanceof C4Component) {
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getPath().getSystemName());
-                    Container containerWithName = softwareSystemWithName.getContainerWithName(((C4Container) t).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!")));
+                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName((((C4Component) t).getPath().getSystemName()));
+                    Container containerWithName = softwareSystemWithName.getContainerWithName(((C4Component) t).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!")));
                     Component componentWithName = containerWithName.getComponentWithName(((C4Component) t).getName());
                     view.add(componentWithName);
                 } else {

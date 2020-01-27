@@ -16,7 +16,9 @@ import static java.util.Collections.emptyList;
 @NoArgsConstructor
 public class ContainerContext {
     @NonNull
-    private C4Path path;
+    private String name;
+    @NonNull
+    private C4Path systemPath;
     @NonNull
     private String description;
     private List<C4Tag> tags = emptyList();

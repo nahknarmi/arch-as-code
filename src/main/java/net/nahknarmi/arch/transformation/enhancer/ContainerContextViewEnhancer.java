@@ -22,11 +22,11 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
         C4ContainerView containerView = dataStructure.getModel().getViews().getContainerView();
         if (containerView != null) {
             containerView.getContainers().forEach(c -> {
-                String systemName = c.getPath().getSystemName();
+                String systemName = c.getSystemPath().getSystemName();
                 Model workspaceModel = workspace.getModel();
                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
 
-                ContainerView view = viewSet.createContainerView(softwareSystem, c.getPath().getName(), c.getDescription());
+                ContainerView view = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
 
                 addEntities(workspaceModel, softwareSystem, view, c);
                 addTaggedEntities(workspaceModel, dataStructure, c, view);
@@ -51,8 +51,8 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
                                 SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
                                 context.add(system);
                             } else if (t instanceof C4Container) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(c.getPath().getSystemName());
-                                Container container = system.getContainerWithName(c.getPath().getName());
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4Container) t).getPath().getSystemName());
+                                Container container = system.getContainerWithName(((C4Container) t).getPath().getContainerName().orElseThrow(()-> new IllegalStateException("Workspace ID is missing!")));
                                 context.add(container);
                             }
                         }));

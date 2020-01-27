@@ -31,6 +31,7 @@ public class C4Path {
 
     public C4Path(String path) {
         this.path = path;
+        this.matcher = matcher();
     }
 
     private Matcher matcher() {

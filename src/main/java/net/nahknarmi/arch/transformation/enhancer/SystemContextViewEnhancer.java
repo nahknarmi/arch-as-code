@@ -27,7 +27,7 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
         if (systemView != null) {
             systemView.getSystems().forEach(systemContext -> {
                 Model workspaceModel = workspace.getModel();
-                String systemName = systemContext.getPath().getSystemName();
+                String systemName = systemContext.getSystemPath().getSystemName();
                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
                 SystemContextView context = viewSet.createSystemContextView(softwareSystem, systemName, systemContext.getDescription());
 
