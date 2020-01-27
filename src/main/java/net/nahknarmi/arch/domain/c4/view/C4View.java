@@ -3,14 +3,20 @@ package net.nahknarmi.arch.domain.c4.view;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class C4View {
-    private C4SystemView systemView = C4SystemView.NONE;
-    private C4ContainerView containerView = C4ContainerView.NONE;
-    private C4ComponentView componentView = C4ComponentView.NONE;
-
-    public static final C4View NONE = new C4View();
+    @NonNull
+    private List<C4SystemView> systemViews = emptyList();
+    @NonNull
+    private List<C4ContainerView> containerViews = emptyList();
+    @NonNull
+    private List<C4ComponentView> componentViews = emptyList();
 }

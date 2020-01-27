@@ -12,7 +12,6 @@ import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
 import net.nahknarmi.arch.domain.c4.view.C4SystemView;
-import net.nahknarmi.arch.domain.c4.view.SystemContext;
 
 import java.util.List;
 
@@ -23,54 +22,54 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        C4SystemView systemView = dataStructure.getModel().getViews().getSystemView();
-        if (systemView != null) {
-            systemView.getSystems().forEach(systemContext -> {
-                Model workspaceModel = workspace.getModel();
-                String systemName = systemContext.getSystemPath().getSystemName();
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                SystemContextView context = viewSet.createSystemContextView(softwareSystem, systemName, systemContext.getDescription());
+        List<C4SystemView> systemViews = dataStructure.getModel().getViews().getSystemViews();
+        systemViews.forEach(systemView -> {
+            Model workspaceModel = workspace.getModel();
+            String systemName = systemView.getSystemPath().getSystemName();
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+            SystemContextView view = viewSet.createSystemContextView(softwareSystem, systemName, systemView.getDescription());
 
-                addEntities(systemContext.getEntities(), workspaceModel, context);
-                addTaggedEntities(dataStructure, systemContext, workspaceModel, context);
+            addEntities(systemView.getEntities(), workspaceModel, view);
+            addTaggedEntities(workspaceModel, dataStructure, view, systemView);
 
-                context.setAutomaticLayout(true);
-            });
-        }
+            view.setAutomaticLayout(true);
+        });
     }
 
-    private void addTaggedEntities(ArchitectureDataStructure dataStructure, SystemContext s, Model workspaceModel, SystemContextView context) {
+    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, SystemContextView view, C4SystemView s) {
         s.getTags()
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
-                        .forEach(x -> {
-                            if (x instanceof C4Person) {
-                                Person person = workspaceModel.getPersonWithName(((C4Person) x).getName());
-                                context.add(person);
-                            } else if (x instanceof C4SoftwareSystem) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) x).getName());
-                                context.add(system);
+                        .forEach(tagable -> {
+                            if (tagable instanceof C4Person) {
+                                String personName = ((C4Person) tagable).getName();
+                                Person person = workspaceModel.getPersonWithName(personName);
+                                view.add(person);
+                            } else if (tagable instanceof C4SoftwareSystem) {
+                                String systemName = ((C4SoftwareSystem) tagable).getName();
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
+                                view.add(system);
                             }
                         }));
     }
 
-    private void addEntities(List<C4Path> entities, Model workspaceModel, SystemContextView context) {
+    private void addEntities(List<C4Path> entities, Model workspaceModel, SystemContextView view) {
         entities.forEach(e -> {
-            addElementToSystemContext(workspaceModel, context, e);
+            addElementToSystemView(workspaceModel, view, e);
         });
     }
 
-    private void addElementToSystemContext(Model workspaceModel, SystemContextView context, C4Path e) {
-        switch (e.getType()) {
+    private void addElementToSystemView(Model workspaceModel, SystemContextView view, C4Path entityPath) {
+        switch (entityPath.getType()) {
             case person:
-                Person person = workspaceModel.getPersonWithName(e.getPersonName());
-                context.add(person);
+                Person person = workspaceModel.getPersonWithName(entityPath.getPersonName());
+                view.add(person);
                 break;
             case system:
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(e.getSystemName());
-                context.add(system);
+                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(entityPath.getSystemName());
+                view.add(system);
                 break;
             default:
-                throw new IllegalStateException("Unsupported relationship type " + e.getType());
+                throw new IllegalStateException("Unsupported relationship type " + entityPath.getType());
         }
     }
 }

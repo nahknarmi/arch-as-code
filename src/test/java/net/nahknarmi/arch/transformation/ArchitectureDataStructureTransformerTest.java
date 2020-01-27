@@ -106,12 +106,9 @@ public class ArchitectureDataStructureTransformerTest {
 
     private C4View buildView() {
         return new C4View(
-                null,
-                null,
-                null
+                emptyList(),
+                emptyList(),
+                emptyList()
         );
     }
-
-    //handle id being absent, name, description.
-
 }

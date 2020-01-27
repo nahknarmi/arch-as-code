@@ -24,6 +24,5 @@ public class C4Model {
     private List<C4Container> containers = emptyList();
     @NonNull
     private List<C4Component> components = emptyList();
-    @NonNull
-    private C4View views = C4View.NONE;
+    private C4View views;
 }

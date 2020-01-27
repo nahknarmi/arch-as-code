@@ -2,12 +2,12 @@ package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
-import com.structurizr.view.ComponentView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.domain.c4.view.C4ComponentView;
-import net.nahknarmi.arch.domain.c4.view.ComponentContext;
+
+import java.util.List;
 
 public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
     @Override
@@ -16,75 +16,90 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        C4ComponentView componentView = dataStructure.getModel().getViews().getComponentView();
-        if (componentView != null) {
-            componentView.getComponents().forEach(c -> {
-                String systemName = c.getContainerPath().getSystemName();
-                String containerName = c.getContainerPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-                Model workspaceModel = workspace.getModel();
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-                Container container = softwareSystem.getContainerWithName(containerName);
+        List<C4ComponentView> componentViews = dataStructure.getModel().getViews().getComponentViews();
+        componentViews.forEach(c -> {
+            String systemName = c.getContainerPath().getSystemName();
+            String containerName = c.getContainerPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+            Model workspaceModel = workspace.getModel();
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+            Container container = softwareSystem.getContainerWithName(containerName);
 
-                ComponentView view = viewSet.createComponentView(container, c.getName(), c.getDescription());
+            com.structurizr.view.ComponentView view = viewSet.createComponentView(container, c.getName(), c.getDescription());
 
-                addEntities(workspaceModel, softwareSystem, view, c);
-                addTaggedEntities(workspaceModel, dataStructure, c, view);
+            addEntities(workspaceModel, view, c);
+            addTaggedEntities(workspaceModel, dataStructure, c, view);
 
-                view.setAutomaticLayout(true);
-
-            });
-        }
+            view.setAutomaticLayout(true);
+        });
     }
 
-    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ComponentContext context, ComponentView view) {
-        context.getTags().forEach(x -> {
-            dataStructure.getAllWithTag(x).forEach(t -> {
-                if (t instanceof C4Person) {
-                    Person personWithName = workspaceModel.getPersonWithName(((C4Person) t).getPath().getName());
-                    view.add(personWithName);
-                } else if (t instanceof C4SoftwareSystem) {
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getPath().getSystemName());
+    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, C4ComponentView context, com.structurizr.view.ComponentView view) {
+        context.getTags().forEach(tag -> {
+            dataStructure.getAllWithTag(tag).forEach(tagable -> {
+                if (tagable instanceof C4Person) {
+                    String personName = ((C4Person) tagable).getPath().getPersonName();
+                    Person person = workspaceModel.getPersonWithName(personName);
+                    view.add(person);
+                } else if (tagable instanceof C4SoftwareSystem) {
+                    String systemName = ((C4SoftwareSystem) tagable).getPath().getSystemName();
+                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
                     view.add(softwareSystemWithName);
-                } else if (t instanceof C4Container) {
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getPath().getSystemName());
-                    Container containerWithName = softwareSystemWithName.getContainerWithName(((C4Container) t).getName());
+                } else if (tagable instanceof C4Container) {
+                    String systemName = ((C4SoftwareSystem) tagable).getPath().getSystemName();
+                    String containerName = ((C4Component) tagable).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
+                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
+                    Container containerWithName = softwareSystemWithName.getContainerWithName(containerName);
                     view.add(containerWithName);
-                } else if (t instanceof C4Component) {
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName((((C4Component) t).getPath().getSystemName()));
-                    Container containerWithName = softwareSystemWithName.getContainerWithName(((C4Component) t).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!")));
-                    Component componentWithName = containerWithName.getComponentWithName(((C4Component) t).getName());
+                } else if (tagable instanceof C4Component) {
+                    String systemName = ((C4Component) tagable).getPath().getSystemName();
+                    String containerName = ((C4Component) tagable).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
+                    String componentName = ((C4Component) tagable).getPath().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
+                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
+                    Container container = softwareSystemWithName.getContainerWithName(containerName);
+                    Component componentWithName = container.getComponentWithName(componentName);
                     view.add(componentWithName);
                 } else {
-                    throw new IllegalStateException("Unsupported type " + t.getClass().getTypeName());
+                    throw new IllegalStateException("Unsupported type " + tagable.getClass().getTypeName());
                 }
             });
         });
     }
 
-    private void addEntities(Model workspaceModel, SoftwareSystem softwareSystem, ComponentView view, ComponentContext componentContext) {
-        componentContext.getEntities().forEach(x -> {
-            switch (x.getType()) {
-                case person:
-                    Person personWithName = workspaceModel.getPersonWithName(x.getName());
-                    view.add(personWithName);
+    private void addEntities(Model workspaceModel, com.structurizr.view.ComponentView view, C4ComponentView componentView) {
+        componentView.getEntities().forEach(entityPath -> {
+            switch (entityPath.getType()) {
+                case person: {
+                    String personName = entityPath.getPersonName();
+                    Person person = workspaceModel.getPersonWithName(personName);
+                    view.add(person);
                     break;
-                case system:
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(x.getName());
-                    view.add(softwareSystemWithName);
+                }
+                case system: {
+                    String systemName = entityPath.getSystemName();
+                    SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+                    view.add(softwareSystem);
                     break;
-                case container:
-                    SoftwareSystem softwareSystemWithName1 = workspaceModel.getSoftwareSystemWithName(x.getSystemName());
-                    Container containerWithName = softwareSystemWithName1.getContainerWithName(x.getName());
-                    view.add(containerWithName);
+                }
+                case container: {
+                    String systemName = entityPath.getSystemName();
+                    String containerName = entityPath.getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                    SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+                    Container container = softwareSystem.getContainerWithName(containerName);
+                    view.add(container);
                     break;
-                case component:
-                    SoftwareSystem softwareSystemWithName2 = workspaceModel.getSoftwareSystemWithName(x.getSystemName());
-                    Container containerWithName2 = softwareSystemWithName2.getContainerWithName(x.getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
-                    Component componentWithName = containerWithName2.getComponentWithName(x.getName());
-                    view.add(componentWithName);
+                }
+                case component: {
+                    String systemName = entityPath.getSystemName();
+                    String containerName = entityPath.getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                    String componentName = entityPath.getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                    SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+                    Container container = softwareSystem.getContainerWithName(containerName);
+                    Component component = container.getComponentWithName(componentName);
+                    view.add(component);
                     break;
+                }
                 default:
-                    throw new IllegalStateException("Unsupported type " + x.getType());
+                    throw new IllegalStateException("Unsupported type " + entityPath.getType());
             }
         });
     }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.nahknarmi.arch.domain.c4.C4Path;
+import net.nahknarmi.arch.domain.c4.C4Tag;
 
 import java.util.List;
 
@@ -14,7 +16,11 @@ import static java.util.Collections.emptyList;
 @NoArgsConstructor
 public class C4ContainerView {
     @NonNull
-    private List<ContainerContext> containers = emptyList();
-
-    public static final C4ContainerView NONE = new C4ContainerView();
+    private String name;
+    @NonNull
+    private C4Path systemPath;
+    @NonNull
+    private String description;
+    private List<C4Tag> tags = emptyList();
+    private List<C4Path> entities = emptyList();
 }

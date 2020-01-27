@@ -10,7 +10,8 @@ import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.domain.c4.view.C4ContainerView;
-import net.nahknarmi.arch.domain.c4.view.ContainerContext;
+
+import java.util.List;
 
 public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
     @Override
@@ -19,64 +20,68 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        C4ContainerView containerView = dataStructure.getModel().getViews().getContainerView();
-        if (containerView != null) {
-            containerView.getContainers().forEach(c -> {
-                String systemName = c.getSystemPath().getSystemName();
-                Model workspaceModel = workspace.getModel();
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+        List<C4ContainerView> containerViews = dataStructure.getModel().getViews().getContainerViews();
+        containerViews.forEach(c -> {
+            String systemName = c.getSystemPath().getSystemName();
+            Model workspaceModel = workspace.getModel();
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
 
-                ContainerView view = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
+            ContainerView view = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
 
-                addEntities(workspaceModel, softwareSystem, view, c);
-                addTaggedEntities(workspaceModel, dataStructure, c, view);
+            addEntities(workspaceModel, view, c);
+            addTaggedEntities(workspaceModel, dataStructure, view, c);
 
-                view.setAutomaticLayout(true);
-            });
-        }
+            view.setAutomaticLayout(true);
+        });
     }
 
-    private void addEntities(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView view, ContainerContext c) {
-        c.getEntities().forEach(x -> addElementToSystemContext(workspaceModel, softwareSystem, view, x));
+    private void addEntities(Model workspaceModel, ContainerView view, C4ContainerView c) {
+        c.getEntities().forEach(x -> addElementToContainerView(workspaceModel, view, x));
     }
 
-    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ContainerContext c, ContainerView context) {
+    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ContainerView context, C4ContainerView c) {
         c.getTags()
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
-                        .forEach(t -> {
-                            if (t instanceof C4Person) {
-                                Person person = workspaceModel.getPersonWithName(((C4Person) t).getName());
+                        .forEach(tagable -> {
+                            if (tagable instanceof C4Person) {
+                                String personName = ((C4Person) tagable).getName();
+                                Person person = workspaceModel.getPersonWithName(personName);
                                 context.add(person);
-                            } else if (t instanceof C4SoftwareSystem) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4SoftwareSystem) t).getName());
+                            } else if (tagable instanceof C4SoftwareSystem) {
+                                String systemName = ((C4SoftwareSystem) tagable).getName();
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
                                 context.add(system);
-                            } else if (t instanceof C4Container) {
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(((C4Container) t).getPath().getSystemName());
-                                Container container = system.getContainerWithName(((C4Container) t).getPath().getContainerName().orElseThrow(()-> new IllegalStateException("Workspace ID is missing!")));
+                            } else if (tagable instanceof C4Container) {
+                                String systemName = ((C4Container) tagable).getPath().getSystemName();
+                                String containerName = ((C4Container) tagable).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
+                                Container container = system.getContainerWithName(containerName);
                                 context.add(container);
                             }
                         }));
     }
 
-
-    private void addElementToSystemContext(Model workspaceModel, SoftwareSystem softwareSystem, ContainerView view, C4Path path) {
+    private void addElementToContainerView(Model workspaceModel, ContainerView view, C4Path path) {
         switch (path.getType()) {
-            case person:
-                Person person = workspaceModel.getPersonWithName(path.getName());
+            case person: {
+                Person person = workspaceModel.getPersonWithName(path.getPersonName());
                 view.add(person);
                 break;
-            case system:
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(path.getName());
+            }
+            case system: {
+                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(path.getSystemName());
                 view.add(system);
                 break;
-            case container:
-                Container container = softwareSystem.getContainerWithName(path.getName());
+            }
+            case container: {
+                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(path.getSystemName());
+                String containerName = path.getContainerName().orElseThrow(() -> new IllegalStateException("WorkSpace ID is missing!"));
+                Container container = softwareSystem.getContainerWithName(containerName);
                 view.add(container);
                 break;
+            }
             default:
                 throw new IllegalStateException("Unsupported relationship type " + path.getType());
         }
     }
-
-
 }

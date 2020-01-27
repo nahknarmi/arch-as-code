@@ -2,7 +2,6 @@ package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
-import lombok.NonNull;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 
@@ -37,7 +36,6 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addSystems(Model model, C4Model dataStructureModel) {
         ofNullable(dataStructureModel)
-
                 .orElse(NONE)
                 .getSystems()
                 .forEach(s -> addSystem(model, s));
@@ -76,7 +74,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private String[] getTags(Tagable t) {
-        List<@NonNull String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
+        List<String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
         return stringList.toArray(new String[stringList.size()]);
     }
 
@@ -96,20 +94,17 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         String description = r.getDescription();
 
                         switch (r.getWith().getType()) {
-                            // Add persons->system relationships
                             case system: {
                                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
                                 person.uses(softwareSystem, description);
                                 break;
                             }
-                            // Add persons->containers relationships
                             case container: {
                                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
                                 Container container = softwareSystem.getContainerWithName(r.getWith().getName());
                                 person.uses(container, description);
                                 break;
                             }
-                            // Add persons->component relationships
                             case component: {
                                 SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
                                 Container container = softwareSystem.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!")));
@@ -117,6 +112,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                 person.uses(component, description);
                                 break;
                             }
+                            default:
+                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });
@@ -131,13 +128,14 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                     .forEach(r -> {
                         String description = r.getDescription();
                         switch (r.getWith().getType()) {
-                            // Add system->system relationships
                             case system: {
                                 SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getName());
                                 softwareSystem.uses(systemDestination, description);
                                 break;
                                 // TODO: Add system->person `delivers` relationship (i.e. system emails user)
                             }
+                            default:
+                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });
@@ -163,6 +161,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                 container.uses(containerDestination, description);
                                 break;
                             }
+                            default:
+                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });
@@ -196,9 +196,10 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                 component.uses(componentDestination, description);
                                 break;
                             }
+                            default:
+                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
-
         });
     }
 }
