@@ -15,162 +15,198 @@ decisions:
     content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
 
 model:
-  persons:
-    - name: "Developer"
+  people:
+    - path: "@Developer"
       description: "Developer building software"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
 
-    - name: "SaasOps"
+        - action: USES
+          with: "c4://DevSpaces"
+          description: "to devolop software"
+
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
+
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces CLI"
+          description: "creates and manages dev spaces"
+
+    - path: "@SaasOps"
       description: "SaasOps operating system"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
 
-    - name: "PCA"
+        - action: USES
+          with: "c4://DevSpaces"
+          description: "to manage cluster"
+
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
+
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces Web Application"
+          description: "to manage instances"
+
+    - path: "@PCA"
       description: "Product Chief Architect"
+      tags:
+        - "Trilogy System View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
+
+        - action: USES
+          with: "c4://XO Chat"
+          description: "to communicate with team"
+
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
 
   systems:
-    - name: "XO Chat"
+    - path: "c4://XO Chat"
       description: "Realtime team communication"
+      tags:
+        - "Trilogy System View"
 
-    - name: "Trilogy Google G Suite"
+    - path: "c4://SalesForce"
+      description: "SalesForce rules"
+
+    - path: "c4://Trilogy Google G Suite"
       description: "Team collaboration via sheets, docs and presentations"
+      tags:
+        - "Trilogy System View"
 
-    - name: "GitHub"
+    - path: "c4://GitHub"
       description: "Hosts code and used for identity management"
+      tags:
+        - "DevSpaces System View"
+        - "DevSpaces Container View"
 
-    - name: "DevSpaces"
+    - path: "c4://DevSpaces"
       description: "allows developers to collaborate"
-      containers:
-        - name: "DevSpaces CLI"
-          description: "Command Line Interface for interacting with DevSpaces Backend"
-          technology: "C++"
-        - name: "DevSpaces Backend"
-          description: "Restful API providing capabilities for interacting with a DevSpace"
-          technology: "Spring Boot"
-        - name: "DevSpaces Web Application"
-          description: "Manage dev spaces"
-          technology: "Angular"
-        - name: "DevSpaces API"
-          description: "API to programmatically create/manage dev spaces"
-          technology: "Spring Boot"
-          components:
-            - name: "Sign In Controller"
-              description: "Allows users to sign in"
-              technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces System View"
 
-            - name: "Security Component"
-              description: "Provides functionality related to signing in, changing passwords, permissions, etc."
-              technology: "Spring Bean"
+  containers:
+    - path: "c4://DevSpaces/DevSpaces CLI"
+      description: "Command Line Interface for interacting with DevSpaces Backend"
+      technology: "C++"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API"
+          description: "to manipulate dev spaces"
 
-            - name: "Reset Password Controller"
-              description: "Allows users to reset their passwords"
-              technology: "Spring MVC Rest Controller"
+    - path: "c4://DevSpaces/DevSpaces Backend"
+      description: "Restful API providing capabilities for interacting with a DevSpace"
+      technology: "Spring Boot"
+      tags:
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API"
+          description: "to manipulate dev spaces"
 
-            - name: "E-mail component"
-              description: "Sends emails to users"
-              technology: "Spring MVC Rest Controller"
+    - path: "c4://DevSpaces/DevSpaces Web Application"
+      description: "Manage dev spaces"
+      technology: "Angular"
+      tags:
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces Backend"
+          description: "Frontend queries backend"
 
+    - path: "c4://DevSpaces/DevSpaces API"
+      description: "API to programmatically create/manage dev spaces"
+      technology: "Spring Boot"
+      tags:
+        - "DevSpaces Container View"
+
+  components:
+    - path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+      description: "Allows users to sign in"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
+
+
+    - path: "c4://DevSpaces/DevSpaces API/Security Component"
+      description: "Provides functionality related to signing in, changing passwords, permissions, etc."
+      technology: "Spring Bean"
+      tags:
+        - "DevSpaces API Component View"
+
+    - path: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
+      description: "Allows users to reset their passwords"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
+
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/E-mail Component"
+          description: "sends new password"
+
+    - path: "c4://DevSpaces/DevSpaces API/E-mail Component"
+      description: "Sends emails to users"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
 
   views:
-    systemView:
-      systems:
-        - name: "DevSpaces"
-          description: "Internal Trilogy Users view of DevSpaces system"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "GitHub"
-              description: "as a version control system"
+    systemViews:
+      - name: "DevSpaces"
+        systemPath: "c4://DevSpaces"
+        description: "Internal Trilogy users view of DevSpaces system"
+        tags:
+          - "DevSpaces System View"
+        entities:
+          - path: "@Developer"
+          - path: "@PCA"
+          - path: "c4://GitHub"
+          - path: "c4://Trilogy Google G Suite"
+          - path: "c4://SalesForce"
 
-            - name: "SaasOps"
-              action: "USES"
-              with: "GitHub"
-              description: "as a version control system"
+      - name: "Trilogy Google G Suite"
+        systemPath: "c4://Trilogy Google G Suite"
+        description: "Trilogy inter-team communication"
+        tags:
+          - "Trilogy System View"
 
-            - name: "Developer"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to devolop software"
+    containerViews:
+      - name: "DevSpaces API Container"
+        systemPath: "c4://DevSpaces"
+        description: "DevSpaces Container"
+        tags:
+          - "DevSpaces Container View"
 
-            - name: "SaasOps"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to manage cluster"
-
-        - name: "Trilogy Google G Suite"
-          relationships:
-            - name: "PCA"
-              action: "USES"
-              with: "XO Chat"
-              description: "to communicate with team"
-
-            - name: "Developer"
-              action: "USES"
-              with: "DevSpaces"
-              description: "to create dev spaces"
-
-            - name: "Developer"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
-
-            - name: "PCA"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
-
-            - name: "SaasOps"
-              action: "USES"
-              with: "Trilogy Google G Suite"
-              description: "inter-team collaboration"
-
-    containerView:
-      containers:
-        - name: "DevSpaces Container"
-          description: "DevSpaces Container"
-          system: "DevSpaces"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "GitHub"
-              description: "pushes code changes"
-
-            - name: "Developer"
-              action: "USES"
-              with: "DevSpaces CLI"
-              description: "creates and manages dev spaces"
-
-            - name: "SaasOps"
-              action: "USES"
-              with: "DevSpaces Web Application"
-              description: "to manage instances"
-
-            - name: "DevSpaces Web Application"
-              action: "USES"
-              with: "DevSpaces Backend"
-              description: "Frontend queries backend"
-
-            - name: "DevSpaces CLI"
-              action: "USES"
-              with: "DevSpaces API"
-              description: "to manipulate dev spaces"
-
-            - name: "DevSpaces Backend"
-              action: "USES"
-              with: "DevSpaces CLI"
-              description: "to manipulate dev spaces"
-
-    componentView:
-      components:
-        - name: "DevSpaces API Components"
-          container: "DevSpaces API"
-          description: "DevSpaces API Components"
-          relationships:
-            - name: "Sign In Controller"
-              action: "USES"
-              with: "Security Component"
-
-            - name: "Reset Password Controller"
-              action: "USES"
-              with: "Security Component"
-
-            - name: "Reset Password Controller"
-              action: "USES"
-              with: "E-mail component"
+    componentViews:
+      - name: "DevSpaces API Components"
+        containerPath: "c4://DevSpaces/DevSpaces API"
+        description: "DevSpaces API Components"
+        tags:
+          - "DevSpaces API Component View"

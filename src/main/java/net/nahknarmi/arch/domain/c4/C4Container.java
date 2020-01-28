@@ -12,17 +12,18 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Container implements Relatable {
+public class C4Container implements Entity {
     @NonNull
-    private String name;
+    private C4Path path;
+    @NonNull
+    private String technology;
     @NonNull
     private String description;
-    private String technology;
-    private List<C4Component> components = emptyList();
-    private List<RelationshipPair> relationships = emptyList();
 
-    @Override
-    public List<RelationshipPair> relations() {
-        return relationships;
+    private List<C4Tag> tags = emptyList();
+    private List<C4Relationship> relationships = emptyList();
+
+    public String getName() {
+        return path.getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
     }
 }

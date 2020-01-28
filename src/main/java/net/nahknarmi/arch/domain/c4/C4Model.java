@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.nahknarmi.arch.domain.c4.view.C4View;
 
 import java.util.List;
 
@@ -16,9 +17,12 @@ public class C4Model {
     public static final C4Model NONE = new C4Model();
 
     @NonNull
-    private List<C4Person> persons = emptyList();
+    private List<C4Person> people = emptyList();
     @NonNull
     private List<C4SoftwareSystem> systems = emptyList();
     @NonNull
-    private C4View views = C4View.NONE;
+    private List<C4Container> containers = emptyList();
+    @NonNull
+    private List<C4Component> components = emptyList();
+    private C4View views;
 }

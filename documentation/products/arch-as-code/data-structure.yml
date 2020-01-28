@@ -1,139 +1,212 @@
-name: "arch-as-code"
-description: "Arch as code allows you to manage product architecture as code."
+name: "TestSpaces"
+description: "TestSpaces is a tool!"
 businessUnit: "DevFactory"
 decisions:
   - id: "1"
-    date: 2019-12-11
-    title: "Build workspaces from code"
+    date: 2018-11-29T16:04:32Z
+    title: "Docker as the containerization technology platform"
     status: Accepted
-    content: "## Context\nModifying the json version of Workspace is a poor experience.\n\n## Decision\nWe will treat yml architecture data structure as the 'source' to generate and publish the Structurizr workplace 'artificat'. Structurizr Cloud Service will continue to persit state and provide a read-only view.\n\n## Consequences\nWe will not checkin any workspace json files. We will not provide 2 way sync. We will not use the revision numbers in Structurizr, rather relying on git for versioning and tagging."
+    content: "## Context\nWe need to choose the default containerization technology that DevSpaces will support\n\n## Decision\nWe will choose Docker as the default platform\n\n## Consequences\nWe will only be able to support Linux based environments for the moment until Docker is able to support full Windows workspaces"
+
   - id: "2"
-    date: 2019-12-11
-    title: "No two way sync"
+    date: 2019-11-19T19:07:15Z
+    title: "Kubernetes as the container management platform"
     status: Accepted
-    content: "## Context\nStructurizr is a flexible service that allows your to both pull and push product architectures.\n\n## Decision\nFor a more simplified and consistent workflow, we want information to flow in one direction-- from our source code to the structurizr api.  This will force everyone to work locally and follow a standard review process via GitHub pull requests instead publishing directly to Structurizr.\n\n## Consequence\nOur workflow will ensure that quality bars and proper reviews are met in addition to providing a more consistent, at the cost of a more restricted process.\n"
-  - id: "3"
-    date: 2020-01-01
-    title: "No cyclical dependencies"
-    status: Accepted
-    content: "## Context\nProposed change\n"
+    content: "## Context\nWe need an orchestration platform that will help us manage all the containers.\n\n## Decision\nKubernetes will be the container orchestration platform\n\n## Consequences."
 
 model:
-  persons:
-    - name: "Developer"
+  people:
+    - path: "@Developer"
       description: "Developer building software"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
 
-    - name: "Product Chief Architect"
-      description: "Designs the software"
+        - action: USES
+          with: "c4://DevSpaces"
+          description: "to devolop software"
 
-    - name: "Technical Product Manager"
-      description: "Makes Important Technical Decisions"
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
 
-    - name: "Engineering Architect"
-      description: "Make Architecture Updates"
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces CLI"
+          description: "creates and manages dev spaces"
 
-    - name: "QA"
-      description: "Test the product"
+    - path: "@SaasOps"
+      description: "SaasOps operating system"
+      tags:
+        - "DevSpaces System View"
+        - "Trilogy System View"
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
 
-    - name: "VP of Engineering"
-      description: "Review and understand product"
+        - action: USES
+          with: "c4://DevSpaces"
+          description: "to manage cluster"
 
-    - name: "Consultant"
-      description: "ThoughtWorks"
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
+
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces Web Application"
+          description: "to manage instances"
+
+    - path: "@PCA"
+      description: "Product Chief Architect"
+      tags:
+        - "Trilogy System View"
+      relationships:
+        - action: USES
+          with: "c4://GitHub"
+          description: "as a version control system"
+
+        - action: USES
+          with: "c4://XO Chat"
+          description: "to communicate with team"
+
+        - action: USES
+          with: "c4://Trilogy Google G Suite"
+          description: "inter-team collaboration"
 
   systems:
-    - name: "GitHub"
+    - path: "c4://XO Chat"
+      description: "Realtime team communication"
+      tags:
+        - "Trilogy System View"
+
+    - path: "c4://SalesForce"
+      description: "SalesForce rules"
+
+    - path: "c4://Trilogy Google G Suite"
+      description: "Team collaboration via sheets, docs and presentations"
+      tags:
+        - "Trilogy System View"
+
+    - path: "c4://GitHub"
       description: "Hosts code and used for identity management"
-      containers:
-        - name: "GitHub Actions"
-          description: "Continuous Integration & Continuous Deployment of Architecture Artificats"
+      tags:
+        - "DevSpaces System View"
+        - "DevSpaces Container View"
 
-    - name: "Structurizr"
-      description: "Software Architecture Visualizationa and Workspace Hosting"
-      containers:
-        - name: "Structurizr Cloud Service Web Interface"
-          description: "Web Interface managing Structurizr Workspaces"
+    - path: "c4://DevSpaces"
+      description: "allows developers to collaborate"
+      tags:
+        - "DevSpaces System View"
 
-        - name: "Structurizr Cloud Service API"
-          description: "API for managing Structurizr Workspaces"
+  containers:
+    - path: "c4://DevSpaces/DevSpaces CLI"
+      description: "Command Line Interface for interacting with DevSpaces Backend"
+      technology: "C++"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API"
+          description: "to manipulate dev spaces"
 
+    - path: "c4://DevSpaces/DevSpaces Backend"
+      description: "Restful API providing capabilities for interacting with a DevSpace"
+      technology: "Spring Boot"
+      tags:
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API"
+          description: "to manipulate dev spaces"
+
+    - path: "c4://DevSpaces/DevSpaces Web Application"
+      description: "Manage dev spaces"
+      technology: "Angular"
+      tags:
+        - "DevSpaces Container View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces Backend"
+          description: "Frontend queries backend"
+
+    - path: "c4://DevSpaces/DevSpaces API"
+      description: "API to programmatically create/manage dev spaces"
+      technology: "Spring Boot"
+      tags:
+        - "DevSpaces Container View"
+
+  components:
+    - path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+      description: "Allows users to sign in"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
+
+
+    - path: "c4://DevSpaces/DevSpaces API/Security Component"
+      description: "Provides functionality related to signing in, changing passwords, permissions, etc."
+      technology: "Spring Bean"
+      tags:
+        - "DevSpaces API Component View"
+
+    - path: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
+      description: "Allows users to reset their passwords"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Security Component"
+          description: "Authorizes user"
+
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/E-mail Component"
+          description: "sends new password"
+
+    - path: "c4://DevSpaces/DevSpaces API/E-mail Component"
+      description: "Sends emails to users"
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "DevSpaces API Component View"
 
   views:
-    systemView:
-      systems:
-        - name: "Structurizr"
-          description: "Structurizr is used for Product Architecture visualization, storage and management"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
+    systemViews:
+      - name: "DevSpaces"
+        systemPath: "c4://DevSpaces"
+        description: "Internal Trilogy users view of DevSpaces system"
+        tags:
+          - "DevSpaces System View"
+        entities:
+          - path: "@Developer"
+          - path: "@PCA"
+          - path: "c4://GitHub"
+          - path: "c4://Trilogy Google G Suite"
+          - path: "c4://SalesForce"
 
-            - name: "Product Chief Architect"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
+      - name: "Trilogy Google G Suite"
+        systemPath: "c4://Trilogy Google G Suite"
+        description: "Trilogy inter-team communication"
+        tags:
+          - "Trilogy System View"
 
-            - name: "Technical Product Manager"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
+    containerViews:
+      - name: "DevSpaces API Container"
+        systemPath: "c4://DevSpaces"
+        description: "DevSpaces Container"
+        tags:
+          - "DevSpaces Container View"
 
-            - name: "Engineering Architect"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
-
-            - name: "QA"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
-
-            - name: "VP of Engineering"
-              action: "USES"
-              with: "Structurizr"
-              description: "Read Product Architecture"
-
-            - name: "Consultant"
-              action: "USES"
-              with: "GitHub"
-              description: "Read, commit and collaboration on source code"
-
-
-        - name: "GitHub"
-          description: "GitHub is used as a hosted version control system"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "GitHub"
-              description: "Read, commit and collaboration on source code"
-
-            - name: "Product Chief Architect"
-              action: "USES"
-              with: "GitHub"
-              description: "Read, commit and collaboration on source code"
-
-            - name: "Engineering Architect"
-              action: "USES"
-              with: "GitHub"
-              description: "Read, commit and collaboration on source code"
-
-    containerView:
-      containers:
-        - name: "Structurizr Container"
-          system: "Structurizr"
-          relationships:
-            - name: "Developer"
-              action: "USES"
-              with: "Structurizr Cloud Service Web Interface"
-              description: "Read current Product Architecture"
-
-            - name: "Engineering Architect"
-              action: "USES"
-              with: "Structurizr Cloud Service Web Interface"
-              description: "Read and modify Product Architecture"
-
-            - name: "Structurizr Cloud Service Web Interface"
-              action: "USES"
-              with: "Structurizr Cloud Service API"
-              description: "To query, update and store Product Architecture"
+    componentViews:
+      - name: "DevSpaces API Components"
+        containerPath: "c4://DevSpaces/DevSpaces API"
+        description: "DevSpaces API Components"
+        tags:
+          - "DevSpaces API Component View"

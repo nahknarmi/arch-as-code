@@ -18,7 +18,7 @@ public class ModelValidator implements DataStructureValidator {
             errors.add("Missing at least one system");
         }
 
-        if (model.getPersons().isEmpty()) {
+        if (model.getPeople().isEmpty()) {
             errors.add("Missing at least one person");
         }
 

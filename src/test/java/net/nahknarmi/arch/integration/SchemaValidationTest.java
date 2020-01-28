@@ -40,8 +40,8 @@ public class SchemaValidationTest {
     }
 
     @Test
-    public void validate_bad_decision_log() throws IOException {
-        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("badDecisionLog.yml");
+    public void validate_missing_decision_log() throws IOException {
+        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("missingDecisionLog.yml");
 
         assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
                 containsInAnyOrder(
@@ -54,28 +54,30 @@ public class SchemaValidationTest {
     }
 
     @Test
-    public void validate_bad_model() throws IOException {
-        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("badModel.yml");
+    public void validate_missing_model_properties() throws IOException {
+        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("missingModelProperties.yml");
 
         assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
-                containsInAnyOrder("$.model.persons: is missing but it is required",
+                containsInAnyOrder("$.model.people: is missing but it is required",
                         "$.model.systems: is missing but it is required"
                 ));
     }
 
     @Test
-    public void validate_bad_view() throws IOException {
-        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("badView.yml");
+    public void validate_missing_view_contexts() throws IOException {
+        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("missingViewContexts.yml");
 
         assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
-                containsInAnyOrder("$.model.views.systemView.systems[0].name: is missing but it is required",
+                containsInAnyOrder(
+                        "$.model.views.systemView.systems[0].name: is missing but it is required",
+                        "$.model.views.systemView.systems[0].systemPath: is missing but it is required",
                         "$.model.views.systemView.systems[0].description: is missing but it is required",
-                        "$.model.views.systemView.systems[0].relationships: is missing but it is required",
                         "$.model.views.containerView.containers[0].name: is missing but it is required",
+                        "$.model.views.containerView.containers[0].systemPath: is missing but it is required",
                         "$.model.views.containerView.containers[0].description: is missing but it is required",
-                        "$.model.views.containerView.containers[0].system: is missing but it is required",
-                        "$.model.views.containerView.containers[0].relationships: is missing but it is required"
-
+                        "$.model.views.componentView.components[0].name: is missing but it is required",
+                        "$.model.views.componentView.components[0].containerPath: is missing but it is required",
+                        "$.model.views.componentView.components[0].description: is missing but it is required"
                 ));
     }
 

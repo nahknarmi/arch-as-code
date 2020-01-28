@@ -33,11 +33,11 @@ public class ArchitectureDataStructurePublishingE2ETest {
         Workspace workspace = adapter.load(TEST_WORKSPACE_ID);
         assertThat(workspace.getDocumentation().getSections(), hasSize(2));
         assertThat(workspace.getDocumentation().getDecisions(), hasSize(2));
-        assertThat(workspace.getModel().getSoftwareSystems(), hasSize(4));
+        assertThat(workspace.getModel().getSoftwareSystems(), hasSize(5));
         assertThat(workspace.getModel().getPeople(), hasSize(3));
         assertEquals(getTotalContainerCount(workspace), 4);
         assertEquals(getTotalComponentCount(workspace), 4);
-        assertThat(workspace.getModel().getRelationships(), hasSize(18));
+        assertThat(workspace.getModel().getRelationships(), hasSize(17));
     }
 
     private int getTotalComponentCount(Workspace workspace) {

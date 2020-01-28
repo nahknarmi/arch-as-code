@@ -7,9 +7,10 @@ import com.structurizr.documentation.DecisionStatus;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.ImportantTechnicalDecision;
 import net.nahknarmi.arch.domain.c4.C4Model;
+import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
-import net.nahknarmi.arch.domain.c4.C4View;
+import net.nahknarmi.arch.domain.c4.view.C4View;
 import org.junit.Test;
 
 import java.io.File;
@@ -95,10 +96,19 @@ public class ArchitectureDataStructureTransformerTest {
 
     private C4Model buildModel() {
         return new C4Model(
-                ImmutableList.of(new C4Person("Foo", "Bar", emptyList())),
-                ImmutableList.of(new C4SoftwareSystem("J2EE Server", "Application server", emptyList(), emptyList())),
-                C4View.NONE
+                ImmutableList.of(new C4Person(new C4Path("@person"), "Foo", emptyList(), emptyList())),
+                ImmutableList.of(new C4SoftwareSystem(new C4Path("c4://sys"), "J2EE Server", emptyList(), emptyList())),
+                emptyList(),
+                emptyList(),
+                buildView()
         );
     }
 
+    private C4View buildView() {
+        return new C4View(
+                emptyList(),
+                emptyList(),
+                emptyList()
+        );
+    }
 }

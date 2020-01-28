@@ -1,7 +1,6 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.view.AutomaticLayout;
 import com.structurizr.view.SystemLandscapeView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
