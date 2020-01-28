@@ -1,0 +1,314 @@
+name: "Big Bank"
+description: "Structurizr example: https://structurizr.com/share/36141/diagrams"
+
+model:
+  people:
+    - path: "@Personal Banking Customer"
+      description: "A customer of a the bank, with personal bank accounts."
+      tags:
+        - "Internet Banking System SystemView"
+        - "Internet Banking System ContainerView"
+      relationships:
+        - action: USES
+          with: "c4://ATM"
+          description: "Withdraws cash using"
+
+        - action: USES
+          with: "c4://Internet Banking System"
+          description: "Views account balances, and makes payments using"
+#        TODO: `delivers` not implemented
+#        - action: DELIVERS
+#          with: "@Customer Service Staff"
+#          description: "Asks questions to"
+#          technology: "Telephone"
+
+        - action: USES
+          with: "c4://Internet Banking System/Single-Page Application"
+          description: "Views account balances, and makes payments using"
+
+        - action: USES
+          with: "c4://Internet Banking System/Web Application"
+          description: "Visits bigbank.com"
+#         TODO: relationship `technology` not implemented
+#         technology: "HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/Mobile App"
+          description: "Views account balances, and makes payments using"
+
+    - path: "@Customer Service Staff"
+      description: "Customer service staff within the bank"
+      relationships:
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Uses"
+
+    - path: "@Back Office Staff"
+      description: "Administration and support staff within the bank"
+      relationships:
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Uses"
+
+  systems:
+    - path: "c4://Mainframe Banking System"
+      description: "Stores all of the core banking information about customers, accounts, transactions, ect."
+      tags:
+        - "Internet Banking System SystemView"
+        - "Internet Banking System ContainerView"
+        - "Internet Banking System - Api Application ComponentView"
+
+    - path: "c4://ATM"
+      description: "Allows customers to withdraw cash"
+      relationships:
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Uses"
+
+    - path: "c4://E-mail System"
+      description: "The internal Microsoft Exchange e-mail system"
+      tags:
+        - "Internet Banking System SystemView"
+        - "Internet Banking System ContainerView"
+        - "Internet Banking System - Api Application ComponentView"
+#      TODO: `delivers` not implemented
+#      relationships:
+#        - action: Delivers
+#          with: "@Personal Banking Customer"
+#          description: "Sends e-mail to"
+
+    - path: "c4://Internet Banking System"
+      description: "Allows customers to view information about their bank accounts, and make payments."
+      tags:
+        - "Internet Banking System SystemView"
+      relationships:
+        - action: USES
+          with: "c4://E-mail System"
+          description: "Sends e-mail using"
+
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Gets account information from, and makes payments using"
+
+  containers:
+    - path: "c4://Internet Banking System/Web Application"
+      description: "Delivers the static content and the Internet banking single page app"
+      technology: "Java and Spring MVC"
+      tags:
+        - "Internet Banking System ContainerView"
+#      TODO: `delivers` not implemented
+#      relationships:
+#        - action: DELIVERS
+#          with: "c4://Internet Banking System/Single-Page Application"
+#          description: "Provides all of the Internet Banking functionality to customers via their web browser."
+
+    - path: "c4://Internet Banking System/Single-Page Application"
+      description: "Delivers the static content and the Internet banking single page app"
+      technology: "Javascript and Angular"
+      tags:
+        - "Internet Banking System ContainerView"
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/API Application"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Sign In Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Reset Password Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Accounts Summary Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+    - path: "c4://Internet Banking System/Mobile App"
+      description: "Provides a limited subset of the Internet banking functionality to customers via their mobile device."
+      technology: "Xamarin"
+      tags:
+        - "Internet Banking System ContainerView"
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/API Application"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Sign In Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Reset Password Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Accounts Summary Controller"
+          description: "Makes API call to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JSON/HTTPS"
+
+    - path: "c4://Internet Banking System/API Application"
+      description: "Provides Internet banking functionality via a JSON/HTTPS API."
+      technology: "Java and Spring MVC"
+      tags:
+        - "Internet Banking System ContainerView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/Database"
+          description: "Reads from and writes to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JDBC"
+
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Makes API Calls to"
+#          TODO: relationship `technology` not implemented
+#          technology: "XML/HTTPS"
+
+        - action: USES
+          with: "c4://E-mail System"
+          description: "Sends e-mail using"
+#          TODO: relationship `technology` not implemented
+#          technology: "SMTP"
+
+    - path: "c4://Internet Banking System/Database"
+      description: "Stores user registration information, hashed authentication credentials, access logs, etc."
+      technology: "Oracle Database Schema"
+      tags:
+        - "Internet Banking System ContainerView"
+        - "Internet Banking System - Api Application ComponentView"
+
+  components:
+    - path: "c4://Internet Banking System/API Application/Sign In Controller"
+      description: "Allows users to sign in to the Internet Banking System."
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Security Component"
+          description: "Uses"
+
+    - path: "c4://Internet Banking System/API Application/Reset Password Controller"
+      description: "Allow users to reset their passwords with a single use URL."
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Security Component"
+          description: "Uses"
+
+        - action: USES
+          with: "c4://Internet Banking System/API Application/E-mail Component"
+          description: "Uses"
+
+    - path: "c4://Internet Banking System/API Application/Accounts Summary Controller"
+      description: "Provides customers with a summary of their bank accounts."
+      technology: "Spring MVC Rest Controller"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/API Application/Mainframe Banking System Facade"
+          description: "Uses"
+
+    - path: "c4://Internet Banking System/API Application/Mainframe Banking System Facade"
+      description: "A facade onto the mainframe banking system"
+      technology: "Spring Bean"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Mainframe Banking System"
+          description: "Uses"
+#          TODO: relationship `technology` not implemented
+#          technology: "XML/HTTPS"
+
+    - path: "c4://Internet Banking System/API Application/E-mail Component"
+      description: "Sends e-mails to users"
+      technology: "Spring Bean"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://E-mail System"
+          description: "Sends e-mail using"
+
+    - path: "c4://Internet Banking System/API Application/Security Component"
+      description: "Provides functionality related to signing in, changing passwords,etc."
+      technology: "Spring Bean"
+      tags:
+        - "Internet Banking System - Api Application ComponentView"
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/Database"
+          description: "Reads from and writes to"
+#          TODO: relationship `technology` not implemented
+#          technology: "JDBC"
+
+  views:
+    systemViews:
+      - name: "System Context diagram for Internet Banking System"
+        systemPath: "c4://Internet Banking System"
+        description: "Internet Banking System - System View"
+#        tags:
+#          - "Internet Banking System SystemView"
+        entities:
+            - path: "@Personal Banking Customer"
+            - path: "c4://Internet Banking System"
+            - path: "c4://E-mail System"
+            - path: "c4://Mainframe Banking System"
+
+
+    containerViews:
+      - name: "Container diagram for Internet Banking System"
+        systemPath: "c4://Internet Banking System"
+        description: "Internet Banking System - Container View"
+#        tags:
+#          - "Internet Banking System ContainerView"
+        entities:
+          - path: "@Personal Banking Customer"
+          - path: "c4://Internet Banking System/Web Application"
+          - path: "c4://Internet Banking System/Single-Page Application"
+          - path: "c4://Internet Banking System/Mobile App"
+          - path: "c4://Internet Banking System/API Application"
+          - path: "c4://Internet Banking System/Database"
+          - path: "c4://E-mail System"
+          - path: "c4://Mainframe Banking System"
+
+    componentViews:
+      - name: "Component diagram for Internet Banking System - API Application"
+        containerPath: "c4://Internet Banking System/API Application"
+        description: "Internet Banking System : API Application - Component View"
+#        tags:
+#          - "Internet Banking System ComponentView"
+        entities:
+          - path: "c4://Internet Banking System/API Application/Sign In Controller"
+          - path: "c4://Internet Banking System/API Application/Reset Password Controller"
+          - path: "c4://Internet Banking System/API Application/Accounts Summary Controller"
+          - path: "c4://Internet Banking System/API Application/Security Component"
+          - path: "c4://Internet Banking System/API Application/E-mail Component"
+          - path: "c4://Internet Banking System/API Application/Mainframe Banking System Facade"
+          - path: "c4://Internet Banking System/Single-Page Application"
+          - path: "c4://Internet Banking System/Mobile App"
+          - path: "c4://Internet Banking System/Database"
+          - path: "c4://E-mail System"
+          - path: "c4://Mainframe Banking System"

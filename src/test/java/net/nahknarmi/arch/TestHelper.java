@@ -7,4 +7,5 @@ public abstract class TestHelper {
     public static String PRODUCT_NAME = "TestSpaces";
 
     public static String TEST_VALIDATION_ROOT_PATH = "/validation/";
+    public static String TEST_VIEW_ROOT_PATH = "/view/bigBank/";
 }

@@ -157,8 +157,18 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             }
                             case container: {
                                 SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
+                                String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                Container containerDestination = systemDestination.getContainerWithName(containerName);
                                 container.uses(containerDestination, description);
+                                break;
+                            }
+                            case component: {
+                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+                                String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                String componentName = r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                Container containerDestination = systemDestination.getContainerWithName(containerName);
+                                Component componentDestination = containerDestination.getComponentWithName(componentName);
+                                container.uses(componentDestination, description);
                                 break;
                             }
                             default:
