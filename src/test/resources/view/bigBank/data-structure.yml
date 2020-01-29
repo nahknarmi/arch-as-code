@@ -16,11 +16,11 @@ model:
         - action: USES
           with: "c4://Internet Banking System"
           description: "Views account balances, and makes payments using"
-#        TODO: `delivers` not implemented
-#        - action: DELIVERS
-#          with: "@Customer Service Staff"
-#          description: "Asks questions to"
-#          technology: "Telephone"
+
+        - action: INTERACTS_WITH
+          with: "@Customer Service Staff"
+          description: "Asks questions to"
+          technology: "Telephone"
 
         - action: USES
           with: "c4://Internet Banking System/Single-Page Application"
@@ -29,8 +29,7 @@ model:
         - action: USES
           with: "c4://Internet Banking System/Web Application"
           description: "Visits bigbank.com"
-#         TODO: relationship `technology` not implemented
-#         technology: "HTTPS"
+          technology: "HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/Mobile App"
@@ -71,11 +70,10 @@ model:
         - "Internet Banking System SystemView"
         - "Internet Banking System ContainerView"
         - "Internet Banking System - Api Application ComponentView"
-#      TODO: `delivers` not implemented
-#      relationships:
-#        - action: Delivers
-#          with: "@Personal Banking Customer"
-#          description: "Sends e-mail to"
+      relationships:
+        - action: DELIVERS
+          with: "@Personal Banking Customer"
+          description: "Sends e-mail to"
 
     - path: "c4://Internet Banking System"
       description: "Allows customers to view information about their bank accounts, and make payments."
@@ -96,11 +94,10 @@ model:
       technology: "Java and Spring MVC"
       tags:
         - "Internet Banking System ContainerView"
-#      TODO: `delivers` not implemented
-#      relationships:
-#        - action: DELIVERS
-#          with: "c4://Internet Banking System/Single-Page Application"
-#          description: "Provides all of the Internet Banking functionality to customers via their web browser."
+      relationships:
+        - action: USES
+          with: "c4://Internet Banking System/Single-Page Application"
+          description: "Provides all of the Internet Banking functionality to customers via their web browser."
 
     - path: "c4://Internet Banking System/Single-Page Application"
       description: "Delivers the static content and the Internet banking single page app"
@@ -112,26 +109,22 @@ model:
         - action: USES
           with: "c4://Internet Banking System/API Application"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Sign In Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Reset Password Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Accounts Summary Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
     - path: "c4://Internet Banking System/Mobile App"
       description: "Provides a limited subset of the Internet banking functionality to customers via their mobile device."
@@ -143,26 +136,22 @@ model:
         - action: USES
           with: "c4://Internet Banking System/API Application"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Sign In Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Reset Password Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
         - action: USES
           with: "c4://Internet Banking System/API Application/Accounts Summary Controller"
           description: "Makes API call to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JSON/HTTPS"
+          technology: "JSON/HTTPS"
 
     - path: "c4://Internet Banking System/API Application"
       description: "Provides Internet banking functionality via a JSON/HTTPS API."
@@ -173,20 +162,17 @@ model:
         - action: USES
           with: "c4://Internet Banking System/Database"
           description: "Reads from and writes to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JDBC"
+          technology: "JDBC"
 
         - action: USES
           with: "c4://Mainframe Banking System"
           description: "Makes API Calls to"
-#          TODO: relationship `technology` not implemented
-#          technology: "XML/HTTPS"
+          technology: "XML/HTTPS"
 
         - action: USES
           with: "c4://E-mail System"
           description: "Sends e-mail using"
-#          TODO: relationship `technology` not implemented
-#          technology: "SMTP"
+          technology: "SMTP"
 
     - path: "c4://Internet Banking System/Database"
       description: "Stores user registration information, hashed authentication credentials, access logs, etc."
@@ -239,8 +225,7 @@ model:
         - action: USES
           with: "c4://Mainframe Banking System"
           description: "Uses"
-#          TODO: relationship `technology` not implemented
-#          technology: "XML/HTTPS"
+          technology: "XML/HTTPS"
 
     - path: "c4://Internet Banking System/API Application/E-mail Component"
       description: "Sends e-mails to users"
@@ -261,8 +246,7 @@ model:
         - action: USES
           with: "c4://Internet Banking System/Database"
           description: "Reads from and writes to"
-#          TODO: relationship `technology` not implemented
-#          technology: "JDBC"
+          technology: "JDBC"
 
   views:
     systemViews:

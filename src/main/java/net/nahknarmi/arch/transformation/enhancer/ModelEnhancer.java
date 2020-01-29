@@ -92,28 +92,40 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             p.getRelationships().stream()
                     .forEach(r -> {
                         String description = r.getDescription();
+                        String technology = r.getTechnology();
+                        C4Type typeDestination = r.getWith().getType();
 
-                        switch (r.getWith().getType()) {
-                            case system: {
-                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                person.uses(softwareSystem, description);
-                                break;
+                        if (r.getAction() == C4Action.USES) {
+                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+
+                            switch (typeDestination) {
+                                case system: {
+                                    person.uses(systemDestination, description, technology);
+                                    break;
+                                }
+                                case container: {
+                                    Container container = systemDestination.getContainerWithName(r.getWith().getName());
+                                    person.uses(container, description, technology);
+                                    break;
+                                }
+                                case component: {
+                                    Container container = systemDestination.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!")));
+                                    Component component = container.getComponentWithName(r.getWith().getName());
+                                    person.uses(component, description, technology);
+                                    break;
+                                }
+                                default:
+                                    throw new IllegalStateException("Unsupported type " + typeDestination);
                             }
-                            case container: {
-                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                Container container = softwareSystem.getContainerWithName(r.getWith().getName());
-                                person.uses(container, description);
-                                break;
+                        }
+                        if (r.getAction() == C4Action.INTERACTS_WITH) {
+                            if (typeDestination != C4Type.person) {
+                                throw new IllegalStateException("Action INTERACTS_WITH supported only with type person, not: " + typeDestination);
+                            } else {
+                                String personName = r.getWith().getPersonName();
+                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                person.interactsWith(personDestination, description, technology);
                             }
-                            case component: {
-                                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                Container container = softwareSystem.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!")));
-                                Component component = container.getComponentWithName(r.getWith().getName());
-                                person.uses(component, description);
-                                break;
-                            }
-                            default:
-                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });
@@ -123,19 +135,46 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         dataStructureModel.getSystems().stream().forEach(s -> {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
 
-
             s.getRelationships().stream()
                     .forEach(r -> {
                         String description = r.getDescription();
-                        switch (r.getWith().getType()) {
-                            case system: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getName());
-                                softwareSystem.uses(systemDestination, description);
-                                break;
-                                // TODO: Add system->person `delivers` relationship (i.e. system emails user)
+                        String technology = r.getTechnology();
+                        C4Type typeDestination = r.getWith().getType();
+
+                        if (r.getAction() == C4Action.USES) {
+                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+
+                            switch (typeDestination) {
+                                case system: {
+                                    softwareSystem.uses(systemDestination, description, technology);
+                                    break;
+                                }
+                                case container: {
+                                    String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    Container containerDestination = systemDestination.getContainerWithName(containerName);
+                                    softwareSystem.uses(containerDestination, description, technology);
+                                    break;
+                                }
+                                case component: {
+                                    String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    String componentName = r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    Container containerDestination = systemDestination.getContainerWithName(containerName);
+                                    Component componentDestination = containerDestination.getComponentWithName(componentName);
+                                    softwareSystem.uses(componentDestination, description, technology);
+                                    break;
+                                }
+                                default:
+                                    throw new IllegalStateException("Unsupported type " + typeDestination);
                             }
-                            default:
-                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
+                        }
+                        if (r.getAction() == C4Action.DELIVERS) {
+                            if (typeDestination != C4Type.person) {
+                                throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
+                            } else {
+                                String personName = r.getWith().getPersonName();
+                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                softwareSystem.delivers(personDestination, description, technology);
+                            }
                         }
                     });
         });
@@ -149,30 +188,43 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             c.getRelationships().stream()
                     .forEach(r -> {
                         String description = r.getDescription();
-                        switch (r.getWith().getType()) {
-                            case system: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                container.uses(systemDestination, description);
-                                break;
+                        String technology = r.getTechnology();
+                        C4Type typeDestination = r.getWith().getType();
+
+                        if (r.getAction() == C4Action.USES) {
+                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+
+                            switch (typeDestination) {
+                                case system: {
+                                    container.uses(systemDestination, description, technology);
+                                    break;
+                                }
+                                case container: {
+                                    String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    Container containerDestination = systemDestination.getContainerWithName(containerName);
+                                    container.uses(containerDestination, description, technology);
+                                    break;
+                                }
+                                case component: {
+                                    String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    String componentName = r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
+                                    Container containerDestination = systemDestination.getContainerWithName(containerName);
+                                    Component componentDestination = containerDestination.getComponentWithName(componentName);
+                                    container.uses(componentDestination, description, technology);
+                                    break;
+                                }
+                                default:
+                                    throw new IllegalStateException("Unsupported type " + typeDestination);
                             }
-                            case container: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-                                Container containerDestination = systemDestination.getContainerWithName(containerName);
-                                container.uses(containerDestination, description);
-                                break;
+                        }
+                        if (r.getAction() == C4Action.DELIVERS) {
+                            if (typeDestination != C4Type.person) {
+                                throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
+                            } else {
+                                String personName = r.getWith().getPersonName();
+                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                container.delivers(personDestination, description, technology);
                             }
-                            case component: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-                                String componentName = r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-                                Container containerDestination = systemDestination.getContainerWithName(containerName);
-                                Component componentDestination = containerDestination.getComponentWithName(componentName);
-                                container.uses(componentDestination, description);
-                                break;
-                            }
-                            default:
-                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });
@@ -184,30 +236,44 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             String containerName = comp.getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
             Container container = softwareSystem.getContainerWithName(containerName);
             Component component = container.getComponentWithName(comp.getName());
+
             comp.getRelationships().stream()
                     .forEach(r -> {
-                        String description = ofNullable(r.getDescription()).orElse("");
-                        switch (r.getWith().getType()) {
-                            case system: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                component.uses(systemDestination, description);
-                                break;
+                        String description = r.getDescription();
+                        String technology = r.getTechnology();
+                        C4Type typeDestination = r.getWith().getType();
+
+                        if (r.getAction() == C4Action.USES) {
+                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
+
+                            switch (typeDestination) {
+                                case system: {
+                                    component.uses(systemDestination, description, technology);
+                                    break;
+                                }
+                                case container: {
+                                    Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
+                                    component.uses(containerDestination, description, technology);
+                                    break;
+                                }
+                                case component: {
+                                    Container containerDestination = systemDestination.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
+                                    Component componentDestination = containerDestination.getComponentWithName(r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
+                                    component.uses(componentDestination, description, technology);
+                                    break;
+                                }
+                                default:
+                                    throw new IllegalStateException("Unsupported type " + typeDestination);
                             }
-                            case container: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
-                                component.uses(containerDestination, description);
-                                break;
+                        }
+                        if (r.getAction() == C4Action.DELIVERS) {
+                            if (typeDestination != C4Type.person) {
+                                throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
+                            } else {
+                                String personName = r.getWith().getPersonName();
+                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                component.delivers(personDestination, description, technology);
                             }
-                            case component: {
-                                SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().getSystemName());
-                                Container containerDestination = systemDestination.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
-                                Component componentDestination = containerDestination.getComponentWithName(r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
-                                component.uses(componentDestination, description);
-                                break;
-                            }
-                            default:
-                                throw new IllegalStateException("Unsupported type " + r.getWith().getType());
                         }
                     });
         });

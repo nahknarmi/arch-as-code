@@ -36,11 +36,12 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(tagSet.contains("Trilogy System View"));
         assertTrue(tagSet.contains("DevSpaces Container View"));
 
-        assertThat(relationships, hasSize(4));
+        assertThat(relationships, hasSize(5));
         assertTrue(relationshipNames.contains("GitHub"));
         assertTrue(relationshipNames.contains("DevSpaces"));
         assertTrue(relationshipNames.contains("DevSpaces CLI"));
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
+        assertTrue(relationshipNames.contains("Sign In Controller"));
 
         assertEquals(person.getDescription(), "Developer building software");
     }
@@ -111,10 +112,13 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
 
         assertTrue(tagSet.contains("Trilogy System View"));
 
-        assertThat(relationships, hasSize(0));
+        assertThat(relationships, hasSize(1));
+        assertTrue(relationshipNames.contains("Sign In Controller"));
+
         assertThat(system.getContainers(), hasSize(0));
 
         assertEquals(system.getDescription(), "Team collaboration via sheets, docs and presentations");
@@ -271,8 +275,10 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        assertTrue(relationshipNames.contains("InfoSec"));
 
-        assertThat(relationships, hasSize(0));
+        assertThat(relationships, hasSize(1));
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 

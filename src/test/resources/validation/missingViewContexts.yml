@@ -7,12 +7,9 @@ model:
   container: []
   components: []
   views:
-    systemView:
-      systems:
-        - {}
-    containerView:
-      containers:
-        - {}
-    componentView:
-      components:
-        - {}
+    systemViews:
+      - {}
+    containerViews:
+      - {}
+    componentViews:
+      - {}

@@ -39,6 +39,10 @@ model:
           with: "c4://DevSpaces/DevSpaces CLI"
           description: "creates and manages dev spaces"
 
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+          description: "log in"
+
     - path: "@SaasOps"
       description: "SaasOps operating system"
       tags:
@@ -79,6 +83,9 @@ model:
           with: "c4://Trilogy Google G Suite"
           description: "inter-team collaboration"
 
+    - path: "@InfoSec"
+      description: "Security and system defense"
+
   systems:
     - path: "c4://XO Chat"
       description: "Realtime team communication"
@@ -86,12 +93,20 @@ model:
         - "Trilogy System View"
 
     - path: "c4://SalesForce"
-      description: "SalesForce rules"
+      description: "Book keeping"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces Backend"
+          description: "queries usage details to estimate monthly costs"
 
     - path: "c4://Trilogy Google G Suite"
       description: "Team collaboration via sheets, docs and presentations"
       tags:
         - "Trilogy System View"
+      relationships:
+        - action: USES
+          with: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+          description: "SSO"
 
     - path: "c4://GitHub"
       description: "Hosts code and used for identity management"
@@ -112,6 +127,10 @@ model:
         - action: USES
           with: "c4://DevSpaces/DevSpaces API"
           description: "to manipulate dev spaces"
+
+        - action: DELIVERS
+          with: "@SaasOps"
+          description: "system-wide load monitoring reports"
 
     - path: "c4://DevSpaces/DevSpaces Backend"
       description: "Restful API providing capabilities for interacting with a DevSpace"
@@ -156,6 +175,10 @@ model:
       technology: "Spring Bean"
       tags:
         - "DevSpaces API Component View"
+      relationships:
+        - action: DELIVERS
+          with: "@InfoSec"
+          description: "Delivers report on multiple failed sign-on attempts"
 
     - path: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
       description: "Allows users to reset their passwords"

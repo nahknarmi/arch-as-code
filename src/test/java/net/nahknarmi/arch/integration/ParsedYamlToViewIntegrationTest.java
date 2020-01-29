@@ -30,7 +30,7 @@ public class ParsedYamlToViewIntegrationTest {
         SystemContextView view = systemContextViews.stream().findFirst().get();
         List<String> elementNames = view.getElements().stream().map(e -> e.getElement().getName()).collect(Collectors.toList());
 
-        assertThat(view.getRelationships().size(), equalTo(3));
+        assertThat(view.getRelationships().size(), equalTo(4));
         assertThat(elementNames,
                 containsInAnyOrder("Personal Banking Customer",
                         "E-mail System",
@@ -46,7 +46,7 @@ public class ParsedYamlToViewIntegrationTest {
         ContainerView view = containerViews.stream().findFirst().get();
         List<String> elementNames = view.getElements().stream().map(e -> e.getElement().getName()).collect(Collectors.toList());
 
-        assertThat(view.getRelationships().size(), equalTo(8));
+        assertThat(view.getRelationships().size(), equalTo(10));
         assertThat(elementNames,
                 containsInAnyOrder("Personal Banking Customer",
                         "E-mail System",

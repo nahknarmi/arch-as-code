@@ -69,15 +69,15 @@ public class SchemaValidationTest {
 
         assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
                 containsInAnyOrder(
-                        "$.model.views.systemView.systems[0].name: is missing but it is required",
-                        "$.model.views.systemView.systems[0].systemPath: is missing but it is required",
-                        "$.model.views.systemView.systems[0].description: is missing but it is required",
-                        "$.model.views.containerView.containers[0].name: is missing but it is required",
-                        "$.model.views.containerView.containers[0].systemPath: is missing but it is required",
-                        "$.model.views.containerView.containers[0].description: is missing but it is required",
-                        "$.model.views.componentView.components[0].name: is missing but it is required",
-                        "$.model.views.componentView.components[0].containerPath: is missing but it is required",
-                        "$.model.views.componentView.components[0].description: is missing but it is required"
+                        "$.model.views.systemViews[0].name: is missing but it is required",
+                        "$.model.views.systemViews[0].systemPath: is missing but it is required",
+                        "$.model.views.systemViews[0].description: is missing but it is required",
+                        "$.model.views.containerViews[0].name: is missing but it is required",
+                        "$.model.views.containerViews[0].systemPath: is missing but it is required",
+                        "$.model.views.containerViews[0].description: is missing but it is required",
+                        "$.model.views.componentViews[0].name: is missing but it is required",
+                        "$.model.views.componentViews[0].containerPath: is missing but it is required",
+                        "$.model.views.componentViews[0].description: is missing but it is required"
                 ));
     }
 

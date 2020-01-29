@@ -101,8 +101,18 @@
                         "action": {
                           "type": "string",
                           "enum": [
-                            "USES"
+                            "USES",
+                            "INTERACTS_WITH"
                           ]
+                        },
+                        "with": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "technology": {
+                          "type": "string"
                         }
                       }
                     }
@@ -148,8 +158,18 @@
                         "action": {
                           "type": "string",
                           "enum": [
-                            "USES"
+                            "USES",
+                            "DELIVERS"
                           ]
+                        },
+                        "with": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "technology": {
+                          "type": "string"
                         }
                       }
                     }
@@ -198,8 +218,18 @@
                         "action": {
                           "type": "string",
                           "enum": [
-                            "USES"
+                            "USES",
+                            "DELIVERS"
                           ]
+                        },
+                        "with": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "technology": {
+                          "type": "string"
                         }
                       }
                     }
@@ -248,8 +278,18 @@
                         "action": {
                           "type": "string",
                           "enum": [
-                            "USES"
+                            "USES",
+                            "DELIVERS"
                           ]
+                        },
+                        "with": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "technology": {
+                          "type": "string"
                         }
                       }
                     }
@@ -262,173 +302,149 @@
         "views": {
           "type": "object",
           "properties": {
-            "systemView": {
-              "type": "object",
-              "required": [
-                "systems"
-              ],
-              "properties": {
-                "systems": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "object",
-                      "required": [
-                        "name",
-                        "systemPath",
-                        "description"
-                      ],
-                      "properties": {
-                        "name": {
+            "systemViews": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "systemPath",
+                    "description"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "systemPath": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": [
+                        {
                           "type": "string"
-                        },
-                        "systemPath": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "tags": {
-                          "type": "array",
-                          "items": [
-                            {
+                        }
+                      ]
+                    },
+                    "entities": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "path"
+                          ],
+                          "properties": {
+                            "path": {
                               "type": "string"
                             }
-                          ]
-                        },
-                        "entities": {
-                          "type": "array",
-                          "items": [
-                            {
-                              "type": "object",
-                              "required": [
-                                "path"
-                              ],
-                              "properties": {
-                                "path": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          ]
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
+                  }
                 }
-              }
+              ]
             },
-            "containerView": {
-              "type": "object",
-              "required": [
-                "containers"
-              ],
-              "properties": {
-                "containers": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "object",
-                      "required": [
-                        "name",
-                        "systemPath",
-                        "description"
-                      ],
-                      "properties": {
-                        "name": {
+            "containerViews": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "systemPath",
+                    "description"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "systemPath": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": [
+                        {
                           "type": "string"
-                        },
-                        "systemPath": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "tags": {
-                          "type": "array",
-                          "items": [
-                            {
+                        }
+                      ]
+                    },
+                    "entities": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "path"
+                          ],
+                          "properties": {
+                            "path": {
                               "type": "string"
                             }
-                          ]
-                        },
-                        "entities": {
-                          "type": "array",
-                          "items": [
-                            {
-                              "type": "object",
-                              "required": [
-                                "path"
-                              ],
-                              "properties": {
-                                "path": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          ]
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
+                  }
                 }
-              }
+              ]
             },
-            "componentView": {
-              "type": "object",
-              "required": [
-                "components"
-              ],
-              "properties": {
-                "components": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "object",
-                      "required": [
-                        "name",
-                        "containerPath",
-                        "description"
-                      ],
-                      "properties": {
-                        "name": {
+            "componentViews": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "containerPath",
+                    "description"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "containerPath": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": [
+                        {
                           "type": "string"
-                        },
-                        "containerPath": {
-                          "type": "string"
-                        },
-                        "description": {
-                          "type": "string"
-                        },
-                        "tags": {
-                          "type": "array",
-                          "items": [
-                            {
+                        }
+                      ]
+                    },
+                    "entities": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "path"
+                          ],
+                          "properties": {
+                            "path": {
                               "type": "string"
                             }
-                          ]
-                        },
-                        "entities": {
-                          "type": "array",
-                          "items": [
-                            {
-                              "type": "object",
-                              "required": [
-                                "path"
-                              ],
-                              "properties": {
-                                "path": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          ]
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
+                  }
                 }
-              }
+              ]
             }
           }
         }

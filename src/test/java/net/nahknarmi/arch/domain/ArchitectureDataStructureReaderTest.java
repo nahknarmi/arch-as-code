@@ -46,7 +46,7 @@ public class ArchitectureDataStructureReaderTest {
         //it should have people
         List<C4Person> people = model.getPeople();
 
-        assertThat(people.size(), equalTo(3));
+        assertThat(people.size(), equalTo(4));
         C4Person person = (C4Person) people.get(0);
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));

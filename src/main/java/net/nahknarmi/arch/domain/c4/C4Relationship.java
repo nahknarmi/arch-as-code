@@ -14,5 +14,7 @@ public class C4Relationship {
     private C4Action action;
     @NonNull
     private C4Path with;
+    @NonNull
     private String description;
+    private String technology;
 }
