@@ -12,12 +12,13 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4SoftwareSystem implements Entity {
+public class C4SoftwareSystem implements Entity, Locatable {
     @NonNull
     private C4Path path;
     @NonNull
     private String description;
 
+    private C4Location location;
     private List<C4Tag> tags = emptyList();
     private List<C4Relationship> relationships = emptyList();
 

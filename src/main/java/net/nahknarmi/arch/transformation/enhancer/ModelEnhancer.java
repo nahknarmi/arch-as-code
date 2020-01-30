@@ -4,6 +4,7 @@ import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
+import net.nahknarmi.arch.transformation.LocationTransformer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                 .orElse(NONE)
                 .getPeople()
                 .forEach(p -> {
-                    Person person = model.addPerson(p.getName(), p.getDescription());
+                    Location location = LocationTransformer.c4LocationToLocation(p.getLocation());
+                    Person person = model.addPerson(location, p.getName(), p.getDescription());
                     person.addTags(getTags(p));
                 });
     }
@@ -42,7 +44,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addSystem(Model model, C4SoftwareSystem s) {
-        SoftwareSystem softwareSystem = model.addSoftwareSystem(s.getName(), s.getDescription());
+        Location location = LocationTransformer.c4LocationToLocation(s.getLocation());
+        SoftwareSystem softwareSystem = model.addSoftwareSystem(location, s.getName(), s.getDescription());
         softwareSystem.addTags(getTags(s));
     }
 

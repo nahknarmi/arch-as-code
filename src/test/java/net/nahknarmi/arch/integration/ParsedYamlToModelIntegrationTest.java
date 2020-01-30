@@ -44,6 +44,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(relationshipNames.contains("Sign In Controller"));
 
         assertEquals(person.getDescription(), "Developer building software");
+        assertEquals(person.getLocation(), Location.Internal);
     }
 
     @Test
@@ -102,6 +103,21 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(system.getContainers(), hasSize(0));
 
         assertEquals(system.getDescription(), "Realtime team communication");
+    }
+
+    @Test
+    public void should_build_system_salesforce() throws FileNotFoundException {
+        String systemName = "SalesForce";
+        Workspace workspace = getWorkspace();
+
+        SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Set<Relationship> relationships = system.getRelationships();
+
+        assertThat(relationships, hasSize(1));
+        assertThat(system.getContainers(), hasSize(0));
+
+        assertEquals(system.getDescription(), "Book keeping");
+        assertEquals(system.getLocation(), Location.External);
     }
 
     @Test

@@ -5,6 +5,7 @@ model:
   people:
     - path: "@Personal Banking Customer"
       description: "A customer of a the bank, with personal bank accounts."
+      location: EXTERNAL
       tags:
         - "Internet Banking System SystemView"
         - "Internet Banking System ContainerView"

@@ -18,6 +18,7 @@ model:
   people:
     - path: "@Developer"
       description: "Developer building software"
+      location: INTERNAL
       tags:
         - "DevSpaces System View"
         - "Trilogy System View"
@@ -94,6 +95,7 @@ model:
 
     - path: "c4://SalesForce"
       description: "Book keeping"
+      location: EXTERNAL
       relationships:
         - action: USES
           with: "c4://DevSpaces/DevSpaces Backend"
