@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public class C4Path {
     private static final int COMPONENT_GROUP_NUMBER = 4;
     private static final int CONTAINER_GROUP_NUMBER = 3;
     private static final int SYSTEM_OR_PERSON_GROUP_NUMBER = 2;
-    private static final String URI_PREFIX = "c4://";
+    private static final String ENTITY_PREFIX = "c4://";
     private static final String PERSON_PREFIX = "@";
     @NonNull
     private String path;
@@ -78,7 +79,7 @@ public class C4Path {
     }
 
     public String getSystemName() {
-        if (this.path.startsWith(URI_PREFIX)) {
+        if (this.path.startsWith(ENTITY_PREFIX)) {
             return matcher().group(SYSTEM_OR_PERSON_GROUP_NUMBER);
         }
 
@@ -86,16 +87,16 @@ public class C4Path {
     }
 
     public Optional<String> getContainerName() {
-        if (this.path.startsWith(URI_PREFIX)) {
-            return Optional.ofNullable(matcher().group(CONTAINER_GROUP_NUMBER));
+        if (this.path.startsWith(ENTITY_PREFIX)) {
+            return ofNullable(matcher().group(CONTAINER_GROUP_NUMBER));
         }
 
         return empty();
     }
 
     public Optional<String> getComponentName() {
-        if (this.path.startsWith(URI_PREFIX)) {
-            return Optional.ofNullable(matcher().group(COMPONENT_GROUP_NUMBER));
+        if (this.path.startsWith(ENTITY_PREFIX)) {
+            return ofNullable(matcher().group(COMPONENT_GROUP_NUMBER));
         }
 
         return empty();

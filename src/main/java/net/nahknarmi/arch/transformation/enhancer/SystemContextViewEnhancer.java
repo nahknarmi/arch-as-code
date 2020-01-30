@@ -12,10 +12,14 @@ import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
 import net.nahknarmi.arch.domain.c4.view.C4SystemView;
+import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
 
 public class SystemContextViewEnhancer implements WorkspaceEnhancer {
+
+    private final ModelMediator modelMediator = new ModelMediator();
+
     @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         if (dataStructure.getModel().equals(C4Model.NONE)) {
@@ -61,12 +65,10 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
     private void addElementToSystemView(Model workspaceModel, SystemContextView view, C4Path entityPath) {
         switch (entityPath.getType()) {
             case person:
-                Person person = workspaceModel.getPersonWithName(entityPath.getPersonName());
-                view.add(person);
+                view.add(modelMediator.person(entityPath, workspaceModel));
                 break;
             case system:
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(entityPath.getSystemName());
-                view.add(system);
+                view.add(modelMediator.system(entityPath, workspaceModel));
                 break;
             default:
                 throw new IllegalStateException("Unsupported relationship type " + entityPath.getType());

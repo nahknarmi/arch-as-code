@@ -10,10 +10,14 @@ import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.domain.c4.view.C4ContainerView;
+import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
 
 public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
+
+    private final ModelMediator modelMediator = new ModelMediator();
+
     @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         if (dataStructure.getModel().equals(C4Model.NONE)) {
@@ -63,23 +67,15 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
 
     private void addElementToContainerView(Model workspaceModel, ContainerView view, C4Path path) {
         switch (path.getType()) {
-            case person: {
-                Person person = workspaceModel.getPersonWithName(path.getPersonName());
-                view.add(person);
+            case person:
+                view.add(modelMediator.person(path, workspaceModel));
                 break;
-            }
-            case system: {
-                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(path.getSystemName());
-                view.add(system);
+            case system:
+                view.add(modelMediator.system(path, workspaceModel));
                 break;
-            }
-            case container: {
-                SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(path.getSystemName());
-                String containerName = path.getContainerName().orElseThrow(() -> new IllegalStateException("WorkSpace ID is missing!"));
-                Container container = softwareSystem.getContainerWithName(containerName);
-                view.add(container);
+            case container:
+                view.add(modelMediator.container(path, workspaceModel));
                 break;
-            }
             default:
                 throw new IllegalStateException("Unsupported relationship type " + path.getType());
         }
