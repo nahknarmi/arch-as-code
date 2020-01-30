@@ -28,7 +28,9 @@ public class ArchitectureDataStructureTransformerTest {
     @Test
     public void should_transform_architecture_yaml_to_structurizr_workspace() {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure(PRODUCT_NAME, "DevFactory", PRODUCT_DESCRIPTION, emptyList(), buildModel());
+                new ArchitectureDataStructure(PRODUCT_NAME, "DevFactory", PRODUCT_DESCRIPTION, emptyList(),
+                        buildModel(),
+                        buildView());
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
@@ -79,7 +81,9 @@ public class ArchitectureDataStructureTransformerTest {
     private void checkStatus(DecisionStatus decisionStatus, String statusString) {
         ArchitectureDataStructure dataStructure =
                 new ArchitectureDataStructure(PRODUCT_NAME, "DevFactory", PRODUCT_DESCRIPTION,
-                        ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")), buildModel());
+                        ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")),
+                        buildModel(),
+                        buildView());
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
@@ -96,8 +100,7 @@ public class ArchitectureDataStructureTransformerTest {
                 ImmutableList.of(new C4Person(new C4Path("@person"), "Foo", null, emptyList(), emptyList())),
                 ImmutableList.of(new C4SoftwareSystem(new C4Path("c4://sys"), "J2EE Server", C4Location.INTERNAL, emptyList(), emptyList())),
                 emptyList(),
-                emptyList(),
-                buildView()
+                emptyList()
         );
     }
 

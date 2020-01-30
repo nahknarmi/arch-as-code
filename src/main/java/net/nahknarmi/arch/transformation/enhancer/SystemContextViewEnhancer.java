@@ -22,7 +22,7 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        List<C4SystemView> systemViews = dataStructure.getModel().getViews().getSystemViews();
+        List<C4SystemView> systemViews = dataStructure.getViews().getSystemViews();
         systemViews.forEach(systemView -> {
             Model workspaceModel = workspace.getModel();
             String systemName = systemView.getSystemPath().getSystemName();

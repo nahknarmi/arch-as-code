@@ -6,10 +6,10 @@ model:
   systems: []
   container: []
   components: []
-  views:
-    systemViews:
-      - {}
-    containerViews:
-      - {}
-    componentViews:
-      - {}
+views:
+  systemViews:
+    - {}
+  containerViews:
+    - {}
+  componentViews:
+    - {}

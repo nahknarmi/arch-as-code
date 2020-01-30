@@ -13,6 +13,8 @@ import static java.util.Collections.emptyList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class C4View {
+    public static final C4View NONE = new C4View();
+
     @NonNull
     private List<C4SystemView> systemViews = emptyList();
     @NonNull

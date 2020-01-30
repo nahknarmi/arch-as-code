@@ -58,6 +58,155 @@
         }
       ]
     },
+    "views": {
+      "type": "object",
+      "properties": {
+        "systemViews": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "required": [
+                "name",
+                "systemPath",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "systemPath": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "entities": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "path"
+                      ],
+                      "properties": {
+                        "path": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "containerViews": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "required": [
+                "name",
+                "systemPath",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "systemPath": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "entities": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "path"
+                      ],
+                      "properties": {
+                        "path": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "componentViews": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "required": [
+                "name",
+                "containerPath",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "containerPath": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "entities": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "path"
+                      ],
+                      "properties": {
+                        "path": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "model": {
       "type": "object",
       "required": [
@@ -298,155 +447,6 @@
               }
             }
           ]
-        },
-        "views": {
-          "type": "object",
-          "properties": {
-            "systemViews": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "required": [
-                    "name",
-                    "systemPath",
-                    "description"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "systemPath": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "tags": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "entities": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "object",
-                          "required": [
-                            "path"
-                          ],
-                          "properties": {
-                            "path": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            "containerViews": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "required": [
-                    "name",
-                    "systemPath",
-                    "description"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "systemPath": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "tags": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "entities": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "object",
-                          "required": [
-                            "path"
-                          ],
-                          "properties": {
-                            "path": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            "componentViews": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "required": [
-                    "name",
-                    "containerPath",
-                    "description"
-                  ],
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "containerPath": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "tags": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "entities": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "type": "object",
-                          "required": [
-                            "path"
-                          ],
-                          "properties": {
-                            "path": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          }
         }
       }
     }
