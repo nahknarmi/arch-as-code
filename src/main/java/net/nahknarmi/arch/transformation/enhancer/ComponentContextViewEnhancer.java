@@ -14,7 +14,6 @@ import java.util.List;
 
 public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
 
-    private final ModelMediator modelMediator = new ModelMediator();
 
     @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
@@ -33,24 +32,25 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
 
             com.structurizr.view.ComponentView view = viewSet.createComponentView(container, c.getName(), c.getDescription());
 
-            addEntities(workspaceModel, view, c);
-            addTaggedEntities(workspaceModel, dataStructure, c, view);
+            ModelMediator modelMediator = new ModelMediator(workspaceModel);
+            addEntities(modelMediator, view, c);
+            addTaggedEntities(modelMediator, dataStructure, c, view);
 
             view.setAutomaticLayout(true);
         });
     }
 
-    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, C4ComponentView context, com.structurizr.view.ComponentView view) {
+    private void addTaggedEntities(ModelMediator modelMediator, ArchitectureDataStructure dataStructure, C4ComponentView context, com.structurizr.view.ComponentView view) {
         context.getTags().forEach(tag -> {
             dataStructure.getAllWithTag(tag).forEach(tagable -> {
                 if (tagable instanceof C4Person) {
-                    view.add(modelMediator.person(((C4Person) tagable).getPath(), workspaceModel));
+                    view.add(modelMediator.person(((C4Person) tagable).getPath()));
                 } else if (tagable instanceof C4SoftwareSystem) {
-                    view.add(modelMediator.system(((C4SoftwareSystem) tagable).getPath(), workspaceModel));
+                    view.add(modelMediator.softwareSystem(((C4SoftwareSystem) tagable).getPath()));
                 } else if (tagable instanceof C4Container) {
-                    view.add(modelMediator.container(((C4Container) tagable).getPath(), workspaceModel));
+                    view.add(modelMediator.container(((C4Container) tagable).getPath()));
                 } else if (tagable instanceof C4Component) {
-                    view.add(modelMediator.component(((C4Component) tagable).getPath(), workspaceModel));
+                    view.add(modelMediator.component(((C4Component) tagable).getPath()));
                 } else {
                     throw new IllegalStateException("Unsupported type " + tagable.getClass().getTypeName());
                 }
@@ -58,20 +58,20 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
         });
     }
 
-    private void addEntities(Model workspaceModel, com.structurizr.view.ComponentView view, C4ComponentView componentView) {
+    private void addEntities(ModelMediator modelMediator, com.structurizr.view.ComponentView view, C4ComponentView componentView) {
         componentView.getEntities().forEach(entityPath -> {
             switch (entityPath.getType()) {
                 case person:
-                    view.add(modelMediator.person(entityPath, workspaceModel));
+                    view.add(modelMediator.person(entityPath));
                     break;
                 case system:
-                    view.add(modelMediator.system(entityPath, workspaceModel));
+                    view.add(modelMediator.softwareSystem(entityPath));
                     break;
                 case container:
-                    view.add(modelMediator.container(entityPath, workspaceModel));
+                    view.add(modelMediator.container(entityPath));
                     break;
                 case component:
-                    view.add(modelMediator.component(entityPath, workspaceModel));
+                    view.add(modelMediator.component(entityPath));
                     break;
                 default:
                     throw new IllegalStateException("Unsupported type " + entityPath.getType());

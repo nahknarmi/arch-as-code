@@ -14,8 +14,6 @@ import java.util.List;
 
 public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
 
-    private final ModelMediator modelMediator = new ModelMediator();
-
     @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         if (dataStructure.getModel().equals(C4Model.NONE)) {
@@ -30,41 +28,42 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
 
             ContainerView view = viewSet.createContainerView(softwareSystem, c.getName(), c.getDescription());
 
-            addEntities(workspaceModel, view, c);
-            addTaggedEntities(workspaceModel, dataStructure, view, c);
+            ModelMediator modelMediator = new ModelMediator(workspaceModel);
+            addEntities(modelMediator, view, c);
+            addTaggedEntities(modelMediator, dataStructure, view, c);
 
             view.setAutomaticLayout(true);
         });
     }
 
-    private void addEntities(Model workspaceModel, ContainerView view, C4ContainerView c) {
-        c.getEntities().forEach(x -> addElementToContainerView(workspaceModel, view, x));
+    private void addEntities(ModelMediator modelMediator, ContainerView view, C4ContainerView c) {
+        c.getEntities().forEach(x -> addElementToContainerView(modelMediator, view, x));
     }
 
-    private void addTaggedEntities(Model workspaceModel, ArchitectureDataStructure dataStructure, ContainerView context, C4ContainerView c) {
+    private void addTaggedEntities(ModelMediator modelMediator, ArchitectureDataStructure dataStructure, ContainerView context, C4ContainerView c) {
         c.getTags()
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
                         .forEach(tagable -> {
                             if (tagable instanceof C4Person) {
-                                context.add(modelMediator.person(((C4Person) tagable).getPath(), workspaceModel));
+                                context.add(modelMediator.person(((C4Person) tagable).getPath()));
                             } else if (tagable instanceof C4SoftwareSystem) {
-                                context.add(modelMediator.system(((C4SoftwareSystem) tagable).getPath(), workspaceModel));
+                                context.add(modelMediator.softwareSystem(((C4SoftwareSystem) tagable).getPath()));
                             } else if (tagable instanceof C4Container) {
-                                context.add(modelMediator.container(((C4Container) tagable).getPath(), workspaceModel));
+                                context.add(modelMediator.container(((C4Container) tagable).getPath()));
                             }
                         }));
     }
 
-    private void addElementToContainerView(Model workspaceModel, ContainerView view, C4Path path) {
+    private void addElementToContainerView(ModelMediator modelMediator, ContainerView view, C4Path path) {
         switch (path.getType()) {
             case person:
-                view.add(modelMediator.person(path, workspaceModel));
+                view.add(modelMediator.person(path));
                 break;
             case system:
-                view.add(modelMediator.system(path, workspaceModel));
+                view.add(modelMediator.softwareSystem(path));
                 break;
             case container:
-                view.add(modelMediator.container(path, workspaceModel));
+                view.add(modelMediator.container(path));
                 break;
             default:
                 throw new IllegalStateException("Unsupported relationship type " + path.getType());
