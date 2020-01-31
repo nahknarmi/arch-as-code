@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static net.nahknarmi.arch.domain.c4.view.C4View.NONE;
+import static net.nahknarmi.arch.domain.c4.view.C4ViewContainer.NONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelValidatorTest {

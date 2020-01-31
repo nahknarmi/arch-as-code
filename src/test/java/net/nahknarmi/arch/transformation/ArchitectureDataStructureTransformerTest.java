@@ -7,7 +7,7 @@ import com.structurizr.documentation.DecisionStatus;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.ImportantTechnicalDecision;
 import net.nahknarmi.arch.domain.c4.*;
-import net.nahknarmi.arch.domain.c4.view.C4View;
+import net.nahknarmi.arch.domain.c4.view.C4ViewContainer;
 import org.junit.Test;
 
 import java.io.File;
@@ -104,8 +104,8 @@ public class ArchitectureDataStructureTransformerTest {
         );
     }
 
-    private C4View buildView() {
-        return new C4View(
+    private C4ViewContainer buildView() {
+        return new C4ViewContainer(
                 emptyList(),
                 emptyList(),
                 emptyList()

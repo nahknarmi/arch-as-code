@@ -256,7 +256,7 @@ views:
       description: "Internet Banking System - System View"
 #        tags:
 #          - "Internet Banking System SystemView"
-      entities:
+      references:
           - path: "@Personal Banking Customer"
           - path: "c4://Internet Banking System"
           - path: "c4://E-mail System"
@@ -269,7 +269,7 @@ views:
       description: "Internet Banking System - Container View"
 #        tags:
 #          - "Internet Banking System ContainerView"
-      entities:
+      references:
         - path: "@Personal Banking Customer"
         - path: "c4://Internet Banking System/Web Application"
         - path: "c4://Internet Banking System/Single-Page Application"
@@ -285,7 +285,7 @@ views:
       description: "Internet Banking System : API Application - Component View"
 #        tags:
 #          - "Internet Banking System ComponentView"
-      entities:
+      references:
         - path: "c4://Internet Banking System/API Application/Sign In Controller"
         - path: "c4://Internet Banking System/API Application/Reset Password Controller"
         - path: "c4://Internet Banking System/API Application/Accounts Summary Controller"

@@ -9,7 +9,7 @@ import net.nahknarmi.arch.transformation.TransformerFactory;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class ParsedYamlToModelIntegrationTest {
 
     @Test
-    public void should_build_person_developer() throws FileNotFoundException {
+    public void should_build_person_developer() throws IOException {
         String personName = "Developer";
         Workspace workspace = getWorkspace();
 
@@ -48,7 +48,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_person_saasops() throws FileNotFoundException {
+    public void should_build_person_saasops() throws IOException {
         String personName = "SaasOps";
         Workspace workspace = getWorkspace();
 
@@ -70,7 +70,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_person_pca() throws FileNotFoundException {
+    public void should_build_person_pca() throws IOException {
         String personName = "PCA";
         Workspace workspace = getWorkspace();
 
@@ -89,7 +89,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_system_xo_chat() throws FileNotFoundException {
+    public void should_build_system_xo_chat() throws IOException {
         String systemName = "XO Chat";
         Workspace workspace = getWorkspace();
 
@@ -106,7 +106,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_system_salesforce() throws FileNotFoundException {
+    public void should_build_system_salesforce() throws IOException {
         String systemName = "SalesForce";
         Workspace workspace = getWorkspace();
 
@@ -121,7 +121,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_system_trilogy_g_suite() throws FileNotFoundException {
+    public void should_build_system_trilogy_g_suite() throws IOException {
         String systemName = "Trilogy Google G Suite";
         Workspace workspace = getWorkspace();
 
@@ -141,7 +141,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_system_github() throws FileNotFoundException {
+    public void should_build_system_github() throws IOException {
         String systemName = "GitHub";
         Workspace workspace = getWorkspace();
 
@@ -159,7 +159,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_system_devspaces() throws FileNotFoundException {
+    public void should_build_system_devspaces() throws IOException {
         String systemName = "DevSpaces";
         Workspace workspace = getWorkspace();
 
@@ -183,7 +183,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_container_devspaces_backend() throws FileNotFoundException {
+    public void should_build_container_devspaces_backend() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces Backend";
         Workspace workspace = getWorkspace();
@@ -205,7 +205,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_container_devspaces_web_app() throws FileNotFoundException {
+    public void should_build_container_devspaces_web_app() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces Web Application";
         Workspace workspace = getWorkspace();
@@ -227,7 +227,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_container_devspaces_api() throws FileNotFoundException {
+    public void should_build_container_devspaces_api() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         Workspace workspace = getWorkspace();
@@ -255,7 +255,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_component_devspaces_api_sign_in_controller() throws FileNotFoundException {
+    public void should_build_component_devspaces_api_sign_in_controller() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         String componentName = "Sign In Controller";
@@ -279,7 +279,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_component_devspaces_api_security_component() throws FileNotFoundException {
+    public void should_build_component_devspaces_api_security_component() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         String componentName = "Security Component";
@@ -303,7 +303,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_component_devspaces_api_reset_password_controller() throws FileNotFoundException {
+    public void should_build_component_devspaces_api_reset_password_controller() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         String componentName = "Reset Password Controller";
@@ -328,7 +328,7 @@ public class ParsedYamlToModelIntegrationTest {
     }
 
     @Test
-    public void should_build_component_devspaces_api_email_component() throws FileNotFoundException {
+    public void should_build_component_devspaces_api_email_component() throws IOException {
         String systemName = "DevSpaces";
         String containerName = "DevSpaces API";
         String componentName = "E-mail Component";
@@ -349,7 +349,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
     }
 
-    private Workspace getWorkspace() throws FileNotFoundException {
+    private Workspace getWorkspace() throws IOException {
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "data-structure.yml");
 

@@ -6,9 +6,6 @@ import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.transformation.LocationTransformer;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static java.util.Optional.ofNullable;
 import static net.nahknarmi.arch.domain.c4.C4Model.NONE;
 
@@ -50,7 +47,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addContainers(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getContainers().stream().forEach(c -> addContainer(workspaceModel, c));
+        dataStructureModel.getContainers().forEach(c -> addContainer(workspaceModel, c));
     }
 
     private void addContainer(Model model, C4Container c) {
@@ -63,7 +60,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addComponents(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getComponents().stream().forEach(c -> addComponent(workspaceModel, c));
+        dataStructureModel.getComponents().forEach(c -> addComponent(workspaceModel, c));
     }
 
     private void addComponent(Model model, C4Component c) {
@@ -77,8 +74,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private String[] getTags(Tagable t) {
-        List<String> stringList = t.getTags().stream().map(tag -> tag.getTag()).collect(Collectors.toList());
-        return stringList.toArray(new String[stringList.size()]);
+        return t.getTags().stream().map(C4Tag::getTag).toArray(String[]::new);
     }
 
     private void addRelationships(Model workspaceModel, C4Model dataStructureModel) {
@@ -89,10 +85,10 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addPeopleRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getPeople().stream().forEach(p -> {
+        dataStructureModel.getPeople().forEach(p -> {
             Person person = workspaceModel.getPersonWithName(p.getName());
 
-            p.getRelationships().stream()
+            p.getRelationships()
                     .forEach(r -> {
                         String description = r.getDescription();
                         String technology = r.getTechnology();
@@ -135,10 +131,10 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addSystemRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getSystems().stream().forEach(s -> {
+        dataStructureModel.getSystems().forEach(s -> {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
 
-            s.getRelationships().stream()
+            s.getRelationships()
                     .forEach(r -> {
                         String description = r.getDescription();
                         String technology = r.getTechnology();
@@ -184,11 +180,11 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addContainerRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getContainers().stream().forEach(c -> {
+        dataStructureModel.getContainers().forEach(c -> {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(c.getPath().getSystemName());
             Container container = softwareSystem.getContainerWithName(c.getName());
 
-            c.getRelationships().stream()
+            c.getRelationships()
                     .forEach(r -> {
                         String description = r.getDescription();
                         String technology = r.getTechnology();
@@ -234,13 +230,13 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addComponentRelationships(Model workspaceModel, C4Model dataStructureModel) {
-        dataStructureModel.getComponents().stream().forEach(comp -> {
+        dataStructureModel.getComponents().forEach(comp -> {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(comp.getPath().getSystemName());
             String containerName = comp.getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
             Container container = softwareSystem.getContainerWithName(containerName);
             Component component = container.getComponentWithName(comp.getName());
 
-            comp.getRelationships().stream()
+            comp.getRelationships()
                     .forEach(r -> {
                         String description = r.getDescription();
                         String technology = r.getTechnology();

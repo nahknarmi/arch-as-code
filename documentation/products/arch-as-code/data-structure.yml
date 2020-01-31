@@ -184,7 +184,7 @@ views:
       description: "Internal Trilogy users view of DevSpaces system"
       tags:
         - "DevSpaces System View"
-      entities:
+      references:
         - path: "@Developer"
         - path: "@PCA"
         - path: "c4://GitHub"
