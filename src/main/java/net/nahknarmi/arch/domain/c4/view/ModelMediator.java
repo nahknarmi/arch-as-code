@@ -21,21 +21,18 @@ public class ModelMediator {
     }
 
     public Container container(C4Path path) {
-        String systemName = path.getSystemName();
         String containerName = path.getContainerName()
-                .orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
+                .orElseThrow(() -> new IllegalStateException(String.format("No container was specified in path - %s. " +
+                        "Is your container path correct?", path)));
+        SoftwareSystem softwareSystem = softwareSystem(path);
         return softwareSystem.getContainerWithName(containerName);
     }
 
     public Component component(C4Path path) {
-        String systemName = path.getSystemName();
-        String containerName = path.getContainerName()
-                .orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
         String componentName = path.getComponentName()
-                .orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
-        Container container = softwareSystem.getContainerWithName(containerName);
+                .orElseThrow(() -> new IllegalStateException(String.format("No component was specified in path - %s. " +
+                        "Is your component path correct?", path)));
+        Container container = container(path);
         return container.getComponentWithName(componentName);
     }
 
