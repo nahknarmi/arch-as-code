@@ -1,7 +1,9 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.*;
+import com.structurizr.model.Container;
+import com.structurizr.model.Model;
+import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
@@ -42,30 +44,13 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
         context.getTags().forEach(tag -> {
             dataStructure.getAllWithTag(tag).forEach(tagable -> {
                 if (tagable instanceof C4Person) {
-                    String personName = ((C4Person) tagable).getPath().getPersonName();
-                    Person person = workspaceModel.getPersonWithName(personName);
-                    view.add(person);
+                    view.add(modelMediator.person(((C4Person) tagable).getPath(), workspaceModel));
                 } else if (tagable instanceof C4SoftwareSystem) {
-                    String systemName = ((C4SoftwareSystem) tagable).getPath().getSystemName();
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
-                    view.add(softwareSystemWithName);
+                    view.add(modelMediator.system(((C4SoftwareSystem) tagable).getPath(), workspaceModel));
                 } else if (tagable instanceof C4Container) {
-                    String systemName = ((C4SoftwareSystem) tagable).getPath().getSystemName();
-                    String containerName = ((C4Component) tagable).getPath().getContainerName()
-                            .orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
-                    Container containerWithName = softwareSystemWithName.getContainerWithName(containerName);
-                    view.add(containerWithName);
+                    view.add(modelMediator.container(((C4Container) tagable).getPath(), workspaceModel));
                 } else if (tagable instanceof C4Component) {
-                    String systemName = ((C4Component) tagable).getPath().getSystemName();
-                    String containerName = ((C4Component) tagable).getPath().getContainerName()
-                            .orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
-                    String componentName = ((C4Component) tagable).getPath().getComponentName()
-                            .orElseThrow(() -> new IllegalStateException("Workspace ID missing!"));
-                    SoftwareSystem softwareSystemWithName = workspaceModel.getSoftwareSystemWithName(systemName);
-                    Container container = softwareSystemWithName.getContainerWithName(containerName);
-                    Component componentWithName = container.getComponentWithName(componentName);
-                    view.add(componentWithName);
+                    view.add(modelMediator.component(((C4Component) tagable).getPath(), workspaceModel));
                 } else {
                     throw new IllegalStateException("Unsupported type " + tagable.getClass().getTypeName());
                 }

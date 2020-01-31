@@ -1,9 +1,7 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.Container;
 import com.structurizr.model.Model;
-import com.structurizr.model.Person;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ContainerView;
 import com.structurizr.view.ViewSet;
@@ -48,19 +46,11 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
                         .forEach(tagable -> {
                             if (tagable instanceof C4Person) {
-                                String personName = ((C4Person) tagable).getName();
-                                Person person = workspaceModel.getPersonWithName(personName);
-                                context.add(person);
+                                context.add(modelMediator.person(((C4Person) tagable).getPath(), workspaceModel));
                             } else if (tagable instanceof C4SoftwareSystem) {
-                                String systemName = ((C4SoftwareSystem) tagable).getName();
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
-                                context.add(system);
+                                context.add(modelMediator.system(((C4SoftwareSystem) tagable).getPath(), workspaceModel));
                             } else if (tagable instanceof C4Container) {
-                                String systemName = ((C4Container) tagable).getPath().getSystemName();
-                                String containerName = ((C4Container) tagable).getPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
-                                Container container = system.getContainerWithName(containerName);
-                                context.add(container);
+                                context.add(modelMediator.container(((C4Container) tagable).getPath(), workspaceModel));
                             }
                         }));
     }

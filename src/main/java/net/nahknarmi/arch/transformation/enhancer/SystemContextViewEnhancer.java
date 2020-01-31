@@ -2,7 +2,6 @@ package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.Model;
-import com.structurizr.model.Person;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.SystemContextView;
 import com.structurizr.view.ViewSet;
@@ -45,13 +44,9 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
                 .forEach(tag -> dataStructure.getAllWithTag(tag)
                         .forEach(tagable -> {
                             if (tagable instanceof C4Person) {
-                                String personName = ((C4Person) tagable).getName();
-                                Person person = workspaceModel.getPersonWithName(personName);
-                                view.add(person);
+                                view.add(modelMediator.person(((C4Person) tagable).getPath(), workspaceModel));
                             } else if (tagable instanceof C4SoftwareSystem) {
-                                String systemName = ((C4SoftwareSystem) tagable).getName();
-                                SoftwareSystem system = workspaceModel.getSoftwareSystemWithName(systemName);
-                                view.add(system);
+                                view.add(modelMediator.system(((C4SoftwareSystem) tagable).getPath(), workspaceModel));
                             }
                         }));
     }
