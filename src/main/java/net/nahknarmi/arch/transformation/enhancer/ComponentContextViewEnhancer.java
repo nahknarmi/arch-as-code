@@ -16,7 +16,7 @@ public class ComponentContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        List<C4ComponentView> componentViews = dataStructure.getModel().getViews().getComponentViews();
+        List<C4ComponentView> componentViews = dataStructure.getViews().getComponentViews();
         componentViews.forEach(c -> {
             String systemName = c.getContainerPath().getSystemName();
             String containerName = c.getContainerPath().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!"));

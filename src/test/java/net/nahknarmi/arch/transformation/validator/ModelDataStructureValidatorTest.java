@@ -5,13 +5,13 @@ import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Person;
 import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
-import net.nahknarmi.arch.domain.c4.view.C4View;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
+import static net.nahknarmi.arch.domain.c4.view.C4ViewContainer.NONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelValidatorTest {
@@ -46,18 +46,18 @@ public class ModelValidatorTest {
     }
 
     private ArchitectureDataStructure getDataStructure(C4Model model) {
-        return new ArchitectureDataStructure("name", "business unit", "desc", emptyList(), model);
+        return new ArchitectureDataStructure("name", "business unit", "desc", emptyList(), model, NONE);
     }
 
     private C4Model noPersonModel() {
-        return new C4Model(emptyList(), ImmutableList.of(new C4SoftwareSystem()), emptyList(), emptyList(), new C4View());
+        return new C4Model(emptyList(), ImmutableList.of(new C4SoftwareSystem()), emptyList(), emptyList());
     }
 
     private C4Model noSystemModel() {
-        return new C4Model(ImmutableList.of(new C4Person()), emptyList(), emptyList(), emptyList(), new C4View());
+        return new C4Model(ImmutableList.of(new C4Person()), emptyList(), emptyList(), emptyList());
     }
 
     private C4Model noSystemNoPersonModel() {
-        return new C4Model(emptyList(), emptyList(), emptyList(), emptyList(), new C4View());
+        return new C4Model(emptyList(), emptyList(), emptyList(), emptyList());
     }
 }

@@ -177,39 +177,39 @@ model:
       tags:
         - "DevSpaces API Component View"
 
-  views:
-    systemView:
-      systems:
-        - name: "DevSpaces"
-          systemPath: "c4://DevSpaces"
-          description: "Internal Trilogy users view of DevSpaces system"
-          tags:
-            - "DevSpaces System View"
-          entities:
-            - path: "@Developer"
-            - path: "@PCA"
-            - path: "c4://GitHub"
-            - path: "c4://Trilogy Google G Suite"
-            - path: "c4://SalesForce"
+views:
+  systemView:
+    systems:
+      - name: "DevSpaces"
+        systemPath: "c4://DevSpaces"
+        description: "Internal Trilogy users view of DevSpaces system"
+        tags:
+          - "DevSpaces System View"
+        references:
+          - path: "@Developer"
+          - path: "@PCA"
+          - path: "c4://GitHub"
+          - path: "c4://Trilogy Google G Suite"
+          - path: "c4://SalesForce"
 
-        - name: "Trilogy Google G Suite"
-          systemPath: "c4://Trilogy Google G Suite"
-          description: "Trilogy inter-team communication"
-          tags:
-            - "Trilogy System View"
+      - name: "Trilogy Google G Suite"
+        systemPath: "c4://Trilogy Google G Suite"
+        description: "Trilogy inter-team communication"
+        tags:
+          - "Trilogy System View"
 
-    containerView:
-      containers:
-        - name: "DevSpaces API Container"
-          systemPath: "c4://DevSpaces"
-          description: "DevSpaces Container"
-          tags:
-            - "DevSpaces Container View"
+  containerView:
+    containers:
+      - name: "DevSpaces API Container"
+        systemPath: "c4://DevSpaces"
+        description: "DevSpaces Container"
+        tags:
+          - "DevSpaces Container View"
 
-    componentView:
-      components:
-        - name: "DevSpaces API Components"
-          containerPath: "c4://DevSpaces/DevSpaces API"
-          description: "DevSpaces API Components"
-          tags:
-            - "DevSpaces API Component View"
+  componentView:
+    components:
+      - name: "DevSpaces API Components"
+        containerPath: "c4://DevSpaces/DevSpaces API"
+        description: "DevSpaces API Components"
+        tags:
+          - "DevSpaces API Component View"

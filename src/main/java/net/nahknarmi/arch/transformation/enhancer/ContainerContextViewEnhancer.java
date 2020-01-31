@@ -20,7 +20,7 @@ public class ContainerContextViewEnhancer implements WorkspaceEnhancer {
             return;
         }
         ViewSet viewSet = workspace.getViews();
-        List<C4ContainerView> containerViews = dataStructure.getModel().getViews().getContainerViews();
+        List<C4ContainerView> containerViews = dataStructure.getViews().getContainerViews();
         containerViews.forEach(c -> {
             String systemName = c.getSystemPath().getSystemName();
             Model workspaceModel = workspace.getModel();

@@ -11,7 +11,7 @@ import net.nahknarmi.arch.transformation.TransformerFactory;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class ParsedYamlToViewIntegrationTest {
 
     @Test
-    public void system_view_test() throws FileNotFoundException {
+    public void system_view_test() throws IOException {
         Workspace workspace = getWorkspace();
         Collection<SystemContextView> systemContextViews = workspace.getViews().getSystemContextViews();
         SystemContextView view = systemContextViews.stream().findFirst().get();
@@ -40,7 +40,7 @@ public class ParsedYamlToViewIntegrationTest {
     }
 
     @Test
-    public void container_view_test() throws FileNotFoundException {
+    public void container_view_test() throws IOException {
         Workspace workspace = getWorkspace();
         Collection<ContainerView> containerViews = workspace.getViews().getContainerViews();
         ContainerView view = containerViews.stream().findFirst().get();
@@ -60,7 +60,7 @@ public class ParsedYamlToViewIntegrationTest {
     }
 
     @Test
-    public void component_view_test() throws FileNotFoundException {
+    public void component_view_test() throws IOException {
         Workspace workspace = getWorkspace();
         Collection<ComponentView> componentViews = workspace.getViews().getComponentViews();
         ComponentView view = componentViews.stream().findFirst().get();
@@ -82,7 +82,7 @@ public class ParsedYamlToViewIntegrationTest {
                 ));
     }
 
-    private Workspace getWorkspace() throws FileNotFoundException {
+    private Workspace getWorkspace() throws IOException {
         File documentationRoot = new File(getClass().getResource(TEST_VIEW_ROOT_PATH).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "data-structure.yml");
 

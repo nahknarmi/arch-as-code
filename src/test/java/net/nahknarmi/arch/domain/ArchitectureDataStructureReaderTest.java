@@ -6,7 +6,7 @@ import net.nahknarmi.arch.domain.c4.C4Person;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,7 +22,7 @@ public class ArchitectureDataStructureReaderTest {
     private static final String PRODUCT_NAME = "TestSpaces";
 
     @Test
-    public void should_load_architecture_data_structure_from_yaml_file() throws FileNotFoundException {
+    public void should_load_architecture_data_structure_from_yaml_file() throws IOException {
         File productDocumentationRoot = new File(getClass().getResource(TEST_SPACES_MANIFEST_PATH).getPath());
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader().load(productDocumentationRoot);
 

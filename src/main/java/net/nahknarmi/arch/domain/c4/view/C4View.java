@@ -1,9 +1,12 @@
 package net.nahknarmi.arch.domain.c4.view;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.nahknarmi.arch.domain.c4.C4Path;
+import net.nahknarmi.arch.domain.c4.C4Tag;
 
 import java.util.List;
 
@@ -12,11 +15,13 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4View {
+abstract class C4View {
     @NonNull
-    private List<C4SystemView> systemViews = emptyList();
+    private String name;
     @NonNull
-    private List<C4ContainerView> containerViews = emptyList();
+    private String description;
     @NonNull
-    private List<C4ComponentView> componentViews = emptyList();
+    private List<C4Tag> tags = emptyList();
+    @JsonProperty("references")
+    private List<C4Path> entities = emptyList();
 }

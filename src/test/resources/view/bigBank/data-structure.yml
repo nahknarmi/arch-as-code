@@ -249,51 +249,51 @@ model:
           description: "Reads from and writes to"
           technology: "JDBC"
 
-  views:
-    systemViews:
-      - name: "System Context diagram for Internet Banking System"
-        systemPath: "c4://Internet Banking System"
-        description: "Internet Banking System - System View"
+views:
+  systemViews:
+    - name: "System Context diagram for Internet Banking System"
+      systemPath: "c4://Internet Banking System"
+      description: "Internet Banking System - System View"
 #        tags:
 #          - "Internet Banking System SystemView"
-        entities:
-            - path: "@Personal Banking Customer"
-            - path: "c4://Internet Banking System"
-            - path: "c4://E-mail System"
-            - path: "c4://Mainframe Banking System"
+      references:
+          - path: "@Personal Banking Customer"
+          - path: "c4://Internet Banking System"
+          - path: "c4://E-mail System"
+          - path: "c4://Mainframe Banking System"
 
 
-    containerViews:
-      - name: "Container diagram for Internet Banking System"
-        systemPath: "c4://Internet Banking System"
-        description: "Internet Banking System - Container View"
+  containerViews:
+    - name: "Container diagram for Internet Banking System"
+      systemPath: "c4://Internet Banking System"
+      description: "Internet Banking System - Container View"
 #        tags:
 #          - "Internet Banking System ContainerView"
-        entities:
-          - path: "@Personal Banking Customer"
-          - path: "c4://Internet Banking System/Web Application"
-          - path: "c4://Internet Banking System/Single-Page Application"
-          - path: "c4://Internet Banking System/Mobile App"
-          - path: "c4://Internet Banking System/API Application"
-          - path: "c4://Internet Banking System/Database"
-          - path: "c4://E-mail System"
-          - path: "c4://Mainframe Banking System"
+      references:
+        - path: "@Personal Banking Customer"
+        - path: "c4://Internet Banking System/Web Application"
+        - path: "c4://Internet Banking System/Single-Page Application"
+        - path: "c4://Internet Banking System/Mobile App"
+        - path: "c4://Internet Banking System/API Application"
+        - path: "c4://Internet Banking System/Database"
+        - path: "c4://E-mail System"
+        - path: "c4://Mainframe Banking System"
 
-    componentViews:
-      - name: "Component diagram for Internet Banking System - API Application"
-        containerPath: "c4://Internet Banking System/API Application"
-        description: "Internet Banking System : API Application - Component View"
+  componentViews:
+    - name: "Component diagram for Internet Banking System - API Application"
+      containerPath: "c4://Internet Banking System/API Application"
+      description: "Internet Banking System : API Application - Component View"
 #        tags:
 #          - "Internet Banking System ComponentView"
-        entities:
-          - path: "c4://Internet Banking System/API Application/Sign In Controller"
-          - path: "c4://Internet Banking System/API Application/Reset Password Controller"
-          - path: "c4://Internet Banking System/API Application/Accounts Summary Controller"
-          - path: "c4://Internet Banking System/API Application/Security Component"
-          - path: "c4://Internet Banking System/API Application/E-mail Component"
-          - path: "c4://Internet Banking System/API Application/Mainframe Banking System Facade"
-          - path: "c4://Internet Banking System/Single-Page Application"
-          - path: "c4://Internet Banking System/Mobile App"
-          - path: "c4://Internet Banking System/Database"
-          - path: "c4://E-mail System"
-          - path: "c4://Mainframe Banking System"
+      references:
+        - path: "c4://Internet Banking System/API Application/Sign In Controller"
+        - path: "c4://Internet Banking System/API Application/Reset Password Controller"
+        - path: "c4://Internet Banking System/API Application/Accounts Summary Controller"
+        - path: "c4://Internet Banking System/API Application/Security Component"
+        - path: "c4://Internet Banking System/API Application/E-mail Component"
+        - path: "c4://Internet Banking System/API Application/Mainframe Banking System Facade"
+        - path: "c4://Internet Banking System/Single-Page Application"
+        - path: "c4://Internet Banking System/Mobile App"
+        - path: "c4://Internet Banking System/Database"
+        - path: "c4://E-mail System"
+        - path: "c4://Mainframe Banking System"
