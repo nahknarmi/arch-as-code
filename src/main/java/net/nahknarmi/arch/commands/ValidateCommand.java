@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -30,7 +30,7 @@ public class ValidateCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws FileNotFoundException {
+    public Integer call() throws IOException {
         List<String> messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productDocumentationRoot, this.manifestFileName);
 
         if (messageSet.isEmpty()) {

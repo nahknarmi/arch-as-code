@@ -1,9 +1,6 @@
 package net.nahknarmi.arch.domain.c4;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -22,12 +19,16 @@ public class C4Path {
     private static final int SYSTEM_OR_PERSON_GROUP_NUMBER = 2;
     private static final String URI_PREFIX = "c4://";
     private static final String PERSON_PREFIX = "@";
-    @NonNull
-    private String path;
 
     private static final String regex = "(c4:\\/\\/|\\@)([\\w\\s\\-]+)\\/?([\\w\\s\\-]+)?\\/?([\\w\\s\\-]+)?";
-    private final Pattern pattern = Pattern.compile(regex);
+    private static final Pattern pattern = Pattern.compile(regex);
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Matcher matcher;
+
+    @NonNull
+    private String path;
 
     public C4Path(String path) {
         this.path = path;

@@ -5,9 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +26,13 @@ public class C4Model {
     private List<C4Container> containers = emptyList();
     @NonNull
     private List<C4Component> components = emptyList();
+
+    public List<Entity> allEntities() {
+        return Stream.of(getSystems(), getPeople(), getComponents(), getContainers())
+                .flatMap(Collection::stream).collect(toList());
+    }
+
+    public List<C4Relationship> allRelationships() {
+        return allEntities().stream().flatMap(x -> x.getRelationships().stream()).collect(toList());
+    }
 }
