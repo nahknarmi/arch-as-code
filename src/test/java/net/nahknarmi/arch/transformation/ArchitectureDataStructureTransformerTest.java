@@ -112,4 +112,6 @@ public class ArchitectureDataStructureTransformerTest {
         );
     }
 
+    //handle id being absent, name, description.
+
 }
