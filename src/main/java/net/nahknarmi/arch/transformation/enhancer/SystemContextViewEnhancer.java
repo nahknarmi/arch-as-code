@@ -8,12 +8,12 @@ import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
 import net.nahknarmi.arch.domain.c4.C4Path;
-import net.nahknarmi.arch.domain.c4.C4Person;
-import net.nahknarmi.arch.domain.c4.C4SoftwareSystem;
+import net.nahknarmi.arch.domain.c4.Entity;
 import net.nahknarmi.arch.domain.c4.view.C4SystemView;
 import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SystemContextViewEnhancer implements WorkspaceEnhancer {
 
@@ -38,34 +38,33 @@ public class SystemContextViewEnhancer implements WorkspaceEnhancer {
         });
     }
 
+    private void addEntities(List<C4Path> entities, ModelMediator modelMediator, SystemContextView view) {
+        entities.forEach(addEntity(modelMediator, view));
+    }
+
     private void addTaggedEntities(ModelMediator modelMediator, ArchitectureDataStructure dataStructure, SystemContextView view, C4SystemView s) {
         s.getTags()
-                .forEach(tag -> dataStructure.getAllWithTag(tag)
-                        .forEach(tagable -> {
-                            if (tagable instanceof C4Person) {
-                                view.add(modelMediator.person(((C4Person) tagable).getPath()));
-                            } else if (tagable instanceof C4SoftwareSystem) {
-                                view.add(modelMediator.softwareSystem(((C4SoftwareSystem) tagable).getPath()));
-                            }
-                        }));
+                .forEach(tag ->
+                        dataStructure
+                                .getAllWithTag(tag)
+                                .stream()
+                                .map(Entity::getPath)
+                                .forEach(addEntity(modelMediator, view))
+                );
     }
 
-    private void addEntities(List<C4Path> entities, ModelMediator modelMediator, SystemContextView view) {
-        entities.forEach(e -> {
-            addElementToSystemView(modelMediator, view, e);
-        });
-    }
-
-    private void addElementToSystemView(ModelMediator modelMediator, SystemContextView view, C4Path entityPath) {
-        switch (entityPath.getType()) {
-            case person:
-                view.add(modelMediator.person(entityPath));
-                break;
-            case system:
-                view.add(modelMediator.softwareSystem(entityPath));
-                break;
-            default:
-                throw new IllegalStateException("Unsupported relationship type " + entityPath.getType());
-        }
+    private Consumer<C4Path> addEntity(ModelMediator modelMediator, SystemContextView view) {
+        return entityPath -> {
+            switch (entityPath.getType()) {
+                case person:
+                    view.add(modelMediator.person(entityPath));
+                    break;
+                case system:
+                    view.add(modelMediator.softwareSystem(entityPath));
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported relationship type " + entityPath.getType());
+            }
+        };
     }
 }
