@@ -15,7 +15,7 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-abstract class C4View {
+public abstract class C4View {
     @NonNull
     private String name;
     @NonNull
