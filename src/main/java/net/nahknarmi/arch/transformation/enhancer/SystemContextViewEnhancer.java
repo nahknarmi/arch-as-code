@@ -37,7 +37,7 @@ public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextVie
                     view.add(modelMediator.softwareSystem(entityPath));
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported relationship type " + entityPath.getType());
+                    throw new IllegalStateException("Unsupported type " + entityPath.getType());
             }
         };
     }
