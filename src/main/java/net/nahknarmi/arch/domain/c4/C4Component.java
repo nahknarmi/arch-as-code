@@ -2,26 +2,14 @@ package net.nahknarmi.arch.domain.c4;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
-import java.util.List;
-
-import static java.util.Collections.emptyList;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Component implements Entity {
-    @NonNull
-    private C4Path path;
-    @NonNull
-    private String technology;
-    @NonNull
-    private String description;
-
-    private List<C4Tag> tags = emptyList();
-    private List<C4Relationship> relationships = emptyList();
+public class C4Component extends BaseEntity implements Entity {
 
     public String getName() {
         return path.getComponentName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!!"));

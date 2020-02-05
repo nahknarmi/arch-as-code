@@ -1,7 +1,15 @@
 package net.nahknarmi.arch.domain.c4;
 
-public interface Entity extends Relatable, Tagable{
+import java.util.List;
+
+public interface Entity extends Relatable, Tagable {
     String getDescription();
 
     C4Path getPath();
+
+    String getTechnology();
+
+    List<C4Tag> getTags();
+
+    List<C4Relationship> getRelationships();
 }

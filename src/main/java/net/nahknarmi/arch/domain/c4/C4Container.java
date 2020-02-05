@@ -1,29 +1,19 @@
 package net.nahknarmi.arch.domain.c4;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
-import java.util.List;
-
-import static java.util.Collections.emptyList;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4Container implements Entity {
-    @NonNull
-    private C4Path path;
-    @NonNull
-    private String technology;
-    @NonNull
-    private String description;
+public class C4Container extends BaseEntity implements Entity {
 
-    private List<C4Tag> tags = emptyList();
-    private List<C4Relationship> relationships = emptyList();
-
+    @JsonIgnore
     public String getName() {
-        return path.getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
+        return path.getContainerName().orElseThrow(() -> new IllegalStateException("Container name couldn't be extracted from " + path));
     }
 }
