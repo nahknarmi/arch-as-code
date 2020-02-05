@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class C4Container extends BaseEntity implements Entity {
 
     @JsonIgnore

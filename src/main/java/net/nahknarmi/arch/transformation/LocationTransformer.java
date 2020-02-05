@@ -13,6 +13,8 @@ public class LocationTransformer {
                     return Location.Internal;
                 case EXTERNAL:
                     return Location.External;
+                case UNSPECIFIED:
+                    return Location.Unspecified;
                 default:
                     throw new IllegalStateException("Unsupported Location type: " + c4Location);
             }

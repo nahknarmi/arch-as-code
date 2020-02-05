@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class C4Component extends BaseEntity implements Entity {
 
     public String getName() {

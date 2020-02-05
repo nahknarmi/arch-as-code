@@ -12,15 +12,15 @@ import static java.util.Collections.emptyList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-abstract class BaseEntity implements Entity {
+public abstract class BaseEntity implements Entity {
     @NonNull
     protected C4Path path;
     @NonNull
-    private String technology;
+    protected String technology;
     @NonNull
-    private String description;
+    protected String description;
     @NonNull
-    private List<C4Tag> tags = emptyList();
+    protected List<C4Tag> tags = emptyList();
     @NonNull
-    private List<C4Relationship> relationships = emptyList();
+    protected List<C4Relationship> relationships = emptyList();
 }
