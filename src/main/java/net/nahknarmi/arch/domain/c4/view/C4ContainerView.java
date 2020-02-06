@@ -7,7 +7,7 @@ import net.nahknarmi.arch.domain.c4.C4Path;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4ContainerView extends C4View {
+public class C4ContainerView extends C4View implements HasSystemPath {
     @NonNull
     private C4Path systemPath;
 

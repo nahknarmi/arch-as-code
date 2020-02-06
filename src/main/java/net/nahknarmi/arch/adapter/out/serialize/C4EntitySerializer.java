@@ -14,8 +14,7 @@ import static java.util.Optional.ofNullable;
 import static net.nahknarmi.arch.domain.c4.C4Location.UNSPECIFIED;
 
 public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
-
-    private final Log log = LogFactory.getLog(getClass());
+    private static final Log log = LogFactory.getLog(C4EntitySerializer.class);
 
     public C4EntitySerializer(Class<T> t) {
         super(t);
@@ -68,7 +67,7 @@ public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
                 gen.writeStringField("with", with.getPath());
                 gen.writeStringField("action", action.name());
                 gen.writeStringField("description", x.getDescription());
-                ofNullable(x.getTechnology()).ifPresent((t) -> writeOptionalStringField(gen, "technology", t));
+                ofNullable(x.getTechnology()).ifPresent((t) -> wrappedWriteStringField(gen, "technology", t));
                 gen.writeEndObject();
 
             } catch (IOException e) {
@@ -79,7 +78,7 @@ public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
         gen.writeEndArray();
     }
 
-    protected void writeOptionalStringField(JsonGenerator gen, String fieldName, String fieldValue) {
+    public static void wrappedWriteStringField(JsonGenerator gen, String fieldName, String fieldValue) {
         try {
             if (fieldValue != null) {
                 gen.writeStringField(fieldName, fieldValue);
@@ -92,13 +91,13 @@ public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
 
     private void writeTechnology(T value, JsonGenerator gen) {
         if (value instanceof HasTechnology) {
-            ofNullable(((HasTechnology) value).getTechnology()).ifPresent((x) -> writeOptionalStringField(gen, "technology", x));
+            ofNullable(((HasTechnology) value).getTechnology()).ifPresent((x) -> wrappedWriteStringField(gen, "technology", x));
         }
     }
 
     private void writeUrl(T value, JsonGenerator gen) {
         if (value instanceof HasUrl) {
-            ofNullable(((HasUrl) value).getUrl()).ifPresent((x) -> writeOptionalStringField(gen, "url", x));
+            ofNullable(((HasUrl) value).getUrl()).ifPresent((x) -> wrappedWriteStringField(gen, "url", x));
         }
     }
 
