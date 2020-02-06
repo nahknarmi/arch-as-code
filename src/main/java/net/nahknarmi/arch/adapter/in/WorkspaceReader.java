@@ -1,13 +1,15 @@
-package net.nahknarmi.arch.adapter;
+package net.nahknarmi.arch.adapter.in;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
+import com.structurizr.util.WorkspaceUtils;
 import com.structurizr.view.StaticView;
 import com.structurizr.view.ViewSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import net.nahknarmi.arch.domain.c4.view.*;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -15,9 +17,10 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static net.nahknarmi.arch.domain.c4.C4Path.buildPath;
 
-public class WorkspaceConverter {
+public class WorkspaceReader {
 
-    public ArchitectureDataStructure convert(Workspace workspace) {
+    public ArchitectureDataStructure load(File workspaceFile) throws Exception {
+        Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
         ArchitectureDataStructure architectureDataStructure = build(workspace);
         Model model = workspace.getModel();
 

@@ -21,7 +21,5 @@ public class ArchitectureDataStructureReader {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(new FileInputStream(manifest), ArchitectureDataStructure.class);
 
-
-//        return new Yaml().loadAs();
     }
 }

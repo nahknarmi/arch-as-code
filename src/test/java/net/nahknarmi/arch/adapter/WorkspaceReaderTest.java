@@ -1,7 +1,6 @@
 package net.nahknarmi.arch.adapter;
 
-import com.structurizr.Workspace;
-import com.structurizr.util.WorkspaceUtils;
+import net.nahknarmi.arch.adapter.in.WorkspaceReader;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import org.junit.Test;
 
@@ -15,15 +14,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 
-public class WorkspaceConverterTest {
+public class WorkspaceReaderTest {
 
     @Test
     public void convert() throws Exception {
         URL resource = getClass().getResource("/structurizr/Think3-Sococo.c4model.json");
-        Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(new File(resource.getPath()));
-
         ArchitectureDataStructure dataStructure =
-                new WorkspaceConverter().convert(workspace);
+                new WorkspaceReader().load(new File(resource.getPath()));
 
         assertThat(dataStructure.getName(), is(equalTo("Sococo Import")));
         assertThat(dataStructure.getBusinessUnit(), is(equalTo("Think3")));
