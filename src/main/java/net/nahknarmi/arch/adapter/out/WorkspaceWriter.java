@@ -3,7 +3,10 @@ package net.nahknarmi.arch.adapter.out;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import net.nahknarmi.arch.adapter.out.serialize.*;
+import net.nahknarmi.arch.adapter.out.serialize.C4ComponentViewSerializer;
+import net.nahknarmi.arch.adapter.out.serialize.C4ContainerViewSerializer;
+import net.nahknarmi.arch.adapter.out.serialize.C4EntitySerializer;
+import net.nahknarmi.arch.adapter.out.serialize.C4SystemViewSerializer;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Component;
 import net.nahknarmi.arch.domain.c4.C4Container;
@@ -26,10 +29,10 @@ public class WorkspaceWriter {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(new C4PersonSerializer(C4Person.class));
-        module.addSerializer(new C4SoftwareSystemSerializer(C4SoftwareSystem.class));
-        module.addSerializer(new C4ContainerSerializer(C4Container.class));
-        module.addSerializer(new C4ComponentSerializer(C4Component.class));
+        module.addSerializer(new C4EntitySerializer(C4Person.class));
+        module.addSerializer(new C4EntitySerializer(C4SoftwareSystem.class));
+        module.addSerializer(new C4EntitySerializer(C4Container.class));
+        module.addSerializer(new C4EntitySerializer(C4Component.class));
         module.addSerializer(new C4ContainerViewSerializer(C4ContainerView.class));
         module.addSerializer(new C4ComponentViewSerializer(C4ComponentView.class));
         module.addSerializer(new C4SystemViewSerializer(C4SystemView.class));

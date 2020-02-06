@@ -8,7 +8,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
-public class C4Container extends BaseEntity implements Entity {
+public class C4Container extends BaseEntity implements Entity, HasTechnology, HasUrl {
     @NonNull
     protected String technology;
     protected String url;

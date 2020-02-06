@@ -1,24 +1,33 @@
 package net.nahknarmi.arch.adapter.out.serialize;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.NonNull;
-import net.nahknarmi.arch.domain.c4.BaseEntity;
-import net.nahknarmi.arch.domain.c4.C4Action;
-import net.nahknarmi.arch.domain.c4.C4Path;
+import net.nahknarmi.arch.domain.c4.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 
 import static java.util.Optional.ofNullable;
+import static net.nahknarmi.arch.domain.c4.C4Location.UNSPECIFIED;
 
-abstract class C4BaseEntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
+public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    public C4BaseEntitySerializer(Class<T> t) {
+    public C4EntitySerializer(Class<T> t) {
         super(t);
+    }
+
+    @Override
+    public void serialize(T value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        gen.writeStartObject();
+
+        baseEntityWrite(value, gen);
+
+        gen.writeEndObject();
     }
 
     protected void baseEntityWrite(T value, JsonGenerator gen) throws IOException {
@@ -27,6 +36,10 @@ abstract class C4BaseEntitySerializer<T extends BaseEntity> extends StdSerialize
 
         writeTags(value, gen);
         writeRelationships(value, gen);
+
+        writeLocation(value, gen);
+        writeUrl(value, gen);
+        writeTechnology(value, gen);
     }
 
     private void writeTags(T value, JsonGenerator gen) throws IOException {
@@ -74,6 +87,24 @@ abstract class C4BaseEntitySerializer<T extends BaseEntity> extends StdSerialize
         } catch (IOException e) {
             log.error("Failed to write field - " + fieldName, e);
             throw new IllegalStateException("Failed to write field - " + fieldName);
+        }
+    }
+
+    private void writeTechnology(T value, JsonGenerator gen) {
+        if (value instanceof HasTechnology) {
+            ofNullable(((HasTechnology) value).getTechnology()).ifPresent((x) -> writeOptionalStringField(gen, "technology", x));
+        }
+    }
+
+    private void writeUrl(T value, JsonGenerator gen) {
+        if (value instanceof HasUrl) {
+            ofNullable(((HasUrl) value).getUrl()).ifPresent((x) -> writeOptionalStringField(gen, "url", x));
+        }
+    }
+
+    private void writeLocation(T value, JsonGenerator gen) throws IOException {
+        if (value instanceof Locatable) {
+            gen.writeStringField("location", ofNullable(((Locatable) value).getLocation()).orElse(UNSPECIFIED).name());
         }
     }
 }
