@@ -16,9 +16,9 @@ public class C4ContainerViewSerializer extends C4BaseViewSerializer<C4ContainerV
     public void serialize(C4ContainerView value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
 
-        gen.writeStringField("systemPath", value.getSystemPath().getPath());
-
         baseViewSerialize(value, gen);
+
+        gen.writeStringField("systemPath", value.getSystemPath().getPath());
 
         gen.writeEndObject();
     }

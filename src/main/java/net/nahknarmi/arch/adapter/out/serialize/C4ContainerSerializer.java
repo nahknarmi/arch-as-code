@@ -6,6 +6,8 @@ import net.nahknarmi.arch.domain.c4.C4Container;
 
 import java.io.IOException;
 
+import static java.util.Optional.ofNullable;
+
 public class C4ContainerSerializer extends C4BaseEntitySerializer<C4Container> {
     public C4ContainerSerializer(Class<C4Container> t) {
         super(t);
@@ -17,8 +19,8 @@ public class C4ContainerSerializer extends C4BaseEntitySerializer<C4Container> {
 
         baseEntityWrite(value, gen);
 
-        gen.writeStringField("technology", value.getTechnology());
-        gen.writeStringField("url", value.getUrl());
+        ofNullable(value.getTechnology()).ifPresent((x) -> writeOptionalStringField(gen, "technology", x));
+        ofNullable(value.getUrl()).ifPresent((x) -> writeOptionalStringField(gen, "url", x));
 
         gen.writeEndObject();
     }

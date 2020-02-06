@@ -6,6 +6,8 @@ import net.nahknarmi.arch.domain.c4.C4Person;
 
 import java.io.IOException;
 
+import static java.util.Optional.ofNullable;
+
 public class C4PersonSerializer extends C4BaseEntitySerializer<C4Person> {
     public C4PersonSerializer(Class<C4Person> t) {
         super(t);
@@ -17,7 +19,7 @@ public class C4PersonSerializer extends C4BaseEntitySerializer<C4Person> {
 
         baseEntityWrite(value, gen);
 
-        gen.writeStringField("location", value.getLocation().name());
+        ofNullable(value.getLocation()).ifPresent((x) -> writeOptionalStringField(gen, "location", x.name()));
 
         gen.writeEndObject();
     }
