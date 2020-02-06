@@ -10,7 +10,6 @@ import net.nahknarmi.arch.domain.c4.view.C4SystemView;
 import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextView, C4SystemView> {
@@ -25,7 +24,7 @@ public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextVie
         ViewSet viewSet = workspace.getViews();
         String systemName = view.getSystemPath().getSystemName();
         SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithName(systemName);
-        return viewSet.createSystemContextView(softwareSystem, systemName + new Random().nextLong(), view.getDescription());
+        return viewSet.createSystemContextView(softwareSystem, view.getKey(), view.getDescription());
     }
 
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, SystemContextView view) {

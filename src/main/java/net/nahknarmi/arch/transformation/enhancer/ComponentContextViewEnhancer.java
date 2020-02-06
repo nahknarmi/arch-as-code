@@ -14,7 +14,6 @@ import net.nahknarmi.arch.domain.c4.view.C4ComponentView;
 import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView, C4ComponentView> {
@@ -35,7 +34,7 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
         SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
         Container container = softwareSystem.getContainerWithName(containerName);
 
-        return viewSet.createComponentView(container, componentView.getName() + new Random().nextLong(), componentView.getDescription());
+        return viewSet.createComponentView(container, componentView.getKey(), componentView.getDescription());
     }
 
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, ComponentView view) {

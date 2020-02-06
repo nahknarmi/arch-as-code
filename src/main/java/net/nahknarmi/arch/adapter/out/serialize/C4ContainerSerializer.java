@@ -18,6 +18,7 @@ public class C4ContainerSerializer extends C4BaseEntitySerializer<C4Container> {
         baseEntityWrite(value, gen);
 
         gen.writeStringField("technology", value.getTechnology());
+        gen.writeStringField("url", value.getUrl());
 
         gen.writeEndObject();
     }

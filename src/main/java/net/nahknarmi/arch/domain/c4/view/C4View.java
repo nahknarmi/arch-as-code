@@ -9,6 +9,7 @@ import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.C4Tag;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -16,6 +17,7 @@ import static java.util.Collections.emptyList;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class C4View {
+    private String key;
     @NonNull
     private String name;
     @NonNull
@@ -24,4 +26,9 @@ public abstract class C4View {
     private List<C4Tag> tags = emptyList();
     @JsonProperty("references")
     private List<C4Path> entities = emptyList();
+
+
+    public String getKey() {
+        return Optional.ofNullable(key).orElse(getName() + "-" + getDescription()) ;
+    }
 }

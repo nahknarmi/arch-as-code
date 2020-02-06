@@ -11,7 +11,6 @@ import net.nahknarmi.arch.domain.c4.view.C4ContainerView;
 import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView, C4ContainerView> {
@@ -27,7 +26,7 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
         String systemName = c.getSystemPath().getSystemName();
         Model workspaceModel = workspace.getModel();
         SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-        return viewSet.createContainerView(softwareSystem, c.getName() + new Random().nextLong(), c.getDescription());
+        return viewSet.createContainerView(softwareSystem, c.getKey(), c.getDescription());
     }
 
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, ContainerView view) {
