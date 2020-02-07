@@ -1,7 +1,7 @@
 package net.nahknarmi.arch.commands;
 
 import net.nahknarmi.arch.adapter.in.WorkspaceReader;
-import net.nahknarmi.arch.adapter.out.WorkspaceWriter;
+import net.nahknarmi.arch.adapter.out.ArchitectureDataStructureWriter;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import picocli.CommandLine;
 
@@ -25,7 +25,7 @@ public class ImportCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         ArchitectureDataStructure dataStructure = new WorkspaceReader().load(this.exportedWorkspacePath);
-        File exportedFile = new WorkspaceWriter().export(dataStructure);
+        File exportedFile = new ArchitectureDataStructureWriter().export(dataStructure);
         return new PublishCommand(exportedFile.getParentFile(), exportedFile.getName()).call();
     }
 }
