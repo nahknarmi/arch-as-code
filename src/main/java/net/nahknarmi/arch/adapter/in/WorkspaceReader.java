@@ -97,7 +97,7 @@ public class WorkspaceReader {
         c4View.setEntities(elements);
     }
 
-    private List<C4Component> components(Model model) {
+    private Set<C4Component> components(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -122,10 +122,10 @@ public class WorkspaceReader {
 
                         )
 
-                ).collect(toList());
+                ).collect(toSet());
     }
 
-    private List<C4Container> containers(Model model) {
+    private Set<C4Container> containers(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -136,10 +136,10 @@ public class WorkspaceReader {
                     C4Path path = buildPath(c);
                     return C4Container.builder().path(path).technology(c.getTechnology()).description(c.getDescription()).tags(tags).relationships(relationships).url(c.getUrl()).build();
                 }))
-                .collect(toList());
+                .collect(toSet());
     }
 
-    private List<C4SoftwareSystem> softwareSystems(Model model) {
+    private Set<C4SoftwareSystem> softwareSystems(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -150,10 +150,10 @@ public class WorkspaceReader {
 
                     return C4SoftwareSystem.builder().path(path).description(x.getDescription()).location(convertLocation(x.getLocation())).tags(tags).relationships(relationships).build();
                 })
-                .collect(toList());
+                .collect(toSet());
     }
 
-    private List<C4Person> people(Model model) {
+    private Set<C4Person> people(Model model) {
         return model
                 .getPeople()
                 .stream()
@@ -170,7 +170,7 @@ public class WorkspaceReader {
                             .relationships(relationships)
                             .build();
                 })
-                .collect(toList());
+                .collect(toSet());
     }
 
     private ArchitectureDataStructure build(Workspace workspace) {

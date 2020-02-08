@@ -1,5 +1,6 @@
 package net.nahknarmi.arch.validation;
 
+import com.google.common.collect.ImmutableSet;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class ModelReferenceValidatorTest {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
 
         C4Model model = new C4Model();
-        model.setPeople(of(buildPeople(new C4Path("c4://acme/spa"))));
+        model.setPeople(ImmutableSet.of(buildPeople(new C4Path("c4://acme/spa"))));
         dataStructure.setModel(model);
 
         List<String> validationList = new ModelReferenceValidator().validate(dataStructure);
@@ -43,9 +44,9 @@ public class ModelReferenceValidatorTest {
 
         C4Model model = new C4Model();
         C4SoftwareSystem coreBanking = softwareSystem();
-        model.setSystems(of(coreBanking));
+        model.setSystems(ImmutableSet.of(coreBanking));
 
-        model.setPeople(of(buildPeople(coreBanking.getPath())));
+        model.setPeople(ImmutableSet.of(buildPeople(coreBanking.getPath())));
         dataStructure.setModel(model);
 
         List<String> validationList = new ModelReferenceValidator().validate(dataStructure);
@@ -64,7 +65,7 @@ public class ModelReferenceValidatorTest {
         C4Model model = new C4Model();
         C4SoftwareSystem softwareSystem = softwareSystem();
         softwareSystem.setRelationships(of(new C4Relationship(C4Action.DELIVERS, new C4Path("@bob"), "batch processing", "mainframe")));
-        model.setSystems(of(softwareSystem));
+        model.setSystems(ImmutableSet.of(softwareSystem));
         dataStructure.setModel(model);
 
         List<String> validationList = new ModelReferenceValidator().validate(dataStructure);

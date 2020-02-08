@@ -6,7 +6,7 @@ import net.nahknarmi.arch.domain.c4.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.collect.ImmutableList.of;
+import static com.google.common.collect.ImmutableSet.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 

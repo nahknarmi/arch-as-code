@@ -29,4 +29,22 @@ public abstract class BaseEntity implements Entity {
         this.relationships = ofNullable(relationships).orElse(emptyList());
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof C4Container)) return false;
+        if (!super.equals(o)) return false;
+
+        C4Container that = (C4Container) o;
+
+        return getPath() != null ? getPath().equals(that.getPath()) : that.getPath() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (getPath() != null ? getPath().hashCode() : 0);
+        return result;
+    }
 }

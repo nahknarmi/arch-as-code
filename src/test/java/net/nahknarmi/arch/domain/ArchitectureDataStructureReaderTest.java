@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
+import java.util.Set;
 
 import static net.nahknarmi.arch.TestHelper.TEST_SPACES_MANIFEST_PATH;
 import static org.hamcrest.CoreMatchers.*;
@@ -45,10 +45,10 @@ public class ArchitectureDataStructureReaderTest {
         assertThat(model, notNullValue());
 
         //it should have people
-        List<C4Person> people = model.getPeople();
+        Set<C4Person> people = model.getPeople();
 
         assertThat(people.size(), equalTo(4));
-        C4Person person = (C4Person) people.get(0);
+        C4Person person = model.personByName("Developer").orElseThrow(() -> new IllegalStateException("Unable to find person with name."));
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));

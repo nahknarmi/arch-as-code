@@ -1,6 +1,6 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.structurizr.Workspace;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Model;
@@ -20,7 +20,7 @@ public class ModelEnhancerTest {
         C4Model model = mock(C4Model.class);
 
         when(dataStructure.getModel()).thenReturn(model);
-        when(model.getPeople()).thenReturn(ImmutableList.of());
+        when(model.getPeople()).thenReturn(ImmutableSet.of());
 
         new ModelEnhancer().enhance(workspace, dataStructure);
 

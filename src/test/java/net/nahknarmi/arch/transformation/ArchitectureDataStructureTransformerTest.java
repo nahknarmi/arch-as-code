@@ -1,6 +1,7 @@
 package net.nahknarmi.arch.transformation;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.DecisionStatus;
@@ -111,10 +112,10 @@ public class ArchitectureDataStructureTransformerTest {
     private C4Model buildModel() {
 
         return new C4Model(
-                ImmutableList.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptySet()).build()),
-                ImmutableList.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptySet()).relationships(emptyList()).build()),
-                emptyList(),
-                emptyList()
+                ImmutableSet.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptySet()).build()),
+                ImmutableSet.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptySet()).relationships(emptyList()).build()),
+                emptySet(),
+                emptySet()
         );
     }
 

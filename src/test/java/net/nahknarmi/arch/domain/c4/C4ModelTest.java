@@ -1,6 +1,6 @@
 package net.nahknarmi.arch.domain.c4;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class C4ModelTest {
 
         C4Path path = new C4Path("@Foo");
         C4Model.builder()
-                .people(ImmutableList.of(C4Person.builder().description("bar").path(path).build(), C4Person.builder().description("bar").path(path).build()))
+                .people(ImmutableSet.of(C4Person.builder().description("bar").path(path).build(), C4Person.builder().description("bar").path(path).build()))
                 .build();
     }
 }
