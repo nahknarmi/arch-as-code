@@ -25,21 +25,23 @@ public class ArchitectureDataStructureWriter {
     public File export(ArchitectureDataStructure dataStructure) throws IOException {
         File tempFile = File.createTempFile("arch-as-code", ".yml");
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(new C4EntitySerializer(C4Person.class));
-        module.addSerializer(new C4EntitySerializer(C4SoftwareSystem.class));
-        module.addSerializer(new C4EntitySerializer(C4Container.class));
-        module.addSerializer(new C4EntitySerializer(C4Component.class));
-        module.addSerializer(new C4ViewSerializer(C4ContainerView.class));
-        module.addSerializer(new C4ViewSerializer(C4ComponentView.class));
-        module.addSerializer(new C4ViewSerializer(C4SystemView.class));
-        objectMapper.registerModule(module);
-
+        objectMapper.registerModule(buildModule());
         objectMapper.writeValue(tempFile, dataStructure);
         logger.info(String.format("Architecture data structure written to - %s", tempFile.getAbsolutePath()));
 
         return tempFile;
+    }
+
+    private SimpleModule buildModule() {
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(new C4EntitySerializer(C4Person.class))
+                .addSerializer(new C4EntitySerializer(C4SoftwareSystem.class))
+                .addSerializer(new C4EntitySerializer(C4Container.class))
+                .addSerializer(new C4EntitySerializer(C4Component.class))
+                .addSerializer(new C4ViewSerializer(C4ContainerView.class))
+                .addSerializer(new C4ViewSerializer(C4ComponentView.class))
+                .addSerializer(new C4ViewSerializer(C4SystemView.class));
+        return module;
     }
 
 }

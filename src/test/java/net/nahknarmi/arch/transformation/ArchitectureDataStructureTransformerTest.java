@@ -32,9 +32,13 @@ public class ArchitectureDataStructureTransformerTest {
     @Test
     public void should_transform_architecture_yaml_to_structurizr_workspace() {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure(PRODUCT_NAME, "DevFactory", PRODUCT_DESCRIPTION, emptyList(),
-                        buildModel(),
-                        buildView());
+                ArchitectureDataStructure.builder()
+                        .name(PRODUCT_NAME)
+                        .businessUnit("DevFactory")
+                        .description(PRODUCT_DESCRIPTION)
+                        .model(buildModel())
+                        .views(buildView())
+                        .build();
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
@@ -84,10 +88,14 @@ public class ArchitectureDataStructureTransformerTest {
 
     private void checkStatus(DecisionStatus decisionStatus, String statusString) {
         ArchitectureDataStructure dataStructure =
-                new ArchitectureDataStructure(PRODUCT_NAME, "DevFactory", PRODUCT_DESCRIPTION,
-                        ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")),
-                        buildModel(),
-                        buildView());
+                ArchitectureDataStructure.builder()
+                        .name(PRODUCT_NAME)
+                        .businessUnit("DevFactory")
+                        .description(PRODUCT_DESCRIPTION)
+                        .model(buildModel())
+                        .views(buildView())
+                        .decisions(ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")))
+                        .build();
 
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);

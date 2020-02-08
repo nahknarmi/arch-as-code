@@ -2,27 +2,34 @@ package net.nahknarmi.arch.generator;
 
 import com.structurizr.model.Element;
 import com.structurizr.model.IdGenerator;
-import com.structurizr.model.Person;
 import com.structurizr.model.Relationship;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import net.nahknarmi.arch.domain.c4.C4Model;
-import net.nahknarmi.arch.domain.c4.C4Path;
+import net.nahknarmi.arch.domain.c4.C4Type;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@AllArgsConstructor
 public class PathIdGenerator implements IdGenerator {
-    @NonNull
-    C4Model dataStructureModel;
+    private final C4Model dataStructureModel;
+
+    public PathIdGenerator(@NonNull C4Model dataStructureModel) {
+        this.dataStructureModel = dataStructureModel;
+    }
 
     @Override
     public String generateId(Element element) {
-        C4Path path = buildPath(element);
-        String pathString = path.getPath();
-        return pathString;
+        C4Type c4Type = C4Type.from(element);
+
+        return dataStructureModel
+                .allEntities()
+                .stream()
+                .filter(e -> e.getPath().getType().equals(c4Type))
+                .filter(x -> x.getName().equals(element.getName()))
+                .findFirst()
+                .map(p -> p.getPath().getPath())
+                .orElseThrow(() -> new IllegalStateException("Unable to find " + c4Type.name() + " with name '" + element.getName() + "'."));
     }
 
     @Override
@@ -42,29 +49,12 @@ public class PathIdGenerator implements IdGenerator {
         for (byte b : hashInBytes) {
             sb.append(String.format("%02x", b));
         }
-        String id = sb.toString();
 
-        return id;
+        return sb.toString();
     }
 
     @Override
     public void found(String id) {
     }
 
-    private C4Path buildPath(Element element) {
-        if (element.getParent() == null) {
-            String prefix = "c4://";
-
-            if (element instanceof Person) {
-                prefix = "@";
-            }
-
-            String path = prefix + element.getName().replaceAll("/", "-");
-            return new C4Path(path);
-        }
-
-        String c4Path = buildPath(element.getParent()).getPath();
-        String fullPath = c4Path + "/" + element.getName().replaceAll("/", "-");
-        return new C4Path(fullPath);
-    }
 }

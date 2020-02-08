@@ -5,27 +5,25 @@ import lombok.*;
 
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class C4Component extends BaseEntity implements Entity, HasTechnology, HasUrl {
     @NonNull
     protected String technology;
     protected String url;
 
-    C4Component() {
-        super();
-    }
-
-    @Builder
-    C4Component(@NonNull C4Path path, @NonNull String technology, @NonNull String description, @NonNull List<C4Tag> tags, @NonNull List<C4Relationship> relationships, String url) {
-        super(path, description, tags, relationships);
+    @Builder(toBuilder = true)
+    public C4Component(String name, @NonNull C4Path path, @NonNull String description, List<C4Tag> tags, List<C4Relationship> relationships, String technology, String url) {
+        super(path, description, tags, relationships, name);
         this.technology = technology;
         this.url = url;
     }
 
     @JsonIgnore
     public String getName() {
-        return path.getComponentName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!!"));
+        return ofNullable(this.name).orElse(path.getComponentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
     }
 }
