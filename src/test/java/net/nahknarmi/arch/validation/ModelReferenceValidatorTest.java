@@ -8,6 +8,7 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -53,7 +54,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4Person buildPeople(C4Path relationshipWith) {
-        return C4Person.builder().path(new C4Path("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptyList()).build();
+        return C4Person.builder().path(new C4Path("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptySet()).build();
     }
 
     @Test
@@ -72,7 +73,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4SoftwareSystem softwareSystem() {
-        return C4SoftwareSystem.builder().path(new C4Path("c4://OBP")).description("core banking").tags(emptyList()).relationships(emptyList()).build();
+        return C4SoftwareSystem.builder().path(new C4Path("c4://OBP")).description("core banking").tags(emptySet()).relationships(emptyList()).build();
     }
 
 }

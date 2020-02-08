@@ -78,7 +78,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         component.addTags(getTags(c));
     }
 
-    private String[] getTags(Tagable t) {
+    private String[] getTags(HasTag t) {
         return t.getTags().stream().map(C4Tag::getTag).toArray(String[]::new);
     }
 

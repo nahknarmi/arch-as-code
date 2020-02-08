@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static net.nahknarmi.arch.TestHelper.TEST_PRODUCT_DOCUMENTATION_ROOT_PATH;
 import static net.nahknarmi.arch.domain.c4.C4Location.INTERNAL;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -110,8 +111,8 @@ public class ArchitectureDataStructureTransformerTest {
     private C4Model buildModel() {
 
         return new C4Model(
-                ImmutableList.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptyList()).build()),
-                ImmutableList.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptyList()).relationships(emptyList()).build()),
+                ImmutableList.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptySet()).build()),
+                ImmutableList.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptySet()).relationships(emptyList()).build()),
                 emptyList(),
                 emptyList()
         );

@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
+@EqualsAndHashCode
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

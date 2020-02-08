@@ -39,45 +39,13 @@ public class C4Model {
         return allEntities().stream().flatMap(x -> x.getRelationships().stream()).collect(toList());
     }
 
-    public Optional<C4Container> containerByName(String name) {
-        return getContainers().stream().filter(x -> x.name.equals(name)).findFirst();
-    }
-
-    public Entity getByPath(String path) {
+    public Optional<Entity> getByPath(String path) {
         C4Path c4Path = new C4Path(path);
-        return getByPath(c4Path);
+
+        return allEntities()
+                .stream()
+                .filter(x -> x.getPath().equals(c4Path))
+                .findFirst();
+
     }
-
-    public Entity getByPath(C4Path path) {
-        if (path.getType().equals(C4Type.person)) {
-            return people.stream()
-                    .filter(p -> p.getName().equals(path.getPersonName()))
-                    .findFirst()
-                    .get();
-        }
-        if (path.getType().equals(C4Type.system)) {
-            return systems.stream()
-                    .filter(s -> s.getName().equals(path.getSystemName()))
-                    .findFirst()
-                    .get();
-        }
-        if (path.getType().equals(C4Type.container)) {
-            return containers.stream()
-                    .filter(cont -> cont.getPath().getSystemName().equals(path.getSystemName()) &&
-                            cont.getPath().getContainerName().equals(path.getContainerName()))
-                    .findFirst()
-                    .get();
-        }
-        if (path.getType().equals(C4Type.component)) {
-            return components.stream()
-                    .filter(cont -> cont.getPath().getSystemName().equals(path.getSystemName()) &&
-                            cont.getPath().getContainerName().equals(path.getContainerName()) &&
-                            cont.getPath().getComponentName().equals(path.getComponentName()))
-                    .findFirst()
-                    .get();
-        }
-
-        return null;
-    }
-
 }
