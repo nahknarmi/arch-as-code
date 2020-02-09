@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.google.common.collect.ImmutableSet.of;
+import static net.nahknarmi.arch.domain.c4.C4Path.path;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -90,7 +91,7 @@ public class PathIdGeneratorTest {
                         of(
                                 C4SoftwareSystem.builder()
                                         .name(SYSTEM_NAME)
-                                        .path(C4Path.from(SYSTEM_PATH))
+                                        .path(path(SYSTEM_PATH))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -100,7 +101,7 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Person.builder()
                                         .name(PERSON_NAME)
-                                        .path(C4Path.from(PERSON_PATH))
+                                        .path(path(PERSON_PATH))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -110,13 +111,13 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Container.builder()
                                         .name(CONTAINER_NAME)
-                                        .path(C4Path.from(CONTAINER_PATH))
+                                        .path(path(CONTAINER_PATH))
                                         .description("irrelevant")
                                         .build(),
 
                                 C4Container.builder()
                                         .name(CONTAINER_NAME2)
-                                        .path(C4Path.from(CONTAINER_PATH2))
+                                        .path(path(CONTAINER_PATH2))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -126,13 +127,13 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Component.builder()
                                         .name(COMPONENT_NAME)
-                                        .path(C4Path.from(COMPONENT_PATH))
+                                        .path(path(COMPONENT_PATH))
                                         .description("irrelevant")
                                         .build(),
 
                                 C4Component.builder()
                                         .name(COMPONENT_NAME)
-                                        .path(C4Path.from(COMPONENT_PATH2))
+                                        .path(path(COMPONENT_PATH2))
                                         .description("irrelevant")
                                         .build()
                         )

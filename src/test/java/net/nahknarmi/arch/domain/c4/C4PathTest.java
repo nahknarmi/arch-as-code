@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static net.nahknarmi.arch.domain.c4.C4Path.path;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -72,7 +73,7 @@ public class C4PathTest {
 
     @Test
     public void person() {
-        C4Path path = C4Path.from("@PCA");
+        C4Path path = path("@PCA");
 
         assertThat(path.getName(), equalTo("PCA"));
         assertThat(path.getType(), equalTo(C4Type.person));
@@ -80,7 +81,7 @@ public class C4PathTest {
 
     @Test
     public void system() {
-        C4Path path = C4Path.from("c4://DevSpaces");
+        C4Path path = path("c4://DevSpaces");
 
         assertThat(path.getName(), equalTo("DevSpaces"));
         assertThat(path.getSystemName(), equalTo("DevSpaces"));
@@ -89,7 +90,7 @@ public class C4PathTest {
 
     @Test
     public void container() {
-        C4Path path = C4Path.from("c4://DevSpaces/DevSpaces API");
+        C4Path path = path("c4://DevSpaces/DevSpaces API");
 
         assertThat(path.getName(), equalTo("DevSpaces API"));
         assertThat(path.getSystemName(), equalTo("DevSpaces"));
@@ -100,7 +101,7 @@ public class C4PathTest {
 
     @Test
     public void component() {
-        C4Path path = C4Path.from("c4://DevSpaces/DevSpaces API/Sign-In Component");
+        C4Path path = path("c4://DevSpaces/DevSpaces API/Sign-In Component");
 
         assertThat(path.getName(), equalTo("Sign-In Component"));
         assertThat(path.getSystemName(), equalTo("DevSpaces"));
@@ -112,70 +113,70 @@ public class C4PathTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void missing_person() {
-        C4Path.from("@");
+        path("@");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void missing_system() {
-        C4Path.from("c4://");
+        path("c4://");
     }
 
 
     @Test(expected = IllegalStateException.class)
     public void accessing_system_path_on_non_system_throws_exception() {
-        C4Path path = C4Path.from("@person");
+        C4Path path = path("@person");
         path.systemPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessing_person_path_on_non_person_throws_exception() {
-        C4Path path = C4Path.from("c4://sys1");
+        C4Path path = path("c4://sys1");
         path.personPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessing_component_path_on_path_with_no_component_throws_exception() {
-        C4Path path = C4Path.from("c4://sys1/container1");
+        C4Path path = path("c4://sys1/container1");
         path.componentPath();
     }
 
     @Test
     public void system_path() {
-        C4Path path = C4Path.from("c4://sys_1");
+        C4Path path = path("c4://sys_1");
         assertThat(path.systemPath(), equalTo(path));
     }
 
     @Test
     public void person_path() {
-        C4Path path = C4Path.from("@person");
+        C4Path path = path("@person");
         assertThat(path.personPath(), equalTo(path));
     }
 
     @Test
     public void should_be_able_to_extract_sub_paths_in_container_path() {
-        C4Path path = C4Path.from("c4://sys1/container1");
-        assertThat(path.systemPath(), equalTo(C4Path.from("c4://sys1")));
+        C4Path path = path("c4://sys1/container1");
+        assertThat(path.systemPath(), equalTo(path("c4://sys1")));
         assertThat(path.containerPath(), equalTo(path));
     }
 
     @Test
     public void should_be_able_to_extract_sub_paths_in_component_path() {
-        C4Path path = C4Path.from("c4://sys1/container1/comp1");
-        assertThat(path.systemPath(), equalTo(C4Path.from("c4://sys1")));
-        assertThat(path.containerPath(), equalTo(C4Path.from("c4://sys1/container1")));
+        C4Path path = path("c4://sys1/container1/comp1");
+        assertThat(path.systemPath(), equalTo(path("c4://sys1")));
+        assertThat(path.containerPath(), equalTo(path("c4://sys1/container1")));
         assertThat(path.componentPath(), equalTo(path));
     }
 
     @Test
     public void should_build_path_from_valid_paths() {
-        assertThat(C4Path.from("@Person"), notNullValue());
-        assertThat(C4Path.from("c4://system1"), notNullValue());
-        assertThat(C4Path.from("c4://system1/container1"), notNullValue());
-        assertThat(C4Path.from("c4://system1/container1/component1"), notNullValue());
+        assertThat(path("@Person"), notNullValue());
+        assertThat(path("c4://system1"), notNullValue());
+        assertThat(path("c4://system1/container1"), notNullValue());
+        assertThat(path("c4://system1/container1/component1"), notNullValue());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_fail_to_build_path_if_prefix_is_invalid() {
-        assertThat(C4Path.from("{@Person"), notNullValue());
+        assertThat(path("{@Person"), notNullValue());
     }
 }

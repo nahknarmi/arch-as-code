@@ -11,7 +11,7 @@ public class C4ModelTest {
     @Ignore
     public void should_not_be_able_to_add_same_person_twice() {
 
-        C4Path path = C4Path.from("@Foo");
+        C4Path path = C4Path.path("@Foo");
         C4Model.builder()
                 .people(ImmutableSet.of(C4Person.builder().description("bar").path(path).build(), C4Person.builder().description("bar").path(path).build()))
                 .build();

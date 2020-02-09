@@ -10,6 +10,7 @@ import java.util.List;
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static net.nahknarmi.arch.domain.c4.C4Path.path;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,7 +31,7 @@ public class ModelReferenceValidatorTest {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
 
         C4Model model = new C4Model();
-        model.setPeople(ImmutableSet.of(buildPeople(C4Path.from("c4://acme/spa"))));
+        model.setPeople(ImmutableSet.of(buildPeople(path("c4://acme/spa"))));
         dataStructure.setModel(model);
 
         List<String> validationList = new ModelReferenceValidator().validate(dataStructure);
@@ -55,7 +56,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4Person buildPeople(C4Path relationshipWith) {
-        return C4Person.builder().path(C4Path.from("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptySet()).build();
+        return C4Person.builder().path(path("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptySet()).build();
     }
 
     @Test
@@ -64,7 +65,7 @@ public class ModelReferenceValidatorTest {
 
         C4Model model = new C4Model();
         C4SoftwareSystem softwareSystem = softwareSystem();
-        softwareSystem.setRelationships(of(new C4Relationship(C4Action.DELIVERS, C4Path.from("@bob"), "batch processing", "mainframe")));
+        softwareSystem.setRelationships(of(new C4Relationship(C4Action.DELIVERS, path("@bob"), "batch processing", "mainframe")));
         model.setSystems(ImmutableSet.of(softwareSystem));
         dataStructure.setModel(model);
 
@@ -74,7 +75,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4SoftwareSystem softwareSystem() {
-        return C4SoftwareSystem.builder().path(C4Path.from("c4://OBP")).description("core banking").tags(emptySet()).relationships(emptyList()).build();
+        return C4SoftwareSystem.builder().path(path("c4://OBP")).description("core banking").tags(emptySet()).relationships(emptyList()).build();
     }
 
 }
