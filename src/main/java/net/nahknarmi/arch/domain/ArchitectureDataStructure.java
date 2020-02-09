@@ -8,10 +8,8 @@ import net.nahknarmi.arch.domain.c4.C4Tag;
 import net.nahknarmi.arch.domain.c4.Entity;
 import net.nahknarmi.arch.domain.c4.view.C4ViewContainer;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -34,10 +32,7 @@ public class ArchitectureDataStructure {
     @Builder.Default
     private C4ViewContainer views = C4ViewContainer.NONE;
 
-    public List<Entity> getAllWithTag(C4Tag tag) {
-        return Stream.of(model.getPeople(), model.getSystems(), model.getContainers(), model.getComponents())
-                .flatMap(Collection::stream)
-                .filter(x -> x.getTags().contains(tag))
-                .collect(Collectors.toList());
+    public Set<Entity> getAllWithTag(C4Tag tag) {
+        return model.findWithTag(tag);
     }
 }

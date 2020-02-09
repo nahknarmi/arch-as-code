@@ -48,7 +48,7 @@ public class ArchitectureDataStructureReaderTest {
         Set<C4Person> people = model.getPeople();
 
         assertThat(people.size(), equalTo(4));
-        C4Person person = model.personByName("Developer").orElseThrow(() -> new IllegalStateException("Unable to find person with name."));
+        C4Person person = model.findPersonByName("Developer");
         assertThat(person, notNullValue());
         assertThat(person.getName(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));

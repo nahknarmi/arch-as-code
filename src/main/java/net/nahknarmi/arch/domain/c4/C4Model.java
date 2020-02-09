@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -42,16 +41,29 @@ public class C4Model {
         return allEntities().stream().flatMap(x -> x.getRelationships().stream()).collect(toList());
     }
 
-    public Optional<C4Person> personByName(String name) {
+    public C4Person findPersonByName(String name) {
         checkNotNull(name);
-        return getPeople().stream().filter(x -> x.getName().equals(name)).findFirst();
+        return getPeople()
+                .stream()
+                .filter(x -> x.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unable to find person with name - " + name));
     }
 
     public Entity findByPath(C4Path path) {
+        checkNotNull(path);
         return allEntities()
                 .stream()
                 .filter(x -> x.getPath().equals(path))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find entity with path " + path));
+    }
+
+    public Set<Entity> findWithTag(C4Tag tag) {
+        checkNotNull(tag);
+        return allEntities()
+                .stream()
+                .filter(x -> x.getTags().contains(tag))
+                .collect(toSet());
     }
 }
