@@ -115,6 +115,7 @@ public class WorkspaceReader {
                                             .technology(co.toString())
                                             .description(co.getDescription())
                                             .tags(tags)
+                                            .name(co.getName())
                                             .relationships(relationships)
                                             .url(co.getUrl())
                                             .build();
@@ -134,7 +135,16 @@ public class WorkspaceReader {
                     Set<C4Tag> tags = convertTags(c.getTags());
 
                     C4Path path = buildPath(c);
-                    return C4Container.builder().path(path).technology(c.getTechnology()).description(c.getDescription()).tags(tags).relationships(relationships).url(c.getUrl()).build();
+                    return C4Container
+                            .builder()
+                            .path(path)
+                            .technology(c.getTechnology())
+                            .description(c.getDescription())
+                            .tags(tags)
+                            .name(c.getName())
+                            .relationships(relationships)
+                            .url(c.getUrl())
+                            .build();
                 }))
                 .collect(toSet());
     }
@@ -148,7 +158,15 @@ public class WorkspaceReader {
                     Set<C4Tag> tags = convertTags(x.getTags());
                     C4Path path = buildPath(x);
 
-                    return C4SoftwareSystem.builder().path(path).description(x.getDescription()).location(convertLocation(x.getLocation())).tags(tags).relationships(relationships).build();
+                    return C4SoftwareSystem
+                            .builder()
+                            .path(path)
+                            .description(x.getDescription())
+                            .location(convertLocation(x.getLocation()))
+                            .tags(tags)
+                            .name(x.getName())
+                            .relationships(relationships)
+                            .build();
                 })
                 .collect(toSet());
     }
@@ -167,6 +185,7 @@ public class WorkspaceReader {
                             .description(x.getDescription())
                             .location(convertLocation(x.getLocation()))
                             .tags(tags)
+                            .name(x.getName())
                             .relationships(relationships)
                             .build();
                 })
