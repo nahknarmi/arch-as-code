@@ -47,13 +47,14 @@ public class C4Model {
         return getPeople().stream().filter(x -> x.getName().equals(name)).findFirst();
     }
 
-    public Optional<Entity> getByPath(String path) {
-        C4Path c4Path = new C4Path(path);
+    public Optional<Entity> findByPath(C4Path path) {
+        return findByPath(path.getPath());
+    }
 
+    public Optional<Entity> findByPath(String path) {
         return allEntities()
                 .stream()
-                .filter(x -> x.getPath().equals(c4Path))
+                .filter(x -> x.getPath().equals(new C4Path(path)))
                 .findFirst();
-
     }
 }

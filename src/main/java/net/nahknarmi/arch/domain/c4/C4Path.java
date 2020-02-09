@@ -122,6 +122,19 @@ public class C4Path {
     }
 
     @JsonIgnore
+    public Optional<C4Path> getContainerPath() {
+        if (getContainerName().isPresent()) {
+            return Optional.of(new C4Path("c4://" + getSystemName() + "/" + getContainerName().get()));
+        }
+        return empty();
+    }
+
+    @JsonIgnore
+    public C4Path getSystemPath() {
+        return new C4Path("c4://" + getSystemName());
+    }
+
+    @JsonIgnore
     public Optional<String> getComponentName() {
         if (this.path.startsWith(ENTITY_PREFIX)) {
             return ofNullable(matcher().group(COMPONENT_GROUP_NUMBER));

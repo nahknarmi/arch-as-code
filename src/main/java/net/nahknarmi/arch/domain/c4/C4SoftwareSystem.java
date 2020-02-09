@@ -14,7 +14,7 @@ import static net.nahknarmi.arch.domain.c4.C4Location.UNSPECIFIED;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class C4SoftwareSystem extends BaseEntity implements Entity, Locatable {
+public class C4SoftwareSystem extends BaseEntity implements Entity, HasLocation {
     private C4Location location;
 
     @Builder

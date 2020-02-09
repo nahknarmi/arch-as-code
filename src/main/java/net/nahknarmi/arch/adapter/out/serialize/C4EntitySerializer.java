@@ -102,8 +102,8 @@ public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
     }
 
     private void writeLocation(T value, JsonGenerator gen) throws IOException {
-        if (value instanceof Locatable) {
-            gen.writeStringField("location", ofNullable(((Locatable) value).getLocation()).orElse(UNSPECIFIED).name());
+        if (value instanceof HasLocation) {
+            gen.writeStringField("location", ofNullable(((HasLocation) value).getLocation()).orElse(UNSPECIFIED).name());
         }
     }
 }

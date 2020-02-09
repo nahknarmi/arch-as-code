@@ -23,7 +23,7 @@ public class IdGenerationTest {
 
         workspace.getModel().getPeople().forEach(p -> {
             String personId = p.getId();
-            Entity entity = dataStructure.getModel().getByPath(personId)
+            Entity entity = dataStructure.getModel().findByPath(personId)
                     .orElseThrow(() -> new IllegalStateException("Element with id " + personId + " not found."));
             String pathString = entity.getPath().getPath();
 
@@ -38,7 +38,7 @@ public class IdGenerationTest {
 
         workspace.getModel().getSoftwareSystems().forEach(s -> {
             String systemId = s.getId();
-            Entity entity = dataStructure.getModel().getByPath(systemId)
+            Entity entity = dataStructure.getModel().findByPath(systemId)
                     .orElseThrow(() -> new IllegalStateException("Element with id " + systemId + " not found."));
             String pathString = entity.getPath().getPath();
 
@@ -54,7 +54,7 @@ public class IdGenerationTest {
         workspace.getModel().getSoftwareSystems().forEach(system -> {
             system.getContainers().forEach(cont -> {
                 String containerId = cont.getId();
-                Entity entity = dataStructure.getModel().getByPath(containerId)
+                Entity entity = dataStructure.getModel().findByPath(containerId)
                         .orElseThrow(() -> new IllegalStateException("Element with id " + containerId + " not found."));
                 String pathString = entity.getPath().getPath();
 
@@ -72,7 +72,7 @@ public class IdGenerationTest {
             system.getContainers().forEach(container -> {
                 container.getComponents().forEach(comp -> {
                     String componentId = comp.getId();
-                    Entity entity = dataStructure.getModel().getByPath(componentId)
+                    Entity entity = dataStructure.getModel().findByPath(componentId)
                             .orElseThrow(() -> new IllegalStateException("Element with id " + componentId + " not found."));
                     String pathString = entity.getPath().getPath();
 

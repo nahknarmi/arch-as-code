@@ -1,5 +1,5 @@
 package net.nahknarmi.arch.domain.c4;
 
-public interface Locatable {
+public interface HasLocation {
     C4Location getLocation();
 }

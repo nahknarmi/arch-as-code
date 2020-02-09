@@ -11,7 +11,7 @@ import static java.util.Optional.ofNullable;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class C4Person extends BaseEntity implements Entity, Locatable {
+public class C4Person extends BaseEntity implements Entity, HasLocation {
     private C4Location location;
 
     @Builder

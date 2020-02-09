@@ -17,9 +17,12 @@ public class PathIdGeneratorTest {
     private final String PERSON_PATH = "@jsmith";
     private final String PERSON_NAME = "John Smith";
     private final String CONTAINER_NAME = "WebLogic";
-    private final String CONTAINER_PATH = SYSTEM_PATH + "/container_2";
+    private final String CONTAINER_NAME2 = "WebSphere";
+    private final String CONTAINER_PATH = SYSTEM_PATH + "/container_1";
+    private final String CONTAINER_PATH2 = SYSTEM_PATH + "/container_2";
     private final String COMPONENT_NAME = "collections";
-    private final String COMPONENT_PATH = CONTAINER_PATH + "/collections_3";
+    private final String COMPONENT_PATH = CONTAINER_PATH + "/collections_1";
+    private final String COMPONENT_PATH2 = CONTAINER_PATH2 + "/collections_2";
 
     private IdGenerator idGenerator;
 
@@ -62,11 +65,23 @@ public class PathIdGeneratorTest {
         Model model = buildModel(idGenerator);
 
         Component component =
-                model.addSoftwareSystem(SYSTEM_NAME, "desc")
-                        .addContainer(CONTAINER_NAME, "desc", "J2EE")
-                        .addComponent(COMPONENT_NAME, "desc");
+                model.addSoftwareSystem(SYSTEM_NAME, SYSTEM_PATH)
+                        .addContainer(CONTAINER_NAME, CONTAINER_PATH, "J2EE")
+                        .addComponent(COMPONENT_NAME, COMPONENT_PATH);
 
         assertThat(component.getId(), equalTo(COMPONENT_PATH));
+    }
+
+    @Test
+    public void should_handle_component_with_same_name() {
+        Model model = buildModel(idGenerator);
+
+        Component component =
+                model.addSoftwareSystem(SYSTEM_NAME, SYSTEM_PATH)
+                        .addContainer(CONTAINER_NAME2, CONTAINER_PATH2, "J2EE")
+                        .addComponent(COMPONENT_NAME, COMPONENT_PATH2);
+
+        assertThat(component.getId(), equalTo(COMPONENT_PATH2));
     }
 
     private C4Model buildC4Model() {
@@ -97,7 +112,14 @@ public class PathIdGeneratorTest {
                                         .name(CONTAINER_NAME)
                                         .path(new C4Path(CONTAINER_PATH))
                                         .description("irrelevant")
-                                        .build())
+                                        .build(),
+
+                                C4Container.builder()
+                                        .name(CONTAINER_NAME2)
+                                        .path(new C4Path(CONTAINER_PATH2))
+                                        .description("irrelevant")
+                                        .build()
+                        )
                 )
 
                 .components(
@@ -106,8 +128,13 @@ public class PathIdGeneratorTest {
                                         .name(COMPONENT_NAME)
                                         .path(new C4Path(COMPONENT_PATH))
                                         .description("irrelevant")
-                                        .build()
+                                        .build(),
 
+                                C4Component.builder()
+                                        .name(COMPONENT_NAME)
+                                        .path(new C4Path(COMPONENT_PATH2))
+                                        .description("irrelevant")
+                                        .build()
                         )
                 )
                 .build();
