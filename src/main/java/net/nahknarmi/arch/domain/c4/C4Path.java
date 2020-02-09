@@ -122,11 +122,11 @@ public class C4Path {
     }
 
     @JsonIgnore
-    public Optional<C4Path> getContainerPath() {
-        if (getContainerName().isPresent()) {
-            return Optional.of(new C4Path("c4://" + getSystemName() + "/" + getContainerName().get()));
+    public C4Path getContainerPath() {
+        if (!getContainerName().isPresent()) {
+            throw new IllegalStateException("Container path does not exist on this path - " + this.getPath());
         }
-        return empty();
+        return new C4Path("c4://" + getSystemName() + "/" + getContainerName().get());
     }
 
     @JsonIgnore

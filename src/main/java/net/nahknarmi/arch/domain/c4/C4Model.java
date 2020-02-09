@@ -47,8 +47,8 @@ public class C4Model {
         return getPeople().stream().filter(x -> x.getName().equals(name)).findFirst();
     }
 
-    public Optional<Entity> findByPath(C4Path path) {
-        return findByPath(path.getPath());
+    public Entity findByPath(C4Path path) {
+        return findByPath(path.getPath()).orElseThrow(() -> new IllegalStateException("Could not find entity with path " + path));
     }
 
     public Optional<Entity> findByPath(String path) {
