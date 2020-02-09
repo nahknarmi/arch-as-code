@@ -67,7 +67,7 @@ public class C4PathTest {
 
     private void buildPath(Element element, C4Type expectedType, String expectedPath) {
         C4Path path = C4Path.buildPath(element);
-        assertThat(path.getType(), equalTo(expectedType));
+        assertThat(path.type(), equalTo(expectedType));
         assertThat(path.getPath(), equalTo(expectedPath));
     }
 
@@ -75,40 +75,40 @@ public class C4PathTest {
     public void person() {
         C4Path path = path("@PCA");
 
-        assertThat(path.getName(), equalTo("PCA"));
-        assertThat(path.getType(), equalTo(C4Type.person));
+        assertThat(path.name(), equalTo("PCA"));
+        assertThat(path.type(), equalTo(C4Type.person));
     }
 
     @Test
     public void system() {
         C4Path path = path("c4://DevSpaces");
 
-        assertThat(path.getName(), equalTo("DevSpaces"));
-        assertThat(path.getSystemName(), equalTo("DevSpaces"));
-        assertThat(path.getType(), equalTo(C4Type.system));
+        assertThat(path.name(), equalTo("DevSpaces"));
+        assertThat(path.systemName(), equalTo("DevSpaces"));
+        assertThat(path.type(), equalTo(C4Type.system));
     }
 
     @Test
     public void container() {
         C4Path path = path("c4://DevSpaces/DevSpaces API");
 
-        assertThat(path.getName(), equalTo("DevSpaces API"));
-        assertThat(path.getSystemName(), equalTo("DevSpaces"));
-        assertThat(path.getContainerName(), equalTo(Optional.of("DevSpaces API")));
+        assertThat(path.name(), equalTo("DevSpaces API"));
+        assertThat(path.systemName(), equalTo("DevSpaces"));
+        assertThat(path.containerName(), equalTo(Optional.of("DevSpaces API")));
 
-        assertThat(path.getType(), equalTo(C4Type.container));
+        assertThat(path.type(), equalTo(C4Type.container));
     }
 
     @Test
     public void component() {
         C4Path path = path("c4://DevSpaces/DevSpaces API/Sign-In Component");
 
-        assertThat(path.getName(), equalTo("Sign-In Component"));
-        assertThat(path.getSystemName(), equalTo("DevSpaces"));
-        assertThat(path.getContainerName(), equalTo(Optional.of("DevSpaces API")));
-        assertThat(path.getComponentName(), equalTo(Optional.of("Sign-In Component")));
+        assertThat(path.name(), equalTo("Sign-In Component"));
+        assertThat(path.systemName(), equalTo("DevSpaces"));
+        assertThat(path.containerName(), equalTo(Optional.of("DevSpaces API")));
+        assertThat(path.componentName(), equalTo(Optional.of("Sign-In Component")));
 
-        assertThat(path.getType(), equalTo(C4Type.component));
+        assertThat(path.type(), equalTo(C4Type.component));
     }
 
     @Test(expected = IllegalArgumentException.class)

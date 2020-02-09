@@ -25,6 +25,6 @@ public class C4Component extends BaseEntity implements Entity, HasTechnology, Ha
 
     @JsonIgnore
     public String getName() {
-        return ofNullable(this.name).orElse(path.getComponentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
+        return ofNullable(this.name).orElse(path.componentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
     }
 }

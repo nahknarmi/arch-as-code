@@ -3,12 +3,12 @@ package net.nahknarmi.arch.domain.c4;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -21,16 +21,40 @@ public class C4Model {
 
     @NonNull
     @Builder.Default
-    private Set<C4Person> people = emptySet();
+    @Setter(AccessLevel.PROTECTED)
+    private Set<C4Person> people = new HashSet<>();
     @NonNull
     @Builder.Default
-    private Set<C4SoftwareSystem> systems = emptySet();
+    @Setter(AccessLevel.PROTECTED)
+    private Set<C4SoftwareSystem> systems = new HashSet<>();
     @NonNull
     @Builder.Default
-    private Set<C4Container> containers = emptySet();
+    @Setter(AccessLevel.PROTECTED)
+    private Set<C4Container> containers = new HashSet<>();
     @NonNull
     @Builder.Default
-    private Set<C4Component> components = emptySet();
+    @Setter(AccessLevel.PROTECTED)
+    private Set<C4Component> components = new HashSet<>();
+
+    public C4Model addPerson(C4Person person) {
+        safelyAddEntity(person, people);
+        return this;
+    }
+
+    public C4Model addSoftwareSystem(C4SoftwareSystem softwareSystem) {
+        safelyAddEntity(softwareSystem, systems);
+        return this;
+    }
+
+    public C4Model addContainer(C4Container container) {
+        safelyAddEntity(container, containers);
+        return this;
+    }
+
+    public C4Model addComponent(C4Component component) {
+        safelyAddEntity(component, components);
+        return this;
+    }
 
     public Set<Entity> allEntities() {
         return Stream.of(getSystems(), getPeople(), getComponents(), getContainers())
@@ -65,5 +89,13 @@ public class C4Model {
                 .stream()
                 .filter(x -> x.getTags().contains(tag))
                 .collect(toSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void safelyAddEntity(Entity entity, Set set) {
+        if (components.stream().anyMatch(s -> s.getPath().equals(entity.getPath()))) {
+            throw new IllegalArgumentException(String.format("Entity '%s' with given path already exists.", entity));
+        }
+        set.add(entity);
     }
 }

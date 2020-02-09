@@ -29,7 +29,7 @@ public class PathIdGenerator implements IdGenerator {
         List<@NonNull Entity> possibleEntities = dataStructureModel
                 .allEntities()
                 .stream()
-                .filter(e -> e.getPath().getType().equals(c4Type))
+                .filter(e -> e.getPath().type().equals(c4Type))
                 .filter(x -> x.getName().equals(element.getName()))
                 .filter(entity -> {
                     switch (c4Type) {

@@ -1,14 +1,12 @@
 package net.nahknarmi.arch.domain.c4;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class C4ModelTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    @Ignore
     public void should_not_be_able_to_add_same_person_twice() {
 
         C4Path path = C4Path.path("@Foo");

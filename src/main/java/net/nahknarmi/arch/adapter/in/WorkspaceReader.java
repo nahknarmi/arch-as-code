@@ -28,10 +28,14 @@ public class WorkspaceReader {
         Model model = workspace.getModel();
 
         C4Model c4Model = new C4Model();
-        c4Model.setPeople(people(model));
-        c4Model.setSystems(softwareSystems(model));
-        c4Model.setContainers(containers(model));
-        c4Model.setComponents(components(model));
+        people(model).forEach(c4Model::addPerson);
+//        c4Model.setPeople(people(model));
+        softwareSystems(model).forEach(c4Model::addSoftwareSystem);
+//        c4Model.setSystems(softwareSystems(model));
+        containers(model).forEach(c4Model::addContainer);
+//        c4Model.setContainers(containers(model));
+        components(model).forEach(c4Model::addComponent);
+//        c4Model.setComponents(components(model));
         architectureDataStructure.setModel(c4Model);
 
         C4ViewContainer views = new C4ViewContainer();
@@ -201,9 +205,9 @@ public class WorkspaceReader {
 
     private C4Action convertAction(Element fromElement, C4Path destination) {
         C4Action action;
-        if (fromElement instanceof Person && destination.getType().equals(person)){
+        if (fromElement instanceof Person && destination.type().equals(person)){
             action = INTERACTS_WITH;
-        } else if (destination.getType().equals(person)) {
+        } else if (destination.type().equals(person)) {
             action = DELIVERS;
         } else {
             action = USES;

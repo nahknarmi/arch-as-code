@@ -22,6 +22,6 @@ public class C4Person extends BaseEntity implements Entity, HasLocation {
 
     @JsonIgnore
     public String getName() {
-        return ofNullable(this.name).orElse(path.getPersonName());
+        return ofNullable(this.name).orElse(path.personName());
     }
 }

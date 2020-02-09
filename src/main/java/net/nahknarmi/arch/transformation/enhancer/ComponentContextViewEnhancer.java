@@ -27,8 +27,8 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
     public ComponentView createView(Workspace workspace, C4ComponentView componentView) {
         ViewSet viewSet = workspace.getViews();
         @NonNull C4Path containerPath = componentView.getContainerPath();
-        String systemName = containerPath.getSystemName();
-        String containerName = containerPath.getContainerName()
+        String systemName = containerPath.systemName();
+        String containerName = containerPath.containerName()
                 .orElseThrow(() -> new IllegalStateException("Container name not found in path " + containerPath));
         Model workspaceModel = workspace.getModel();
         SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
@@ -40,7 +40,7 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, ComponentView view) {
         return entityPath -> {
 
-            switch (entityPath.getType()) {
+            switch (entityPath.type()) {
                 case person:
                     view.add(modelMediator.person(entityPath));
                     break;
@@ -61,7 +61,7 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
                     }
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported type " + entityPath.getType());
+                    throw new IllegalStateException("Unsupported type " + entityPath.type());
             }
         };
     }

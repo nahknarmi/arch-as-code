@@ -22,14 +22,14 @@ public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextVie
     @Override
     public SystemContextView createView(Workspace workspace, C4SystemView view) {
         ViewSet viewSet = workspace.getViews();
-        String systemName = view.getSystemPath().getSystemName();
+        String systemName = view.getSystemPath().systemName();
         SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithName(systemName);
         return viewSet.createSystemContextView(softwareSystem, view.getKey(), view.getDescription());
     }
 
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, SystemContextView view) {
         return entityPath -> {
-            switch (entityPath.getType()) {
+            switch (entityPath.type()) {
                 case person:
                     view.add(modelMediator.person(entityPath));
                     break;
@@ -37,7 +37,7 @@ public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextVie
                     view.add(modelMediator.softwareSystem(entityPath));
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported type " + entityPath.getType());
+                    throw new IllegalStateException("Unsupported type " + entityPath.type());
             }
         };
     }

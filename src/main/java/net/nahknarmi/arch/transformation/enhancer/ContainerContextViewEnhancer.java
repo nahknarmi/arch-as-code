@@ -23,7 +23,7 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
     @Override
     public ContainerView createView(Workspace workspace, C4ContainerView c) {
         ViewSet viewSet = workspace.getViews();
-        String systemName = c.getSystemPath().getSystemName();
+        String systemName = c.getSystemPath().systemName();
         Model workspaceModel = workspace.getModel();
         SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
         return viewSet.createContainerView(softwareSystem, c.getKey(), c.getDescription());
@@ -32,7 +32,7 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
     public Consumer<C4Path> addEntity(ModelMediator modelMediator, ContainerView view) {
         return entityPath -> {
 
-            switch (entityPath.getType()) {
+            switch (entityPath.type()) {
                 case person:
                     view.add(modelMediator.person(entityPath));
                     break;
@@ -43,7 +43,7 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
                     view.add(modelMediator.container(entityPath));
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported type " + entityPath.getType());
+                    throw new IllegalStateException("Unsupported type " + entityPath.type());
             }
         };
     }
