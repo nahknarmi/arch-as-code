@@ -118,4 +118,52 @@ public class C4PathTest {
     public void missing_system() {
         new C4Path("c4://");
     }
+
+
+    @Test(expected = IllegalStateException.class)
+    public void accessing_system_path_on_non_system_throws_exception() {
+        C4Path path = new C4Path("@person");
+        path.systemPath();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void accessing_person_path_on_non_person_throws_exception() {
+        C4Path path = new C4Path("c4://sys1");
+        path.personPath();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void accessing_component_path_on_path_with_no_component_throws_exception() {
+        C4Path path = new C4Path("c4://sys1/container1");
+        path.componentPath();
+    }
+
+    @Test
+    public void system_path() {
+        C4Path path = new C4Path("c4://sys_1");
+        assertThat(path.systemPath(), equalTo(path));
+    }
+
+    @Test
+    public void person_path() {
+        C4Path path = new C4Path("@person");
+        assertThat(path.personPath(), equalTo(path));
+    }
+
+    @Test
+    public void should_be_able_to_extract_sub_paths_in_container_path() {
+        C4Path path = new C4Path("c4://sys1/container1");
+        assertThat(path.systemPath(), equalTo(new C4Path("c4://sys1")));
+        assertThat(path.containerPath(), equalTo(path));
+    }
+
+    @Test
+    public void should_be_able_to_extract_sub_paths_in_component_path() {
+        C4Path path = new C4Path("c4://sys1/container1/comp1");
+        assertThat(path.systemPath(), equalTo(new C4Path("c4://sys1")));
+        assertThat(path.containerPath(), equalTo(new C4Path("c4://sys1/container1")));
+        assertThat(path.componentPath(), equalTo(path));
+    }
+
+
 }

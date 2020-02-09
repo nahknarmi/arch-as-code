@@ -35,7 +35,7 @@ public class PathIdGenerator implements IdGenerator {
                     switch (c4Type) {
                         case container: {
                             Element elementSystem = element.getParent();
-                            Entity entitySystem = dataStructureModel.findByPath(entity.getPath().getSystemPath());
+                            Entity entitySystem = dataStructureModel.findByPath(entity.getPath().systemPath());
 
                             return elementSystem.getName().equals(entitySystem.getName());
                         }
@@ -43,8 +43,8 @@ public class PathIdGenerator implements IdGenerator {
                             Element elementContainer = element.getParent();
                             Element elementSystem = elementContainer.getParent();
 
-                            Entity entityContainer = dataStructureModel.findByPath(entity.getPath().getContainerPath());
-                            Entity entitySystem = dataStructureModel.findByPath(entity.getPath().getSystemPath());
+                            Entity entityContainer = dataStructureModel.findByPath(entity.getPath().containerPath());
+                            Entity entitySystem = dataStructureModel.findByPath(entity.getPath().systemPath());
 
                             return elementSystem.getName().equals(entitySystem.getName())
                                     && elementContainer.getName().equals(entityContainer.getName());
