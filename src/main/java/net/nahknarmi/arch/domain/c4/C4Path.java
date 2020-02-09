@@ -36,9 +36,15 @@ public class C4Path {
     @NonNull
     private String path;
 
-    public C4Path(String path) {
+    C4Path(String path) {
         this.path = path;
         this.matcher = matcher();
+    }
+
+    public static C4Path from(String path) {
+        Matcher matcher = pattern.matcher(path);
+        checkArgument(matcher.matches(), String.format("Path does not match expected pattern. (%s)", path));
+        return new C4Path(path);
     }
 
     private Matcher matcher() {

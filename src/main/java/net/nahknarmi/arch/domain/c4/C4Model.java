@@ -48,13 +48,10 @@ public class C4Model {
     }
 
     public Entity findByPath(C4Path path) {
-        return findByPath(path.getPath()).orElseThrow(() -> new IllegalStateException("Could not find entity with path " + path));
-    }
-
-    public Optional<Entity> findByPath(String path) {
         return allEntities()
                 .stream()
-                .filter(x -> x.getPath().equals(new C4Path(path)))
-                .findFirst();
+                .filter(x -> x.getPath().equals(path))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Could not find entity with path " + path));
     }
 }

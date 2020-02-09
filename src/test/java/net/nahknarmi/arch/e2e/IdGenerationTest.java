@@ -3,6 +3,7 @@ package net.nahknarmi.arch.e2e;
 import com.structurizr.Workspace;
 import net.nahknarmi.arch.adapter.in.ArchitectureDataStructureReader;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
+import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.Entity;
 import net.nahknarmi.arch.transformation.ArchitectureDataStructureTransformer;
 import net.nahknarmi.arch.transformation.TransformerFactory;
@@ -23,8 +24,7 @@ public class IdGenerationTest {
 
         workspace.getModel().getPeople().forEach(p -> {
             String personId = p.getId();
-            Entity entity = dataStructure.getModel().findByPath(personId)
-                    .orElseThrow(() -> new IllegalStateException("Element with id " + personId + " not found."));
+            Entity entity = dataStructure.getModel().findByPath(C4Path.from(personId));
             String pathString = entity.getPath().getPath();
 
             assertEquals(personId, pathString);
@@ -38,8 +38,7 @@ public class IdGenerationTest {
 
         workspace.getModel().getSoftwareSystems().forEach(s -> {
             String systemId = s.getId();
-            Entity entity = dataStructure.getModel().findByPath(systemId)
-                    .orElseThrow(() -> new IllegalStateException("Element with id " + systemId + " not found."));
+            Entity entity = dataStructure.getModel().findByPath(C4Path.from(systemId));
             String pathString = entity.getPath().getPath();
 
             assertEquals(systemId, pathString);
@@ -54,8 +53,7 @@ public class IdGenerationTest {
         workspace.getModel().getSoftwareSystems().forEach(system -> {
             system.getContainers().forEach(cont -> {
                 String containerId = cont.getId();
-                Entity entity = dataStructure.getModel().findByPath(containerId)
-                        .orElseThrow(() -> new IllegalStateException("Element with id " + containerId + " not found."));
+                Entity entity = dataStructure.getModel().findByPath(C4Path.from(containerId));
                 String pathString = entity.getPath().getPath();
 
                 assertEquals(containerId, pathString);
@@ -72,8 +70,7 @@ public class IdGenerationTest {
             system.getContainers().forEach(container -> {
                 container.getComponents().forEach(comp -> {
                     String componentId = comp.getId();
-                    Entity entity = dataStructure.getModel().findByPath(componentId)
-                            .orElseThrow(() -> new IllegalStateException("Element with id " + componentId + " not found."));
+                    Entity entity = dataStructure.getModel().findByPath(C4Path.from(componentId));
                     String pathString = entity.getPath().getPath();
 
                     assertEquals(componentId, pathString);

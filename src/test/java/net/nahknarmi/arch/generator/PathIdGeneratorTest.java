@@ -90,7 +90,7 @@ public class PathIdGeneratorTest {
                         of(
                                 C4SoftwareSystem.builder()
                                         .name(SYSTEM_NAME)
-                                        .path(new C4Path(SYSTEM_PATH))
+                                        .path(C4Path.from(SYSTEM_PATH))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -100,7 +100,7 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Person.builder()
                                         .name(PERSON_NAME)
-                                        .path(new C4Path(PERSON_PATH))
+                                        .path(C4Path.from(PERSON_PATH))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -110,13 +110,13 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Container.builder()
                                         .name(CONTAINER_NAME)
-                                        .path(new C4Path(CONTAINER_PATH))
+                                        .path(C4Path.from(CONTAINER_PATH))
                                         .description("irrelevant")
                                         .build(),
 
                                 C4Container.builder()
                                         .name(CONTAINER_NAME2)
-                                        .path(new C4Path(CONTAINER_PATH2))
+                                        .path(C4Path.from(CONTAINER_PATH2))
                                         .description("irrelevant")
                                         .build()
                         )
@@ -126,13 +126,13 @@ public class PathIdGeneratorTest {
                         of(
                                 C4Component.builder()
                                         .name(COMPONENT_NAME)
-                                        .path(new C4Path(COMPONENT_PATH))
+                                        .path(C4Path.from(COMPONENT_PATH))
                                         .description("irrelevant")
                                         .build(),
 
                                 C4Component.builder()
                                         .name(COMPONENT_NAME)
-                                        .path(new C4Path(COMPONENT_PATH2))
+                                        .path(C4Path.from(COMPONENT_PATH2))
                                         .description("irrelevant")
                                         .build()
                         )

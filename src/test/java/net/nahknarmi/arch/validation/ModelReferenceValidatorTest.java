@@ -30,7 +30,7 @@ public class ModelReferenceValidatorTest {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
 
         C4Model model = new C4Model();
-        model.setPeople(ImmutableSet.of(buildPeople(new C4Path("c4://acme/spa"))));
+        model.setPeople(ImmutableSet.of(buildPeople(C4Path.from("c4://acme/spa"))));
         dataStructure.setModel(model);
 
         List<String> validationList = new ModelReferenceValidator().validate(dataStructure);
@@ -55,7 +55,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4Person buildPeople(C4Path relationshipWith) {
-        return C4Person.builder().path(new C4Path("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptySet()).build();
+        return C4Person.builder().path(C4Path.from("@bob")).description("person").location(C4Location.EXTERNAL).relationships(of(new C4Relationship(C4Action.DELIVERS, relationshipWith, "bazz", "desc"))).tags(emptySet()).build();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ModelReferenceValidatorTest {
 
         C4Model model = new C4Model();
         C4SoftwareSystem softwareSystem = softwareSystem();
-        softwareSystem.setRelationships(of(new C4Relationship(C4Action.DELIVERS, new C4Path("@bob"), "batch processing", "mainframe")));
+        softwareSystem.setRelationships(of(new C4Relationship(C4Action.DELIVERS, C4Path.from("@bob"), "batch processing", "mainframe")));
         model.setSystems(ImmutableSet.of(softwareSystem));
         dataStructure.setModel(model);
 
@@ -74,7 +74,7 @@ public class ModelReferenceValidatorTest {
     }
 
     private C4SoftwareSystem softwareSystem() {
-        return C4SoftwareSystem.builder().path(new C4Path("c4://OBP")).description("core banking").tags(emptySet()).relationships(emptyList()).build();
+        return C4SoftwareSystem.builder().path(C4Path.from("c4://OBP")).description("core banking").tags(emptySet()).relationships(emptyList()).build();
     }
 
 }

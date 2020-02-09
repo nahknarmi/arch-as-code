@@ -112,8 +112,8 @@ public class ArchitectureDataStructureTransformerTest {
     private C4Model buildModel() {
 
         return new C4Model(
-                ImmutableSet.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptySet()).build()),
-                ImmutableSet.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptySet()).relationships(emptyList()).build()),
+                ImmutableSet.of(C4Person.builder().path(C4Path.from("@person")).description("Foo").relationships(emptyList()).tags(emptySet()).build()),
+                ImmutableSet.of(C4SoftwareSystem.builder().path(C4Path.from("c4://sys")).description("sys").location(INTERNAL).tags(emptySet()).relationships(emptyList()).build()),
                 emptySet(),
                 emptySet()
         );
