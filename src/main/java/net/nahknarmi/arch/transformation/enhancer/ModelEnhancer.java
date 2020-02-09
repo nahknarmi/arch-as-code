@@ -147,10 +147,6 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
                         if (r.getAction() == C4Action.USES) {
                             String systemName = r.getWith().systemName();
-                            if (systemName == null) {
-                                System.err.println("fooo");
-                            }
-
                             SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(systemName);
 
                             switch (typeDestination) {

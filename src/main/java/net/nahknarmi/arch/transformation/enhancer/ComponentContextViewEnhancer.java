@@ -12,11 +12,14 @@ import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.view.C4ComponentView;
 import net.nahknarmi.arch.domain.c4.view.ModelMediator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView, C4ComponentView> {
+    private static Logger log = LoggerFactory.getLogger(ComponentContextViewEnhancer.class);
 
     @Override
     public List<C4ComponentView> getViews(ArchitectureDataStructure dataStructure) {
@@ -57,7 +60,7 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
                     if (component.getContainer().equals(container)) {
                         view.add(component);
                     } else {
-                        System.err.println("Only components belonging to " + container + " can be added to view (" + component + " not added.).");
+                        log.warn("Only components belonging to " + container + " can be added to view (" + component + " not added.).");
                     }
                     break;
                 default:
