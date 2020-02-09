@@ -6,7 +6,6 @@ import net.nahknarmi.arch.domain.c4.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.collect.ImmutableSet.of;
 import static net.nahknarmi.arch.domain.c4.C4Path.path;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -86,59 +85,45 @@ public class PathIdGeneratorTest {
     }
 
     private C4Model buildC4Model() {
-        return C4Model.builder()
-                .systems(
-                        of(
-                                C4SoftwareSystem.builder()
-                                        .name(SYSTEM_NAME)
-                                        .path(path(SYSTEM_PATH))
-                                        .description("irrelevant")
-                                        .build()
-                        )
+        return new C4Model()
+                .addSoftwareSystem(
+                        C4SoftwareSystem.builder()
+                                .name(SYSTEM_NAME)
+                                .path(path(SYSTEM_PATH))
+                                .description("irrelevant")
+                                .build()
+                ).addPerson(
+                        C4Person.builder()
+                                .name(PERSON_NAME)
+                                .path(path(PERSON_PATH))
+                                .description("irrelevant")
+                                .build()
+                ).addContainer(
+                        C4Container.builder()
+                                .name(CONTAINER_NAME)
+                                .path(path(CONTAINER_PATH))
+                                .description("irrelevant")
+                                .build())
+                .addContainer(
+                        C4Container.builder()
+                                .name(CONTAINER_NAME2)
+                                .path(path(CONTAINER_PATH2))
+                                .description("irrelevant")
+                                .build()
                 )
-
-                .people(
-                        of(
-                                C4Person.builder()
-                                        .name(PERSON_NAME)
-                                        .path(path(PERSON_PATH))
-                                        .description("irrelevant")
-                                        .build()
-                        )
-                )
-
-                .containers(
-                        of(
-                                C4Container.builder()
-                                        .name(CONTAINER_NAME)
-                                        .path(path(CONTAINER_PATH))
-                                        .description("irrelevant")
-                                        .build(),
-
-                                C4Container.builder()
-                                        .name(CONTAINER_NAME2)
-                                        .path(path(CONTAINER_PATH2))
-                                        .description("irrelevant")
-                                        .build()
-                        )
-                )
-
-                .components(
-                        of(
-                                C4Component.builder()
-                                        .name(COMPONENT_NAME)
-                                        .path(path(COMPONENT_PATH))
-                                        .description("irrelevant")
-                                        .build(),
-
-                                C4Component.builder()
-                                        .name(COMPONENT_NAME)
-                                        .path(path(COMPONENT_PATH2))
-                                        .description("irrelevant")
-                                        .build()
-                        )
-                )
-                .build();
+                .addComponent(
+                        C4Component.builder()
+                                .name(COMPONENT_NAME)
+                                .path(path(COMPONENT_PATH))
+                                .description("irrelevant")
+                                .build()
+                ).addComponent(
+                        C4Component.builder()
+                                .name(COMPONENT_NAME)
+                                .path(path(COMPONENT_PATH2))
+                                .description("irrelevant")
+                                .build()
+                );
     }
 
     private Model buildModel(IdGenerator idGenerator) {

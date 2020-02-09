@@ -29,13 +29,9 @@ public class WorkspaceReader {
 
         C4Model c4Model = new C4Model();
         people(model).forEach(c4Model::addPerson);
-//        c4Model.setPeople(people(model));
         softwareSystems(model).forEach(c4Model::addSoftwareSystem);
-//        c4Model.setSystems(softwareSystems(model));
         containers(model).forEach(c4Model::addContainer);
-//        c4Model.setContainers(containers(model));
         components(model).forEach(c4Model::addComponent);
-//        c4Model.setComponents(components(model));
         architectureDataStructure.setModel(c4Model);
 
         C4ViewContainer views = new C4ViewContainer();

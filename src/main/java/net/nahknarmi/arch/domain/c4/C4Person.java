@@ -6,6 +6,8 @@ import lombok.*;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
 @EqualsAndHashCode(callSuper = true)
@@ -23,5 +25,14 @@ public class C4Person extends BaseEntity implements Entity, HasLocation {
     @JsonIgnore
     public String getName() {
         return ofNullable(this.name).orElse(path.personName());
+    }
+
+    public static class C4PersonBuilder {
+
+        public C4PersonBuilder path(C4Path path) {
+            checkArgument(C4Type.person.equals(path.type()), format("Path %s is not valid for Container.", path));
+            this.path = path;
+            return this;
+        }
     }
 }
