@@ -34,7 +34,7 @@ public class C4Model {
     private Set<C4Component> components = new HashSet<>();
 
     public C4Model addPerson(C4Person person) {
-        checkArgument(!personWithNameExists(person), format("Person with name '%s' already exists.", person.getName()));
+        checkArgument(!personWithNameExists(person), format("Person with name '%s' already exists.", person.name()));
         checkArgument(!entityWithPathExists(person, people), format("Person with path '%s' already exists.", person));
 
         people.add(person);
@@ -43,7 +43,7 @@ public class C4Model {
     }
 
     public C4Model addSoftwareSystem(C4SoftwareSystem softwareSystem) {
-        checkArgument(!systemWithNameExists(softwareSystem), format("Software System with name '%s' already exists.", softwareSystem.getName()));
+        checkArgument(!systemWithNameExists(softwareSystem), format("Software System with name '%s' already exists.", softwareSystem.name()));
         checkArgument(!entityWithPathExists(softwareSystem, systems), format("Software System given path '%s' already exists.", softwareSystem));
 
         systems.add(softwareSystem);
@@ -81,7 +81,7 @@ public class C4Model {
         checkNotNull(name);
         return getPeople()
                 .stream()
-                .filter(x -> x.getName().equals(name))
+                .filter(x -> x.name().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Unable to find person with name - " + name));
     }
@@ -116,10 +116,10 @@ public class C4Model {
     }
 
     private boolean personWithNameExists(C4Person person) {
-        return getPeople().stream().anyMatch(x -> x.getName().equals(person.getName()));
+        return getPeople().stream().anyMatch(x -> x.name().equals(person.name()));
     }
 
     private boolean systemWithNameExists(C4SoftwareSystem system) {
-        return getSystems().stream().anyMatch(x -> x.getName().equals(system.getName()));
+        return getSystems().stream().anyMatch(x -> x.name().equals(system.name()));
     }
 }

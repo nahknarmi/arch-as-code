@@ -11,29 +11,27 @@ public class ModelMediator {
     }
 
     public Person person(C4Path path) {
-        String personName = path.personName();
-        return model.getPersonWithName(personName);
+        String id = path.getPath();
+        Person element = (Person) model.getElement(id);
+        return element;
     }
 
     public SoftwareSystem softwareSystem(C4Path path) {
-        String systemName = path.systemName();
-        return model.getSoftwareSystemWithName(systemName);
+        String id = path.getPath();
+        SoftwareSystem element = (SoftwareSystem) model.getElement(id);
+        return element;
     }
 
     public Container container(C4Path path) {
-        String containerName = path.containerName()
-                .orElseThrow(() -> new IllegalStateException(String.format("No container was specified in path - %s. " +
-                        "Is your container path correct?", path)));
-        SoftwareSystem softwareSystem = softwareSystem(path);
-        return softwareSystem.getContainerWithName(containerName);
+        String id = path.getPath();
+        Container element = (Container) model.getElement(id);
+        return element;
     }
 
     public Component component(C4Path path) {
-        String componentName = path.componentName()
-                .orElseThrow(() -> new IllegalStateException(String.format("No component was specified in path - %s. " +
-                        "Is your component path correct?", path)));
-        Container container = container(path);
-        return container.getComponentWithName(componentName);
+        String id = path.getPath();
+        Component element = (Component) model.getElement(id);
+        return element;
     }
 
 }

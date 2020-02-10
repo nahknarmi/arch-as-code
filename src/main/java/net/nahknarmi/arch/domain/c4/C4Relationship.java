@@ -1,13 +1,9 @@
 package net.nahknarmi.arch.domain.c4;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class C4Relationship {
     @NonNull
@@ -17,4 +13,12 @@ public class C4Relationship {
     @NonNull
     private String description;
     private String technology;
+
+    @Builder
+    public C4Relationship(@NonNull C4Action action, @NonNull C4Path with, @NonNull String description, String technology) {
+        this.action = action;
+        this.with = with;
+        this.description = description;
+        this.technology = technology;
+    }
 }

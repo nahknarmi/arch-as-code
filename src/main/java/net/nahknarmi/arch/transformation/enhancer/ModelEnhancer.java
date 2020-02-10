@@ -33,7 +33,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                 .getPeople()
                 .forEach(p -> {
                     Location location = LocationTransformer.c4LocationToLocation(p.getLocation());
-                    Person person = model.addPerson(location, p.getName(), p.getDescription());
+                    Person person = model.addPerson(location, p.name(), p.getDescription());
                     person.addTags(getTags(p));
                 });
     }
@@ -47,7 +47,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addSystem(Model model, C4SoftwareSystem s) {
         Location location = LocationTransformer.c4LocationToLocation(s.getLocation());
-        SoftwareSystem softwareSystem = model.addSoftwareSystem(location, s.getName(), s.getDescription());
+        SoftwareSystem softwareSystem = model.addSoftwareSystem(location, s.name(), s.getDescription());
         softwareSystem.addTags(getTags(s));
     }
 
@@ -57,7 +57,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addContainer(Model model, C4Container c) {
         String systemName = c.getPath().systemName();
-        String containerName = c.getName();
+        String containerName = c.name();
         SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
 
         Container container = softwareSystem.addContainer(containerName, c.getDescription(), c.getTechnology());
@@ -74,7 +74,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
         Container container = softwareSystem.getContainerWithName(containerName);
 
-        Component component = container.addComponent(c.getName(), c.getDescription(), c.getTechnology());
+        Component component = container.addComponent(c.name(), c.getDescription(), c.getTechnology());
         component.addTags(getTags(c));
     }
 
@@ -91,7 +91,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addPeopleRelationships(Model workspaceModel, C4Model dataStructureModel) {
         dataStructureModel.getPeople().forEach(p -> {
-            Person person = workspaceModel.getPersonWithName(p.getName());
+            Person person = workspaceModel.getPersonWithName(p.name());
 
             p.getRelationships()
                     .forEach(r -> {
@@ -137,7 +137,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
     private void addSystemRelationships(Model workspaceModel, C4Model dataStructureModel) {
         dataStructureModel.getSystems().forEach(s -> {
-            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.getName());
+            SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(s.name());
 
             s.getRelationships()
                     .forEach(r -> {
@@ -188,7 +188,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     private void addContainerRelationships(Model workspaceModel, C4Model dataStructureModel) {
         dataStructureModel.getContainers().forEach(c -> {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(c.getPath().systemName());
-            Container container = softwareSystem.getContainerWithName(c.getName());
+            Container container = softwareSystem.getContainerWithName(c.name());
 
             c.getRelationships()
                     .forEach(r -> {
@@ -246,7 +246,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(comp.getPath().systemName());
             String containerName = comp.getPath().containerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!"));
             Container container = softwareSystem.getContainerWithName(containerName);
-            Component component = container.getComponentWithName(comp.getName());
+            Component component = container.getComponentWithName(comp.name());
 
             comp.getRelationships()
                     .forEach(r -> {

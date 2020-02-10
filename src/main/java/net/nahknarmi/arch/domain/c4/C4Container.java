@@ -26,8 +26,7 @@ public class C4Container extends BaseEntity implements Entity, HasTechnology, Ha
         this.url = url;
     }
 
-    @JsonIgnore
-    public String getName() {
+    public String name() {
         return ofNullable(name)
                 .orElse(path.containerName().orElseThrow(()
                         -> new IllegalStateException("Container name couldn't be extracted from " + path)));

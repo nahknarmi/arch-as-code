@@ -30,6 +30,7 @@ public class C4EntitySerializer<T extends BaseEntity> extends StdSerializer<T> {
     }
 
     protected void baseEntityWrite(T value, JsonGenerator gen) throws IOException {
+        gen.writeStringField("name", value.name());
         gen.writeStringField("path", value.getPath().getPath());
         gen.writeStringField("description", value.getDescription());
 

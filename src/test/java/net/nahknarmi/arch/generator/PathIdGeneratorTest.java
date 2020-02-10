@@ -1,5 +1,6 @@
 package net.nahknarmi.arch.generator;
 
+import com.google.common.collect.ImmutableList;
 import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import net.nahknarmi.arch.domain.c4.*;
@@ -84,6 +85,23 @@ public class PathIdGeneratorTest {
         assertThat(component.getId(), equalTo(COMPONENT_PATH2));
     }
 
+    @Test
+    public void should_handle_relationship_id() {
+        Model model = buildModel(idGenerator);
+
+        Component component =
+                model.addSoftwareSystem(SYSTEM_NAME, SYSTEM_PATH)
+                        .addContainer(CONTAINER_NAME2, CONTAINER_PATH2, "J2EE")
+                        .addComponent(COMPONENT_NAME, COMPONENT_PATH2);
+
+        Person person = model.addPerson(PERSON_NAME, "fooo");
+
+        person.uses(component, "foo");
+
+
+        assertThat(component.getId(), equalTo(COMPONENT_PATH2));
+    }
+
     private C4Model buildC4Model() {
         return new C4Model()
                 .addSoftwareSystem(
@@ -91,6 +109,12 @@ public class PathIdGeneratorTest {
                                 .name(SYSTEM_NAME)
                                 .path(path(SYSTEM_PATH))
                                 .description("irrelevant")
+                                .relationships(ImmutableList.of(C4Relationship.builder()
+                                        .action(C4Action.USES)
+                                        .with(path(PERSON_PATH))
+                                        .technology("SOAP")
+                                        .description("Foo bar")
+                                        .build()))
                                 .build()
                 ).addPerson(
                         C4Person.builder()

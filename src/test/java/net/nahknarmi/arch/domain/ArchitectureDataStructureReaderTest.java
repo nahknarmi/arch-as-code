@@ -50,7 +50,7 @@ public class ArchitectureDataStructureReaderTest {
         assertThat(people.size(), equalTo(4));
         C4Person person = model.findPersonByName("Developer");
         assertThat(person, notNullValue());
-        assertThat(person.getName(), is(equalTo("Developer")));
+        assertThat(person.name(), is(equalTo("Developer")));
         assertThat(person.getDescription(), is(equalTo("Developer building software")));
 
         //it should have systems

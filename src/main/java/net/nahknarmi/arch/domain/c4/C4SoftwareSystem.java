@@ -25,8 +25,7 @@ public class C4SoftwareSystem extends BaseEntity implements Entity, HasLocation 
         this.location = Optional.ofNullable(location).orElse(UNSPECIFIED);
     }
 
-    @JsonIgnore
-    public String getName() {
+    public String name() {
         return ofNullable(name).orElse(path.systemName());
     }
 

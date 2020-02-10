@@ -3,7 +3,7 @@ package net.nahknarmi.arch.domain.c4;
 import java.util.List;
 
 public interface Entity extends HasRelation, HasTag {
-    String getName();
+    String name();
 
     String getDescription();
 

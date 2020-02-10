@@ -1,6 +1,5 @@
 package net.nahknarmi.arch.domain.c4;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.List;
@@ -25,8 +24,7 @@ public class C4Component extends BaseEntity implements Entity, HasTechnology, Ha
         this.url = url;
     }
 
-    @JsonIgnore
-    public String getName() {
+    public String name() {
         return ofNullable(this.name).orElse(path.componentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
     }
 

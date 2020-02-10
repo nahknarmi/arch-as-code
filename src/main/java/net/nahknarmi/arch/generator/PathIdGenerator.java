@@ -1,5 +1,6 @@
 package net.nahknarmi.arch.generator;
 
+import com.google.common.base.Preconditions;
 import com.structurizr.model.Element;
 import com.structurizr.model.IdGenerator;
 import com.structurizr.model.Relationship;
@@ -30,14 +31,14 @@ public class PathIdGenerator implements IdGenerator {
                 .allEntities()
                 .stream()
                 .filter(e -> e.getPath().type().equals(c4Type))
-                .filter(x -> x.getName().equals(element.getName()))
+                .filter(x -> x.name().equals(element.getName()))
                 .filter(entity -> {
                     switch (c4Type) {
                         case container: {
                             Element elementSystem = element.getParent();
                             Entity entitySystem = dataStructureModel.findByPath(entity.getPath().systemPath());
 
-                            return elementSystem.getName().equals(entitySystem.getName());
+                            return elementSystem.getName().equals(entitySystem.name());
                         }
                         case component: {
                             Element elementContainer = element.getParent();
@@ -46,8 +47,8 @@ public class PathIdGenerator implements IdGenerator {
                             Entity entityContainer = dataStructureModel.findByPath(entity.getPath().containerPath());
                             Entity entitySystem = dataStructureModel.findByPath(entity.getPath().systemPath());
 
-                            return elementSystem.getName().equals(entitySystem.getName())
-                                    && elementContainer.getName().equals(entityContainer.getName());
+                            return elementSystem.getName().equals(entitySystem.name())
+                                    && elementContainer.getName().equals(entityContainer.name());
                         }
                         case system:
                         case person:
@@ -71,7 +72,13 @@ public class PathIdGenerator implements IdGenerator {
 
     @Override
     public String generateId(Relationship relationship) {
-        String relationshipString = relationship.toString();
+        Preconditions.checkNotNull(relationship.getSourceId(), relationship);
+        Preconditions.checkNotNull(relationship.getDestinationId(), relationship);
+//        Preconditions.checkNotNull(relationship.getTechnology(), relationship);
+
+
+
+        String relationshipString = relationship.getSourceId() + relationship.getDestinationId() + relationship.getTechnology();
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");
@@ -86,6 +93,8 @@ public class PathIdGenerator implements IdGenerator {
         for (byte b : hashInBytes) {
             sb.append(String.format("%02x", b));
         }
+
+        System.err.println("----------------------------" + sb.toString());
 
         return sb.toString();
     }
