@@ -226,6 +226,9 @@
                 "path": {
                   "type": "string"
                 },
+                "name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
@@ -283,6 +286,9 @@
                 "path": {
                   "type": "string"
                 },
+                "name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
@@ -338,6 +344,9 @@
               ],
               "properties": {
                 "path": {
+                  "type": "string"
+                },
+                "name": {
                   "type": "string"
                 },
                 "description": {
@@ -398,6 +407,9 @@
               ],
               "properties": {
                 "path": {
+                  "type": "string"
+                },
+                "name": {
                   "type": "string"
                 },
                 "description": {
