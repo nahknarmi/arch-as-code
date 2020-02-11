@@ -4,6 +4,7 @@ import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
+import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 import net.nahknarmi.arch.generator.PathIdGenerator;
 import net.nahknarmi.arch.transformation.LocationTransformer;
 
@@ -176,8 +177,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personName = r.getWith().personName();
-                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                String personId = r.getWith().getPath();
+                                Person personDestination = (Person) workspaceModel.getElement(personId);
                                 softwareSystem.delivers(personDestination, description, technology);
                             }
                         }
@@ -232,8 +233,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personName = r.getWith().personName();
-                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                String personId = r.getWith().getPath();
+                                Person personDestination = (Person) workspaceModel.getElement(personId);
                                 container.delivers(personDestination, description, technology);
                             }
                         }
@@ -268,6 +269,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case component: {
+                                    Component component1 = new ModelMediator(workspaceModel).component(r.getWith());
+
                                     Container containerDestination = systemDestination.getContainerWithName(r.getWith().containerName().orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
                                     Optional<String> componentName = r.getWith().componentName();
                                     Component componentDestination = containerDestination.getComponentWithName(componentName.orElseThrow(() -> new IllegalStateException("Workspace ID is missing!")));
@@ -287,8 +290,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personName = r.getWith().personName();
-                                Person personDestination = workspaceModel.getPersonWithName(personName);
+                                String personId = r.getWith().getPath();
+                                Person personDestination = (Person) workspaceModel.getElement(personId);
                                 component.delivers(personDestination, description, technology);
                             }
                         }
