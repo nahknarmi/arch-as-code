@@ -195,7 +195,12 @@ public class WorkspaceReader {
     private ArchitectureDataStructure build(Workspace workspace) {
         ArchitectureDataStructure result = new ArchitectureDataStructure();
         result.setName(workspace.getName());
-        result.setBusinessUnit(workspace.getModel().getEnterprise().getName());
+
+        Enterprise enterprise = workspace.getModel().getEnterprise();
+        if (enterprise != null) {
+            result.setBusinessUnit(enterprise.getName());
+        }
+
         result.setDescription(workspace.getDescription());
         return result;
     }
@@ -220,7 +225,7 @@ public class WorkspaceReader {
 
     private C4Action convertAction(Element fromElement, C4Path destination) {
         C4Action action;
-        if (fromElement instanceof Person && destination.type().equals(person)){
+        if (fromElement instanceof Person && destination.type().equals(person)) {
             action = INTERACTS_WITH;
         } else if (destination.type().equals(person)) {
             action = DELIVERS;

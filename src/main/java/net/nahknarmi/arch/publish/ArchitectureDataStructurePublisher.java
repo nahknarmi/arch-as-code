@@ -17,7 +17,7 @@ public class ArchitectureDataStructurePublisher {
     private final ArchitectureDataStructureReader dataStructureReader;
     private final ArchitectureDataStructureTransformer dataStructureTransformer;
     private final StructurizrAdapter structurizrAdapter;
-    private final String manifiestFileName;
+    private final String manifestFileName;
 
     ArchitectureDataStructurePublisher(File productDocumentationRoot,
                                               ArchitectureDataStructureReader importer,
@@ -27,7 +27,7 @@ public class ArchitectureDataStructurePublisher {
         this.dataStructureTransformer = transformer;
         this.dataStructureReader = importer;
         this.structurizrAdapter = structurizrAdapter;
-        this.manifiestFileName = "data-structure.yml";
+        this.manifestFileName = "data-structure.yml";
 
     }
 
@@ -36,16 +36,19 @@ public class ArchitectureDataStructurePublisher {
         this.dataStructureTransformer = transformer;
         this.dataStructureReader = importer;
         this.structurizrAdapter = adapter;
-        this.manifiestFileName = manifestFileName;
+        this.manifestFileName = manifestFileName;
     }
 
     public void publish() throws StructurizrClientException, IOException {
-        File manifestFile = new File(productDocumentationRoot + File.separator + manifiestFileName);
-
-        ArchitectureDataStructure dataStructure = dataStructureReader.load(manifestFile);
-        Workspace workspace = dataStructureTransformer.toWorkSpace(dataStructure);
-
+        Workspace workspace = getWorkspace(productDocumentationRoot, manifestFileName);
         structurizrAdapter.publish(workspace);
+    }
+
+    public Workspace getWorkspace(File productDocumentationRoot, String manifestFileName) throws IOException {
+        File manifestFile = new File(productDocumentationRoot + File.separator + manifestFileName);
+        ArchitectureDataStructure dataStructure = dataStructureReader.load(manifestFile);
+
+        return dataStructureTransformer.toWorkSpace(dataStructure);
     }
 
     public static ArchitectureDataStructurePublisher create(File productDocumentationRoot, String manifestFileName) {

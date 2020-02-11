@@ -57,9 +57,9 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addContainer(Model model, C4Container c) {
-        String systemName = c.getPath().systemName();
+        String systemPath = c.getPath().systemPath().getPath();
         String containerName = c.name();
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
+        SoftwareSystem softwareSystem = (SoftwareSystem) model.getElement(systemPath);
 
         Container container = softwareSystem.addContainer(containerName, c.getDescription(), c.getTechnology());
         container.addTags(getTags(c));
@@ -70,9 +70,9 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addComponent(Model model, C4Component c) {
-        String systemName = c.getPath().systemName();
+        String systemPath = c.getPath().systemPath().getPath();
         String containerName = c.getPath().containerName().orElseThrow(() -> new IllegalStateException("Container name not found on " + c.getPath()));
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName(systemName);
+        SoftwareSystem softwareSystem = (SoftwareSystem) model.getElement(systemPath);
         Container container = softwareSystem.getContainerWithName(containerName);
 
         Component component = container.addComponent(c.name(), c.getDescription(), c.getTechnology());
@@ -101,7 +101,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         C4Type typeDestination = r.getWith().type();
 
                         if (r.getAction() == C4Action.USES) {
-                            SoftwareSystem systemDestination = workspaceModel.getSoftwareSystemWithName(r.getWith().systemName());
+                            String systemPath = r.getWith().systemPath().getPath();
+                            SoftwareSystem systemDestination = (SoftwareSystem) workspaceModel.getElement(systemPath);
 
                             switch (typeDestination) {
                                 case system: {

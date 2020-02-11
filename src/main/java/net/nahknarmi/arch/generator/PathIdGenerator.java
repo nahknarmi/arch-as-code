@@ -74,9 +74,6 @@ public class PathIdGenerator implements IdGenerator {
     public String generateId(Relationship relationship) {
         Preconditions.checkNotNull(relationship.getSourceId(), relationship);
         Preconditions.checkNotNull(relationship.getDestinationId(), relationship);
-//        Preconditions.checkNotNull(relationship.getTechnology(), relationship);
-
-
 
         String relationshipString = relationship.getSourceId() + relationship.getDestinationId() + relationship.getTechnology();
         MessageDigest md;
@@ -93,8 +90,6 @@ public class PathIdGenerator implements IdGenerator {
         for (byte b : hashInBytes) {
             sb.append(String.format("%02x", b));
         }
-
-        System.err.println("----------------------------" + sb.toString());
 
         return sb.toString();
     }
