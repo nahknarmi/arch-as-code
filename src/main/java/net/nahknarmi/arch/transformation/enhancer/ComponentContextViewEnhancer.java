@@ -3,11 +3,8 @@ package net.nahknarmi.arch.transformation.enhancer;
 import com.structurizr.Workspace;
 import com.structurizr.model.Component;
 import com.structurizr.model.Container;
-import com.structurizr.model.Model;
-import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ComponentView;
 import com.structurizr.view.ViewSet;
-import lombok.NonNull;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.C4Path;
 import net.nahknarmi.arch.domain.c4.view.C4ComponentView;
@@ -29,13 +26,8 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
     @Override
     public ComponentView createView(Workspace workspace, C4ComponentView componentView) {
         ViewSet viewSet = workspace.getViews();
-        @NonNull C4Path containerPath = componentView.getContainerPath();
-        String systemName = containerPath.systemName();
-        String containerName = containerPath.containerName()
-                .orElseThrow(() -> new IllegalStateException("Container name not found in path " + containerPath));
-        Model workspaceModel = workspace.getModel();
-        SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
-        Container container = softwareSystem.getContainerWithName(containerName);
+        C4Path containerPath = componentView.getContainerPath();
+        Container container = (Container) workspace.getModel().getElement(containerPath.getPath());
 
         return viewSet.createComponentView(container, componentView.getKey(), componentView.getDescription());
     }

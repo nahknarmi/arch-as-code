@@ -31,6 +31,7 @@ public class C4Path {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @Getter(AccessLevel.PRIVATE)
     private Matcher matcher;
 
     @NonNull

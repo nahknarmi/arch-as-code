@@ -1,7 +1,6 @@
 package net.nahknarmi.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.Model;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ContainerView;
 import com.structurizr.view.ViewSet;
@@ -23,9 +22,8 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
     @Override
     public ContainerView createView(Workspace workspace, C4ContainerView c) {
         ViewSet viewSet = workspace.getViews();
-        String systemName = c.getSystemPath().systemName();
-        Model workspaceModel = workspace.getModel();
-        SoftwareSystem softwareSystem = workspaceModel.getSoftwareSystemWithName(systemName);
+        SoftwareSystem softwareSystem = (SoftwareSystem) workspace.getModel().getElement(c.getSystemPath().getPath());
+
         return viewSet.createContainerView(softwareSystem, c.getKey(), c.getDescription());
     }
 

@@ -43,7 +43,7 @@ public class ImportExportRoundtripTest {
 //         Re-import json->yaml
 //        ArchitectureDataStructure reimportedDataStructure = new WorkspaceReader().load(renamedJson);
 //        File reExportedFile = new ArchitectureDataStructureWriter().export(reimportedDataStructure);
-        System.out.println("   *** original file" + workspacePath);
-        System.out.println("   *** renamed file" + renamedJson);
+        System.out.println("   *** original file " + workspacePath);
+        System.out.println("   *** renamed file " + renamedJson);
     }
 }

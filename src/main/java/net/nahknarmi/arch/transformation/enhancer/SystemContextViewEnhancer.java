@@ -22,8 +22,8 @@ public class SystemContextViewEnhancer extends BaseViewEnhancer<SystemContextVie
     @Override
     public SystemContextView createView(Workspace workspace, C4SystemView view) {
         ViewSet viewSet = workspace.getViews();
-        String systemName = view.getSystemPath().systemName();
-        SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithName(systemName);
+        SoftwareSystem softwareSystem = (SoftwareSystem) workspace.getModel().getElement(view.getSystemPath().getPath());
+
         return viewSet.createSystemContextView(softwareSystem, view.getKey(), view.getDescription());
     }
 
