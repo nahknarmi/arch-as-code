@@ -349,6 +349,9 @@
                 "name": {
                   "type": "string"
                 },
+                "url": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
@@ -413,6 +416,9 @@
                   "type": "string"
                 },
                 "description": {
+                  "type": "string"
+                },
+                "url": {
                   "type": "string"
                 },
                 "technology": {

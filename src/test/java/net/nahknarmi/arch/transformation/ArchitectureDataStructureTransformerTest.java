@@ -5,6 +5,10 @@ import com.google.common.collect.ImmutableSet;
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.DecisionStatus;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
+import com.structurizr.model.Model;
+import net.nahknarmi.arch.adapter.in.ArchitectureDataStructureReader;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.ImportantTechnicalDecision;
 import net.nahknarmi.arch.domain.c4.C4Model;
@@ -21,28 +25,25 @@ import java.util.Date;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static net.nahknarmi.arch.TestHelper.TEST_PRODUCT_DOCUMENTATION_ROOT_PATH;
+import static net.nahknarmi.arch.TestHelper.TEST_SPACES_MANIFEST_PATH;
 import static net.nahknarmi.arch.domain.c4.C4Location.INTERNAL;
 import static net.nahknarmi.arch.domain.c4.C4Path.path;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 public class ArchitectureDataStructureTransformerTest {
-    private static final String PRODUCT_NAME = "testspaces";
-    private static final String PRODUCT_DESCRIPTION = "DevSpaces is a tool";
+    private static final String PRODUCT_NAME = "TestSpaces";
+    private static final String PRODUCT_DESCRIPTION = "TestSpaces is a tool!";
 
     @Test
-    public void should_transform_architecture_yaml_to_structurizr_workspace() {
-        ArchitectureDataStructure dataStructure =
-                ArchitectureDataStructure.builder()
-                        .name(PRODUCT_NAME)
-                        .businessUnit("DevFactory")
-                        .description(PRODUCT_DESCRIPTION)
-                        .model(buildModel())
-                        .views(buildView())
-                        .build();
-
+    public void should_transform_architecture_yaml_to_structurizr_workspace() throws IOException {
         File documentationRoot = new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
+        File manifestFile = new File(getClass().getResource(TEST_SPACES_MANIFEST_PATH).getPath());
+
+        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader().load(manifestFile);
+
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
         Workspace workspace = transformer.toWorkSpace(dataStructure);
 
@@ -50,32 +51,39 @@ public class ArchitectureDataStructureTransformerTest {
         assertThat(workspace.getName(), equalTo(PRODUCT_NAME));
         assertThat(workspace.getDescription(), equalTo(PRODUCT_DESCRIPTION));
         assertThat(workspace.getDocumentation().getSections().size(), equalTo(2));
-        assertThat(workspace.getModel().getPeople().size(), equalTo(1));
-        assertThat(workspace.getModel().getSoftwareSystems().size(), equalTo(1));
+        Model model = workspace.getModel();
+        assertThat(model.getPeople().size(), equalTo(4));
+        assertThat(model.getSoftwareSystems().size(), equalTo(5));
+        Container container = (Container) model.getElement("c4://DevSpaces/DevSpaces Web Application");
+        assertThat(container, notNullValue());
+        assertThat(container.getUrl(), equalTo("https://devspaces.io"));
+        Component component = (Component) model.getElement("c4://DevSpaces/DevSpaces API/Sign In Controller");
+        assertThat(component, notNullValue());
+        assertThat(component.getUrl(), equalTo("https://devspaces.io/sign-in"));
     }
 
     @Test
-    public void should_tranform_accept_decision_status() throws IOException {
+    public void should_tranform_accept_decision_status() {
         checkStatus(DecisionStatus.Accepted);
     }
 
     @Test
-    public void should_tranform_superseded_decision_status() throws IOException {
+    public void should_tranform_superseded_decision_status() {
         checkStatus(DecisionStatus.Superseded);
     }
 
     @Test
-    public void should_tranform_deprecated_decision_status() throws IOException {
+    public void should_tranform_deprecated_decision_status() {
         checkStatus(DecisionStatus.Deprecated);
     }
 
     @Test
-    public void should_tranform_rejected_decision_status() throws IOException {
+    public void should_tranform_rejected_decision_status() {
         checkStatus(DecisionStatus.Rejected);
     }
 
     @Test
-    public void should_tranform_proposed_decision_status() throws IOException {
+    public void should_tranform_proposed_decision_status() {
         checkStatus(DecisionStatus.Proposed);
     }
 

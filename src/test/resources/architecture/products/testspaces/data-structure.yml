@@ -147,6 +147,7 @@ model:
     - path: "c4://DevSpaces/DevSpaces Web Application"
       description: "Manage dev spaces"
       technology: "Angular"
+      url: "https://devspaces.io"
       tags:
         - "DevSpaces Container View"
       relationships:
@@ -164,6 +165,7 @@ model:
     - path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
       description: "Allows users to sign in"
       technology: "Spring MVC Rest Controller"
+      url: "https://devspaces.io/sign-in"
       tags:
         - "DevSpaces API Component View"
       relationships:

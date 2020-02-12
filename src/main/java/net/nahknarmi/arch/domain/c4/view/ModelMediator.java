@@ -50,6 +50,7 @@ public class ModelMediator {
         SoftwareSystem softwareSystem = new ModelMediator(model).softwareSystem(container.getPath().systemPath());
         Container result = softwareSystem.addContainer(container.name(), container.getDescription(), container.getTechnology());
         result.addTags(getTags(container));
+        result.setUrl(container.getUrl());
         return result;
     }
 
@@ -57,6 +58,7 @@ public class ModelMediator {
         Container container = new ModelMediator(model).container(component.getPath().containerPath());
         Component result = container.addComponent(component.name(), component.getDescription(), component.getTechnology());
         result.addTags(getTags(component));
+        result.setUrl(component.getUrl());
         return result;
     }
 
