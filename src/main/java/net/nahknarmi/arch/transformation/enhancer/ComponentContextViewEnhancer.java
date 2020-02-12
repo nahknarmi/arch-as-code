@@ -48,11 +48,12 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
                     Container container = view.getContainer();
                     Component component = modelMediator.component(entityPath);
 
-//                    if (component.getContainer().equals(container)) {
+                    //TODO: Find out why there are cases where input is broken
+                    if (component.getContainer().equals(container)) {
                         view.add(component);
-//                    } else {
-//                        log.warn("Only components belonging to " + container + " can be added to view (" + component + " not added.).");
-//                    }
+                    } else {
+                        log.warn("Only components belonging to " + container + " can be added to view (" + component + " not added.).");
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Unsupported type " + entityPath.type());
