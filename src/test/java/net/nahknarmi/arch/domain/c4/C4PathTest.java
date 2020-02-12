@@ -20,7 +20,6 @@ public class C4PathTest {
     @Before
     public void setUp() {
         workspace = new Workspace("foo", "blah");
-//        workspace.getModel().setIdGenerator(new PathIdGenerator());
     }
 
     @Test
