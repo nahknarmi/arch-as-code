@@ -38,7 +38,7 @@ dependencies {
 
     //Command line arguments
     implementation 'info.picocli:picocli:4.2.0'
-    annotationProcessor 'info.picocli:picocli-codegen:4.1.4'
+    annotationProcessor 'info.picocli:picocli-codegen:4.2.0'
 
     //vavr
     implementation 'io.vavr:vavr:0.10.2'
