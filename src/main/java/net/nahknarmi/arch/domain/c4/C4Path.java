@@ -25,7 +25,7 @@ public class C4Path {
     private static final String ENTITY_PREFIX = "c4://";
     private static final String PERSON_PREFIX = "@";
 
-    private static final String regex = "(c4:\\/\\/|\\@)([\\w\\s\\-]+)\\/?([\\w\\s\\-]+)?\\/?([\\w\\s\\-]+)?";
+    private static final String regex = "(c4:\\/\\/|\\@)([\\w\\s\\-\\.\\-]+)\\/?([\\w\\s\\.\\-]+)?\\/?([\\w\\s\\.\\-]+)?";
     private static final Pattern pattern = Pattern.compile(regex);
 
     @JsonIgnore

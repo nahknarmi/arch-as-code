@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static net.nahknarmi.arch.domain.c4.C4Path.path;
+import static net.nahknarmi.arch.domain.c4.C4Type.component;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -19,6 +20,7 @@ public class C4PathTest {
     @Before
     public void setUp() {
         workspace = new Workspace("foo", "blah");
+//        workspace.getModel().setIdGenerator(new PathIdGenerator());
     }
 
     @Test
@@ -43,6 +45,12 @@ public class C4PathTest {
     public void buildPath_for_component() {
         Component component = buildComponent("component");
         buildPath(component, C4Type.component, "c4://system/container/component");
+    }
+
+    @Test
+    public void buildPath_for_component_with_dot() {
+        Component component = buildComponent("Sococo.App");
+        buildPath(component, C4Type.component, "c4://system/container/Sococo.App");
     }
 
     @Test
@@ -108,7 +116,7 @@ public class C4PathTest {
         assertThat(path.containerName(), equalTo(Optional.of("DevSpaces API")));
         assertThat(path.componentName(), equalTo(Optional.of("Sign-In Component")));
 
-        assertThat(path.type(), equalTo(C4Type.component));
+        assertThat(path.type(), equalTo(component));
     }
 
     @Test(expected = IllegalArgumentException.class)

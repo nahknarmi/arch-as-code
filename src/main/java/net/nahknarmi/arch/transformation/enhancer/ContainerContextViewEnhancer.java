@@ -22,8 +22,8 @@ public class ContainerContextViewEnhancer extends BaseViewEnhancer<ContainerView
     @Override
     public ContainerView createView(Workspace workspace, C4ContainerView c) {
         ViewSet viewSet = workspace.getViews();
-        SoftwareSystem softwareSystem = (SoftwareSystem) workspace.getModel().getElement(c.getSystemPath().getPath());
 
+        SoftwareSystem softwareSystem = new ModelMediator(workspace.getModel()).softwareSystem(c.getSystemPath());
         return viewSet.createContainerView(softwareSystem, c.getKey(), c.getDescription());
     }
 
