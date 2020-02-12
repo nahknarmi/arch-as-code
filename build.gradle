@@ -37,7 +37,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
 
     //Command line arguments
-    implementation 'info.picocli:picocli:4.1.4'
+    implementation 'info.picocli:picocli:4.2.0'
     annotationProcessor 'info.picocli:picocli-codegen:4.1.4'
 
     //vavr
