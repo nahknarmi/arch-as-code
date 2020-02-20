@@ -3,6 +3,8 @@ package net.nahknarmi.arch.domain.c4;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -35,19 +37,14 @@ public abstract class BaseEntity implements Entity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BaseEntity)) return false;
-        if (!super.equals(o)) return false;
-
-        BaseEntity that = (BaseEntity) o;
-
-        return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
+        if (o.getClass() != getClass()) {
+            return false;
+        }
+        return new EqualsBuilder().append(this.getId(), ((BaseEntity) o).getId()).isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
-        return result;
+        return new HashCodeBuilder().append(getId()).toHashCode();
     }
 }
