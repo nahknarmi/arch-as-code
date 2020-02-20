@@ -1,6 +1,5 @@
 package net.nahknarmi.arch.generator;
 
-import com.google.common.base.Preconditions;
 import com.structurizr.model.Element;
 import com.structurizr.model.IdGenerator;
 import com.structurizr.model.Relationship;
@@ -13,6 +12,7 @@ import net.nahknarmi.arch.domain.c4.Entity;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.stream.Collectors.toList;
 
 public class NumericIdGenerator implements IdGenerator {
@@ -75,8 +75,8 @@ public class NumericIdGenerator implements IdGenerator {
 
     @Override
     public String generateId(Relationship relationship) {
-        Preconditions.checkNotNull(relationship.getSourceId(), relationship);
-        Preconditions.checkNotNull(relationship.getDestinationId(), relationship);
+        checkNotNull(relationship.getSourceId(), relationship);
+        checkNotNull(relationship.getDestinationId(), relationship);
 
         List<Tuple2<Entity, C4Relationship>> possibleRelationships = dataStructureModel
                 .allRelationships()

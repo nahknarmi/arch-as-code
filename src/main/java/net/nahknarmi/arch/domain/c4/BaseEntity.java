@@ -41,13 +41,13 @@ public abstract class BaseEntity implements Entity {
 
         BaseEntity that = (BaseEntity) o;
 
-        return getPath() != null ? getPath().equals(that.getPath()) : that.getPath() == null;
+        return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getPath() != null ? getPath().hashCode() : 0);
+        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
         return result;
     }
 }
