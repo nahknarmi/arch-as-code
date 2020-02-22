@@ -47,7 +47,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 1.8
@@ -55,15 +55,13 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Test Installation on OSX
+      - name: Test Installation on OSX & Ubuntu
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
-        run: |
-            "./scripts/install/${{ matrix.os }}/install.sh"
+        run: ./scripts/install/${{ matrix.os }}/install.sh
 
       - name: Test Installation on Windows
         if: matrix.os == 'windows-latest'
-        run: |
-            "get-executionpolicy"
+        run: get-executionpolicy
 
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
