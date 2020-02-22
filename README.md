@@ -26,10 +26,20 @@ You can download the latest tarball [here](https://github.com/nahknarmi/arch-as-
 
 Alternatively you can run commands below for your respective OS.
 
-### Mac OSX & Linux
+### Mac OS
 
 ```bash
 mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
+
+export PATH=$PATH:~/arch-as-code/bin
+
+arch-as-code --help
+```
+
+### Linux
+
+```bash
+mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar -z --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
 

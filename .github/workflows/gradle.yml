@@ -57,7 +57,7 @@ jobs:
 
       - name: Test Installation
         if: github.ref == 'refs/heads/installation-tests'
-        run: "./scripts/test-installation.sh"
+        run: "./scripts/install/${{ matrix.os }}/install.sh"
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
           STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
