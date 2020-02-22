@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 set -eux
 
-mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
+mkdir -p ~/arch-as-code
+ls -alh ~/
 
-ls -alh ~/arch-as-code/
+curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"
+
+curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
+
 
 export PATH=$PATH:~/arch-as-code/bin
 
