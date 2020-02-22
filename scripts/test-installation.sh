@@ -2,16 +2,17 @@
 set -eux
 
 mkdir -p ~/arch-as-code
-ls -alh ~/
 
-curl -v https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest
+curl -i https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest
 
-echo `curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url"`
+curl -v https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest
+
+echo `curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url"`
 
 
-echo `curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"`
+echo `curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"`
 
-curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
+curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
 
 
 export PATH=$PATH:~/arch-as-code/bin
