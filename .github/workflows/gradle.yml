@@ -47,7 +47,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest]
+        os: [macOS-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 1.8
@@ -56,8 +56,14 @@ jobs:
           java-version: 1.8
 
       - name: Test Installation
-        if: github.ref == 'refs/heads/installation-tests'
-        run: "./scripts/install/${{ matrix.os }}/install.sh"
+        - if: matrix.os == 'ubuntu-latest'
+            run: |
+              "./scripts/install/${{ matrix.os }}/install.sh"
+
+        - if: matrix.os == 'windows-latest'
+            run: |
+              ".\scripts\install\${{ matrix.os }}\install.ps1"
+
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
           STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
