@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eux
 
+curl -i https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest
+
 mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
