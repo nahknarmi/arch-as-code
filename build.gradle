@@ -19,7 +19,7 @@ apply plugin: 'distribution'
 mainClassName = 'net.nahknarmi.arch.Bootstrap'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '1.1'
+version = '1.1.0'
 
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
@@ -87,5 +87,27 @@ plugins.withType(DistributionPlugin) {
     distTar {
         compression = Compression.GZIP
         extension = 'tar.gz'
+    }
+}
+
+
+def generatedResources = "$buildDir/generated-resources/main"
+sourceSets {
+    main {
+        //register an output folder on the main SourceSet:
+        output.dir(generatedResources, builtBy: 'generateVersionTxt')
+        //it is now a part of the 'main' classpath and will be a part of the jar
+    }
+}
+
+//a task that generates the resources:
+task generateVersionTxt {
+    description 'Creates a version.txt file with build info that is added to the root of the jar'
+    doLast {
+        new File(generatedResources).mkdirs()
+        def generated = new File(generatedResources, "version.txt")
+        generated.text = """
+          Version: $rootProject.version
+          """
     }
 }

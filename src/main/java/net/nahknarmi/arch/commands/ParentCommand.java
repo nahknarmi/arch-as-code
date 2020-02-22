@@ -4,9 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "arch-as-code", description = "Architecture as code", mixinStandardHelpOptions = true, version = "1.0.0")
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@CommandLine.Command(name = "arch-as-code", description = "Architecture as code", mixinStandardHelpOptions = true, versionProvider = ParentCommand.VersionProvider.class)
 public class ParentCommand implements Callable<Integer> {
     private static final Log logger = LogFactory.getLog(ParentCommand.class);
 
@@ -14,5 +19,17 @@ public class ParentCommand implements Callable<Integer> {
     public Integer call() {
         logger.info("Arch as code");
         return 0;
+    }
+
+    static class VersionProvider implements CommandLine.IVersionProvider {
+
+        @Override
+        public String[] getVersion() throws IOException {
+            URL url = getClass().getResource("/version.txt");
+            checkNotNull(url, "Failed to retrieve version information.");
+            Properties properties = new Properties();
+            properties.load(url.openStream());
+            return new String[]{"version " + properties.getProperty("Version") + ", build 633a0ea"};
+        }
     }
 }
