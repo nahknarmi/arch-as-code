@@ -4,7 +4,12 @@ set -eux
 mkdir -p ~/arch-as-code
 ls -alh ~/
 
-curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"
+curl -v https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest
+
+echo `curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url"`
+
+
+echo `curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \"`
 
 curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
 
