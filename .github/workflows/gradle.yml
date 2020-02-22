@@ -42,14 +42,6 @@ jobs:
         STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
         STRUCTURIZR_WORKSPACE_ID: ${{ secrets.PROD_STRUCTURIZR_WORKSPACE_ID }}
 
-    - name: Release
-      if: github.ref == 'refs/heads/installation-tests'
-      run: ./scripts/test-installation.sh"
-      env:
-        STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
-        STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
-        STRUCTURIZR_WORKSPACE_ID: ${{ secrets.PROD_STRUCTURIZR_WORKSPACE_ID }}
-
   publish:
 #    needs: build
     runs-on: macOS-latest
