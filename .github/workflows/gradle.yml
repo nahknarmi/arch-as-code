@@ -63,7 +63,7 @@ jobs:
       - name: Test Installation on Windows
         if: matrix.os == 'windows-latest'
         run: |
-            ".\scripts\install\${{ matrix.os }}\install.ps1"
+            "get-executionpolicy"
 
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
