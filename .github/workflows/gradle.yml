@@ -42,12 +42,12 @@ jobs:
         STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
         STRUCTURIZR_WORKSPACE_ID: ${{ secrets.PROD_STRUCTURIZR_WORKSPACE_ID }}
 
-  publish:
+  release:
 #    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        os: [windows-latest]
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 1.8
