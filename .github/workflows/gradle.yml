@@ -56,13 +56,13 @@ jobs:
           java-version: 1.8
 
       - name: Test Installation
-        - if: matrix.os == 'ubuntu-latest'
-            run: |
-              "./scripts/install/${{ matrix.os }}/install.sh"
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+            "./scripts/install/${{ matrix.os }}/install.sh"
 
-        - if: matrix.os == 'windows-latest'
-            run: |
-              ".\scripts\install\${{ matrix.os }}\install.ps1"
+        if: matrix.os == 'windows-latest'
+        run: |
+            ".\scripts\install\${{ matrix.os }}\install.ps1"
 
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
