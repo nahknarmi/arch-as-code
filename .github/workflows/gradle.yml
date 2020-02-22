@@ -51,7 +51,7 @@ jobs:
         STRUCTURIZR_WORKSPACE_ID: ${{ secrets.PROD_STRUCTURIZR_WORKSPACE_ID }}
 
   publish:
-    needs: build
+#    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -62,7 +62,7 @@ jobs:
 
       - name: Test Installation
         if: github.ref == 'refs/heads/installation-tests'
-        run: ./scripts/test-installation.sh"
+        run: "./scripts/test-installation.sh"
         env:
           STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
           STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
