@@ -19,12 +19,7 @@ cd "$env:temp\my-awesome-product"
 arch-as-code --version
 
 # gci env:* | sort-object name
-
-echo "$STRUCTURIZR_WORKSPACE_ID"
-echo "Env:$STRUCTURIZR_WORKSPACE_ID"
-echo "ENV:$STRUCTURIZR_WORKSPACE_ID"
-echo "env:$STRUCTURIZR_WORKSPACE_ID"
-echo "$env:$STRUCTURIZR_WORKSPACE_ID"
+echo "$env:STRUCTURIZR_WORKSPACE_ID"
 
 echo "$env:GITHUB_RUN_ID"
 
