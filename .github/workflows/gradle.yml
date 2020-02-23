@@ -59,14 +59,14 @@ jobs:
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
         run: ./scripts/install/${{ matrix.os }}/install.sh
         env:
-          STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
-          STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+          STRUCTURIZR_API_KEY: ${{ secrets.TEST_STRUCTURIZR_API_KEY }}
+          STRUCTURIZR_API_SECRET: ${{ secrets.TEST_STRUCTURIZR_API_SECRET }}
           STRUCTURIZR_WORKSPACE_ID: ${{ secrets.TEST_STRUCTURIZR_WORKSPACE_ID }}
 
       - name: Test Installation on Windows
         if: matrix.os == 'windows-latest'
         run: .\scripts\install\windows-latest\install.ps1
         env:
-          STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
-          STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+          STRUCTURIZR_API_KEY: ${{ secrets.TEST_STRUCTURIZR_API_KEY }}
+          STRUCTURIZR_API_SECRET: ${{ secrets.TEST_STRUCTURIZR_API_SECRET }}
           STRUCTURIZR_WORKSPACE_ID: ${{ secrets.TEST_STRUCTURIZR_WORKSPACE_ID }}
