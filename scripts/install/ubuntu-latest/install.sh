@@ -10,7 +10,7 @@ arch-as-code --help
 mkdir -p ~/my-awesome-product
 cd ~/my-awesome-product
 
-arch-as-code init -i ${STRUCTURIZR_WORKSPACE_ID} -k ${STRUCTURIZR_API_KEY} -s ${STRUCTURIZR_API_SECRET} .
+arch-as-code init -i "${STRUCTURIZR_WORKSPACE_ID}" -k "${STRUCTURIZR_API_KEY}" -s "${STRUCTURIZR_API_SECRET}" .
 
 arch-as-code validate .
 
