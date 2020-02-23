@@ -14,9 +14,11 @@ arch-as-code --help
 New-Item -ItemType Directory -Force -Path "$env:temp\my-awesome-product"
 cd "$env:temp\my-awesome-product"
 
-ls
+ls "$env:temp"
 
-# arch-as-code init -i $ENV:STRUCTURIZR_WORKSPACE_ID -k $ENV:STRUCTURIZR_API_KEY -s $ENV:STRUCTURIZR_API_SECRET .
+ls "$env:temp\my-awesome-product"
+
+arch-as-code init -i $ENV:STRUCTURIZR_WORKSPACE_ID -k $ENV:STRUCTURIZR_API_KEY -s $ENV:STRUCTURIZR_API_SECRET .
 #
 # arch-as-code validate .
 #
