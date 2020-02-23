@@ -24,4 +24,5 @@ pwd
 
 arch-as-code --version
 
-arch-as-code init -i $STRUCTURIZR_WORKSPACE_ID -k $STRUCTURIZR_API_KEY -s $STRUCTURIZR_API_SECRET .
+arch-as-code init -i "$STRUCTURIZR_WORKSPACE_ID" -k "$STRUCTURIZR_API_KEY" -s "$STRUCTURIZR_API_SECRET" .
+
