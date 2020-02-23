@@ -43,7 +43,7 @@ jobs:
         STRUCTURIZR_WORKSPACE_ID: ${{ secrets.PROD_STRUCTURIZR_WORKSPACE_ID }}
 
   release:
-#    needs: build
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -55,7 +55,7 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Test Installation on OSX & Ubuntu
+      - name: Test Installation on macOS & Ubuntu
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
         run: ./scripts/install/${{ matrix.os }}/install.sh
         env:

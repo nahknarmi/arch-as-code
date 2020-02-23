@@ -1,10 +1,10 @@
 # Arch as code
 
-![](https://github.com/nahknarmi/arch-as-code/workflows/Build%20&%20Test/badge.svg) 
-[![Test Coverage](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/test_coverage)](https://codeclimate.com/github/nahknarmi/arch-as-code/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/maintainability)](https://codeclimate.com/github/nahknarmi/arch-as-code/maintainability)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=nahknarmi/arch-as-code)](https://dependabot.com)
-[![Known Vulnerabilities](https://snyk.io/test/github/nahknarmi/arch-as-code/badge.svg)](https://snyk.io/test/github/nahknarmi/arch-as-code)
+![](https://github.com/trilogy-group/arch-as-code/workflows/Build%20&%20Test/badge.svg) 
+[![Test Coverage](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/test_coverage)](https://codeclimate.com/github/trilogy-group/arch-as-code/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/maintainability)](https://codeclimate.com/github/trilogy-group/arch-as-code/maintainability)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=trilogy-group/arch-as-code)](https://dependabot.com)
+[![Known Vulnerabilities](https://snyk.io/test/github/trilogy-group/arch-as-code/badge.svg)](https://snyk.io/test/github/trilogy-group/arch-as-code)
 
 Arch as code project is to manage **product architecture as code**. 
 
@@ -22,14 +22,14 @@ See Structurizr [getting started](https://structurizr.com/help/getting-started) 
 
 Arch as code requires Java 8 or greater to be installed.
 
-You can download the latest tarball [here](https://github.com/nahknarmi/arch-as-code/releases/latest).
+You can download the latest tarball [here](https://github.com/trilogy-group/arch-as-code/releases/latest).
 
 Alternatively you can run commands below for your respective OS.
 
 ### Mac OS
 
 ```bash
-mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
+mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
 
@@ -39,7 +39,7 @@ arch-as-code --help
 ### Linux
 
 ```bash
-mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar -z --strip-components 1 -x -C ~/arch-as-code
+mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar -z --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
 
@@ -49,7 +49,7 @@ arch-as-code --help
 ### Windows
 
 ```powershell
-$download_url = (Invoke-WebRequest "https://api.github.com/repos/nahknarmi/arch-as-code/releases/latest" | ConvertFrom-Json).assets.browser_download_url
+$download_url = (Invoke-WebRequest "https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest" | ConvertFrom-Json).assets.browser_download_url
 
 (New-Object System.Net.WebClient).DownloadFile($download_url, "$env:temp\arch-as-code.tar.gz")  
 
@@ -106,9 +106,9 @@ Tests operate against a "test" Structurizr workspace.
 
 ## Continuous Integration & Continuous Deployment
 
-Continuous integration is currently being done using [GitHub Actions](https://github.com/nahknarmi/arch-as-code/actions).
+Continuous integration is currently being done using [GitHub Actions](https://github.com/trilogy-group/arch-as-code/actions).
 
-Continuous deployment (publishing documentation) is currently being done using [GitHub Actions](https://github.com/nahknarmi/arch-as-code/actions). 
+Continuous deployment (publishing documentation) is currently being done using [GitHub Actions](https://github.com/trilogy-group/arch-as-code/actions). 
 
 GitHub Actions configuration is captured under `.github/workflows/`
 
