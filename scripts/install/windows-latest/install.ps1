@@ -21,7 +21,3 @@ ls "$env:temp\my-awesome-product"
 pwd
 
 arch-as-code init -i $ENV:STRUCTURIZR_WORKSPACE_ID -k $ENV:STRUCTURIZR_API_KEY -s $ENV:STRUCTURIZR_API_SECRET .
-#
-# arch-as-code validate .
-#
-# arch-as-code publish .
