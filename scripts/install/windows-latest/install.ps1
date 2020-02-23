@@ -18,10 +18,5 @@ cd "$env:temp\my-awesome-product"
 
 arch-as-code --version
 
-# gci env:* | sort-object name
-echo "$env:STRUCTURIZR_WORKSPACE_ID"
-
-echo "$env:GITHUB_RUN_ID"
-
-arch-as-code init -i "$env:STRUCTURIZR_WORKSPACE_ID" -k "$env:STRUCTURIZR_API_KEY" -s "$env:STRUCTURIZR_API_SECRET" "$env:temp\my-awesome-product"
+# arch-as-code init -i "$env:STRUCTURIZR_WORKSPACE_ID" -k "$env:STRUCTURIZR_API_KEY" -s "$env:STRUCTURIZR_API_SECRET" "$env:temp\my-awesome-product"
 
