@@ -11,8 +11,8 @@ $Env:Path += ";$HOME\arch-as-code\bin"
 
 arch-as-code --help
 
-New-Item -ItemType Directory -Force -Path $HOME\my-awesome-product
-cd $HOME\my-awesome-product
+New-Item -ItemType Directory -Force -Path "$env:temp\my-awesome-product"
+cd "$env:temp\my-awesome-product"
 
 ls
 
