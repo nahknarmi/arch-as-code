@@ -18,7 +18,7 @@ import static net.nahknarmi.arch.adapter.Credentials.createCredentials;
 
 @CommandLine.Command(name = "init", description = "Initializes project")
 public class InitializeCommand implements Callable<Integer> {
-    private static final Log logger = LogFactory.getLog(ValidateCommand.class);
+    private static final Log logger = LogFactory.getLog(InitializeCommand.class);
 
     @CommandLine.Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
     private String workspaceId;
@@ -29,7 +29,7 @@ public class InitializeCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
     private String apiSecret;
 
-    @CommandLine.Parameters(description = "Product documentation root directory", defaultValue = "./")
+    @CommandLine.Parameters(description = "Product documentation root directory")
     private File productDocumentationRoot;
 
     // for testing purposes
