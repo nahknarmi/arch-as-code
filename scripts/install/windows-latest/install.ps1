@@ -16,13 +16,9 @@ arch-as-code --help
 New-Item -ItemType Directory -Force -Path "$env:temp\my-awesome-product"
 cd "$env:temp\my-awesome-product"
 
-ls "$env:temp"
-
-ls "$env:temp\my-awesome-product"
-
-pwd
-
 arch-as-code --version
+
+gci env:* | sort-object name
 
 arch-as-code init -i "$STRUCTURIZR_WORKSPACE_ID" -k "$STRUCTURIZR_API_KEY" -s "$STRUCTURIZR_API_SECRET" .
 
