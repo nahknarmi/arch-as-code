@@ -25,35 +25,35 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_print_arch_as_code_when_no_args() {
+    public void prints_arch_as_code_when_no_args() {
         int exitCode = parent();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void should_print_version() {
+    public void prints_version() {
         int exitCode = version();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void should_print_help() {
+    public void prints_help() {
         int exitCode = help();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void should_fail_when_no_parameters_passed_to_initialize_command() {
+    public void fails_when_no_parameters_passed_to_initialize_command() {
         int exitCode = new Bootstrap().execute(new String[]{"init"});
 
         assertThat(exitCode, equalTo(2));
     }
 
     @Test
-    public void should_fail_when_options_passed_but_parameter_is_not_passed_to_initialize_command() {
+    public void fails_when_options_passed_but_parameter_is_not_passed_to_initialize_command() {
         int exitCode = new Bootstrap()
                 .execute(new String[]{
                         "init",
@@ -66,14 +66,14 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_initialize_workspace_when_all_parameters_and_options_passed_to_initialize_command() {
+    public void initializes_workspace_when_all_parameters_and_options_passed_to_initialize_command() {
         int exitCode = init();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void should_fail_when_workspace_path_not_passed_to_validate_command() {
+    public void fails_when_workspace_path_not_passed_to_validate_command() {
         init();
 
         int exitCode = new Bootstrap().execute(new String[]{"validate"});
@@ -82,7 +82,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_validate_workspace_when_workspace_path_passed_to_validate_command() {
+    public void validates_workspace_when_workspace_path_passed_to_validate_command() {
         init();
 
         int exitCode = validate();
@@ -101,7 +101,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_publish_workspace_when_workspace_path_passed_to_validate_command() {
+    public void publishes_workspace_when_workspace_path_passed_to_validate_command() {
         init();
         validate();
 
@@ -111,14 +111,14 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_fail_when_exported_workspace_path_not_passed_to_import_command() {
+    public void fails_when_exported_workspace_path_not_passed_to_import_command() {
         int exitCode = new Bootstrap().execute(new String[]{"import"});
 
         assertThat(exitCode, equalTo(2));
     }
 
     @Test
-    public void should_import_exported_workspace_when_workspace_path_passed_to_import_command() {
+    public void imports_exported_workspace_when_workspace_path_passed_to_import_command() {
         int exitCode = importWorkspace();
 
         assertThat(exitCode, equalTo(0));
