@@ -1,13 +1,13 @@
 package net.nahknarmi.arch;
 
 import net.nahknarmi.arch.adapter.WorkspaceConfig;
-import net.nahknarmi.arch.adapter.WorkspaceConfigLoader;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 
+import static net.nahknarmi.arch.adapter.Credentials.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -19,7 +19,7 @@ public class UserJourneyTest {
 
     @Before
     public void setUp() throws Exception {
-        config = new WorkspaceConfigLoader().config();
+        config = config();
         workspaceRoot = Files.createTempDirectory("arch-as-code").toAbsolutePath().toString();
         exportedWorkspacePath = new File(getClass().getResource("/structurizr/Think3-Sococo.c4model.json").getPath());
     }

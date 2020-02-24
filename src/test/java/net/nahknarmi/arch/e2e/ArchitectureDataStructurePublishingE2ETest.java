@@ -3,7 +3,6 @@ package net.nahknarmi.arch.e2e;
 import com.structurizr.Workspace;
 import com.structurizr.api.StructurizrClientException;
 import net.nahknarmi.arch.adapter.StructurizrAdapter;
-import net.nahknarmi.arch.adapter.WorkspaceConfigLoader;
 import net.nahknarmi.arch.publish.ArchitectureDataStructurePublisher;
 import org.junit.Test;
 
@@ -23,13 +22,12 @@ public class ArchitectureDataStructurePublishingE2ETest {
         //given
         File documentationRoot =
                 new File(getClass().getResource(TEST_PRODUCT_DOCUMENTATION_ROOT_PATH).getPath());
-        WorkspaceConfigLoader workspaceConfigLoader = new WorkspaceConfigLoader();
 
         //when
         ArchitectureDataStructurePublisher.create(documentationRoot, "data-structure.yml").publish();
 
         //then
-        StructurizrAdapter adapter = new StructurizrAdapter(workspaceConfigLoader);
+        StructurizrAdapter adapter = new StructurizrAdapter();
         Workspace workspace = adapter.load(TEST_WORKSPACE_ID);
         assertThat(workspace.getDocumentation().getSections(), hasSize(2));
         assertThat(workspace.getDocumentation().getDecisions(), hasSize(2));
