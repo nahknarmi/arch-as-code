@@ -1,11 +1,11 @@
 name: arch-as-code release
 
-on: [push]
-
-  branches:
-    - installation-tests
-  tags:
-    - v*
+on:
+  push:
+    branches:
+      - installation-tests
+    tags:
+      - v*
 
 jobs:
 
