@@ -53,7 +53,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_fail_when_parameter_is_not_passed_to_initialize_command() {
+    public void should_fail_when_options_passed_but_parameter_is_not_passed_to_initialize_command() {
         int exitCode = new Bootstrap()
                 .execute(new String[]{
                         "init",
@@ -112,9 +112,6 @@ public class UserJourneyTest {
 
     @Test
     public void should_fail_when_exported_workspace_path_not_passed_to_import_command() {
-        init();
-        validate();
-
         int exitCode = new Bootstrap().execute(new String[]{"import"});
 
         assertThat(exitCode, equalTo(2));
