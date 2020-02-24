@@ -1,7 +1,7 @@
 package net.nahknarmi.arch.transformation;
 
 import com.google.common.collect.ImmutableList;
-import net.nahknarmi.arch.adapter.WorkspaceIdFinder;
+import net.nahknarmi.arch.adapter.WorkspaceConfigLoader;
 import net.nahknarmi.arch.transformation.enhancer.*;
 
 import java.io.File;
@@ -20,6 +20,6 @@ public abstract class TransformerFactory {
                         new ComponentContextViewEnhancer(),
                         new SystemLandscapeViewEnhancer()
                 ),
-                new WorkspaceIdFinder());
+                new WorkspaceConfigLoader());
     }
 }
