@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 
 import static net.nahknarmi.arch.adapter.Credentials.createCredentials;
 
-@CommandLine.Command(name = "init", description = "Initializes project")
+@CommandLine.Command(name = "init", description = "Initializes workspace")
 public class InitializeCommand implements Callable<Integer> {
     private static final Log logger = LogFactory.getLog(InitializeCommand.class);
 
@@ -29,7 +29,7 @@ public class InitializeCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
     private String apiSecret;
 
-    @CommandLine.Parameters(description = "Product documentation root directory")
+    @CommandLine.Parameters(index = "0", description = "Product documentation root directory")
     private File productDocumentationRoot;
 
     // for testing purposes

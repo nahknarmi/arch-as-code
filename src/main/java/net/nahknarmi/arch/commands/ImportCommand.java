@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "import", description = "Imports existing struturizr workspace")
 public class ImportCommand implements Callable<Integer> {
 
-    @CommandLine.Parameters(index = "0", paramLabel = "EXPORTED_WORKSPACE", description = "Exported structurizr workspace location.", defaultValue = "./")
+    @CommandLine.Parameters(index = "0", paramLabel = "EXPORTED_WORKSPACE", description = "Exported structurizr workspace location.")
     private File exportedWorkspacePath;
 
     // Only for testing purposes

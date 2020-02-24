@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 public class PublishCommand implements Callable<Integer> {
     private final String manifestFileName;
 
-    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.", defaultValue = "./")
+    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_DOCUMENTATION_PATH", description = "Product documentation root where data-structure.yml is located.")
     private File productDocumentationRoot;
 
     // Only for testing purposes
