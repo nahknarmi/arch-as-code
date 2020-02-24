@@ -11,8 +11,8 @@ code**.
 
 By following this approach we will be able to **manage our architecture
 documents, models, decisions and diagrams** in the same way we do code
-thus benefiting from all **tools and workflows supporting modern
-development**. Think PR reviews, static code analysis, continuous
+thus benefiting from all **tools, techniques and workflows supporting
+modern development**. Think PR reviews, static code analysis, continuous
 integration & continuous deployment.
 
 Specifically we are making use of the
