@@ -1,4 +1,4 @@
-name: arch-as-code CI
+name: arch-as-code release
 
 on: [push]
 
