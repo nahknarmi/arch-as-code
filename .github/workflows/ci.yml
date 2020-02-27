@@ -28,8 +28,8 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
-        name: installer
-        path: build/distributions/
+        name: distributions
+        path: build/distributions/*.tar.gz
 
     - name: Push Test Coverage
       run: ./scripts/push-to-code-coverage.sh
