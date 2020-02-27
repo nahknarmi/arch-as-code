@@ -29,7 +29,7 @@ public class ParentCommand implements Callable<Integer> {
             checkNotNull(url, "Failed to retrieve version information.");
             Properties properties = new Properties();
             properties.load(url.openStream());
-            return new String[]{"version " + properties.getProperty("Version") + ", build 633a0ea"};
+            return new String[]{"arch-as-code version " + properties.getProperty("Version")};
         }
     }
 }
