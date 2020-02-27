@@ -25,6 +25,12 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
 
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: installer
+        path: build/distribution/
+
     - name: Push Test Coverage
       run: ./scripts/push-to-code-coverage.sh
       env: # Or as an environment variable
