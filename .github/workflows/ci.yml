@@ -29,7 +29,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: distributions
-        path: build/distributions/*.tar.gz
+        path: build/distributions
 
     - name: Push Test Coverage
       run: ./scripts/push-to-code-coverage.sh
