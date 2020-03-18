@@ -1,6 +1,6 @@
 package net.trilogy.arch.commands;
 
-import net.trilogy.arch.adapter.ArchitectureDataStructureObjectMapper;
+import net.trilogy.arch.adapter.out.ArchitectureDataStructureWriter;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,8 +8,7 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.Credentials.createCredentials;
@@ -55,17 +54,23 @@ public class InitializeCommand implements Callable<Integer> {
     }
 
     private void createManifest() throws IOException {
-        File manifestFile = new File(productDocumentationRoot.getAbsolutePath() + File.separator + "data-structure.yml");
+        ArchitectureDataStructure data = createSampleDataStructure();
+        String toFilePath = productDocumentationRoot.getAbsolutePath() + File.separator + "data-structure.yml";
+        write(data, toFilePath);
+        logger.info(String.format("Manifest file written to - %s", toFilePath));
+    }
 
+    private void write(ArchitectureDataStructure data, String toFilePath) throws IOException {
+        File export = new ArchitectureDataStructureWriter().export(data);
+        File manifestFile = new File(toFilePath);
+        Files.move(export.toPath(), manifestFile.toPath());
+    }
+
+    private ArchitectureDataStructure createSampleDataStructure() {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
         dataStructure.setDescription("Architecture as code");
         dataStructure.setName("Hello World!!!");
         dataStructure.setBusinessUnit("DevFactory");
-
-        Path targetManifestPath = Paths.get(manifestFile.toURI());
-
-        new ArchitectureDataStructureObjectMapper().writeValue(targetManifestPath.toFile(), dataStructure);
-
-        logger.info(String.format("Manifest file written to - %s", manifestFile.getAbsolutePath()));
+        return dataStructure;
     }
 }
