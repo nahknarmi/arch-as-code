@@ -1,13 +1,11 @@
 package net.trilogy.arch.domain.c4;
 
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 public class C4Relationship {
     private String id;
     private String alias;
