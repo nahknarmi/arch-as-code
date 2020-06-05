@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ArchitectureDiffService {
+public class ArchitectureDiffCalculator {
     public static Set<Diff> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
         final Set<Diff> firstDiffs = getAllThings(firstArch).stream()
                 .map(p1 -> new Diff(

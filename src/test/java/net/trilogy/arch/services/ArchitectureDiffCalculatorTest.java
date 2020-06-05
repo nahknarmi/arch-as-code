@@ -25,7 +25,7 @@ import net.trilogy.arch.domain.c4.C4Person;
 import net.trilogy.arch.domain.c4.C4Relationship;
 import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 
-public class ArchitectureDiffServiceTest {
+public class ArchitectureDiffCalculatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
@@ -34,7 +34,7 @@ public class ArchitectureDiffServiceTest {
         final ArchitectureDataStructure first = emptyArch().build();
         final ArchitectureDataStructure second = emptyArch().build();
 
-        assertThat(ArchitectureDiffService.diff(first, second), equalTo(Set.of()));
+        assertThat(ArchitectureDiffCalculator.diff(first, second), equalTo(Set.of()));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ArchitectureDiffServiceTest {
                 new Diff(commonPersonNameToBeChanged.getId(), commonPersonNameToBeChanged, commonPersonNameChanged)
         );
 
-        var actual = ArchitectureDiffService.diff(first, second);
+        var actual = ArchitectureDiffCalculator.diff(first, second);
 
         expected.forEach(e -> collector.checkThat(actual, hasItem(e)));
         collector.checkThat(actual.size(), equalTo(expected.size()));
@@ -77,7 +77,7 @@ public class ArchitectureDiffServiceTest {
         var second = getArch(arch, Set.of(personWithRelationshipsToSys3), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
 
         Diff expected = new Diff("10", relationToSys2, relationToSys3);
-        var actual = ArchitectureDiffService.diff(first, second);
+        var actual = ArchitectureDiffCalculator.diff(first, second);
 
         collector.checkThat(actual, hasItem(expected));
     }
