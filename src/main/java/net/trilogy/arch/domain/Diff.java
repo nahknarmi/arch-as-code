@@ -18,7 +18,6 @@ public class Diff{
         this.before = before;
         this.after = after;
         this.status = calculateStatus();
-
     }
 
     private Status calculateStatus() {
@@ -32,7 +31,7 @@ public class Diff{
 
     public void markChildrenUpdated() {
         if (status.equals(Status.NO_UPDATE)) {
-            this.status = Status.CHILDREN_UPDATED;
+            this.status = Status.NO_UPDATE_BUT_CHILDREN_UPDATED;
         }
     }
 
@@ -40,7 +39,7 @@ public class Diff{
         CREATED,
         UPDATED,
         DELETED,
-        CHILDREN_UPDATED,
+        NO_UPDATE_BUT_CHILDREN_UPDATED,
         NO_UPDATE
     }
 }

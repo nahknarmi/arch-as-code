@@ -39,7 +39,7 @@ public class DiffTest {
     public void shouldCalculatedChildrenUpdated() {
         final Diff diff = new Diff(null, new Thing("noUpdate"), new Thing("noUpdate"));
         diff.markChildrenUpdated();
-        assertThat(diff.getStatus(), equalTo(Diff.Status.CHILDREN_UPDATED));
+        assertThat(diff.getStatus(), equalTo(Diff.Status.NO_UPDATE_BUT_CHILDREN_UPDATED));
     }
 
     @Test
