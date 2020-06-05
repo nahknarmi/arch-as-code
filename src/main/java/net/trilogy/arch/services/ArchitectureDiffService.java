@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 
 public class ArchitectureDiffService {
     public static Set<Diff<?>> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
-        final Set<Diff<C4Person>> firstDiffs = firstArch.getModel().getPeople().stream()
+        final Set<Diff<C4Person>> firstDiffs = firstArch.getModel().allEntities().stream()
                 .map(p1 -> new Diff<>(
                         p1.getId(),
                         p1,
-                        (C4Person) secondArch.getModel().findEntityById(p1.getId()).orElse(null)
+                        secondArch.getModel().findEntityById(p1.getId()).orElse(null)
                 )).collect(Collectors.toSet());
 
         final Set<Diff<C4Person>> secondDiffs = secondArch.getModel().getPeople().stream()
@@ -26,7 +26,6 @@ public class ArchitectureDiffService {
                 )).collect(Collectors.toSet());
 
         return union(firstDiffs, secondDiffs).collect(Collectors.toSet());
-
     }
 
     private static <T> Stream<T> union(Set<T> first, Set<T> second) {

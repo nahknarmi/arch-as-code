@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static net.trilogy.arch.ArchitectureDataStructureHelper.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
@@ -46,24 +47,23 @@ public class ArchitectureDiffServiceTest {
         assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));
     }
 
-    @Ignore("wip")
     @Test
     public void shouldDiffPeopleRelationships() {
         var arch = emptyArch();
         final C4SoftwareSystem system2 = createSystem("2");
         final C4SoftwareSystem system3 = createSystem("3");
-        final Set<C4SoftwareSystem> systems = Set.of(system2, system3);
 
-        final C4Person personWithRelationshipsToSystem2 = createPersonWithRelationshipsTo("1", Set.of(system2));
-        final C4Person personWithRelationshipsToSystem3 = createPersonWithRelationshipsTo("1", Set.of(system3));
+        final C4Relationship relationToSys2 = new C4Relationship("10", null, C4Action.USES, null, "2", "desc", null);
+        final C4Relationship relationToSys3 = new C4Relationship("10", null, C4Action.USES, null, "3", "desc", null);
+        final C4Person personWithRelationshipsToSys2 = createPersonWithRelationshipsTo("1", Set.of(relationToSys2));
+        final C4Person personWithRelationshipsToSys3 = createPersonWithRelationshipsTo("1", Set.of(relationToSys3));
 
-        var first = getArch(arch, Set.of(personWithRelationshipsToSystem2), systems, Set.of(), Set.of(), Set.of());
-        var second = getArch(arch, Set.of(personWithRelationshipsToSystem3), systems, Set.of(), Set.of(), Set.of());
+        var first = getArch(arch, Set.of(personWithRelationshipsToSys2), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
+        var second = getArch(arch, Set.of(personWithRelationshipsToSys3), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
 
-        List<Diff<?>> expected = null;
-        fail("wip");
+        Diff<?> expected = new Diff<>("10", relationToSys2, relationToSys3);
 
-        assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));
+        assertThat(ArchitectureDiffService.diff(first, second), contains(expected));
     }
 
     @Ignore("wip")

@@ -7,13 +7,13 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Diff<T> {
+public class Diff<Diffable> {
     final private String id;
     final private T before;
     final private T after;
     private Status status;
 
-    public Diff(String id, T before, T after) {
+    public Diff(String id, Diffable before, Diffable after) {
         this.id = id;
         this.before = before;
         this.after = after;

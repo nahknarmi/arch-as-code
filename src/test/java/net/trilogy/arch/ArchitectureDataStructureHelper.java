@@ -39,44 +39,31 @@ public class ArchitectureDataStructureHelper {
         );
     }
 
-    public static C4Person createPerson(String suffix) {
+    public static C4Person createPerson(String id) {
         return C4Person.builder()
-                .id("p" + suffix)
-                .name("person-" + suffix)
+                .id(id)
+                .name("person-" + id)
                 .build();
     }
 
-    public static C4Person createPersonWithRelationshipsTo(String suffix, Set<BaseEntity> entities) {
-        final String personId = "p-" + suffix;
-        final Set<C4Relationship> relationships = entities
-                .stream()
-                .map(e -> new C4Relationship(personId + "->" + e.getId(),
-                                null,
-                                C4Action.USES,
-                                null,
-                                e.getId(),
-                                "desc-" + suffix,
-                                null
-                        )
-                ).collect(Collectors.toSet());
-
+    public static C4Person createPersonWithRelationshipsTo(String id, Set<C4Relationship> relationships) {
         return C4Person.builder()
-                .id(personId)
-                .name("person-" + suffix)
+                .id(id)
+                .name("person-" + id)
                 .relationships(relationships)
                 .build();
     }
 
-    public static C4SoftwareSystem createSystem(String suffix) {
+    public static C4SoftwareSystem createSystem(String id) {
         return C4SoftwareSystem.builder()
-                .id("s" + suffix)
-                .name("system-" + suffix)
+                .id(id)
+                .name("system-" + id)
                 .build();
     }
 
 
-    public static C4SoftwareSystem createSystemWithRelationshipsTo(String suffix, Set<BaseEntity> entities) {
-        final String systemId = "s-" + suffix;
+    public static C4SoftwareSystem createSystemWithRelationshipsTo(String id, Set<BaseEntity> entities) {
+        final String systemId = id;
         final Set<C4Relationship> relationships = entities
                 .stream()
                 .map(e -> new C4Relationship(systemId + "->" + e.getId(),
@@ -84,14 +71,14 @@ public class ArchitectureDataStructureHelper {
                                 C4Action.USES,
                                 null,
                                 e.getId(),
-                                "desc-" + suffix,
+                                "desc-" + id,
                                 null
                         )
                 ).collect(Collectors.toSet());
 
         return C4SoftwareSystem.builder()
                 .id(systemId)
-                .name("system-" + suffix)
+                .name("system-" + id)
                 .relationships(relationships)
                 .build();
     }
