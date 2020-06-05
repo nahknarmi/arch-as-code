@@ -4,7 +4,9 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.Diff;
 import net.trilogy.arch.domain.c4.*;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 
 import java.util.List;
 import java.util.Set;
@@ -12,10 +14,13 @@ import java.util.Set;
 import static net.trilogy.arch.ArchitectureDataStructureHelper.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
 public class ArchitectureDiffServiceTest {
+    @Rule
+    public final ErrorCollector collector = new ErrorCollector();
 
     @Test
     public void shouldDiffEmptyArchitectures() {
@@ -44,7 +49,9 @@ public class ArchitectureDiffServiceTest {
                 new Diff(commonPersonNameToBeChanged.getId(), commonPersonNameToBeChanged, commonPersonNameChanged)
         );
 
-        assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));
+        var actual = ArchitectureDiffService.diff(first, second);
+
+        expected.forEach(e -> collector.checkThat(actual, hasItem(e)));
     }
 
     @Test
@@ -62,8 +69,9 @@ public class ArchitectureDiffServiceTest {
         var second = getArch(arch, Set.of(personWithRelationshipsToSys3), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
 
         Diff expected = new Diff("10", relationToSys2, relationToSys3);
+        var actual = ArchitectureDiffService.diff(first, second);
 
-        assertThat(ArchitectureDiffService.diff(first, second), contains(expected));
+        collector.checkThat(actual, hasItem(expected));
     }
 
     @Ignore("wip")

@@ -139,7 +139,7 @@ public class C4ModelTest {
                                 .build())
                         .build());
 
-        assertThat(c4Model.findRelationshipById("3").getId(), equalTo("3"));
+        assertThat(c4Model.findRelationshipById("3").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "3")).getId(), equalTo("3"));
     }
 
     @Test

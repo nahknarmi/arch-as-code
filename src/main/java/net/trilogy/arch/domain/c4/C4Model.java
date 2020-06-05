@@ -179,15 +179,13 @@ public class C4Model {
         return result;
     }
 
-    public C4Relationship findRelationshipById(String id) {
+    public Optional<C4Relationship> findRelationshipById(String id) {
         checkNotNull(id);
-        Tuple2<Entity, C4Relationship> foundTuple = allRelationships()
+        return allRelationships()
                 .stream()
                 .filter(t -> t._2().getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
-
-        return foundTuple._2();
+                .map(t -> t._2);
     }
 
     public C4Relationship findRelationshipByAlias(String alias) {
