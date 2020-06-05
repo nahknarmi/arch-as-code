@@ -1,15 +1,13 @@
 package net.trilogy.arch.domain;
 
 
-import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.c4.*;
 import net.trilogy.arch.domain.c4.view.C4ComponentView;
 import net.trilogy.arch.domain.c4.view.C4ContainerView;
 import net.trilogy.arch.domain.c4.view.C4DeploymentView;
 import net.trilogy.arch.domain.c4.view.C4SystemView;
-
-import org.junit.Ignore;
+import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
 import java.io.File;
@@ -23,7 +21,6 @@ import static net.trilogy.arch.TestHelper.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 public class ArchitectureDataStructureReaderTest {
     @Test
@@ -86,7 +83,7 @@ public class ArchitectureDataStructureReaderTest {
 
         assertThat(data.getModel().getSystems().size(), is(equalTo(5)));
 
-        var actual = (C4SoftwareSystem) data.getModel().findEntityById("6");
+        var actual = (C4SoftwareSystem) data.getModel().findEntityById("6").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "6"));
         var expected = C4SoftwareSystem.builder()
                 .id("6")
                 .name("SalesForce")
@@ -112,7 +109,7 @@ public class ArchitectureDataStructureReaderTest {
 
         assertThat(data.getModel().getContainers().size(), is(equalTo(4)));
 
-        var actual = (C4Container) data.getModel().findEntityById("11");
+        var actual = (C4Container) data.getModel().findEntityById("11").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "11"));
         var expected = C4Container.builder()
                 .name("DevSpaces/DevSpaces Backend")
                 .id("11")
@@ -140,7 +137,7 @@ public class ArchitectureDataStructureReaderTest {
 
         assertThat(data.getModel().getComponents().size(), is(equalTo(5)));
 
-        var actual = (C4Component) data.getModel().findEntityById("38");
+        var actual = (C4Component) data.getModel().findEntityById("38").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "38"));
         var expected = C4Component.builder()
                 .path(C4Path.path("c4://DevSpaces/DevSpaces-DevSpaces API/DevSpaces-DevSpaces API-Sign In Controller"))
                 .id("38")
@@ -174,7 +171,7 @@ public class ArchitectureDataStructureReaderTest {
         assertThat(data.getModel().getDeploymentNodes().size(), is(equalTo(1)));
         assertThat(data.getModel().getDeploymentNodesRecursively().size(), is(equalTo(6)));
 
-        var actual = (C4DeploymentNode) data.getModel().findEntityById("51");
+        var actual = (C4DeploymentNode) data.getModel().findEntityById("51").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "51"));
 
         var expected = C4DeploymentNode.builder()
                 .alias(null)

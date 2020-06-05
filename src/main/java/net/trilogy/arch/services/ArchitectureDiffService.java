@@ -1,40 +1,35 @@
 package net.trilogy.arch.services;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Streams;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.domain.Diff;
 import net.trilogy.arch.domain.c4.C4Person;
-import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArchitectureDiffService {
-    public static ArchitectureDiff diff(ArchitectureDataStructure first, ArchitectureDataStructure second) {
-        ArchitectureDiff.PeopleDiff peopleDiff = calcPeopleDiff(first, second);
-        ArchitectureDiff.SystemsDiff systemsDiff = calcSystemsDiff(first, second);
+    public static Set<Diff<?>> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
+        final Set<Diff<C4Person>> firstDiffs = firstArch.getModel().getPeople().stream()
+                .map(p1 -> new Diff<>(
+                        p1.getId(),
+                        p1,
+                        (C4Person) secondArch.getModel().findEntityById(p1.getId()).orElse(null)
+                )).collect(Collectors.toSet());
 
-        return new ArchitectureDiff(peopleDiff, systemsDiff);
+        final Set<Diff<C4Person>> secondDiffs = secondArch.getModel().getPeople().stream()
+                .map(p2 -> new Diff<>(
+                        p2.getId(),
+                        (C4Person) firstArch.getModel().findEntityById(p2.getId()).orElse(null),
+                        p2
+                )).collect(Collectors.toSet());
+
+        return union(firstDiffs, secondDiffs).collect(Collectors.toSet());
+
     }
 
-    private static ArchitectureDiff.PeopleDiff calcPeopleDiff(ArchitectureDataStructure first,
-                                                              ArchitectureDataStructure second) {
-        Set<C4Person> inFirst = first.getModel().getPeople();
-        Set<C4Person> inSecond = second.getModel().getPeople();
-        final ImmutableSet<C4Person> onlyInFirst = Sets.difference(inFirst, inSecond).immutableCopy();
-        final ImmutableSet<C4Person> onlyInSecond = Sets.difference(inSecond, inFirst).immutableCopy();
-        final ImmutableSet<C4Person> inBoth = Sets.intersection(inFirst, inSecond).immutableCopy();
-
-        return new ArchitectureDiff.PeopleDiff(onlyInFirst, onlyInSecond, inBoth);
-    }
-
-    private static ArchitectureDiff.SystemsDiff calcSystemsDiff(ArchitectureDataStructure first,
-                                                                ArchitectureDataStructure second) {
-        Set<C4SoftwareSystem> inFirst = first.getModel().getSystems();
-        Set<C4SoftwareSystem> inSecond = second.getModel().getSystems();
-        final ImmutableSet<C4SoftwareSystem> onlyInFirst = Sets.difference(inFirst, inSecond).immutableCopy();
-        final ImmutableSet<C4SoftwareSystem> onlyInSecond = Sets.difference(inSecond, inFirst).immutableCopy();
-        final ImmutableSet<C4SoftwareSystem> inBoth = Sets.intersection(inFirst, inSecond).immutableCopy();
-
-        return new ArchitectureDiff.SystemsDiff(onlyInFirst, onlyInSecond, inBoth);
+    private static <T> Stream<T> union(Set<T> first, Set<T> second) {
+        return Streams.concat(first.stream(), second.stream());
     }
 }

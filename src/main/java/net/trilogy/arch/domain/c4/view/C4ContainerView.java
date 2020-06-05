@@ -33,7 +33,7 @@ public class C4ContainerView extends C4View implements HasSystemReference, HasId
     public C4SoftwareSystem getReferenced(C4Model dataStructureModel) {
         Entity result;
         if (systemId != null) {
-            result = dataStructureModel.findEntityById(systemId);
+            result = dataStructureModel.findEntityById(systemId).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + systemId));
         } else if (systemAlias != null) {
             result = dataStructureModel.findEntityByAlias(systemAlias);
         } else {

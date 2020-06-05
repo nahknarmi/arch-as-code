@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -130,7 +131,8 @@ public class C4Model {
 
     public Entity findEntityByReference(C4Reference reference) {
         if (reference.getId() != null) {
-            return findEntityById(reference.getId());
+            String id = reference.getId();
+            return findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
         } else if (reference.getAlias() != null) {
             return findEntityByAlias(reference.getAlias());
         } else {
@@ -138,13 +140,12 @@ public class C4Model {
         }
     }
 
-    public Entity findEntityById(String id) {
+    public Optional<Entity> findEntityById(String id) {
         checkNotNull(id);
         return allEntities()
                 .stream()
                 .filter(e -> e.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
+                .findFirst();
     }
 
     public Entity findEntityByAlias(String alias) {
@@ -167,7 +168,8 @@ public class C4Model {
 
         Entity result;
         if (relationship.getWithId() != null) {
-            result = findEntityById(relationship.getWithId());
+            String id = relationship.getWithId();
+            result = findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
         } else if (relationship.getWithAlias() != null) {
             result = findEntityByAlias(relationship.getWithAlias());
         } else {

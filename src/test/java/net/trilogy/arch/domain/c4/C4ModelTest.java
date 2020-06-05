@@ -85,7 +85,7 @@ public class C4ModelTest {
                         .id("1")
                         .build());
 
-        assertThat(c4Model.findEntityById("1").getId(), equalTo("1"));
+        assertThat(c4Model.findEntityById("1").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "1")).getId(), equalTo("1"));
     }
 
     @Test

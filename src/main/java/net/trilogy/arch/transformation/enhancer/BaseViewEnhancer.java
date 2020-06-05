@@ -48,7 +48,8 @@ public abstract class BaseViewEnhancer<T extends View, G extends C4View> impleme
 
     private Entity viewReferenceToEntity(C4Model dataStructureModel, C4Reference viewRef) {
         if (viewRef.getId() != null) {
-            return dataStructureModel.findEntityById(viewRef.getId());
+            String id = viewRef.getId();
+            return dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
         } else if (viewRef.getAlias() != null) {
             return dataStructureModel.findEntityByAlias(viewRef.getAlias());
         } else {

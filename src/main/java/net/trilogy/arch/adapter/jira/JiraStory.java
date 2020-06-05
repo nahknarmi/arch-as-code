@@ -69,9 +69,9 @@ public class JiraStory {
             if (tddContainerByComponent.isDeleted()) architecture = beforeAuArchitecture;
             else architecture = afterAuArchitecture;
 
+            String id = tddContainerByComponent.getComponentId().toString();
             return Optional.of(
-                    architecture.getModel()
-                            .findEntityById(tddContainerByComponent.getComponentId().toString())
+                    architecture.getModel().findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id))
                             .getPath()
                             .getPath()
             );

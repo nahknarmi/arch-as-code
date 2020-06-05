@@ -41,7 +41,7 @@ public class WorkspaceReaderTest {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO);
         ArchitectureDataStructure data = new WorkspaceReader().load(new File(resource.getPath()));
 
-        C4Component component = (C4Component) data.getModel().findEntityById("220");
+        C4Component component = (C4Component) data.getModel().findEntityById("220").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "220"));
 
         assertThat(component.getName(), is(equalTo("Ionic")));
         assertThat(component.getContainerAlias(), is(nullValue()));
@@ -92,7 +92,7 @@ public class WorkspaceReaderTest {
         assertThat(dataStructure.getModel().getDeploymentNodes().size(), is(equalTo(4)));
         assertThat(dataStructure.getModel().getDeploymentNodesRecursively().size(), is(equalTo(18)));
 
-        var actual = (C4DeploymentNode) dataStructure.getModel().findEntityById("65");
+        var actual = (C4DeploymentNode) dataStructure.getModel().findEntityById("65").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "65"));
 
         var expected = C4DeploymentNode.builder()
                 .alias(null)

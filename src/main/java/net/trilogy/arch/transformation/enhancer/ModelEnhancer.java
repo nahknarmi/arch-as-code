@@ -167,7 +167,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     private C4Container getContainer(C4Model dataStructureModel, C4Component comp) {
         Entity result;
         if (comp.getContainerId() != null) {
-            result = dataStructureModel.findEntityById(comp.getContainerId());
+            String id = comp.getContainerId();
+            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
         } else if (comp.getContainerAlias() != null) {
             result = dataStructureModel.findEntityByAlias(comp.getContainerAlias());
         } else {
@@ -184,7 +185,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     private C4SoftwareSystem getSoftwareSystem(C4Model dataStructureModel, C4Container cont) {
         Entity result;
         if (cont.getSystemId() != null) {
-            result = dataStructureModel.findEntityById(cont.getSystemId());
+            String id = cont.getSystemId();
+            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
         } else if (cont.getSystemAlias() != null) {
             result = dataStructureModel.findEntityByAlias(cont.getSystemAlias());
         } else {

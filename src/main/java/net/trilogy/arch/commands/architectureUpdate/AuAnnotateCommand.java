@@ -1,8 +1,8 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
-import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
@@ -83,7 +83,7 @@ public class AuAnnotateCommand implements Callable<Integer> {
 
     private String getComponentPathComment(String id, ArchitectureDataStructure architecture) {
         try {
-            return "  # " + architecture.getModel().findEntityById(id).getPath().getPath();
+            return "  # " + architecture.getModel().findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id)).getPath().getPath();
         } catch (Exception ignored) {
             return "";
         }

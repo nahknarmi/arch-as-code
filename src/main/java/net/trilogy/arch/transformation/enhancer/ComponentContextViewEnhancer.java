@@ -47,7 +47,8 @@ public class ComponentContextViewEnhancer extends BaseViewEnhancer<ComponentView
                     C4Component comp = (C4Component) entity;
                     String containerId;
                     if (comp.getContainerId() != null) {
-                        containerId = dataStructureModel.findEntityById(comp.getContainerId()).getId();
+                        String id = comp.getContainerId();
+                        containerId = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id)).getId();
                     } else if (comp.getContainerAlias() != null) {
                         containerId = dataStructureModel.findEntityByAlias(comp.getContainerAlias()).getId();
                     } else {
