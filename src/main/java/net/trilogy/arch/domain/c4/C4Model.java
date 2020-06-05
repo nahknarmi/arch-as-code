@@ -98,11 +98,13 @@ public class C4Model {
         }
     }
 
+    // [TODO] [TESTING] Testing gap
     public Set<Entity> allEntities() {
         return Stream.of(getSystems(), getPeople(), getComponents(), getContainers(), getDeploymentNodesRecursively())
                 .flatMap(Collection::stream).collect(toSet());
     }
 
+    // [TODO] [TESTING] Testing gap
     public Set<Tuple2<Entity, C4Relationship>> allRelationships() {
         return allEntities().stream()
                 .flatMap(entity -> {
