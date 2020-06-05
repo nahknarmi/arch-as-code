@@ -7,10 +7,10 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Diff<Diffable> {
+public class Diff{
     final private String id;
-    final private T before;
-    final private T after;
+    final private Diffable before;
+    final private Diffable after;
     private Status status;
 
     public Diff(String id, Diffable before, Diffable after) {

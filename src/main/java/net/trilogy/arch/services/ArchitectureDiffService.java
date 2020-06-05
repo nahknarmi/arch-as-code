@@ -3,6 +3,7 @@ package net.trilogy.arch.services;
 import com.google.common.collect.Streams;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.Diff;
+import net.trilogy.arch.domain.Diffable;
 import net.trilogy.arch.domain.c4.C4Person;
 
 import java.util.Set;
@@ -10,16 +11,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ArchitectureDiffService {
-    public static Set<Diff<?>> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
-        final Set<Diff<C4Person>> firstDiffs = firstArch.getModel().allEntities().stream()
-                .map(p1 -> new Diff<>(
+    public static Set<Diff> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
+        final Set<Diff> firstDiffs = firstArch.getModel().allEntities().stream()
+                .map(p1 -> new Diff(
                         p1.getId(),
                         p1,
                         secondArch.getModel().findEntityById(p1.getId()).orElse(null)
                 )).collect(Collectors.toSet());
 
-        final Set<Diff<C4Person>> secondDiffs = secondArch.getModel().getPeople().stream()
-                .map(p2 -> new Diff<>(
+        final Set<Diff> secondDiffs = secondArch.getModel().getPeople().stream()
+                .map(p2 -> new Diff(
                         p2.getId(),
                         (C4Person) firstArch.getModel().findEntityById(p2.getId()).orElse(null),
                         p2

@@ -37,11 +37,11 @@ public class ArchitectureDiffServiceTest {
 
         var first = getArchWithPeople(arch, Set.of(personInFirst, commonPersonNameToBeChanged, commonPersonNoChange));
         var second = getArchWithPeople(arch, Set.of(personInSecond, commonPersonNameChanged, commonPersonNoChange));
-        Set<Diff<?>> expected = Set.of(
-                new Diff<>(personInFirst.getId(), personInFirst, null),
-                new Diff<>(personInSecond.getId(), null, personInSecond),
-                new Diff<>(commonPersonNoChange.getId(), commonPersonNoChange, commonPersonNoChange),
-                new Diff<>(commonPersonNameToBeChanged.getId(), commonPersonNameToBeChanged, commonPersonNameChanged)
+        Set<Diff> expected = Set.of(
+                new Diff(personInFirst.getId(), personInFirst, null),
+                new Diff(personInSecond.getId(), null, personInSecond),
+                new Diff(commonPersonNoChange.getId(), commonPersonNoChange, commonPersonNoChange),
+                new Diff(commonPersonNameToBeChanged.getId(), commonPersonNameToBeChanged, commonPersonNameChanged)
         );
 
         assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));
@@ -61,7 +61,7 @@ public class ArchitectureDiffServiceTest {
         var first = getArch(arch, Set.of(personWithRelationshipsToSys2), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
         var second = getArch(arch, Set.of(personWithRelationshipsToSys3), Set.of(system2, system3), Set.of(), Set.of(), Set.of());
 
-        Diff<?> expected = new Diff<>("10", relationToSys2, relationToSys3);
+        Diff expected = new Diff("10", relationToSys2, relationToSys3);
 
         assertThat(ArchitectureDiffService.diff(first, second), contains(expected));
     }
@@ -77,7 +77,7 @@ public class ArchitectureDiffServiceTest {
         var first = getArchWithSystems(arch, Set.of(systemInFirst, commonSystem));
         var second = getArchWithSystems(arch, Set.of(systemInSecond, commonSystem));
 
-        List<Diff<?>> expected = null;
+        List<Diff> expected = null;
         fail("wip");
 
         assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));
@@ -97,7 +97,7 @@ public class ArchitectureDiffServiceTest {
         var first = getArchWithSystems(arch, Set.of(systemWithRelationshipToSystem2, system2, system3));
         var second = getArchWithSystems(arch, Set.of(systemWithRelationshipToSystem3, system2, system3));
 
-        List<Diff<?>> expected = null;
+        List<Diff> expected = null;
         fail("wip");
 
         assertThat(ArchitectureDiffService.diff(first, second), equalTo(expected));

@@ -14,7 +14,7 @@ import static java.util.Optional.ofNullable;
 
 @Data
 @NoArgsConstructor
-public abstract class BaseEntity implements Entity, Diffable {
+public abstract class BaseEntity implements Entity {
     @NonNull
     protected String id;
     protected String alias;

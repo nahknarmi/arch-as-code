@@ -2,7 +2,9 @@ package net.trilogy.arch.domain.c4;
 
 import java.util.List;
 
-public interface Entity extends HasRelation, HasTag, HasIdentity {
+import net.trilogy.arch.domain.Diffable;
+
+public interface Entity extends Diffable, HasRelation, HasTag, HasIdentity {
     String getId();
 
     String getAlias();
