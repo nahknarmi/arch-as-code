@@ -3,52 +3,50 @@ package net.trilogy.arch.services;
 import com.google.common.collect.Sets;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.Diff;
+import net.trilogy.arch.domain.Diffable;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArchitectureDiffService {
     public static Set<Diff> diff(ArchitectureDataStructure firstArch, ArchitectureDataStructure secondArch) {
-        final Set<Diff> firstDiffs1 = firstArch.getModel().allEntities().stream()
+        final Set<Diff> firstDiffs = getAllThings(firstArch).stream()
                 .map(p1 -> new Diff(
                         p1.getId(),
                         p1,
-                        secondArch.getModel().findEntityById(p1.getId()).orElse(null)
-                )).collect(Collectors.toSet());
+                        findById(secondArch, p1.getId()).orElse(null)
+                    )
+                )
+                .collect(Collectors.toSet());
 
-        final Set<Diff> secondDiffs1 = secondArch.getModel().allEntities().stream()
+        final Set<Diff> secondDiffs = getAllThings(secondArch).stream()
                 .map(p2 -> new Diff(
                         p2.getId(),
-                        firstArch.getModel().findEntityById(p2.getId()).orElse(null),
+                        findById(firstArch, p2.getId()).orElse(null),
                         p2
-                )).collect(Collectors.toSet());
+                    )
+                )
+                .collect(Collectors.toSet());
 
-        final var entityDiffs = Sets.union(firstDiffs1, secondDiffs1);
+        return Sets.union(firstDiffs, secondDiffs);
+    }
 
-        final Set<Diff> firstDiffs2 = firstArch.getModel().allRelationships().stream()
-                .map(t -> t._2)
-                .map(r1 -> {
-                    String id = r1.getId();
-                    return new Diff(
-                            r1.getId(),
-                            r1,
-                            secondArch.getModel().findRelationshipById(id).orElse(null)
-                    );
-                }).collect(Collectors.toSet());
+    private static Optional<? extends Diffable> findById(ArchitectureDataStructure arch, String id) {
+        return Stream.of(
+                arch.getModel().findRelationshipById(id),
+                arch.getModel().findEntityById(id)
+            )
+            .filter(it -> it.isPresent())
+            .findAny()
+            .orElseGet(() -> Optional.empty());
+    }
 
-        final Set<Diff> secondDiffs2 = secondArch.getModel().allRelationships().stream()
-                .map(t -> t._2)
-                .map(r2 -> {
-                    String id = r2.getId();
-                    return new Diff(
-                            r2.getId(),
-                            firstArch.getModel().findRelationshipById(id).orElse(null),
-                            r2
-                    );
-                }).collect(Collectors.toSet());
-
-        final var relationshipDiffs = Sets.union(firstDiffs2, secondDiffs2);
-
-        return Sets.union(entityDiffs, relationshipDiffs);
+    private static Set<Diffable> getAllThings(ArchitectureDataStructure arch) {
+        return Sets.union(
+                arch.getModel().allEntities(),
+                arch.getModel().allRelationships().stream().map(it -> it._2).collect(Collectors.toSet())
+        );
     }
 }
