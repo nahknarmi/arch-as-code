@@ -65,6 +65,11 @@ public class WorkspaceReader {
         return architectureDataStructure;
     }
 
+    public ViewSet loadViews(File workspaceFile) throws Exception {
+        Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
+        return workspace.getViews();
+    }
+
     private Set<C4SystemView> systemViews(ViewSet views) {
         return views
                 .getSystemContextViews()
