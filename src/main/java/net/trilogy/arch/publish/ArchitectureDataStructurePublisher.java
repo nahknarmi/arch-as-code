@@ -51,12 +51,6 @@ public class ArchitectureDataStructurePublisher {
         }
     }
 
-    private void savePublishedWorkspace(Workspace workspace) throws IOException {
-        File published = new File(productArchitectureDirectory + File.separator + "published.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(published, workspace);
-    }
-
     public Workspace getWorkspace(File productArchitectureDirectory, String manifestFileName) throws IOException {
         ArchitectureDataStructure dataStructure = loadProductArchitecture(productArchitectureDirectory, manifestFileName);
 
