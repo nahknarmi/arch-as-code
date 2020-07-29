@@ -7,14 +7,12 @@ import com.structurizr.documentation.Image;
 import com.structurizr.documentation.Section;
 import com.structurizr.model.*;
 import com.structurizr.util.WorkspaceUtils;
-import com.structurizr.view.StaticView;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.*;
-import net.trilogy.arch.domain.c4.view.*;
 import net.trilogy.arch.transformation.DeploymentNodeTransformer;
 
 import java.io.File;
@@ -45,14 +43,6 @@ public class WorkspaceReader {
         deploymentNodes(model).forEach(c4Model::addDeploymentNode);
         architectureDataStructure.setModel(c4Model);
 
-        C4ViewContainer views = new C4ViewContainer();
-        ViewSet workspaceViews = workspace.getViews();
-        views.setSystemViews(systemViews(workspaceViews));
-        views.setContainerViews(containerViews(workspaceViews));
-        views.setComponentViews(componentViews(workspaceViews));
-        views.setDeploymentViews(deploymentViews(workspaceViews, architectureDataStructure.getModel()));
-        architectureDataStructure.setViews(views);
-
         List<ImportantTechnicalDecision> decisions = decisions(workspace);
         architectureDataStructure.setDecisions(decisions);
 
@@ -68,92 +58,6 @@ public class WorkspaceReader {
     public ViewSet loadViews(File workspaceFile) throws Exception {
         Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
         return workspace.getViews();
-    }
-
-    private Set<C4SystemView> systemViews(ViewSet views) {
-        return views
-                .getSystemContextViews()
-                .stream()
-                .map(systemContextView -> {
-                    SoftwareSystem softwareSystem = systemContextView.getSoftwareSystem();
-                    C4SystemView c4SystemView = new C4SystemView(softwareSystem.getId(), null);
-                    mapCommonViewAttributes(systemContextView, c4SystemView);
-
-                    return c4SystemView;
-                })
-                .collect(toSet());
-    }
-
-    private Set<C4ContainerView> containerViews(ViewSet views) {
-        return views
-                .getContainerViews()
-                .stream()
-                .map(containerView -> {
-                    SoftwareSystem softwareSystem = containerView.getSoftwareSystem();
-                    C4ContainerView view = new C4ContainerView(softwareSystem.getId(), null);
-                    mapCommonViewAttributes(containerView, view);
-
-                    return view;
-                })
-                .collect(toSet());
-    }
-
-    private Set<C4ComponentView> componentViews(ViewSet views) {
-        return views
-                .getComponentViews()
-                .stream()
-                .map(componentView -> {
-                    Container container = componentView.getContainer();
-                    C4ComponentView view = new C4ComponentView(container.getId(), null);
-                    mapCommonViewAttributes(componentView, view);
-
-                    return view;
-                })
-                .collect(toSet());
-    }
-
-    private Set<C4DeploymentView> deploymentViews(ViewSet views, C4Model c4Model) {
-        return views
-                .getDeploymentViews()
-                .stream()
-                .map(deploymentView -> {
-
-                    Set<C4Reference> elements = c4Model.getDeploymentNodes()
-                            .stream()
-                            .filter(d -> deploymentView.getElements().stream()
-                                    .map(e -> e.getId())
-                                    .collect(toList()).contains(d.getId())
-                            )
-                            .map(d -> new C4Reference(d.getId(), null))
-                            .collect(toSet());
-
-                    C4Reference systemRef = null;
-                    if (deploymentView.getSoftwareSystem() != null) {
-                        systemRef = new C4Reference(deploymentView.getSoftwareSystem().getId(), null);
-                    }
-
-                    return C4DeploymentView.builder()
-                            .key(deploymentView.getKey())
-                            .name(deploymentView.getName())
-                            .description(deploymentView.getDescription())
-                            .environment(deploymentView.getEnvironment())
-                            .system(systemRef)
-                            .elements(elements)
-                            .build();
-                })
-                .collect(toSet());
-    }
-
-    // TODO [TESTING]: Mutation testing reveals lack of coverage here.
-    private void mapCommonViewAttributes(StaticView view, C4View c4View) {
-        c4View.setKey(view.getKey());
-        c4View.setName(view.getName());
-        c4View.setDescription(view.getDescription());
-        c4View.setKey(view.getKey());
-        Set<C4Reference> elements = view.getElements().stream()
-                .map(e -> new C4Reference(e.getId(), null))
-                .collect(toSet());
-        c4View.setElements(elements);
     }
 
     private List<C4DeploymentNode> deploymentNodes(Model model) {

@@ -3,10 +3,6 @@ package net.trilogy.arch.domain;
 
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.c4.*;
-import net.trilogy.arch.domain.c4.view.C4ComponentView;
-import net.trilogy.arch.domain.c4.view.C4ContainerView;
-import net.trilogy.arch.domain.c4.view.C4DeploymentView;
-import net.trilogy.arch.domain.c4.view.C4SystemView;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -14,7 +10,6 @@ import java.io.File;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -205,113 +200,6 @@ public class ArchitectureDataStructureReaderTest {
                 .tags(Set.of())
                 .relationships(Set.of())
                 .technology("Docker")
-                .build();
-
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadSystemViews() throws Exception {
-        var file = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_VIEWS).getPath());
-        var data = new ArchitectureDataStructureReader(new FilesFacade()).load(file);
-
-        assertThat(data.getViews().getSystemViews().size(), is(equalTo(1)));
-
-        var actual = new ArrayList(data.getViews().getSystemViews()).get(0);
-        var expected = C4SystemView.builder()
-                .key("InternetBankingSystem-SystemView")
-                .name("Internet Banking System - System Context")
-                .description("Internet Banking System - System View")
-                .systemId("7")
-                .tags(Set.of())
-                .elements(Set.of(
-                        new C4Reference("4", null),
-                        new C4Reference("7", null),
-                        new C4Reference("6", null),
-                        new C4Reference("1", null)
-                ))
-                .build();
-
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadContainerViews() throws Exception {
-        var file = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_VIEWS).getPath());
-        var data = new ArchitectureDataStructureReader(new FilesFacade()).load(file);
-
-        assertThat(data.getViews().getContainerViews().size(), is(equalTo(1)));
-
-        var actual = new ArrayList<>(data.getViews().getContainerViews()).get(0);
-        var expected = C4ContainerView.builder()
-                .key("InternetBankingSystem-ContainerView")
-                .name("Internet Banking System - Containers")
-                .systemId("7")
-                .description("Internet Banking System - Container View")
-                .tags(Set.of())
-                .elements(Set.of(
-                        new C4Reference("4", null),
-                        new C4Reference("11", null),
-                        new C4Reference("6", null),
-                        new C4Reference("9", null),
-                        new C4Reference("10", null),
-                        new C4Reference("8", null),
-                        new C4Reference("12", null),
-                        new C4Reference("1", null)
-                ))
-                .build();
-
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadComponentViews() throws Exception {
-        var file = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_VIEWS).getPath());
-        var data = new ArchitectureDataStructureReader(new FilesFacade()).load(file);
-
-        assertThat(data.getViews().getComponentViews().size(), is(equalTo(1)));
-
-        var actual = new ArrayList<>(data.getViews().getComponentViews()).get(0);
-        var expected = C4ComponentView.builder()
-                .key("InternetBankingSystemAPIApplication-ComponentView")
-                .name("Internet Banking System - Internet Banking System/API Application - Components")
-                .containerId("11")
-                .description("Internet Banking System : API Application - Component View")
-                .tags(Set.of())
-                .elements(Set.of(
-                        new C4Reference("4", null),
-                        new C4Reference("18", null),
-                        new C4Reference("15", null),
-                        new C4Reference("14", null),
-                        new C4Reference("6", null),
-                        new C4Reference("17", null),
-                        new C4Reference("9", null),
-                        new C4Reference("10", null),
-                        new C4Reference("16", null),
-                        new C4Reference("13", null),
-                        new C4Reference("12", null)
-                ))
-                .build();
-
-        assertThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadDeploymentViews() throws Exception {
-        var file = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_VIEWS).getPath());
-        var data = new ArchitectureDataStructureReader(new FilesFacade()).load(file);
-
-        assertThat(data.getViews().getDeploymentViews().size(), is(equalTo(1)));
-
-        var actual = new ArrayList<>(data.getViews().getDeploymentViews()).get(0);
-        var expected = C4DeploymentView.builder()
-                .description("An example development deployment scenario for the Internet Banking System.")
-                .environment("Development")
-                .key("Laptop")
-                .name("Internet Banking System - Deployment - Development")
-                .system(new C4Reference("7", null))
-                .elements(Set.of(new C4Reference("50", null)))
-                .tags(Set.of())
                 .build();
 
         assertThat(actual, is(equalTo(expected)));

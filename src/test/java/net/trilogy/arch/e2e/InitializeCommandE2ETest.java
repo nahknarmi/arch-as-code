@@ -82,12 +82,7 @@ public class InitializeCommandE2ETest {
                         "  systems: []",
                         "  containers: []",
                         "  components: []",
-                        "  deploymentNodes: []",
-                        "views:",
-                        "  systemViews: []",
-                        "  containerViews: []",
-                        "  componentViews: []",
-                        "  deploymentViews: []"
+                        "  deploymentNodes: []"
                 )
         );
     }

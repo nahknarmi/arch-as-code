@@ -16,7 +16,6 @@ import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.C4Model;
 import net.trilogy.arch.domain.c4.C4Person;
 import net.trilogy.arch.domain.c4.C4SoftwareSystem;
-import net.trilogy.arch.domain.c4.view.C4ViewContainer;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -144,7 +143,6 @@ public class ArchitectureDataStructureTransformerTest {
                         .businessUnit("DevFactory")
                         .description(PRODUCT_DESCRIPTION)
                         .model(buildModel())
-                        .views(buildView())
                         .decisions(ImmutableList.of(new ImportantTechnicalDecision("1", new Date(), "title", statusString, "content")))
                         .build();
 
@@ -178,15 +176,6 @@ public class ArchitectureDataStructureTransformerTest {
                                 .tags(emptySet())
                                 .relationships(emptyList()).build()
                 ),
-                emptySet(),
-                emptySet(),
-                emptySet()
-        );
-    }
-
-    private C4ViewContainer buildView() {
-        return new C4ViewContainer(
-                emptySet(),
                 emptySet(),
                 emptySet(),
                 emptySet()

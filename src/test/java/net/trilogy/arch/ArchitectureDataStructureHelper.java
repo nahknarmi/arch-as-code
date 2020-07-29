@@ -2,7 +2,6 @@ package net.trilogy.arch;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.c4.*;
-import net.trilogy.arch.domain.c4.view.C4ViewContainer;
 
 import java.util.List;
 import java.util.Set;
@@ -19,22 +18,12 @@ public class ArchitectureDataStructureHelper {
                 .businessUnit("business-Unit")
                 .description("description")
                 .decisions(List.of())
-                .model(emptyModel())
-                .views(emptyViews());
+                .model(emptyModel());
     }
 
     public static C4Model emptyModel() {
         return new C4Model(
                 Set.of(),
-                Set.of(),
-                Set.of(),
-                Set.of(),
-                Set.of()
-        );
-    }
-
-    public static C4ViewContainer emptyViews() {
-        return new C4ViewContainer(
                 Set.of(),
                 Set.of(),
                 Set.of(),

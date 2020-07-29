@@ -14,13 +14,7 @@ public abstract class TransformerFactory {
                         // TODO: Extact
                         new DocumentationEnhancer(documentRoot, new FilesFacade()),
                         new DecisionEnhancer(),
-                        new ModelEnhancer(),
-                        new StyleViewEnhancer(),
-                        new SystemContextViewEnhancer(),
-                        new ContainerContextViewEnhancer(),
-                        new ComponentContextViewEnhancer(),
-                        new SystemLandscapeViewEnhancer(),
-                        new DeploymentViewEnhancer()
+                        new ModelEnhancer()
                 ));
     }
 }

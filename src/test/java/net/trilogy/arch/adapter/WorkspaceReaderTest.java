@@ -7,7 +7,6 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.*;
-import net.trilogy.arch.domain.c4.view.C4DeploymentView;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -16,8 +15,6 @@ import java.io.File;
 import java.net.URL;
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,10 +81,6 @@ public class WorkspaceReaderTest {
         collector.checkThat(dataStructure.getModel().getContainers(), hasSize(28));
         collector.checkThat(dataStructure.getModel().getComponents(), hasSize(35));
         collector.checkThat(dataStructure.getModel().allRelationships(), hasSize(160));
-
-        collector.checkThat(dataStructure.getViews().getComponentViews(), hasSize(8));
-        collector.checkThat(dataStructure.getViews().getContainerViews(), hasSize(9));
-        collector.checkThat(dataStructure.getViews().getSystemViews(), hasSize(6));
     }
 
     @Test
@@ -129,45 +122,6 @@ public class WorkspaceReaderTest {
     }
 
     @Test
-    public void shouldReadDeploymentViews() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
-        C4DeploymentView actual = dataStructure.getViews().getDeploymentViews().stream()
-                .filter(v -> v.getKey().equals("DevelopmentDeployment")).findAny().get();
-
-        C4DeploymentView expected = C4DeploymentView.builder()
-                .key("DevelopmentDeployment")
-                .name("Internet Banking System - Deployment - Development")
-                .system(new C4Reference("2", null))
-                .description("An example development deployment scenario for the Internet Banking System.")
-                .environment("Development")
-                .elements(Set.of(new C4Reference("50", null)))
-                .build();
-
-        collector.checkThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadDeploymentViewWithNoSystem() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_NO_SYSTEM);
-        final String key = "test";
-
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
-        C4DeploymentView actual = dataStructure.getViews().getDeploymentViews().stream()
-                .filter(v -> v.getKey().equals(key)).findAny().get();
-
-        C4DeploymentView expected = C4DeploymentView.builder()
-                .key(key)
-                .environment("Default")
-                .description("")
-                .name("Deployment - Default")
-                .elements(Set.of(new C4Reference("1", null)))
-                .build();
-
-        collector.checkThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
     public void shouldReadDecisions() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO);
         String id = "4";
@@ -187,28 +141,6 @@ public class WorkspaceReaderTest {
                 .build();
 
         collector.checkThat(actual, is(equalTo(expected)));
-    }
-
-    @Test
-    public void shouldReadViewElements() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
-
-        Set<C4Reference> actual = new ArrayList<>(dataStructure.getViews().getComponentViews()).get(0).getElements();
-        var expected = new HashSet<C4Reference>();
-        expected.add(new C4Reference("4", null));
-        expected.add(new C4Reference("6", null));
-        expected.add(new C4Reference("17", null));
-        expected.add(new C4Reference("18", null));
-        expected.add(new C4Reference("21", null));
-        expected.add(new C4Reference("29", null));
-        expected.add(new C4Reference("30", null));
-        expected.add(new C4Reference("31", null));
-        expected.add(new C4Reference("32", null));
-        expected.add(new C4Reference("33", null));
-        expected.add(new C4Reference("34", null));
-
-        collector.checkThat(actual, is(expected));
     }
 
     @Test

@@ -61,20 +61,6 @@ public class SchemaValidationTest {
                 ));
     }
 
-    @Test
-    public void validate_missing_view_contexts() throws Exception {
-        Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("missingViewContexts.yml");
-
-        assertThat(validationMessageSet.stream().map(ValidationMessage::getMessage).collect(Collectors.toList()),
-                containsInAnyOrder(
-                        "$.views.systemViews[0].name: is missing but it is required",
-                        "$.views.systemViews[0].description: is missing but it is required",
-                        "$.views.containerViews[0].name: is missing but it is required",
-                        "$.views.containerViews[0].description: is missing but it is required",
-                        "$.views.componentViews[0].name: is missing but it is required",
-                        "$.views.componentViews[0].description: is missing but it is required"
-                ));
-    }
 
     private Set<ValidationMessage> getSchemaValidationMessages(String yamlFileName) throws FileNotFoundException {
         File validationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_VALIDATION).getPath());
