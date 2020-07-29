@@ -1,8 +1,6 @@
 package net.trilogy.arch.publish;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.structurizr.Workspace;
-import com.structurizr.view.ViewSet;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -44,8 +42,6 @@ public class ArchitectureDataStructurePublisher {
     public void publish() throws IOException {
         Workspace workspace = getWorkspace(productArchitectureDirectory, manifestFileName);
 
-        loadAndSetViews(productArchitectureDirectory, workspace);
-
         if (!structurizrAdapter.publish(workspace)) {
             throw new RuntimeException("Failed to publish to Structurizr");
         }
@@ -64,15 +60,4 @@ public class ArchitectureDataStructurePublisher {
         return new ArchitectureDataStructureObjectMapper().readValue(archAsString);
     }
 
-    private void loadAndSetViews(File productArchitectureDirectory, Workspace workspace) throws IOException {
-        ViewSet viewSet = loadStructurizrViews(productArchitectureDirectory);
-
-        new ViewReferenceMapper().addViewsWithReferencedObjects(workspace, viewSet);
-    }
-
-    private ViewSet loadStructurizrViews(File productArchitectureDirectory) throws IOException {
-        File manifestFile = new File(productArchitectureDirectory + File.separator + "structurizrViews.json");
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(manifestFile, ViewSet.class);
-    }
 }

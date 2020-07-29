@@ -12,8 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper.STRUCTURIZR_VIEWS_JSON;
+
 public class ArchitectureDataStructureWriter {
-    private FilesFacade filesFacade;
+    private final FilesFacade filesFacade;
 
     public ArchitectureDataStructureWriter(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
@@ -39,7 +41,7 @@ public class ArchitectureDataStructureWriter {
     }
 
     public Path writeViews(ViewSet structurizrViews, Path parentPath) throws IOException {
-        final Path viewsWritePath = parentPath.resolve("structurizrViews.json");
+        final Path viewsWritePath = parentPath.resolve(STRUCTURIZR_VIEWS_JSON);
         if (structurizrViews != null) {
             ObjectMapper mapper = new ObjectMapper();
             filesFacade.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));

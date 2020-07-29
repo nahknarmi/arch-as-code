@@ -1,6 +1,7 @@
 package net.trilogy.arch.transformation;
 
 import com.google.common.collect.ImmutableList;
+import net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.transformation.enhancer.*;
 
@@ -14,6 +15,7 @@ public abstract class TransformerFactory {
                         new DocumentationEnhancer(documentRoot, new FilesFacade()),
                         new DecisionEnhancer(),
                         new ModelEnhancer()
-                ));
+                ),
+                new StructurizrViewsMapper(documentRoot));
     }
 }

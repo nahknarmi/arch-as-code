@@ -1,5 +1,6 @@
-package net.trilogy.arch.publish;
+package net.trilogy.arch.adapter.structurizr;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.structurizr.Workspace;
 import com.structurizr.model.Container;
 import com.structurizr.model.SoftwareSystem;
@@ -8,14 +9,39 @@ import com.structurizr.view.ViewSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-public class ViewReferenceMapper {
+public class StructurizrViewsMapper {
 
-    private static final Logger logger = LogManager.getLogger(ViewReferenceMapper.class);
+    public static final String STRUCTURIZR_VIEWS_JSON = "structurizrViews.json";
 
-    public void addViewsWithReferencedObjects(Workspace workspace, ViewSet viewSet) {
+    private static final Logger logger = LogManager.getLogger(StructurizrViewsMapper.class);
+    private final File documentRoot;
+
+    public StructurizrViewsMapper(File documentRoot) {
+        this.documentRoot = documentRoot;
+    }
+
+    public void loadAndSetViews(Workspace workspace) {
+        try {
+            ViewSet viewSet = loadStructurizrViews();
+            addViewsWithReferencedObjects(workspace, viewSet);
+        } catch (IOException e) {
+            logger.error("Failed to load views", e);
+            throw new RuntimeException("Failed to load views", e);
+        }
+    }
+
+    private ViewSet loadStructurizrViews() throws IOException {
+        File manifestFile = new File(documentRoot.getCanonicalPath() + File.separator + STRUCTURIZR_VIEWS_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(manifestFile, ViewSet.class);
+    }
+
+    private void addViewsWithReferencedObjects(Workspace workspace, ViewSet viewSet) {
         viewSet.getSystemLandscapeViews().forEach(lv -> setSoftwareSystem(workspace, lv));
 
         viewSet.getSystemContextViews().forEach(sv -> setSoftwareSystem(workspace, sv));
@@ -54,7 +80,9 @@ public class ViewReferenceMapper {
     }
 
     private void setOnModel(Object model, Object objectToSet) {
-        this.setOnModel(model, objectToSet, "set" + objectToSet.getClass().getSimpleName());
+        if (objectToSet != null) {
+            this.setOnModel(model, objectToSet, "set" + objectToSet.getClass().getSimpleName());
+        }
     }
 
     private void setOnModel(Object model, Object objectToSet, String methodName) {

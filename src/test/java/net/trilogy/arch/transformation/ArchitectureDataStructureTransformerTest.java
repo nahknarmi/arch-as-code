@@ -8,6 +8,7 @@ import com.structurizr.documentation.DecisionStatus;
 import com.structurizr.model.Component;
 import com.structurizr.model.Container;
 import com.structurizr.model.Model;
+import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
@@ -17,6 +18,7 @@ import net.trilogy.arch.domain.c4.C4Model;
 import net.trilogy.arch.domain.c4.C4Person;
 import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 import net.trilogy.arch.facade.FilesFacade;
+import net.trilogy.arch.publish.ArchitectureDataStructurePublisher;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,7 +41,7 @@ public class ArchitectureDataStructureTransformerTest {
     private static final String PRODUCT_DESCRIPTION = "TestSpaces is a tool!";
 
     @Test
-    public void shouldHandleMultipleRelationshipsWithSameSouceAndDestination() throws Exception {
+    public void shouldHandleMultipleRelationshipsWithSameSourceAndDestination() throws Exception {
         ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_VIEWS);
         File structurizrJson = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_MULTIPLE_RELATIONSHIPS).getPath());
         ArchitectureDataStructure ourYaml = new WorkspaceReader().load(structurizrJson);
@@ -130,6 +132,21 @@ public class ArchitectureDataStructureTransformerTest {
     @Test
     public void should_tranform_decision_status_to_default() {
         checkStatus(DecisionStatus.Proposed, "Something invalid");
+    }
+
+    @Test
+    public void shouldLoadAndAttachViews() throws Exception {
+        File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
+        ArchitectureDataStructurePublisher publisher = new ArchitectureDataStructurePublisher(new FilesFacade(), documentationRoot, "product-architecture.yml");
+        ArchitectureDataStructure dataStructure = publisher.loadProductArchitecture(documentationRoot, "product-architecture.yml");
+
+        ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
+        Workspace workspace = transformer.toWorkSpace(dataStructure);
+
+        ViewSet views = workspace.getViews();
+        assertThat(views.getSystemContextViews().size(), equalTo(2));
+        assertThat(views.getContainerViews().size(), equalTo(1));
+        assertThat(views.getComponentViews().size(), equalTo(1));
     }
 
     private void checkStatus(DecisionStatus decisionStatus) {
