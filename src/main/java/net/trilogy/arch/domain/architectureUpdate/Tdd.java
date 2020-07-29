@@ -48,6 +48,7 @@ public class Tdd {
     @EqualsAndHashCode
     public static class ComponentReference implements EntityReference {
         @JsonValue
+        @Getter
         private final String id;
 
         public static ComponentReference blank() {

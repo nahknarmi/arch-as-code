@@ -77,10 +77,11 @@ public class AuAnnotateCommandTest {
                         "component-id: '31'  # c4://Internet Banking System/API Application/Reset Password Controller")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
-                .replaceFirst("component-id: 34",
-                        "component-id: 34  # c4://Internet Banking System/API Application/E-mail Component");
+                .replaceFirst("component-id: '34'",
+                        "component-id: '34'  # c4://Internet Banking System/API Application/E-mail Component");
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated with component paths.\n"));
+        collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
     }
@@ -103,9 +104,10 @@ public class AuAnnotateCommandTest {
                         "component-id: '29'  # c4://Internet Banking System/API Application/Sign In Controller")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
-                .replaceFirst("component-id: 34",
-                        "component-id: 34  # c4://Internet Banking System/API Application/E-mail Component");
+                .replaceFirst("component-id: '34'",
+                        "component-id: '34'  # c4://Internet Banking System/API Application/E-mail Component");
 
+        collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
     }
@@ -120,15 +122,35 @@ public class AuAnnotateCommandTest {
         // THEN
         var expected = Files.readString(originalAuWithoutComponentsPath);
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated with component paths.\n"));
         collector.checkThat(actual, equalTo(expected));
-        collector.checkThat(status, equalTo(0));
+        collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
+        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(status, equalTo(1));
     }
 
     @Test
-    public void shouldIgnoreInvalidComponents() throws Exception {
+    public void shouldHandleWithOnlyInvalidComponents() throws Exception {
         // GIVEN
-        Files.writeString(changedAuWithComponentsPath, Files.readString(changedAuWithComponentsPath).replace("component-id: 34", "component-id: '404'"));
+        Files.writeString(changedAuWithoutComponentsPath, Files.readString(changedAuWithoutComponentsPath).replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'"));
+
+        // WHEN
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithoutComponentsPath), toString(rootPath));
+
+        var actual = Files.readString(changedAuWithoutComponentsPath);
+
+        // THEN
+        var expected = Files.readString(originalAuWithoutComponentsPath).replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
+
+        collector.checkThat(actual, equalTo(expected));
+        collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
+        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(status, equalTo(1));
+    }
+
+    @Test
+    public void shouldIgnoreInvalidComponentsAmongstValid() throws Exception {
+        // GIVEN
+        Files.writeString(changedAuWithComponentsPath, Files.readString(changedAuWithComponentsPath).replace("component-id: '34'", "component-id: '404'"));
 
         // WHEN
         int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsPath), toString(rootPath));
@@ -137,7 +159,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         var expected = Files.readString(originalAuWithComponentsPath)
-                .replaceFirst("component-id: 34", "component-id: '404'")
+                .replaceFirst("component-id: '34'", "component-id: '404'")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
                 .replaceFirst("component-id: '31'",
@@ -145,6 +167,7 @@ public class AuAnnotateCommandTest {
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated with component paths.\n"));
         collector.checkThat(actual, equalTo(expected));
+        collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
     }
 
@@ -160,9 +183,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(
-                err.toString(),
-                equalTo("Unable to load Architecture Update.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load Architecture Update.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
@@ -179,9 +200,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(
-                err.toString(),
-                equalTo("Unable to load Architecture product-architecture.yml.\nError thrown: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load Architecture product-architecture.yml.\nError thrown: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
@@ -198,11 +217,8 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(
-                err.toString(),
-                equalTo("Unable to write annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\nCause: null\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to write annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\nCause: null\n"));
         collector.checkThat(status, equalTo(2));
-
     }
 
     private String toString(Path path) {

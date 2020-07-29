@@ -1,11 +1,14 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
+import net.trilogy.arch.adapter.architectureUpdateYaml.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.c4.Entity;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -13,9 +16,12 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -48,21 +54,38 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         logArgs();
         var regexToGetComponentReferences = Pattern.compile(REGEX);
 
-        String au = null;
+        String auAsString = null;
+        ArchitectureUpdate au = null;
         try {
-            au = filesFacade.readString(architectureUpdateFilePath.toPath());
+            auAsString = filesFacade.readString(architectureUpdateFilePath.toPath());
+            au = new ArchitectureUpdateObjectMapper().readValue(auAsString);
         } catch (Exception e) {
             printError(e, "Unable to load Architecture Update.");
             return 2;
         }
 
-        final Matcher matcher = regexToGetComponentReferences.matcher(au);
+
+        final Matcher matcher = regexToGetComponentReferences.matcher(auAsString);
 
         final var architecture = loadArchitectureOrPrintError("Unable to load Architecture product-architecture.yml.");
         if (architecture.isEmpty()) return 2;
 
+        ArchitectureDataStructure dataStructure = architecture.get();
+        Set<Entity> collect = au.getTddContainersByComponent().stream()
+                .map(tdd -> dataStructure
+                        .getModel()
+                        .findEntityById(tdd.getComponentId().getId())
+                )
+                .flatMap(Optional::stream)
+                .collect(Collectors.toSet());
+
+        if (collect.isEmpty()) {
+            printError("No valid components to annotate.");
+            return 1;
+        }
+
         while (matcher.find()) {
-            au = matcher.replaceAll((res) ->
+            auAsString = matcher.replaceAll((res) ->
                     res.group(1) +
                             getComponentPathComment(res.group(2), architecture.get()) +
                             res.group(3)
@@ -70,7 +93,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         }
 
         try {
-            filesFacade.writeString(architectureUpdateFilePath.toPath(), au);
+            filesFacade.writeString(architectureUpdateFilePath.toPath(), auAsString);
         } catch (Exception e) {
             printError(e, "Unable to write annotations to Architecture Update.");
             return 2;
