@@ -12,8 +12,7 @@ import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class ArchitectureDataStructurePublisherTest {
     @Test
@@ -49,6 +48,8 @@ public class ArchitectureDataStructurePublisherTest {
                 manifestFileName);
 
         Workspace expectedWorkspace = publisher.getWorkspace(productArchitectureDir, manifestFileName);
+
+        when(mockedStructurizrAdapter.publish(any(Workspace.class))).thenReturn(true);
 
         // When
         publisher.publish();

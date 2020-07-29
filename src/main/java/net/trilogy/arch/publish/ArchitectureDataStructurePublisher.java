@@ -1,7 +1,8 @@
 package net.trilogy.arch.publish;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.structurizr.Workspace;
-import com.structurizr.api.StructurizrClientException;
+import com.structurizr.view.ViewSet;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -41,9 +42,22 @@ public class ArchitectureDataStructurePublisher {
     }
 
     // TODO [TESTING] [OVERHAUL] [OPTIONAL]: Make testing not require real connection to Structurizr.
-    public void publish() throws StructurizrClientException, IOException {
+    public void publish() throws IOException {
         Workspace workspace = getWorkspace(productArchitectureDirectory, manifestFileName);
-        structurizrAdapter.publish(workspace);
+
+        loadAndSetViews(productArchitectureDirectory, workspace);
+
+        //savePublishedWorkspace(workspace);
+
+        if (! structurizrAdapter.publish(workspace)) {
+            throw new RuntimeException("Failed to publish to Structurizr");
+        }
+    }
+
+    private void savePublishedWorkspace(Workspace workspace) throws IOException {
+        File published = new File(productArchitectureDirectory + File.separator + "published.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(published, workspace);
     }
 
     public Workspace getWorkspace(File productArchitectureDirectory, String manifestFileName) throws IOException {
@@ -57,5 +71,17 @@ public class ArchitectureDataStructurePublisher {
         String archAsString = this.filesFacade.readString(manifestFile.toPath());
 
         return new ArchitectureDataStructureObjectMapper().readValue(archAsString);
+    }
+
+    private void loadAndSetViews(File productArchitectureDirectory, Workspace workspace) throws IOException {
+        ViewSet viewSet = loadStructurizrViews(productArchitectureDirectory);
+
+        new ViewReferenceMapper().addViewsWithReferencedObjects(workspace, viewSet);
+    }
+
+    private ViewSet loadStructurizrViews(File productArchitectureDirectory) throws IOException {
+        File manifestFile = new File(productArchitectureDirectory + File.separator + "structurizrViews.json");
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(manifestFile, ViewSet.class);
     }
 }

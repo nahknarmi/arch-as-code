@@ -1,5 +1,7 @@
 package net.trilogy.arch.adapter.architectureYaml;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.structurizr.view.ViewSet;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
@@ -34,6 +36,15 @@ public class ArchitectureDataStructureWriter {
         writeDocumentationImages(filesFacade, dataStructure, writePath);
 
         return writeFile;
+    }
+
+    public Path writeViews(ViewSet structurizrViews, Path parentPath) throws IOException {
+        final Path viewsWritePath = parentPath.resolve("structurizrViews.json");
+        if (structurizrViews != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            filesFacade.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));
+        }
+        return viewsWritePath;
     }
 
     private void writeDocumentation(ArchitectureDataStructure dataStructure, Path documentation) throws IOException {

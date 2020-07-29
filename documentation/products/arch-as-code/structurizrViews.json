@@ -1,0 +1,200 @@
+{
+  "systemLandscapeViews": [],
+  "systemContextViews": [
+    {
+      "softwareSystemId": "4",
+      "description": "Trilogy inter-team communication",
+      "key": "DevSpaces",
+      "paperSize": "A5_Landscape",
+      "automaticLayout": null,
+      "title": null,
+      "animations": [],
+      "enterpriseBoundaryVisible": true,
+      "elements": [
+        {
+          "id": "7",
+          "x": 400,
+          "y": 345
+        },
+        {
+          "id": "2",
+          "x": 1270,
+          "y": 1035
+        },
+        {
+          "id": "3",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "5",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "1",
+          "x": 1265,
+          "y": 390
+        }
+      ],
+      "relationships": []
+    }
+  ],
+  "containerViews": [
+    {
+      "softwareSystemId": "4",
+      "description": "DevSpaces Container",
+      "key": "DevSpaces API Container",
+      "paperSize": "A5_Landscape",
+      "automaticLayout": null,
+      "title": null,
+      "animations": [],
+      "elements": [
+        {
+          "id": "1",
+          "x": 400,
+          "y": 345
+        },
+        {
+          "id": "2",
+          "x": 1270,
+          "y": 1035
+        },
+        {
+          "id": "8",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "10",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "11",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "12",
+          "x": 1265,
+          "y": 390
+        },
+        {
+          "id": "13",
+          "x": 1265,
+          "y": 390
+        }
+      ],
+      "relationships": []
+    }
+  ],
+  "componentViews": [
+    {
+      "containerId": "9",
+      "description": "DevSpaces API Components",
+      "key": "DevSpaces API Components",
+      "paperSize": "A5_Landscape",
+      "automaticLayout": null,
+      "title": null,
+      "animations": [],
+      "elements": [
+        {
+          "id": "14",
+          "x": 400,
+          "y": 345
+        },
+        {
+          "id": "15",
+          "x": 1270,
+          "y": 1035
+        },
+        {
+          "id": "16",
+          "x": 1265,
+          "y": 390
+        }
+      ],
+      "relationships": []
+    }
+  ],
+  "dynamicViews": [],
+  "deploymentViews": [],
+  "filteredViews": [],
+  "configuration": {
+    "branding": {
+      "logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIyOUFCMTZGNkQxRDExRTRBQjk4QjAxODU3RDEzNDdGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjIyOUFCMTcwNkQxRDExRTRBQjk4QjAxODU3RDEzNDdGIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjI5QUIxNkQ2RDFEMTFFNEFCOThCMDE4NTdEMTM0N0YiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjI5QUIxNkU2RDFEMTFFNEFCOThCMDE4NTdEMTM0N0YiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4fxM50AAALh0lEQVR42uxdXWhc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",
+      "font": {
+        "name": "Open Sans",
+        "url": null
+      }
+    },
+    "styles": {
+      "elements": [
+        {
+          "tag": "Product"
+        },
+        {
+          "tag": "Person",
+          "background": "#08427b",
+          "color": "#ffffff",
+          "shape": "Person"
+        },
+        {
+          "tag": "External",
+          "background": "#c0c0c0"
+        },
+        {
+          "tag": "DB",
+          "shape": "Cylinder"
+        },
+        {
+          "tag": "SHARED_LIBRARY",
+          "shape": "Folder"
+        },
+        {
+          "tag": "Phone",
+          "background": "#73d100"
+        },
+        {
+          "tag": "MobileDevice",
+          "shape": "MobileDevicePortrait"
+        },
+        {
+          "tag": "Browser",
+          "shape": "WebBrowser"
+        },
+        {
+          "tag": "Desktop",
+          "shape": "RoundedBox"
+        },
+        {
+          "tag": "Staff",
+          "background": "#c9c9c9",
+          "color": "#000000",
+          "shape": "Person"
+        }
+      ],
+      "relationships": [
+        {
+          "tag": "Relationship",
+          "thickness": 2,
+          "dashed": false
+        },
+        {
+          "tag": "Data",
+          "dashed": true
+        },
+        {
+          "tag": "Meta",
+          "dashed": true
+        }
+      ]
+    },
+    "terminology": {
+      "enterprise": "Product"
+    },
+    "defaultView": null,
+    "viewSortOrder": null
+  }
+}

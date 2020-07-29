@@ -101,9 +101,12 @@ public class UserJourneyTest {
     @Test
     public void publishes_workspace_when_workspace_path_passed_to_validate_command() throws Exception {
         init();
+        int exitCode = importWorkspace();
+        assertThat(exitCode, equalTo(0));
+
         execute("validate", workspaceRoot);
 
-        int exitCode = execute("publish", workspaceRoot);
+        exitCode = execute("publish", workspaceRoot);
 
         assertThat(exitCode, equalTo(0));
     }

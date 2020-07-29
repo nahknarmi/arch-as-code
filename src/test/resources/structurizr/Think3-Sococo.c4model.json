@@ -676,7 +676,8 @@
                         "sourceId": "140",
                         "destinationId": "37",
                         "description": "Runs app",
-                        "interactionStyle": "Synchronous"
+                        "interactionStyle": "Synchronous",
+                        "technology": "https"
                     }
                 ],
                 "location": "External"
