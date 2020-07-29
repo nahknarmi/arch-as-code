@@ -46,8 +46,6 @@ public class ArchitectureDataStructurePublisher {
 
         loadAndSetViews(productArchitectureDirectory, workspace);
 
-        //savePublishedWorkspace(workspace);
-
         if (!structurizrAdapter.publish(workspace)) {
             throw new RuntimeException("Failed to publish to Structurizr");
         }
