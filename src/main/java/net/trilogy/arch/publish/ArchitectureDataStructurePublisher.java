@@ -41,7 +41,6 @@ public class ArchitectureDataStructurePublisher {
         this.structurizrAdapter = structurizrAdapter;
     }
 
-    // TODO [TESTING] [OVERHAUL] [OPTIONAL]: Make testing not require real connection to Structurizr.
     public void publish() throws IOException {
         Workspace workspace = getWorkspace(productArchitectureDirectory, manifestFileName);
 
@@ -49,7 +48,7 @@ public class ArchitectureDataStructurePublisher {
 
         //savePublishedWorkspace(workspace);
 
-        if (! structurizrAdapter.publish(workspace)) {
+        if (!structurizrAdapter.publish(workspace)) {
             throw new RuntimeException("Failed to publish to Structurizr");
         }
     }

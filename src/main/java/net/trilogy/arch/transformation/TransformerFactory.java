@@ -11,7 +11,6 @@ public abstract class TransformerFactory {
     public static ArchitectureDataStructureTransformer create(File documentRoot) {
         return new ArchitectureDataStructureTransformer(
                 ImmutableList.of(
-                        // TODO: Extact
                         new DocumentationEnhancer(documentRoot, new FilesFacade()),
                         new DecisionEnhancer(),
                         new ModelEnhancer()
