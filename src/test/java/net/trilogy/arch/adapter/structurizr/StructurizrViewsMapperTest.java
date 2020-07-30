@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThrows;
 
 public class StructurizrViewsMapperTest {
 
@@ -58,5 +59,53 @@ public class StructurizrViewsMapperTest {
         views.getContainerViews().forEach(cv -> assertThat(cv.getSoftwareSystem().getId(), equalTo(cv.getSoftwareSystemId())));
         views.getComponentViews().forEach(cv -> assertThat(cv.getSoftwareSystem().getId(), equalTo(cv.getSoftwareSystemId())));
         views.getComponentViews().forEach(cv -> assertThat(cv.getContainer().getId(), equalTo(cv.getContainerId())));
+    }
+
+    @Test
+    public void shouldLoadViewsWithNoReferencedObjectWhenObjectIdsAreNotFound() {
+        File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
+
+        Workspace workspace = new Workspace("some name", "some description");
+
+        StructurizrViewsMapper viewsMapper = new StructurizrViewsMapper(documentationRoot);
+        viewsMapper.loadAndSetViews(workspace);
+
+        ViewSet views = workspace.getViews();
+
+        Collection<SystemContextView> systemViews = views.getSystemContextViews();
+        assertThat(systemViews.size(), equalTo(2));
+
+        Collection<ContainerView> containerViews = views.getContainerViews();
+        assertThat(containerViews.size(), equalTo(1));
+
+        Collection<ComponentView> componentViews = views.getComponentViews();
+        assertThat(componentViews.size(), equalTo(1));
+
+        systemViews.forEach(sv -> assertThat(sv.getSoftwareSystem(), nullValue()));
+        containerViews.forEach(cv -> assertThat(cv.getSoftwareSystem(), nullValue()));
+        componentViews.forEach(cv -> assertThat(cv.getSoftwareSystem(), nullValue()));
+        componentViews.forEach(cv -> assertThat(cv.getContainer(), nullValue()));
+    }
+
+    @Test
+    public void shouldFailToLoadViewsWhenViewFileIsNotFound() {
+        File folderWithNoViews = new File(getClass().getResource("/images").getPath());
+
+        Workspace workspace = new Workspace("some name", "some description");
+
+        StructurizrViewsMapper viewsMapper = new StructurizrViewsMapper(folderWithNoViews);
+
+        assertThrows("Failed to load Structurizr views", RuntimeException.class, () -> viewsMapper.loadAndSetViews(workspace));
+    }
+
+    @Test
+    public void shouldFailToLoadViewsWhenViewFileIsMalformed() {
+        File folderWithMalformed = new File(getClass().getResource("/views/malformed").getPath());
+
+        Workspace workspace = new Workspace("some name", "some description");
+
+        StructurizrViewsMapper viewsMapper = new StructurizrViewsMapper(folderWithMalformed);
+
+        assertThrows("Failed to load Structurizr views", RuntimeException.class, () -> viewsMapper.loadAndSetViews(workspace));
     }
 }

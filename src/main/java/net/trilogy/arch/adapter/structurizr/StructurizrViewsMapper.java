@@ -31,7 +31,7 @@ public class StructurizrViewsMapper {
             addViewsWithReferencedObjects(workspace, viewSet);
         } catch (IOException e) {
             logger.error("Failed to load views", e);
-            throw new RuntimeException("Failed to load views", e);
+            throw new RuntimeException("Failed to load Structurizr views", e);
         }
     }
 
