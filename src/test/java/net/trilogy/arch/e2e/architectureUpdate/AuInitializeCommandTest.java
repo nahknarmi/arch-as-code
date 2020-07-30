@@ -3,12 +3,16 @@ package net.trilogy.arch.e2e.architectureUpdate;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.mockito.ArgumentMatchers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -28,6 +32,25 @@ public class AuInitializeCommandTest {
     private final String client_id = "id";
     private final String project_id = "proj";
     private final String secret = "secret";
+
+    final PrintStream originalOut = System.out;
+    final PrintStream originalErr = System.err;
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+    @Before
+    public void setUp() {
+        out.reset();
+        err.reset();
+        System.setOut(new PrintStream(out));
+        System.setErr(new PrintStream(err));
+    }
+
+    @After
+    public void tearDown() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
+    }
 
     @Test
     public void shouldUseCorrectAuFolder() {
@@ -72,6 +95,28 @@ public class AuInitializeCommandTest {
                 Files.isDirectory(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
                 is(true)
         );
+    }
+
+    @Test
+    public void shouldNotifyIfArchitectureUpdatesDirectoryAlreadyExists() throws Exception {
+        // Given
+        Path tempDirPath = getTempDirectory();
+        collector.checkThat(
+                ARCHITECTURE_UPDATES_ROOT_FOLDER + " folder does not exist. (Precondition check)",
+                Files.exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
+                is(false)
+        );
+
+        Path baseAuFolder = tempDirPath.resolve("architecture-updates");
+        Files.createDirectory(baseAuFolder);
+
+        // When
+        Integer status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+
+        // Then
+        collector.checkThat(status, equalTo(0));
+        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(out.toString(), containsString("already exists"));
     }
 
     @Test

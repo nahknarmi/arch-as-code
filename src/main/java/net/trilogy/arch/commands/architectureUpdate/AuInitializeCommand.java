@@ -10,6 +10,7 @@ import picocli.CommandLine.Parameters;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
@@ -115,11 +116,19 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
 
     private boolean makeAuFolder() {
         File auFolder = productArchitectureDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER).toFile();
-        boolean succeeded = auFolder.mkdir();
+
+        boolean succeeded = true;
+        if (Files.exists(auFolder.toPath())) {
+            print(String.format("Architecture Updates directory $s already exists", auFolder.getAbsolutePath()));
+        } else {
+            succeeded = auFolder.mkdir();
+        }
+
         if (!succeeded) {
             printError(String.format("Unable to create %s", auFolder.getAbsolutePath()));
             return false;
         }
+
         return true;
     }
 
