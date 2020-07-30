@@ -13,6 +13,8 @@ import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -47,10 +49,10 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         logArgs();
         if (!checkBranchNameEquals(name)) return 1;
 
-        var auFile = getNewAuFilePath();
+        var auFile = getNewAuFilePath(name);
         if (auFile.isEmpty()) return 1;
 
-        var au = loadAu();
+        var au = loadAu(name);
         if (au.isEmpty()) return 1;
 
         if (!writeAu(auFile.get(), au.get())) return 1;
@@ -59,7 +61,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAu() {
+    private Optional<ArchitectureUpdate> loadAu(String name) {
         if (p1GoogleDocUrl != null) {
             return loadFromP1();
         } else {
@@ -88,22 +90,31 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         }
     }
 
-    private Optional<File> getNewAuFilePath() {
-        File auFolder = productArchitectureDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER).toFile();
+    private Optional<File> getNewAuFilePath(String name) {
+        File baseAuFolder = productArchitectureDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER).toFile();
 
-        if (!auFolder.isDirectory()) {
+        if (!Files.exists(baseAuFolder.toPath())) {
             try {
-                filesFacade.createDirectory(auFolder.toPath());
+                filesFacade.createDirectory(baseAuFolder.toPath());
             } catch (Exception e) {
                 printError("Unable to create architecture-updates directory.", e);
                 return Optional.empty();
             }
         }
 
-        String auFileName = name + ".yml";
-        File auFile = auFolder.toPath().resolve(auFileName).toFile();
+        Path auFolder = baseAuFolder.toPath().resolve(name);
+        if (!auFolder.toFile().isDirectory()) {
+            try {
+                filesFacade.createDirectory(auFolder);
+            } catch (Exception e) {
+                printError(String.format("Unable to create %s directory.", auFolder.toString()), e);
+                return Optional.empty();
+            }
+        }
+
+        File auFile = auFolder.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile();
         if (auFile.isFile()) {
-            printError(String.format("AU %s already exists. Try a different name.", auFileName));
+            printError(String.format("AU %s already exists. Try a different name.", auFile.getAbsolutePath()));
             return Optional.empty();
         }
 

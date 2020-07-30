@@ -195,7 +195,7 @@ public class AuNewCommandTest {
 
         int status = execute("au", "new", "au-name", str(rootDir.toPath()));
 
-        Path auFile = rootDir.toPath().resolve("architecture-updates/au-name.yml");
+        Path auFile = rootDir.toPath().resolve("architecture-updates/au-name/architecture-update.yml");
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(Files.exists(auFile), is(true));
@@ -211,24 +211,30 @@ public class AuNewCommandTest {
 
     @Test
     public void shouldCreateFileWithoutP1() throws Exception {
+        // Given
         execute("init", str(rootDir.toPath()), "-i i", "-k k", "-s s");
-        Path auDir = initializeAuDirectory(rootDir.toPath());
-        Path auFile = auDir.resolve("au-name.yml");
+
+        String auName = "au-name";
+        Path allAusDir = initializeAuDirectory(rootDir.toPath());
+        Path currentAuDir = allAusDir.resolve(auName);
+        Path auFile = currentAuDir.resolve("architecture-update.yml");
         collector.checkThat(
                 "AU does not already exist. (Precondition check)",
                 Files.exists(auFile),
                 is(false)
         );
 
-        Integer exitCode = execute("au", "new", "au-name", str(rootDir.toPath()));
+        // When
+        Integer exitCode = execute("au", "new", auName, str(rootDir.toPath()));
 
+        // Then
         collector.checkThat(exitCode, is(equalTo(0)));
         collector.checkThat(Files.exists(auFile), is(true));
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
                 equalTo(
                         new ArchitectureUpdateObjectMapper().writeValueAsString(
-                                ArchitectureUpdate.builderPreFilledWithBlanks().name("au-name").build()
+                                ArchitectureUpdate.builderPreFilledWithBlanks().name(auName).build()
                         )
                 )
         );
@@ -239,8 +245,10 @@ public class AuNewCommandTest {
         // GIVEN
         mockGoogleDocsApi();
         execute("init", str(rootDir.toPath()), "-i i", "-k k", "-s s");
-        Path auDir = initializeAuDirectory(rootDir.toPath());
-        Path auFile = auDir.resolve("au-name.yml");
+
+        String auName = "au-name";
+        Path allAusDir = initializeAuDirectory(rootDir.toPath());
+        Path auFile = allAusDir.resolve(auName).resolve("architecture-update.yml");
         collector.checkThat(
                 "AU does not already exist. (Precondition check)",
                 Files.exists(auFile),
@@ -248,7 +256,7 @@ public class AuNewCommandTest {
         );
 
         // WHEN
-        Integer exitCode = execute(app, "au new au-name -p url " + str(rootDir.toPath()));
+        Integer exitCode = execute(app, "au new " + auName + " -p url " + str(rootDir.toPath()));
 
         // THEN
         collector.checkThat(exitCode, is(equalTo(0)));
@@ -262,15 +270,19 @@ public class AuNewCommandTest {
     @Test
     public void shouldNotCreateFileIfAlreadyExists() throws Exception {
         Path rootDir = getTempRepositoryDirectory();
-        execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-
         String auName = "au-name";
-        execute("au", "new", auName, str(rootDir));
-        Files.writeString(auPathFrom(rootDir, auName), "EXISTING CONTENTS");
+        Path allAusDir = initializeAuDirectory(rootDir);
+        Path auFile = allAusDir.resolve(auName).resolve("architecture-update.yml");
+
+        Integer setupStatus = execute("au", "new", auName, str(rootDir));
+        Files.writeString(auFile, "EXISTING CONTENTS");
+
+        collector.checkThat(setupStatus, equalTo(0));
+        collector.checkThat(err.toString(), equalTo(""));
 
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
-                Files.readString(auPathFrom(rootDir, auName)),
+                Files.readString(auFile),
                 equalTo("EXISTING CONTENTS")
         );
 
@@ -281,8 +293,13 @@ public class AuNewCommandTest {
         );
 
         collector.checkThat(
+                err.toString(),
+                containsString("/root/architecture-updates/au-name/architecture-update.yml already exists. Try a different name.")
+        );
+
+        collector.checkThat(
                 "Must not overwrite an AU",
-                Files.readString(auPathFrom(rootDir, auName)),
+                Files.readString(auFile),
                 equalTo("EXISTING CONTENTS")
         );
     }
@@ -319,10 +336,6 @@ public class AuNewCommandTest {
     private Path initializeAuDirectory(Path rootDir) throws Exception {
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
         return rootDir.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER);
-    }
-
-    private Path auPathFrom(Path rootPath, String auName) {
-        return rootPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER).resolve(auName).toAbsolutePath();
     }
 
     private String str(Path tempDirPath) {

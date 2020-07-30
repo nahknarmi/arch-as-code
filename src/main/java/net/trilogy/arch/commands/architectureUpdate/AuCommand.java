@@ -1,12 +1,12 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
-import java.util.concurrent.Callable;
-
 import lombok.Getter;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Spec;
+
+import java.util.concurrent.Callable;
 
 @Command(
         name = "architecture-update",
@@ -16,6 +16,7 @@ import picocli.CommandLine.Spec;
 )
 public class AuCommand implements Callable<Integer>, DisplaysOutputMixin {
     public static final String ARCHITECTURE_UPDATES_ROOT_FOLDER = "architecture-updates";
+    public static final String ARCHITECTURE_UPDATE_FILE_NAME = "architecture-update.yml";
 
     @Getter
     @Spec
