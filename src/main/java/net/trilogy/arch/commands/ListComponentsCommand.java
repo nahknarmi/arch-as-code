@@ -3,6 +3,7 @@ package net.trilogy.arch.commands;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
+import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "list-components", mixinStandardHelpOptions = true, description = "Outputs a CSV formatted list of components and their IDs, which are present in the architecture.")
 public class ListComponentsCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin {
+
+    @CommandLine.Option(names = {"-s", "--search"}, description = "Search string to be part of name or description to find matching components.")
+    private String searchString;
 
     @Getter
     @Spec
@@ -53,6 +57,7 @@ public class ListComponentsCommand implements Callable<Integer>, LoadArchitectur
                             .getComponents()
                             .stream()
                             .sorted((a, b) -> a.getId().compareTo(b.getId()))
+                            .filter( c -> searchString == null || searchComponent(c))
                             .map(component -> 
                                     "\n" +
                                     component.getId() + ", " + 
@@ -62,5 +67,12 @@ public class ListComponentsCommand implements Callable<Integer>, LoadArchitectur
                             .collect(Collectors.joining());
 
         print("ID, Name, Path" + toOutput);
+    }
+
+    private boolean searchComponent(C4Component component) {
+        String lowerCase = searchString.toLowerCase();
+        String name = component.getName();
+        String description = component.getDescription();
+        return  (name != null && name.toLowerCase().contains(lowerCase)) || (description != null && description.toLowerCase().contains(lowerCase));
     }
 }

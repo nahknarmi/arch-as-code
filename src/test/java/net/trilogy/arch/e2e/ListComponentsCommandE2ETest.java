@@ -66,6 +66,21 @@ public class ListComponentsCommandE2ETest {
     }
 
     @Test
+    public void shouldOutputComponentsListFilteredBySearchString() throws Exception {
+        initFileForTest("allValidSchema.yml");
+
+        int status = TestHelper.execute("list-components",  "-s password", rootDir.getAbsolutePath());
+
+        collector.checkThat(status, equalTo(0));
+        collector.checkThat(out.toString(), equalTo(
+                "ID, Name, Path\n" +
+                        "14, DevSpaces/DevSpaces API/Security Component, c4://DevSpaces/DevSpaces-DevSpaces API/DevSpaces-DevSpaces API-Security Component\n" +
+                        "15, DevSpaces/DevSpaces API/Reset Password Controller, \n"
+        ));
+        collector.checkThat(err.toString(), equalTo(""));
+    }
+
+    @Test
     public void shouldHandleEmptyModel() throws Exception {
         initFileForTest("emptyModel.yml");
 
