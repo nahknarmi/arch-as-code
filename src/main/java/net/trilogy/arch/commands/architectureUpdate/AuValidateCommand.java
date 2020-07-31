@@ -12,11 +12,7 @@ import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.schema.SchemaValidator;
-import net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator;
-import net.trilogy.arch.validation.architectureUpdate.ValidationError;
-import net.trilogy.arch.validation.architectureUpdate.ValidationErrorType;
-import net.trilogy.arch.validation.architectureUpdate.ValidationResult;
-import net.trilogy.arch.validation.architectureUpdate.ValidationStage;
+import net.trilogy.arch.validation.architectureUpdate.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Model.CommandSpec;
 
@@ -30,9 +26,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Parameters;
-import static picocli.CommandLine.Spec;
+import static picocli.CommandLine.*;
 
 @Command(name = "validate", description = "Validate Architecture Update", mixinStandardHelpOptions = true)
 public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFromGitMixin, LoadArchitectureMixin, DisplaysErrorMixin, DisplaysOutputMixin {
@@ -41,16 +35,19 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     @Spec
     private CommandSpec spec;
 
-    @Parameters(index = "0", description = "File name of architecture update to validate")
-    private File architectureUpdateFilePath;
+    @Parameters(index = "0", description = "Directory name of architecture update to validate")
+    private File architectureUpdateDirectory;
 
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
 
-    @Getter private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
-    @Getter private final FilesFacade filesFacade;
-    @Getter private final GitInterface gitInterface;
+    @Getter
+    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
+    @Getter
+    private final FilesFacade filesFacade;
+    @Getter
+    private final GitInterface gitInterface;
 
     @CommandLine.Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to validate changes. Usually 'master'. Also can be a commit or tag.", required = true)
     String baseBranch;
@@ -79,7 +76,8 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         final var baseBranchArch = loadArchitectureFromGitOrPrintError(baseBranch, "Unable to load '" + baseBranch + "' branch architecture");
         if (baseBranchArch.isEmpty()) return 1;
 
-        final var au = loadAndValidateAu();
+        File auFile = architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile();
+        final var au = loadAndValidateAu(auFile);
         if (au.isEmpty()) return 1;
 
         final ValidationResult validationResults = ArchitectureUpdateValidator.validate(
@@ -100,12 +98,12 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAndValidateAu() {
+    private Optional<ArchitectureUpdate> loadAndValidateAu(File auFile) {
         try {
-            if (validateAu()) {
+            if (validateAu(auFile)) {
                 return Optional.of(
                         architectureUpdateObjectMapper.readValue(
-                                filesFacade.readString(architectureUpdateFilePath.toPath())
+                                filesFacade.readString(auFile.toPath())
                         )
                 );
             }
@@ -115,14 +113,14 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return Optional.empty();
     }
 
-    private boolean validateAu() throws FileNotFoundException {
-        InputStream auInputStream = new FileInputStream(architectureUpdateFilePath);
+    private boolean validateAu(File auFile) throws FileNotFoundException {
+        InputStream auInputStream = new FileInputStream(auFile);
         Set<ValidationMessage> validationMessages = new SchemaValidator().validateArchitectureUpdateDocument(auInputStream);
         if (validationMessages.isEmpty()) {
             return true;
         }
         printError("Architecture update schema validation failed.");
-        validationMessages.stream().forEach( m -> printError(m.getMessage()));
+        validationMessages.stream().forEach(m -> printError(m.getMessage()));
         return false;
     }
 

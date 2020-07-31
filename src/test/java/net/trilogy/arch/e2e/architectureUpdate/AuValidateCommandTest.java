@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.Matchers.*;
@@ -22,6 +23,7 @@ public class AuValidateCommandTest {
     public final ErrorCollector collector = new ErrorCollector();
 
     private File rootDir;
+    private Path auDir;
     private Git git;
 
     final PrintStream originalOut = System.out;
@@ -38,11 +40,19 @@ public class AuValidateCommandTest {
         var buildDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_VALIDATION_E2E).getPath());
 
         rootDir = buildDir.toPath().resolve("git").toFile();
+        auDir = rootDir.toPath().resolve("architecture-updates/");
 
         FileUtils.copyDirectory(buildDir, rootDir);
         git = Git.init().setDirectory(rootDir).call();
 
         setUpRealisticGitRepository();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        FileUtils.deleteDirectory(rootDir);
+        System.setOut(originalOut);
+        System.setErr(originalErr);
     }
 
     private void setUpRealisticGitRepository() throws Exception {
@@ -66,47 +76,47 @@ public class AuValidateCommandTest {
         git.commit().setMessage("change architecture in au").call();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(rootDir);
-        System.setOut(originalOut);
-        System.setErr(originalErr);
-    }
-
     @Test
-    public void shouldBeFullyValid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/blank.yml";
+    public void shouldBeFullyValid() {
+        var auPath = auDir.resolve("blank/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
         collector.checkThat(err.toString(), equalTo(""));
     }
 
     @Test
-    public void shouldBeTDDValid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/invalid_capabilities.yml";
+    public void shouldBeTDDValid() {
+        var auPath = auDir.resolve("invalid-capabilities/").toString();
+
         Integer status = execute("architecture-update", "validate", "-b", "master", "-t", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
         collector.checkThat(err.toString(), equalTo(""));
     }
 
     @Test
-    public void shouldBeStoryValid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/invalid_tdds.yml";
+    public void shouldBeStoryValid() {
+        var auPath = auDir.resolve("invalid-tdds/").toString();
+
         Integer status = execute("architecture-update", "validate", "-b", "master", "-s", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
         collector.checkThat(err.toString(), equalTo(""));
     }
 
     @Test
-    public void shouldPresentErrorsNicely() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/both_invalid.yml";
+    public void shouldPresentErrorsNicely() {
+        var auPath = auDir.resolve("both-invalid/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-
         collector.checkThat(
                 err.toString(),
                 equalTo("" +
@@ -124,79 +134,66 @@ public class AuValidateCommandTest {
     }
 
     @Test
-    public void shouldBeFullyInvalid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/both_invalid.yml";
+    public void shouldBeFullyInvalid() {
+        var auPath = auDir.resolve("both-invalid/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-
-        collector.checkThat(
-                err.toString(),
-                containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference.")
-        );
-        collector.checkThat(
-                err.toString(),
-                containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story.")
-        );
-        collector.checkThat(
-                err.toString(),
-                containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist.")
-        );
+        collector.checkThat(err.toString(),
+                containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference."));
+        collector.checkThat(err.toString(),
+                containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."));
+        collector.checkThat(err.toString(),
+                containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."));
     }
 
     @Test
-    public void shouldBeTddInvalid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/both_invalid.yml";
+    public void shouldBeTddInvalid() {
+        var auPath = auDir.resolve("both-invalid/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", "--TDDs", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-
-        collector.checkThat(
-                err.toString(),
-                containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference.")
-        );
-        collector.checkThat(
-                err.toString(),
-                not(containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."))
-        );
-        collector.checkThat(
-                err.toString(),
-                containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist.")
-        );
+        collector.checkThat(err.toString(),
+                containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference."));
+        collector.checkThat(err.toString(),
+                not(containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story.")));
+        collector.checkThat(err.toString(),
+                containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."));
     }
 
     @Test
-    public void shouldBeStoryInvalid() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/both_invalid.yml";
+    public void shouldBeStoryInvalid() {
+        var auPath = auDir.resolve("both-invalid/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", "--stories", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-
-        collector.checkThat(
-                err.toString(),
-                not(containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."))
-        );
-        collector.checkThat(
-                err.toString(),
-                not(containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference."))
-        );
-        collector.checkThat(
-                err.toString(),
-                containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story.")
-        );
+        collector.checkThat(err.toString(),
+                not(containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist.")));
+        collector.checkThat(err.toString(),
+                not(containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference.")));
+        collector.checkThat(err.toString(),
+                containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."));
     }
 
     @Test
-    public void shouldFindErrorsAcrossGitBranches() throws Exception {
-        var auPath = rootDir.toPath().resolve("architecture-updates/invalid_deleted_component.yml").toAbsolutePath().toString();
+    public void shouldFindErrorsAcrossGitBranches() {
+        var auPath = auDir.resolve("invalid-deleted-component/").toString();
+
         Integer status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(err.toString(), containsString("Deleted component id \"deleted-component-invalid\" is invalid. (Checked architecture in \"master\" branch.)"));
     }
 
     @Test
-    public void shouldHandleIfGitReaderFails() throws Exception {
-        var auPath = rootDir.toPath().resolve("architecture-updates/blank.yml").toAbsolutePath().toString();
+    public void shouldHandleIfGitReaderFails() {
+        var auPath = auDir.resolve("architecture-updates/blank/").toString();
 
         Integer status = execute("architecture-update", "validate", "-b", "invalid", auPath, rootDir.getAbsolutePath());
 
@@ -205,8 +202,8 @@ public class AuValidateCommandTest {
     }
 
     @Test
-    public void shouldHandleIfUnableToLoadArchitecture() throws Exception {
-        var auPath = rootDir.toPath().resolve("architecture-updates/blank.yml").toAbsolutePath().toString();
+    public void shouldHandleIfUnableToLoadArchitecture() {
+        var auPath = auDir.resolve("architecture-updates/blank/").toString();
 
         Integer status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath() + "invalid");
 
@@ -215,9 +212,11 @@ public class AuValidateCommandTest {
     }
 
     @Test
-    public void shouldFindAUStructureErrors() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/invalid_structure.yml";
+    public void shouldFindAUStructureErrors() {
+        var auPath = auDir.resolve("invalid-structure/").toString();
+
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
 
@@ -228,12 +227,13 @@ public class AuValidateCommandTest {
     }
 
     @Test
-    public void shouldFindAUSchemaErrors() throws Exception {
-        var auPath = rootDir.getAbsolutePath() + "/architecture-updates/invalid_schema.yml";
+    public void shouldFindAUSchemaErrors() {
+        var auPath = auDir.resolve("invalid-schema").toString();
+
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-
         collector.checkThat(
                 err.toString(),
                 containsString("$.tdds-per-component[0].tdds.[SAMPLE-TDD-ID-2].text: is missing but it is required")
