@@ -27,10 +27,10 @@ public class AuAnnotateCommandTest {
     public final ErrorCollector collector = new ErrorCollector();
 
     Path rootPath;
-    Path originalAuWithComponentsPath;
-    Path changedAuWithComponentsPath;
-    Path originalAuWithoutComponentsPath;
-    Path changedAuWithoutComponentsPath;
+    Path originalAuWithComponentsDirectoryPath;
+    Path changedAuWithComponentsDirectoryPath;
+    Path originalAuWithoutComponentsDirectoryPath;
+    Path changedAuWithoutComponentsDirectoryPath;
 
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
@@ -40,14 +40,22 @@ public class AuAnnotateCommandTest {
     @Before
     public void setUp() throws Exception {
         rootPath = TestHelper.getPath(getClass(), TestHelper.ROOT_PATH_TO_TEST_AU_ANNOTATE);
-        originalAuWithComponentsPath = rootPath.resolve("architecture-updates/valid-with-components.yml");
-        originalAuWithoutComponentsPath = rootPath.resolve("architecture-updates/valid-without-components.yml");
+        originalAuWithComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponents/");
+        originalAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponents/");
 
-        changedAuWithComponentsPath = rootPath.resolve("architecture-updates/valid-with-components-clone.yml");
-        changedAuWithoutComponentsPath = rootPath.resolve("architecture-updates/valid-without-components-clone.yml");
+        changedAuWithComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsClone/");
+        changedAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponentsClone/");
 
-        Files.copy(originalAuWithComponentsPath, changedAuWithComponentsPath);
-        Files.copy(originalAuWithoutComponentsPath, changedAuWithoutComponentsPath);
+        if (!Files.exists(changedAuWithComponentsDirectoryPath))
+            Files.createDirectory(changedAuWithComponentsDirectoryPath);
+
+        if (!Files.exists(changedAuWithoutComponentsDirectoryPath))
+            Files.createDirectory(changedAuWithoutComponentsDirectoryPath);
+
+        Files.copy(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"),
+                changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
+        Files.copy(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"),
+                changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         out.reset();
         err.reset();
@@ -57,8 +65,11 @@ public class AuAnnotateCommandTest {
 
     @After
     public void tearDown() throws Exception {
-        Files.deleteIfExists(changedAuWithComponentsPath);
-        Files.deleteIfExists(changedAuWithoutComponentsPath);
+        Files.deleteIfExists(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
+        Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
+        Files.deleteIfExists(changedAuWithComponentsDirectoryPath);
+        Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath);
+
 
         System.setOut(originalOut);
         System.setErr(originalErr);
@@ -67,12 +78,12 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldAnnotate() throws Exception {
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(changedAuWithComponentsPath);
+        var actual = Files.readString(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         // THEN
-        var expected = Files.readString(originalAuWithComponentsPath)
+        var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: '31'",
                         "component-id: '31'  # c4://Internet Banking System/API Application/Reset Password Controller")
                 .replaceFirst("component-id: \"30\"",
@@ -89,17 +100,20 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldRefreshAnnotations() throws Exception {
         // GIVEN
-        TestHelper.execute("au", "annotate", toString(changedAuWithComponentsPath), toString(rootPath));
+        TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
 
-        Files.writeString(changedAuWithComponentsPath, Files.readString(changedAuWithComponentsPath).replace("component-id: '31'", "component-id: '29'"));
+        Path writeDestination = changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml");
+        String writeSource = Files.readString(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
+                .replace("component-id: '31'", "component-id: '29'");
+        Files.writeString(writeDestination, writeSource);
 
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(changedAuWithComponentsPath);
+        var actual = Files.readString(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         // THEN
-        var expected = Files.readString(originalAuWithComponentsPath)
+        var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: '31'",
                         "component-id: '29'  # c4://Internet Banking System/API Application/Sign In Controller")
                 .replaceFirst("component-id: \"30\"",
@@ -115,12 +129,12 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldHandleNoComponents() throws Exception {
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(changedAuWithoutComponentsPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithoutComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(changedAuWithoutComponentsPath);
+        var actual = Files.readString(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         // THEN
-        var expected = Files.readString(originalAuWithoutComponentsPath);
+        var expected = Files.readString(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         collector.checkThat(actual, equalTo(expected));
         collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
@@ -131,15 +145,19 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldHandleWithOnlyInvalidComponents() throws Exception {
         // GIVEN
-        Files.writeString(changedAuWithoutComponentsPath, Files.readString(changedAuWithoutComponentsPath).replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'"));
+        Path writeDestination = changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml");
+        String writeSource = Files.readString(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"))
+                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
+        Files.writeString(writeDestination, writeSource);
 
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(changedAuWithoutComponentsPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithoutComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(changedAuWithoutComponentsPath);
+        var actual = Files.readString(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         // THEN
-        var expected = Files.readString(originalAuWithoutComponentsPath).replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
+        var expected = Files.readString(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"))
+                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
 
         collector.checkThat(actual, equalTo(expected));
         collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
@@ -150,15 +168,18 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldIgnoreInvalidComponentsAmongstValid() throws Exception {
         // GIVEN
-        Files.writeString(changedAuWithComponentsPath, Files.readString(changedAuWithComponentsPath).replace("component-id: '34'", "component-id: '404'"));
+        Path writeDestination = this.changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml");
+        String writeSource = Files.readString(this.changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
+                .replace("component-id: '34'", "component-id: '404'");
+        Files.writeString(writeDestination, writeSource);
 
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(this.changedAuWithComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(changedAuWithComponentsPath);
+        var actual = Files.readString(this.changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
 
         // THEN
-        var expected = Files.readString(originalAuWithComponentsPath)
+        var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: '34'", "component-id: '404'")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
@@ -175,11 +196,12 @@ public class AuAnnotateCommandTest {
     public void shouldNotifyUserWhenAUFailsToLoad() throws Exception {
         // GIVEN
         final FilesFacade mockedFilesFacade = spy(FilesFacade.class);
-        when(mockedFilesFacade.readString(changedAuWithComponentsPath)).thenThrow(new IOException("error-message", new RuntimeException("Boom!")));
+        when(mockedFilesFacade.readString(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml")))
+                .thenThrow(new IOException("error-message", new RuntimeException("Boom!")));
 
         // WHEN
-        int status = TestHelper.execute(Application.builder().filesFacade(mockedFilesFacade).build(),
-                "au annotate " + toString(changedAuWithComponentsPath) + " " + toString(rootPath));
+        Application app = Application.builder().filesFacade(mockedFilesFacade).build();
+        int status = TestHelper.execute(app, "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
@@ -196,7 +218,7 @@ public class AuAnnotateCommandTest {
 
         // WHEN
         int status = TestHelper.execute(Application.builder().filesFacade(spyedFilesFacade).build(),
-                "au annotate " + toString(changedAuWithComponentsPath) + " " + toString(rootPath));
+                "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
@@ -213,7 +235,7 @@ public class AuAnnotateCommandTest {
 
         // WHEN
         int status = TestHelper.execute(Application.builder().filesFacade(mockedFilesFacade).build(),
-                "au annotate " + toString(changedAuWithComponentsPath) + " " + toString(rootPath));
+                "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));

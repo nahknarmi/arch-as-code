@@ -57,13 +57,12 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         String auAsString = null;
         ArchitectureUpdate au = null;
         try {
-            auAsString = filesFacade.readString(architectureUpdateFilePath.toPath());
+            auAsString = filesFacade.readString(architectureUpdateFilePath.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
             au = new ArchitectureUpdateObjectMapper().readValue(auAsString);
         } catch (Exception e) {
             printError(e, "Unable to load Architecture Update.");
             return 2;
         }
-
 
         final Matcher matcher = regexToGetComponentReferences.matcher(auAsString);
 
@@ -93,7 +92,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         }
 
         try {
-            filesFacade.writeString(architectureUpdateFilePath.toPath(), auAsString);
+            filesFacade.writeString(architectureUpdateFilePath.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), auAsString);
         } catch (Exception e) {
             printError(e, "Unable to write annotations to Architecture Update.");
             return 2;
