@@ -60,7 +60,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
 
     private void createManifest() throws IOException {
         ArchitectureDataStructure data = createSampleDataStructure();
-        String toFilePath = productArchitectureDirectory.getAbsolutePath() + File.separator + "product-architecture.yml";
+        String toFilePath = productArchitectureDirectory.getAbsolutePath() + File.separator + ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME;
         write(data, toFilePath);
         print("Manifest file written to - " + toFilePath);
     }

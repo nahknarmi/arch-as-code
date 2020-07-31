@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands.mixin;
 
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
+import net.trilogy.arch.commands.ParentCommand;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 
@@ -18,7 +18,8 @@ public interface LoadArchitectureMixin extends DisplaysErrorMixin {
 
     default Optional<ArchitectureDataStructure> loadArchitectureOrPrintError(String errorMessageIfFailed) {
         final var productArchitecturePath = getProductArchitectureDirectory()
-                .toPath().resolve("product-architecture.yml");
+                .toPath()
+                .resolve(ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME);
 
         try {
             return Optional.of(

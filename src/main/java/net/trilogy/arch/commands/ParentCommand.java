@@ -1,18 +1,18 @@
 package net.trilogy.arch.commands;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import lombok.Getter;
+import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Spec;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
-import lombok.Getter;
-import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
-import picocli.CommandLine.Command;
-import picocli.CommandLine;
-import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Spec;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Command(
         name = "arch-as-code",
@@ -21,6 +21,8 @@ import picocli.CommandLine.Spec;
         versionProvider = ParentCommand.VersionProvider.class
 )
 public class ParentCommand implements Callable<Integer>, DisplaysOutputMixin {
+    public static final String PRODUCT_ARCHITECTURE_FILE_NAME = "product-architecture.yml";
+
     @Getter
     @Spec
     private CommandSpec spec;

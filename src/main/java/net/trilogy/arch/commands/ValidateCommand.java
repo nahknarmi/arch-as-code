@@ -7,7 +7,6 @@ import net.trilogy.arch.validation.ArchitectureDataStructureValidatorFactory;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -24,12 +23,11 @@ public class ValidateCommand implements Callable<Integer>, DisplaysOutputMixin, 
     // TODO [TESTING]: add sad path coverage e2e tests
     public Integer call() {
         logArgs();
-        var fileName = "product-architecture.yml";
+        var fileName = ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME;
         List<String> messageSet;
         try {
-             messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, fileName);
-        }
-        catch (Exception e) {
+            messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, fileName);
+        } catch (Exception e) {
             printError("", e);
             return 1;
         }

@@ -15,7 +15,6 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "publish", mixinStandardHelpOptions = true, description = "Publish architecture to structurizr.")
 public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
-    private final String manifestFileName;
     private final StructurizrAdapter structurizrAdapter;
 
     @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_ARCHITECTURE_DIRECTORY", description = "Product architecture root where product-architecture.yml is located.")
@@ -26,12 +25,10 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
     private CommandLine.Model.CommandSpec spec;
 
     public PublishCommand() {
-        this.manifestFileName = "product-architecture.yml";
         this.structurizrAdapter = new StructurizrAdapter();
     }
 
     public PublishCommand(StructurizrAdapter structurizrAdapter) {
-        this.manifestFileName = "product-architecture.yml";
         this.structurizrAdapter = structurizrAdapter;
     }
 
@@ -40,10 +37,10 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
         logArgs();
         List<String> messageSet = List.of();
         try {
-            messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, this.manifestFileName);
+            messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME);
 
             if (messageSet.isEmpty()) {
-                new ArchitectureDataStructurePublisher(structurizrAdapter, new FilesFacade(), productArchitectureDirectory, manifestFileName).publish();
+                new ArchitectureDataStructurePublisher(structurizrAdapter, new FilesFacade(), productArchitectureDirectory, ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME).publish();
                 print("Successfully published to Structurizr!");
                 return 0;
             }
