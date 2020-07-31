@@ -44,7 +44,7 @@ public class PublishCommandE2ETest {
     }
 
     @Test
-    public void shouldSuccessfullyPublish() throws Exception {
+    public void shouldSuccessfullyPublish() {
         // Given
         StructurizrAdapter structurizrAdapter = spy(StructurizrAdapter.class);
         Application app = Application.builder()
@@ -87,7 +87,7 @@ public class PublishCommandE2ETest {
     }
 
     @Test
-    public void shouldDisplayStructurizrPublishError() throws Exception {
+    public void shouldDisplayStructurizrPublishError() {
         // Given
         StructurizrAdapter structurizrAdapter = mock(StructurizrAdapter.class);
         doThrow(new RuntimeException("Boom!")).when(structurizrAdapter).publish(any());
