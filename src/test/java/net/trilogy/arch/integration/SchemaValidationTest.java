@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 public class SchemaValidationTest {
 
-
     @Test
     public void validate_all_valid_schema() throws Exception {
         Set<ValidationMessage> validationMessageSet = getSchemaValidationMessages("allValidSchema.yml");
