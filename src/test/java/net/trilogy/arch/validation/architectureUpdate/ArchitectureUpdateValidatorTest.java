@@ -82,48 +82,48 @@ public class ArchitectureUpdateValidatorTest {
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Valid-Deleted-Component-Id"),
                                         true,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-2"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-2"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("38"),
                                         false,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("14"),
                                         false,
-                                        Map.of(new Tdd.Id("TDD-unused-and-without-story"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("TDD-unused-and-without-story"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("14"),
                                         true, // same id as a non-deleted one-- they should not clash
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-5"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-5"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("15"),
                                         false,
                                         Map.of(
-                                                new Tdd.Id("Valid-TDD-with-decision-and-story"), new Tdd("text"),
-                                                new Tdd.Id("TDD-unused-with-story"), new Tdd("text")
+                                                new Tdd.Id("Valid-TDD-with-decision-and-story"), new Tdd("text", null),
+                                                new Tdd.Id("TDD-unused-with-story"), new Tdd("text", null)
                                         )
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Invalid-Component-Id"),
                                         false,
                                         Map.of(
-                                                new Tdd.Id("Tdd-with-invalid-component"), new Tdd("text"),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("INVALID BECAUSE DUPLICATED ID")
+                                                new Tdd.Id("Tdd-with-invalid-component"), new Tdd("text", null),
+                                                new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("INVALID BECAUSE DUPLICATED ID", null)
                                         )
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Invalid-Component-Id-2"),
                                         null,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-3"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-3"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Invalid-Deleted-Component-Id"),
                                         true,  // ERR: Because this component never existed
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-4"), new Tdd("text"))
+                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-4"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("38"), // ERR: duplicated

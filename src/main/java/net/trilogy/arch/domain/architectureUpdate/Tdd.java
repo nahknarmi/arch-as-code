@@ -14,16 +14,18 @@ import lombok.ToString;
 public class Tdd {
     @JsonProperty(value = "text")
     private final String text;
+    @JsonProperty(value = "file")
+    private final String file;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Tdd(
-            @JsonProperty("text") String text
-    ) {
+    public Tdd(@JsonProperty("text") String text,
+               @JsonProperty("file") String file) {
         this.text = text;
+        this.file = file;
     }
 
     public static Tdd blank() {
-        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3");
+        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
     }
 
     @EqualsAndHashCode

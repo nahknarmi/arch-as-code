@@ -55,10 +55,17 @@
         "additionalProperties": {
           "type": "array",
           "items": {
-            "type":  "object",
+            "type": "object",
             "properties": {
-              "text": { "type":  "string"},
-              "tdd-references": {"type":  "array", "items":  {"type": "string"}}
+              "text": {
+                "type": "string"
+              },
+              "tdd-references": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             },
             "required": [
               "text",
@@ -79,9 +86,9 @@
                 "text": {
                   "type": "string"
                 },
-                "required": [
-                  "text"
-                ]
+                "file": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -638,7 +645,9 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "text":  { "type":  "string" },
+          "text": {
+            "type": "string"
+          },
           "tdd-references": {
             "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/tdd-references",
             "type": "array",
@@ -668,7 +677,10 @@
             }
           }
         },
-        "required": ["text", "tdd-references"]
+        "required": [
+          "text",
+          "tdd-references"
+        ]
       }
     },
     "tdds-per-component": {
@@ -685,6 +697,15 @@
             "tdds": {
               "[SAMPLE-TDD-ID]": {
                 "text": "[SAMPLE TDD TEXT]"
+              }
+            }
+          },
+          {
+            "component-id": "100",
+            "deleted": false,
+            "tdds": {
+              "TDD 1.0": {
+                "file": "TDD 1.0 ? : Component-100.md"
               }
             }
           }
@@ -751,8 +772,14 @@
                 ],
                 "additionalProperties": {
                   "type": "object",
-                  "properties": { "text":  { "type":  "string" } },
-                  "required": ["text"]
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "file": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -781,10 +808,17 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "text":  { "type":  "string" },
-          "source": {"type":  "string"}
+          "text": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          }
         },
-        "required": ["text", "source"]
+        "required": [
+          "text",
+          "source"
+        ]
       }
     },
     "capabilities": {

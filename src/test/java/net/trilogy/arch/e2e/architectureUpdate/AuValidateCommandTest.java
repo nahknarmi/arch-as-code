@@ -239,4 +239,56 @@ public class AuValidateCommandTest {
                 containsString("$.tdds-per-component[0].tdds.[SAMPLE-TDD-ID-2].text: is missing but it is required")
         );
     }
+
+    @Test
+    public void shouldBeValidWithCorrectMarkdown() {
+        // Given
+        var auPath = auDir.resolve("valid-markdown/").toString();
+
+        // When
+        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        // Then
+        collector.checkThat(status, equalTo(0));
+        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(out.toString(), equalTo("Success, no errors found."));
+
+    }
+
+    @Test
+    public void shouldNotifyUserIfMarkdownFilesDoNotMatchFormat() {
+        // Given
+        var auPath = "pathAuWithEmptyMarkdown";
+
+        // When
+//        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        // Then
+    }
+
+    @Test
+    public void shouldNotifyUserIfMarkdownFilesAreNotUsed() {
+
+    }
+
+    @Test
+    public void shouldEnsureMarkdownFileNotEmpty() {
+        // Given
+        var auPath = "pathAuWithEmptyMarkdown";
+
+        // When
+//        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        // Then
+    }
+
+    @Test
+    public void shouldWarnWhenBothFileAndTextPresent() {
+
+    }
+
+    @Test
+    public void shouldWarnThatTextIsOverriddenWhenFilePresent() {
+
+    }
 }

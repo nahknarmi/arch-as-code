@@ -34,12 +34,12 @@ public class JiraStoryTest {
                 List.of(
                     new JiraStory.JiraTdd(
                         new Tdd.Id("TDD 1"),
-                        new Tdd("TDD 1 text"),
+                        new Tdd("TDD 1 text", null),
                         "c4://Internet Banking System/API Application/Reset Password Controller"
                     ),
                     new JiraStory.JiraTdd(
                         new Tdd.Id("TDD 3"),
-                        new Tdd("TDD 3 text"),
+                        new Tdd("TDD 3 text", null),
                         "c4://Internet Banking System/API Application/Sign In Controller" // deleted component id: 29
                     )
                 ),
@@ -138,17 +138,17 @@ public class JiraStoryTest {
                     new Tdd.ComponentReference("31"),
                     false,
                     Map.of(
-                        new Tdd.Id("TDD 1"), new Tdd("TDD 1 text"),
-                        new Tdd.Id("TDD 2"), new Tdd("TDD 2 text"),
-                        new Tdd.Id("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text")
+                        new Tdd.Id("TDD 1"), new Tdd("TDD 1 text", null),
+                        new Tdd.Id("TDD 2"), new Tdd("TDD 2 text", null),
+                        new Tdd.Id("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null)
                     )
                 ),
                 new TddContainerByComponent(
                     new Tdd.ComponentReference("404"),
                     true,
                     Map.of(
-                        new Tdd.Id("TDD 3"), new Tdd("TDD 3 text"),
-                        new Tdd.Id("TDD 4"), new Tdd("TDD 4 text")
+                        new Tdd.Id("TDD 3"), new Tdd("TDD 3 text", null),
+                        new Tdd.Id("TDD 4"), new Tdd("TDD 4 text", null)
                     )
                 )
             ))
