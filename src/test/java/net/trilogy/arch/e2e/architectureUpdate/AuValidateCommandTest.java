@@ -228,7 +228,7 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldFindAUSchemaErrors() {
-        var auPath = auDir.resolve("invalid-schema").toString();
+        var auPath = auDir.resolve("invalid-schema/").toString();
 
         Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
@@ -236,7 +236,7 @@ public class AuValidateCommandTest {
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(
                 err.toString(),
-                containsString("$.tdds-per-component[0].tdds.[SAMPLE-TDD-ID-2].text: is missing but it is required")
+                containsString("Unrecognized field \"notext\"")
         );
     }
 
