@@ -240,8 +240,7 @@ public class ArchitectureUpdateValidator {
                 .stream()
                 .filter(story -> story.getTddReferences() != null)
                 .flatMap(story ->
-                        story.getTddReferences()
-                                .stream()
+                        getTddReferencesStream(story)
                                 .filter(tdd -> !allTddIds.contains(tdd))
                                 .map(tdd -> ValidationError.forStoriesTddsMustBeValidReferences(tdd, story.getTitle()))
                 )
@@ -276,7 +275,7 @@ public class ArchitectureUpdateValidator {
         return architectureUpdate.getCapabilityContainer()
                 .getFeatureStories()
                 .stream()
-                .flatMap(story -> story.getTddReferences().stream())
+                .flatMap(story -> getTddReferencesStream(story))
                 .collect(toSet());
     }
 
@@ -294,6 +293,13 @@ public class ArchitectureUpdateValidator {
                 .getFeatureStories().stream()
                 .flatMap(story -> getStoryRequirementReferencesStream(story))
                 .collect(toSet());
+    }
+
+    private java.util.stream.Stream<Tdd.Id> getTddReferencesStream(FeatureStory story) {
+        if (story.getTddReferences() == null)
+            return java.util.stream.Stream.empty();
+
+        return story.getTddReferences().stream();
     }
 
     private java.util.stream.Stream<FunctionalRequirement.Id> getStoryRequirementReferencesStream(FeatureStory story) {
