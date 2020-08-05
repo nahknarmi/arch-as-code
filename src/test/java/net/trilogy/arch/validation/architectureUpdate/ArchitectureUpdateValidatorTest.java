@@ -23,20 +23,9 @@ public class ArchitectureUpdateValidatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-    private ArchitectureUpdate invalidAu;
     private ArchitectureDataStructure validDataStructure;
     private ArchitectureDataStructure hasMissingComponentDataStructure;
 
-    /*
-     * [TODO] [TESTING]: Refactor required.
-     *
-     * This testing strategy got out of hand. The strategy is:
-     *   create an AU with all possible validation errors, and see if the validator
-     *   catches them all
-     * The recommended strategy is:
-     *   make production `getError_` method accessible from test (package private, or extract to its 
-     *   own class), and test it individually + have a single test that ensures all errors are aggregated
-    */
     @Before
     public void setUp() throws IOException {
         final String ValidArchAsString = new FilesFacade().readString(new File(
@@ -48,125 +37,6 @@ public class ArchitectureUpdateValidatorTest {
                 getClass().getResource(MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE).getPath()
         ).toPath());
         hasMissingComponentDataStructure = new ArchitectureDataStructureObjectMapper().readValue(missingComponentArchAsString);
-
-        invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
-                .decisions(Map.of(
-                        new Decision.Id("Missing-TDD-Decision-1"), new Decision("Decision-1-text", null),
-                        new Decision.Id("Missing-TDD-Decision-2"), new Decision("Decision-2-text", List.of()),
-                        new Decision.Id("Bad-TDD-Decision"), new Decision("Decision-2-text", List.of(new Tdd.Id("BAD-TDD-ID"))),
-                        new Decision.Id("Valid-Decision"), new Decision("Decision-3-text", List.of(new Tdd.Id("Valid-TDD-with-decision-and-story")))
-                ))
-                .functionalRequirements(
-                        Map.of(
-                                new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"),
-                                new FunctionalRequirement("Text", "Source", List.of(
-                                        new Tdd.Id("BAD-TDD-ID"),
-                                        new Tdd.Id("Tdd-with-invalid-component")
-                                )),
-
-                                new FunctionalRequirement.Id("Valid-Functional-Requirement"),
-                                new FunctionalRequirement("Text", "Source", List.of()),
-
-                                new FunctionalRequirement.Id("Functional-Requirement-Without-Story"),
-                                new FunctionalRequirement("Text", "Source", List.of(
-                                        new Tdd.Id("Valid-TDD-with-requirement-and-story"),
-                                        new Tdd.Id("Valid-TDD-with-requirement-and-story-2"),
-                                        new Tdd.Id("Valid-TDD-with-requirement-and-story-3"),
-                                        new Tdd.Id("Valid-TDD-with-requirement-and-story-4"),
-                                        new Tdd.Id("Valid-TDD-with-requirement-and-story-5")
-                                ))
-                        )
-                )
-                .tddContainersByComponent(
-                        List.of(
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("Valid-Deleted-Component-Id"),
-                                        true,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-2"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("38"),
-                                        false,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("14"),
-                                        false,
-                                        Map.of(new Tdd.Id("TDD-unused-and-without-story"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("14"),
-                                        true, // same id as a non-deleted one-- they should not clash
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-5"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("15"),
-                                        false,
-                                        Map.of(
-                                                new Tdd.Id("Valid-TDD-with-decision-and-story"), new Tdd("text", null),
-                                                new Tdd.Id("TDD-unused-with-story"), new Tdd("text", null)
-                                        )
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("Invalid-Component-Id"),
-                                        false,
-                                        Map.of(
-                                                new Tdd.Id("Tdd-with-invalid-component"), new Tdd("text", null),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story"), new Tdd("INVALID BECAUSE DUPLICATED ID", null)
-                                        )
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("Invalid-Component-Id-2"),
-                                        null,
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-3"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("Invalid-Deleted-Component-Id"),
-                                        true,  // ERR: Because this component never existed
-                                        Map.of(new Tdd.Id("Valid-TDD-with-requirement-and-story-4"), new Tdd("text", null))
-                                ),
-                                new TddContainerByComponent(
-                                        new Tdd.ComponentReference("38"), // ERR: duplicated
-                                        false,
-                                        Map.of()
-                                )
-                        )
-                )
-                .capabilityContainer(
-                        new CapabilitiesContainer(
-                                Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("N/A").build()).build(),
-                                List.of(
-                                        new FeatureStory("Feat Title", Jira.blank(), List.of(
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story"),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story-2"),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story-3"),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story-4"),
-                                                new Tdd.Id("Valid-TDD-with-requirement-and-story-5"),
-                                                new Tdd.Id("Invalid-TDD-ID"),
-                                                new Tdd.Id("Tdd-with-invalid-component")
-                                        ), List.of(
-                                                new FunctionalRequirement.Id("Valid-Functional-Requirement")
-                                        )),
-
-                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(
-                                                new Tdd.Id("Valid-TDD-with-decision-and-story"),
-                                                new Tdd.Id("TDD-unused-with-story")
-                                        ), List.of(
-                                                new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"),
-                                                new FunctionalRequirement.Id("Bad-Functional-Requirement-ID")
-                                        )),
-
-                                        new FeatureStory("Feat Title 3", Jira.blank(), List.of(
-                                                new Tdd.Id("Valid-TDD-with-decision-and-story")
-                                        ), List.of()),
-
-                                        new FeatureStory("Feat Title 4", Jira.blank(), List.of(), List.of(
-                                                new FunctionalRequirement.Id("Valid-Functional-Requirement")
-                                        ))
-                                )
-                        )
-                )
-                .build();
     }
 
     @Test
@@ -179,44 +49,419 @@ public class ArchitectureUpdateValidatorTest {
     }
 
     @Test
-    public void shouldFindAllErrors() {
-        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, hasMissingComponentDataStructure).getErrors();
+    public void shouldValidate_DecisionsMustHaveTdds() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .decisions(
+                        Map.of(
+                                new Decision.Id("Null TDD references"), new Decision("[SAMPLE DECISION TEXT]", null),
+                                new Decision.Id("Empty TDD references"), new Decision("Decision Text", List.of())
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forTddsMustBeValidReferences(new Decision.Id("Bad-TDD-Decision"), new Tdd.Id("BAD-TDD-ID")),
-                forTddsMustBeValidReferences(new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"), new Tdd.Id("BAD-TDD-ID")),
-
-                forDecisionsMustHaveTdds(new Decision.Id("Missing-TDD-Decision-1")),
-                forDecisionsMustHaveTdds(new Decision.Id("Missing-TDD-Decision-2")),
-
-                forMustHaveStories(new Tdd.Id("TDD-unused-and-without-story")),
-                forMustHaveStories(new FunctionalRequirement.Id("Functional-Requirement-Without-Story")),
-
-                forTddsMustHaveDecisionsOrRequirements(new Tdd.Id("TDD-unused-and-without-story")),
-                forTddsMustHaveDecisionsOrRequirements(new Tdd.Id("TDD-unused-with-story")),
-
-                forStoriesTddsMustBeValidReferences(new Tdd.Id("Invalid-TDD-ID"), "Feat Title"),
-
-                forTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Invalid-Component-Id")),
-                forTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Invalid-Component-Id-2")),
-                forDeletedTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Invalid-Deleted-Component-Id")),
-
-                forFunctionalRequirementsMustBeValidReferences("Feat Title 2", new FunctionalRequirement.Id("Bad-Functional-Requirement-ID")),
-
-                forStoriesMustHaveTdds("Feat Title 4"),
-
-                forStoriesMustHaveFunctionalRequirements("Feat Title 3"),
-
-                forDuplicatedTdd(new Tdd.Id("Valid-TDD-with-requirement-and-story")),
-
-                forDuplicatedComponent(new Tdd.ComponentReference("38")),
-
-                forNotAvailableLink("capabilities.epic.jira.link")
+                forDecisionsMustHaveTdds(new Decision.Id("Null TDD references")),
+                forDecisionsMustHaveTdds(new Decision.Id("Empty TDD references"))
         );
 
-        expectedErrors.forEach(e ->
-                collector.checkThat(actualErrors, hasItem(e)));
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
 
-        collector.checkThat(actualErrors.size(), equalTo(expectedErrors.size()));
+    @Test
+    public void shouldValidate_DecisionsTddsMustBeValidReferences() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .decisions(
+                        Map.of(
+                                new Decision.Id("Bad-TDD-Decision"), new Decision("Decision Text", List.of(new Tdd.Id("BAD-TDD-ID")))
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        collector.checkThat(actualErrors, hasItem(
+                forTddsMustBeValidReferences(new Decision.Id("Bad-TDD-Decision"), new Tdd.Id("BAD-TDD-ID"))
+        ));
+    }
+
+    @Test
+    public void shouldValidate_FunctionalRequirementsTddsMustBeValidReferences() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .functionalRequirements(
+                        Map.of(
+                                new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"),
+                                new FunctionalRequirement("Text", "Source", List.of(
+                                        new Tdd.Id("BAD-TDD-ID-1"),
+                                        new Tdd.Id("BAD-TDD-ID-2")
+                                ))
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forTddsMustBeValidReferences(new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"), new Tdd.Id("BAD-TDD-ID-1")),
+                forTddsMustBeValidReferences(new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"), new Tdd.Id("BAD-TDD-ID-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_TddsMustHaveUniqueIds() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("1"),
+                                        true,
+                                        Map.of(new Tdd.Id("Dupe-1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("1"),
+                                        true,
+                                        Map.of(new Tdd.Id("Dupe-1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("1"),
+                                        true,
+                                        Map.of(new Tdd.Id("Dupe-2"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("1"),
+                                        true,
+                                        Map.of(new Tdd.Id("Dupe-2"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forDuplicatedTdd(new Tdd.Id("Dupe-1")),
+                forDuplicatedTdd(new Tdd.Id("Dupe-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_ComponentsMustBeReferencedOnlyOnceForTdds() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Dupe-1"),
+                                        false,
+                                        Map.of(new Tdd.Id("1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Dupe-1"),
+                                        false,
+                                        Map.of(new Tdd.Id("2"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Dupe-2"),
+                                        false,
+                                        Map.of(new Tdd.Id("3"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Dupe-2"),
+                                        false,
+                                        Map.of(new Tdd.Id("4"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forDuplicatedComponent(new Tdd.ComponentReference("Dupe-1")),
+                forDuplicatedComponent(new Tdd.ComponentReference("Dupe-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_TddsComponentsMustBeValidReferences() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Non-existent-1"),
+                                        false,
+                                        Map.of(new Tdd.Id("1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Non-existent-2"),
+                                        false,
+                                        Map.of(new Tdd.Id("2"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Non-existent-1")),
+                forTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Non-existent-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+
+    @Test
+    public void shouldValidate_TddsDeletedComponentsMustBeValidReferences() {
+        // Given
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Non-existent-deleted-1"),
+                                        true,
+                                        Map.of(new Tdd.Id("1"), new Tdd("text", null))
+                                ),
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Non-existent-deleted-2"),
+                                        true,
+                                        Map.of(new Tdd.Id("2"), new Tdd("text", null))
+                                ),
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("Valid-Deleted-Component-Id"),  // Present in beforeUpdate Architecture
+                                        true,
+                                        Map.of(new Tdd.Id("3"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        // When
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, hasMissingComponentDataStructure).getErrors();
+
+        // Then
+        var expectedErrors = List.of(
+                forDeletedTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Non-existent-deleted-1")),
+                forDeletedTddsComponentsMustBeValidReferences(new Tdd.ComponentReference("Non-existent-deleted-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+
+        // And ensure that the valid deleted component is not present in errors
+        collector.checkThat(actualErrors,
+                not(hasItem(forDeletedTddsComponentsMustBeValidReferences(
+                        new Tdd.ComponentReference("Valid-Deleted-Component-Id")
+                )))
+        );
+    }
+
+    @Test
+    public void shouldValidate_TddsMustHaveDecisionsOrRequirements() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
+                                        false,
+                                        Map.of(new Tdd.Id("No-decision-or-req-1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
+                                        true,
+                                        Map.of(new Tdd.Id("No-decision-or-req-2"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forTddsMustHaveDecisionsOrRequirements(new Tdd.Id("No-decision-or-req-1")),
+                forTddsMustHaveDecisionsOrRequirements(new Tdd.Id("No-decision-or-req-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_StoriesMustHaveFunctionalRequirements() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.blank(),
+                                List.of(
+                                        new FeatureStory(
+                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.blank()),
+                                                List.of()
+                                        ),
+                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(Tdd.Id.blank()),
+                                                null
+                                        )
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forStoriesMustHaveFunctionalRequirements("Feat Title 1"),
+                forStoriesMustHaveFunctionalRequirements("Feat Title 2")
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValiate_StoriesFunctionalRequirementsMustBeValidReferences() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.blank(),
+                                List.of(
+                                        new FeatureStory(
+                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.blank()),
+                                                List.of(new FunctionalRequirement.Id("Invalid-Functional-Requirement"))
+                                        )
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forFunctionalRequirementsMustBeValidReferences("Feat Title 1", new FunctionalRequirement.Id("Invalid-Functional-Requirement"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_StoriesMustHaveTdds() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.blank(),
+                                List.of(
+                                        new FeatureStory(
+                                                "Feat Title 1", Jira.blank(),
+                                                List.of(), // Empty TDD reference
+                                                List.of()
+                                        ), new FeatureStory(
+                                                "Feat Title 2", Jira.blank(),
+                                                null, // Null TDD reference
+                                                List.of()
+                                        )
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forStoriesMustHaveTdds("Feat Title 1"),
+                forStoriesMustHaveTdds("Feat Title 2")
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_StoriesTddsMustBeValidReferences() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.blank(),
+                                List.of(
+                                        new FeatureStory(
+                                                "Feat Title 1", Jira.blank(),
+                                                List.of(new Tdd.Id("Invalid TDD 1"),
+                                                        new Tdd.Id("Invalid TDD 2")),
+                                                List.of()
+                                        )
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forStoriesTddsMustBeValidReferences(new Tdd.Id("Invalid TDD 1"), "Feat Title 1"),
+                forStoriesTddsMustBeValidReferences(new Tdd.Id("Invalid TDD 2"), "Feat Title 1")
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_TddsMustHaveStories() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
+                                        false,
+                                        Map.of(new Tdd.Id("TDD-with-no-story-1"), new Tdd("text", null))
+                                ), new TddContainerByComponent(
+                                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
+                                        true,
+                                        Map.of(new Tdd.Id("TDD-with-no-story-2"), new Tdd("text", null))
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forMustHaveStories(new Tdd.Id("TDD-with-no-story-1")),
+                forMustHaveStories(new Tdd.Id("TDD-with-no-story-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_FunctionalRequirementsMustHaveStories() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .functionalRequirements(
+                        Map.of(
+                                new FunctionalRequirement.Id("Func-req-with-no-story-1"),
+                                new FunctionalRequirement("Text", "Source", List.of()),
+                                new FunctionalRequirement.Id("Func-req-with-no-story-2"),
+                                new FunctionalRequirement("Text", "Source", List.of())
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forMustHaveStories(new FunctionalRequirement.Id("Func-req-with-no-story-1")),
+                forMustHaveStories(new FunctionalRequirement.Id("Func-req-with-no-story-2"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldValidate_LinksAreAvailable() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .p1(new P1("n/a", new Jira("ticket", "n/a"), "exec summary"))
+                .p2(new P2(null, new Jira("ticket", null)))
+                .usefulLinks(List.of(new Link("desc", null)))
+                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "n/a")))))
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("N/A").build()).build(),
+                                List.of(
+                                        new FeatureStory("Title", new Jira("ticket", "n/a"), List.of(), List.of())
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forNotAvailableLink("P1.link"),
+                forNotAvailableLink("P1.jira.link"),
+                forNotAvailableLink("P2.link"),
+                forNotAvailableLink("P2.jira.link"),
+                forNotAvailableLink("capabilities.epic.jira.link"),
+                forNotAvailableLink("capabilities.featurestory.jira.ticket ticket link"),
+                forNotAvailableLink("Useful link desc link"),
+                forNotAvailableLink("Milestone dependency milestone desc link")
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
 }
