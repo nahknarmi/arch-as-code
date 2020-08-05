@@ -79,7 +79,7 @@ public class ArchitectureUpdateValidator {
 
                 getErrors_TddsMustHaveStories(),
                 getErrors_FunctionalRequirementsMustHaveStories(),
-                getErrors_linksAreAvailable(),
+                getErrors_LinksAreAvailable(),
                 getErrors_noPrNotCombinedWithAnotherTddId()
         ).collect(Collectors.toList()));
     }
@@ -101,7 +101,7 @@ public class ArchitectureUpdateValidator {
         return refs != null && refs.contains(Tdd.Id.noPr()) && refs.size() > 1;
     }
 
-    private Set<ValidationError> getErrors_linksAreAvailable() {
+    private Set<ValidationError> getErrors_LinksAreAvailable() {
         return getAllLinksWithPath().stream()
                 .filter(p -> p.getRight() == null || p.getRight().equalsIgnoreCase("N/A"))
                 .map(p -> forNotAvailableLink(p.getLeft()))
