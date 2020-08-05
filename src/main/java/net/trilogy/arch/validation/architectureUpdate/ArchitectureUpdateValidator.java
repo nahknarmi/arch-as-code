@@ -85,7 +85,7 @@ public class ArchitectureUpdateValidator {
     private Set<ValidationError> getErrors_linksAreAvailable() {
         List<Pair<String, String>> links = getAllLinksWithPath();
 
-        return links.stream().filter( p -> p.getRight().equalsIgnoreCase("N/A")).map(p -> forNotAvailableLink(p.getLeft())).collect(toSet());
+        return links.stream().filter(p -> p.getRight().equalsIgnoreCase("N/A")).map(p -> forNotAvailableLink(p.getLeft())).collect(toSet());
     }
 
     private List<Pair<String, String>> getAllLinksWithPath() {
@@ -106,17 +106,17 @@ public class ArchitectureUpdateValidator {
                             links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))
                     )
             );
-            milestoneDependencies.forEach(m ->  m.getLinks().forEach(l ->
+            milestoneDependencies.forEach(m -> m.getLinks().forEach(l ->
                             links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))
                     )
             );
         }
         architectureUpdate.getUsefulLinks().forEach(l ->
-            links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink()))
+                links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink()))
         );
 
         architectureUpdate.getCapabilityContainer().getFeatureStories().forEach(s ->
-                links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket()  + " link", s.getJira().getLink()))
+                links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink()))
         );
         return links;
     }
@@ -143,8 +143,7 @@ public class ArchitectureUpdateValidator {
                 .stream()
                 .filter(story -> story.getRequirementReferences() != null)
                 .flatMap(story ->
-                        story.getRequirementReferences()
-                                .stream()
+                        getStoryRequirementReferencesStream(story)
                                 .filter(funcReq -> !allFunctionalRequirementIds.contains(funcReq))
                                 .map(funcReq -> ValidationError.forFunctionalRequirementsMustBeValidReferences(story.getTitle(), funcReq))
                 )
@@ -162,7 +161,7 @@ public class ArchitectureUpdateValidator {
     private Set<ValidationError> getErrors_TddsComponentsMustBeValidReferences() {
         return architectureUpdate.getTddContainersByComponent()
                 .stream()
-                .filter(container -> !container.isDeleted())
+                .filter(component -> !component.isDeleted())
                 .map(TddContainerByComponent::getComponentId)
                 .filter(componentReference ->
                         !allComponentIdsInAfterArchitecture.contains(componentReference.toString()))
@@ -293,8 +292,15 @@ public class ArchitectureUpdateValidator {
     private Set<FunctionalRequirement.Id> getAllFunctionalRequirementsReferencedByStories() {
         return architectureUpdate.getCapabilityContainer()
                 .getFeatureStories().stream()
-                .flatMap(story -> story.getRequirementReferences().stream())
+                .flatMap(story -> getStoryRequirementReferencesStream(story))
                 .collect(toSet());
+    }
+
+    private java.util.stream.Stream<FunctionalRequirement.Id> getStoryRequirementReferencesStream(FeatureStory story) {
+        if (story.getRequirementReferences() == null)
+            return java.util.stream.Stream.empty();
+
+        return story.getRequirementReferences().stream();
     }
 
     private Set<Tdd.Id> getAllTddIdsReferencedByDecisions() {
@@ -317,7 +323,7 @@ public class ArchitectureUpdateValidator {
                 .filter(t -> !uniques.add(t))
                 .collect(toSet());
     }
-    
+
     @EqualsAndHashCode
     @Getter
     @RequiredArgsConstructor
