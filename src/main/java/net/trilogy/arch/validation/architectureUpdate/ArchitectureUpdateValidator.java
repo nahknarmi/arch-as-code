@@ -83,9 +83,10 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_linksAreAvailable() {
-        List<Pair<String, String>> links = getAllLinksWithPath();
-
-        return links.stream().filter(p -> p.getRight().equalsIgnoreCase("N/A")).map(p -> forNotAvailableLink(p.getLeft())).collect(toSet());
+        return getAllLinksWithPath().stream()
+                .filter(p -> p.getRight() == null || p.getRight().equalsIgnoreCase("N/A"))
+                .map(p -> forNotAvailableLink(p.getLeft()))
+                .collect(toSet());
     }
 
     private List<Pair<String, String>> getAllLinksWithPath() {
