@@ -1,4 +1,4 @@
-package net.trilogy.arch.adapter.architectureUpdateYaml;
+package net.trilogy.arch.adapter.architectureUpdate;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

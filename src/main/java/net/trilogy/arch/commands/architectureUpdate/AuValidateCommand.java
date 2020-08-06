@@ -2,7 +2,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureUpdateYaml.ArchitectureUpdateObjectMapper;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
