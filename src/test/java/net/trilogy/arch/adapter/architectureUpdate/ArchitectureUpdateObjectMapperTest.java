@@ -1,7 +1,6 @@
-package net.trilogy.arch.adapter;
+package net.trilogy.arch.adapter.architectureUpdate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import org.junit.Test;
 

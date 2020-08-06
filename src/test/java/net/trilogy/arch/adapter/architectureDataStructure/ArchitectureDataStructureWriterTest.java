@@ -1,9 +1,7 @@
-package net.trilogy.arch.adapter.out;
+package net.trilogy.arch.adapter.architectureDataStructure;
 
 import lombok.SneakyThrows;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
