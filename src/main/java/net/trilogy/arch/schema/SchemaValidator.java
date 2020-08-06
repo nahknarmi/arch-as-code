@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;

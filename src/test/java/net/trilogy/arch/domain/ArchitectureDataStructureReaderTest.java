@@ -1,7 +1,7 @@
 package net.trilogy.arch.domain;
 
 
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.c4.*;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;

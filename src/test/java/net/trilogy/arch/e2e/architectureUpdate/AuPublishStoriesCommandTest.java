@@ -2,8 +2,8 @@ package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.*;

@@ -1,4 +1,4 @@
-package net.trilogy.arch.adapter.architectureYaml;
+package net.trilogy.arch.adapter.architectureDataStructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

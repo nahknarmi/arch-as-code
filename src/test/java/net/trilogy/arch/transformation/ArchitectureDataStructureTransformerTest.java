@@ -10,7 +10,7 @@ import com.structurizr.model.Container;
 import com.structurizr.model.Model;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;

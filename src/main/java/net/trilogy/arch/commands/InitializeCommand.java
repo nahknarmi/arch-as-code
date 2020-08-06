@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureWriter;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;

@@ -1,16 +1,15 @@
 package net.trilogy.arch.commands;
 
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
+import lombok.Getter;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
+import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.facade.FilesFacade;
-import net.trilogy.arch.domain.ArchitectureDataStructure;
-
-import lombok.Getter;
 import picocli.CommandLine;
-import picocli.CommandLine.Spec;
 import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.util.concurrent.Callable;

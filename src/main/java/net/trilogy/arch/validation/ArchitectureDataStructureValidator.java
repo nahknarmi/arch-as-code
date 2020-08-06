@@ -1,7 +1,7 @@
 package net.trilogy.arch.validation;
 
 import com.networknt.schema.ValidationMessage;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureReader;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.schema.SchemaValidator;
 

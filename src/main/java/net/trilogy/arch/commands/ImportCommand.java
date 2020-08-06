@@ -2,7 +2,7 @@ package net.trilogy.arch.commands;
 
 import com.structurizr.view.ViewSet;
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureWriter;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
