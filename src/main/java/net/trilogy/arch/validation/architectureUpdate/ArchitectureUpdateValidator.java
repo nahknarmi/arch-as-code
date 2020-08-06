@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNoPrWithAnotherTdd;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNotAvailableLink;
 
@@ -79,8 +80,10 @@ public class ArchitectureUpdateValidator {
 
                 getErrors_TddsMustHaveStories(),
                 getErrors_FunctionalRequirementsMustHaveStories(),
+                getErrors_noPrNotCombinedWithAnotherTddId(),
                 getErrors_LinksAreAvailable(),
-                getErrors_noPrNotCombinedWithAnotherTddId()
+
+                getError_OnlyOneTddContentsReference()
         ).collect(Collectors.toList()));
     }
 
@@ -278,6 +281,35 @@ public class ArchitectureUpdateValidator {
                                 .filter(tdd -> !allTddIds.contains(tdd) && ! Tdd.Id.noPr().equals(tdd))
                                 .map(tdd -> ValidationError.forTddsMustBeValidReferences(functionalEntry.getKey(), tdd)))
                 .collect(toSet());
+    }
+
+    private Set<ValidationError> getError_OnlyOneTddContentsReference() {
+        return architectureUpdate.getTddContainersByComponent().stream()
+                .map(tddContainerByComponent -> tddContainerByComponent.getTdds().entrySet().stream()
+                        .map(pair -> createAmbiguousTddContentReferenceValidationError(tddContainerByComponent, pair))
+                        .collect(toSet()))
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(toSet());
+    }
+
+    private ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<Tdd.Id, Tdd> pair) {
+        Tdd.Id id = pair.getKey();
+        Tdd tdd = pair.getValue();
+
+        if ((tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty()))
+            return null;
+
+        boolean errorCondition =
+                tdd.getText() != null &&
+                        tdd.getFile() != null &&
+                        !tdd.getText().isEmpty() &&
+                        !tdd.getFile().isEmpty();
+        if (errorCondition) {
+            return forAmbiguousTddContentReference(tddContainerByComponent.getComponentId(), id);
+        }
+
+        return null;
     }
 
     private List<Tdd.Id> getAllTddIds() {

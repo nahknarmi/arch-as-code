@@ -112,6 +112,13 @@ public class ValidationError {
         return new ValidationError(LINK_NOT_AVAILABLE, String.format("Link %s must be a valid link and not N/A", linkPath));
     }
 
+    public static ValidationError forAmbiguousTddContentReference(Tdd.ComponentReference componentReference, Tdd.Id id) {
+        return new ValidationError(
+                ValidationErrorType.AMBIGUOUS_TDD_CONTENT_REFERENCE,
+                String.format("Component id \"%s\" has TDD \"%s\" with both text and file fields present.", componentReference.toString(), id.toString())
+        );
+    }
+
     private static String getEntityTypeString(EntityReference entityId) {
         if (entityId instanceof Tdd.Id) {
             return "TDD";

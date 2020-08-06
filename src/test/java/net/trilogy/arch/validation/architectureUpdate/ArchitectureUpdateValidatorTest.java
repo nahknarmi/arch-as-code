@@ -464,4 +464,33 @@ public class ArchitectureUpdateValidatorTest {
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
+
+    @Test
+    public void shouldValidate_OnlyOneTddContentsReference() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("10"),
+                                        false,
+                                        Map.of(
+                                                new Tdd.Id("TDD 1.1"), new Tdd("text", "file"),
+                                                new Tdd.Id("TDD OK file"), new Tdd(null, "file"),
+                                                new Tdd.Id("TDD OK text"), new Tdd("text", null)
+                                        )
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forAmbiguousTddContentReference(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 1.1"))
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+
+        collector.checkThat(actualErrors, not(hasItem(forAmbiguousTddContentReference(new Tdd.ComponentReference("10"), new Tdd.Id("TDD OK file")))));
+        collector.checkThat(actualErrors, not(hasItem(forAmbiguousTddContentReference(new Tdd.ComponentReference("10"), new Tdd.Id("TDD OK text")))));
+    }
 }
