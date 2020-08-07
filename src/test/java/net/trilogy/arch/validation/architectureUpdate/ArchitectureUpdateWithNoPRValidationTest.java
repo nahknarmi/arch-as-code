@@ -1,6 +1,6 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import net.trilogy.arch.adapter.architectureYaml.ArchitectureDataStructureObjectMapper;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.facade.FilesFacade;
