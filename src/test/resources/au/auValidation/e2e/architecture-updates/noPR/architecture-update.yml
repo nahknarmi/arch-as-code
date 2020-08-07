@@ -1,0 +1,67 @@
+name: "[SAMPLE NAME]"
+milestone: "[SAMPLE MILESTONE]"
+authors:
+  - name: "[SAMPLE PERSON NAME]"
+    email: "[SAMPLE PERSON EMAIL]"
+PCAs:
+  - name: "[SAMPLE PERSON NAME]"
+    email: "[SAMPLE PERSON EMAIL]"
+P2:
+  link: "[SAMPLE LINK TO P1]"
+  jira:
+    ticket: "[SAMPLE JIRA TICKET]"
+    link: "[SAMPLE JIRA TICKET LINK]"
+P1:
+  link: "[SAMPLE LINK TO P1]"
+  jira:
+    ticket: "[SAMPLE JIRA TICKET]"
+    link: "[SAMPLE JIRA TICKET LINK]"
+  executive-summary: "[SAMPLE EXECUTIVE SUMMARY]"
+useful-links:
+  - description: "[SAMPLE LINK DESCRIPTION]"
+    link: "[SAMPLE-LINK]"
+milestone-dependencies:
+  - description: "[SAMPLE MILESTONE DEPENDENCY]"
+    links:
+      - description: "[SAMPLE LINK DESCRIPTION]"
+        link: "[SAMPLE-LINK]"
+decisions:
+  '[SAMPLE-DECISION-ID]':
+    text: "[SAMPLE DECISION TEXT]"
+    tdd-references:
+      - "no-PR"
+      - "TDD 2"
+tdds-per-component:
+  - component-id: "16"
+    deleted: false
+    tdds:
+      'TDD 1':
+        text: "[SAMPLE TDD TEXT]"
+  - component-id: "[SAMPLE-COMPONENT-ID]"
+    deleted: true
+    tdds:
+      'TDD 2':
+        text: "[SAMPLE TDD TEXT]"
+functional-requirements:
+  '[SAMPLE-REQUIREMENT-ID]':
+    text: "[SAMPLE REQUIREMENT TEXT]"
+    source: "[SAMPLE REQUIREMENT SOURCE TEXT]"
+    tdd-references:
+      - "no-PR"
+      - "no-PR"
+capabilities:
+  epic:
+    title: "[SAMPLE EPIC TITLE]"
+    jira:
+      ticket: "[SAMPLE JIRA TICKET]"
+      link: "[SAMPLE JIRA TICKET LINK]"
+  feature-stories:
+    - title: "[SAMPLE FEATURE STORY TITLE]"
+      jira:
+        ticket: "[SAMPLE JIRA TICKET]"
+        link: "[SAMPLE JIRA TICKET LINK]"
+      tdd-references:
+        - "no-PR"
+        - "TDD 2"
+      functional-requirement-references:
+        - "[SAMPLE-REQUIREMENT-ID]"

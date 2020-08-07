@@ -120,4 +120,7 @@ public class ValidationError {
         return "Entity";
     }
 
+    public static ValidationError forNoPrWithAnotherTdd(String path) {
+        return new ValidationError(LINK_NOT_AVAILABLE, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
+    }
 }

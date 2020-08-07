@@ -40,6 +40,7 @@ public class Tdd {
         public static Id blank() {
             return new Id("[SAMPLE-TDD-ID]");
         }
+        public static Id noPr() { return new Id("no-PR"); }
 
         public String toString() {
             return this.id;
