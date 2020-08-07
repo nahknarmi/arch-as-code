@@ -19,7 +19,7 @@ public enum ValidationErrorType {
     DUPLICATE_TDD_ID("Duplicate TDD ID", TDD),
     DUPLICATE_COMPONENT_ID("Duplicate Component ID", TDD),
     LINK_NOT_AVAILABLE ("Link value is N/A", TDD),
-    NO_PR_COMBINED_WITH_ANOTHER_TDD ("Link value is N/A", TDD);
+    NO_PR_COMBINED_WITH_ANOTHER_TDD ("No-Pr is combined with another TDD", TDD);
 
     @Getter private final String label;
     @Getter private final ValidationStage stage;

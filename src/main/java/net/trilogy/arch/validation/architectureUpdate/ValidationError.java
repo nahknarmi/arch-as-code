@@ -10,6 +10,7 @@ import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.ComponentReference;
 
 import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.LINK_NOT_AVAILABLE;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.NO_PR_COMBINED_WITH_ANOTHER_TDD;
 
 @ToString
 @Getter
@@ -121,6 +122,6 @@ public class ValidationError {
     }
 
     public static ValidationError forNoPrWithAnotherTdd(String path) {
-        return new ValidationError(LINK_NOT_AVAILABLE, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
+        return new ValidationError(NO_PR_COMBINED_WITH_ANOTHER_TDD, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
     }
 }

@@ -239,4 +239,18 @@ public class AuValidateCommandTest {
                 containsString("Unrecognized field \"notext\"")
         );
     }
+
+    @Test
+    public void shouldBeInValidForNoPR() {
+        var auPath = auDir.resolve("noPR/").toString();
+
+        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        collector.checkThat(status, not(equalTo(0)));
+        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(
+                err.toString(),
+                containsString("No-Pr is combined with another TDD")
+        );
+    }
 }
