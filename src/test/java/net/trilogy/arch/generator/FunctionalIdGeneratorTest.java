@@ -1,5 +1,6 @@
 package net.trilogy.arch.generator;
 
+import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import org.junit.Test;
 
@@ -80,11 +81,13 @@ public class FunctionalIdGeneratorTest {
     }
 
     private Person newPerson() {
-        return new Model().addPerson("abc", "def");
+        Workspace workspace = new Workspace("foo", "blah");
+        return workspace.getModel().addPerson("abc", "def");
     }
 
     private Relationship newRelationship() {
-        Model model = new Model();
+        Workspace workspace = new Workspace("foo", "blah");
+        Model model = workspace.getModel();
         Person person = model.addPerson("abc", "def");
         SoftwareSystem system = model.addSoftwareSystem("def", "ghi");
         return person.uses(system, "jkl");
