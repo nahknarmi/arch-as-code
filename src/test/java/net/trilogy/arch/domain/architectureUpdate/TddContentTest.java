@@ -55,11 +55,17 @@ public class TddContentTest {
 
     @Test
     public void shouldReturnNullIfError() throws Exception {
+        // Given
+        Path rootDir = Files.createTempDirectory("temp");
+        Path file = new FilesFacade().writeString(rootDir.resolve("markdown.md"), "contents");
+
         FilesFacade filesFacade = mock(FilesFacade.class);
-        when(filesFacade.readString(any())).thenThrow(new RuntimeException("boom"));
+        when(filesFacade.readString(any())).thenThrow(new IOException("boom"));
 
-        TddContent content = TddContent.createCreateFromFile(null, filesFacade);
+        // When
+        TddContent content = TddContent.createCreateFromFile(file.toFile(), filesFacade);
 
+        // Then
         collector.checkThat(content, equalTo(null));
     }
 }
