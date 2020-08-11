@@ -37,7 +37,7 @@ public class AuCommandTest {
     }
 
     @Test
-    public void rootCommandShouldPrintUsage() throws Exception {
+    public void rootCommandShouldPrintUsage() {
         collector.checkThat(
                 execute("au"),
                 equalTo(0)
