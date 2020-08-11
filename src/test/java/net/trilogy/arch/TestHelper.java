@@ -35,6 +35,7 @@ public abstract class TestHelper {
 
     public static final String ROOT_PATH_TO_TEST_GENERALLY = "/architecture/products/testspaces/";
     public static final String ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION = "/architecture/products/testspaces/";
+    public static final String ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE = "/architecture/products/testspaces/";
     public static final String ROOT_PATH_TO_TEST_DIFF_COMMAND = "/architecture/products/testspaces/";
     public static final String ROOT_PATH_TO_TEST_VALIDATION = "/yaml/validation/";
     public static final String ROOT_PATH_TO_TEST_AU_VALIDATION_E2E = "/au/auValidation/e2e/";
