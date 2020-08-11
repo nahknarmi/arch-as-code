@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -23,11 +24,13 @@ public class ArchitectureUpdateWriterTest {
     public void shouldWriteAuAndTddContentToAuDirectory() throws Exception {
         // Given
         Path auDir = Files.createTempDirectory("aac");
-        String tddContentFilename = "TDD 1.1 : Component-123.md";
+        String tddContentFilename = "TDD 1.0 : Component-100.md";
+        String tddContentFilename2 = "TDD 2.0 : Component-200.md";
         String content = "## Title\n### Content\nLorem ipsum";
-        var au = ArchitectureUpdate.blank().toBuilder()
+        ArchitectureUpdate au = ArchitectureUpdate.blank().toBuilder()
                 .tddContents(List.of(
-                        new TddContent(content, tddContentFilename)
+                        new TddContent(content, tddContentFilename),
+                        new TddContent("content", tddContentFilename2)
                 )).build();
 
         // When
@@ -35,8 +38,24 @@ public class ArchitectureUpdateWriterTest {
 
         // Then
         String tddContent = Files.readString(auDir.resolve(tddContentFilename));
+        String tddContents = Files.readString(auDir.resolve(tddContentFilename2));
         String auAsString = Files.readString(auDir.resolve("architecture-update.yml"));
         collector.checkThat(tddContent, equalTo(content));
+        collector.checkThat(tddContents, equalTo("content"));
         collector.checkThat(auAsString, containsString("name: '[SAMPLE NAME]'\n"));
+    }
+
+    @Test
+    public void shouldWriteAuWithoutTddContents() throws Exception {
+        Path auDir = Files.createTempDirectory("aac");
+        ArchitectureUpdate au = ArchitectureUpdate.blank();
+
+        new ArchitectureUpdateWriter(new FilesFacade()).export(au, auDir);
+
+        List<String> files = Files.list(auDir)
+                .map(path -> path.getFileName().toString())
+                .collect(toList());
+
+        collector.checkThat(files, equalTo(List.of("architecture-update.yml")));
     }
 }
