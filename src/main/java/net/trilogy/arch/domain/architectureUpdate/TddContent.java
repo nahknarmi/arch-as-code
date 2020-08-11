@@ -4,8 +4,10 @@ import com.google.common.io.Files;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
+import java.io.IOException;
 
 @Getter
 @ToString
@@ -27,5 +29,21 @@ public class TddContent {
 
         // Supported content types
         return fileExtension.equals("md") || fileExtension.equals("txt");
+    }
+
+    public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
+        if (file == null) return null;
+
+        String content = null;
+        String filename = null;
+
+        try {
+            content = filesFacade.readString(file.toPath());
+            filename = file.getName();
+        } catch (IOException e) {
+            return null;
+        }
+
+        return new TddContent(content, filename);
     }
 }

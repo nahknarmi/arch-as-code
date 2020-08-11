@@ -1,5 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
+import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -7,8 +8,12 @@ import org.junit.rules.ErrorCollector;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TddContentTest {
     @Rule
@@ -28,5 +33,33 @@ public class TddContentTest {
         collector.checkThat(TddContent.isContent(tempPdf), equalTo(false));
         collector.checkThat(TddContent.isContent(dir), equalTo(false));
         collector.checkThat(TddContent.isContent(nullFile), equalTo(false));
+    }
+
+    @Test
+    public void shouldCreateContentFromFiles() throws IOException {
+        Path rootDir = Files.createTempDirectory("temp");
+        Path file = new FilesFacade().writeString(rootDir.resolve("markdown.md"), "contents");
+
+        TddContent tddContent = TddContent.createCreateFromFile(file.toFile(), new FilesFacade());
+
+        collector.checkThat(tddContent.getContent(), equalTo("contents"));
+        collector.checkThat(tddContent.getFilename(), equalTo("markdown.md"));
+    }
+
+    @Test
+    public void shouldReturnNullIfFileNull() {
+        TddContent nullContent = TddContent.createCreateFromFile(null, new FilesFacade());
+
+        collector.checkThat(nullContent, equalTo(null));
+    }
+
+    @Test
+    public void shouldReturnNullIfError() throws Exception {
+        FilesFacade filesFacade = mock(FilesFacade.class);
+        when(filesFacade.readString(any())).thenThrow(new RuntimeException("boom"));
+
+        TddContent content = TddContent.createCreateFromFile(null, filesFacade);
+
+        collector.checkThat(content, equalTo(null));
     }
 }
