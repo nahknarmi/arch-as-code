@@ -46,7 +46,9 @@ public class PublishCommandE2ETest {
     @Test
     public void shouldSuccessfullyPublish() {
         // Given
-        StructurizrAdapter structurizrAdapter = spy(StructurizrAdapter.class);
+        StructurizrAdapter structurizrAdapter = mock(StructurizrAdapter.class);
+        when(structurizrAdapter.publish(any())).thenReturn(true);
+
         Application app = Application.builder()
                 .structurizrAdapter(structurizrAdapter)
                 .build();
@@ -65,7 +67,9 @@ public class PublishCommandE2ETest {
     @Test
     public void shouldListValidationsErrorsWhenProductArchitectureInvalid() throws Exception {
         // Given
+        // No need to mock publish() because it's never called due to the precondition check
         StructurizrAdapter structurizrAdapter = spy(StructurizrAdapter.class);
+
         Application app = Application.builder()
                 .structurizrAdapter(structurizrAdapter)
                 .build();
