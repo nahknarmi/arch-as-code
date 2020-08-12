@@ -34,7 +34,7 @@ public class ArchitectureUpdateReader {
         final File[] files = path.toFile().listFiles();
 
         return Arrays.stream(files)
-                .filter(TddContent::isContent)
+                .filter(TddContent::isContentType)
                 .map((File file) -> TddContent.createCreateFromFile(file, filesFacade))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

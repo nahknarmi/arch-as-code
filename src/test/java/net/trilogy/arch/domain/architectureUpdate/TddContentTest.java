@@ -28,11 +28,11 @@ public class TddContentTest {
         File dir = Files.createTempDirectory("temp").toFile();
         File nullFile = null;
 
-        collector.checkThat(TddContent.isContent(tempMarkdown), equalTo(true));
-        collector.checkThat(TddContent.isContent(tempText), equalTo(true));
-        collector.checkThat(TddContent.isContent(tempPdf), equalTo(false));
-        collector.checkThat(TddContent.isContent(dir), equalTo(false));
-        collector.checkThat(TddContent.isContent(nullFile), equalTo(false));
+        collector.checkThat(TddContent.isContentType(tempMarkdown), equalTo(true));
+        collector.checkThat(TddContent.isContentType(tempText), equalTo(true));
+        collector.checkThat(TddContent.isContentType(tempPdf), equalTo(false));
+        collector.checkThat(TddContent.isContentType(dir), equalTo(false));
+        collector.checkThat(TddContent.isContentType(nullFile), equalTo(false));
     }
 
     @Test

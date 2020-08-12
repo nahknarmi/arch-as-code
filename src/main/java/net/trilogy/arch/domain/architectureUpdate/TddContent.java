@@ -31,7 +31,7 @@ public class TddContent {
         this.filename = filename;
     }
 
-    public static boolean isContent(File file) {
+    public static boolean isContentType(File file) {
         if (file == null) return false;
         if (file.isDirectory()) return false;
 
