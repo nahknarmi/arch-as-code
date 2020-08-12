@@ -1,0 +1,6 @@
+This should not be picked up as TDD content because it's incorrectly named.
+The proper naming convention is `<TDD-ID> : Component-<component-id>.md`
+
+examples:
+TDD 1.1 : Component-10.md
+ITD 2.0 : Component-100.txt
