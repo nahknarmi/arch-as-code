@@ -36,6 +36,18 @@ public class TddContentTest {
     }
 
     @Test
+    public void shouldIdentifyFilesThatMatchTddContentNamingConvention() throws IOException {
+        File tempMarkdown = Files.createTempFile("markdown", ".md").toFile();
+        File tddMarkdown = Files.createTempFile("TDD 1.1 : Component-10", ".md").toFile();
+        File tddText = Files.createTempFile("IFD 2.3.4 : Component-101", ".txt").toFile();
+
+        collector.checkThat(TddContent.isTddContentName(tempMarkdown), equalTo(false));
+        collector.checkThat(TddContent.isTddContentName(tddMarkdown), equalTo(true));
+        collector.checkThat(TddContent.isTddContentName(tddText), equalTo(true));
+
+    }
+
+    @Test
     public void shouldCreateContentFromFiles() throws IOException {
         Path rootDir = Files.createTempDirectory("temp");
         Path file = new FilesFacade().writeString(rootDir.resolve("markdown.md"), "contents");
@@ -67,5 +79,13 @@ public class TddContentTest {
 
         // Then
         collector.checkThat(content, equalTo(null));
+    }
+
+    @Test
+    public void shouldParseTddComponentFromFilename() {
+        TddContent tddContent = new TddContent("content", "TDD 1.1 : Component-10.md");
+
+        collector.checkThat(tddContent.getTdd(), equalTo("TDD 1.1"));
+        collector.checkThat(tddContent.getComponentId(), equalTo("10"));
     }
 }

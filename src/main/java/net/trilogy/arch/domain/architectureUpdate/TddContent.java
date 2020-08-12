@@ -8,13 +8,23 @@ import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 public class TddContent {
+    public static final int TDD_MATCHER_GROUP = 1;
+    public static final int COMPONENT_ID_MATCHER_GROUP = 2;
+
     private final String content;
     private final String filename;
+
+    private static final String REGEX = "(.*) : Component-(\\d+)";
+    private static final Pattern pattern = Pattern.compile(REGEX);
+    private Matcher matcher;
+
 
     public TddContent(String content, String filename) {
         this.content = content;
@@ -31,6 +41,13 @@ public class TddContent {
         return fileExtension.equals("md") || fileExtension.equals("txt");
     }
 
+    public static boolean isTddContentName(File file) {
+        if (file == null) return false;
+        if (file.isDirectory()) return false;
+
+        return pattern.matcher(file.getName()).find();
+    }
+
     public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
         if (file == null) return null;
 
@@ -45,5 +62,22 @@ public class TddContent {
         }
 
         return new TddContent(content, filename);
+    }
+
+    public String getTdd() {
+        return matcher().group(TDD_MATCHER_GROUP);
+    }
+
+    public String getComponentId() {
+        return matcher().group(COMPONENT_ID_MATCHER_GROUP);
+    }
+
+    private Matcher matcher() {
+        if (matcher == null) {
+            matcher = pattern.matcher(filename);
+            matcher.find();
+        }
+
+        return this.matcher;
     }
 }
