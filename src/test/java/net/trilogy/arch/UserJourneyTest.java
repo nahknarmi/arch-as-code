@@ -26,35 +26,35 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void prints_arch_as_code_when_no_args() throws Exception {
+    public void prints_arch_as_code_when_no_args() {
         int exitCode = execute();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void prints_version() throws Exception {
+    public void prints_version() {
         int exitCode = execute("--version");
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void prints_help() throws Exception {
+    public void prints_help() {
         int exitCode = execute("--help");
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void fails_when_no_parameters_passed_to_initialize_command() throws Exception {
+    public void fails_when_no_parameters_passed_to_initialize_command() {
         int exitCode = execute("init");
 
         assertThat(exitCode, equalTo(2));
     }
 
     @Test
-    public void fails_when_options_passed_but_parameter_is_not_passed_to_initialize_command() throws Exception {
+    public void fails_when_options_passed_but_parameter_is_not_passed_to_initialize_command() {
         int exitCode = execute("init",
                 "-i", String.valueOf(config.getWorkspaceId()),
                 "-k", config.getApiKey(),
@@ -64,14 +64,14 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void initializes_workspace_when_all_parameters_and_options_passed_to_initialize_command() throws Exception {
+    public void initializes_workspace_when_all_parameters_and_options_passed_to_initialize_command() {
         int exitCode = init();
 
         assertThat(exitCode, equalTo(0));
     }
 
     @Test
-    public void fails_when_workspace_path_not_passed_to_validate_command() throws Exception {
+    public void fails_when_workspace_path_not_passed_to_validate_command() {
         init();
 
         int exitCode = execute("validate");
@@ -80,7 +80,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void validates_workspace_when_workspace_path_passed_to_validate_command() throws Exception {
+    public void validates_workspace_when_workspace_path_passed_to_validate_command() {
         init();
 
         int exitCode = execute("validate", workspaceRoot);
@@ -89,7 +89,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_fail_when_workspace_path_not_passed_to_publish_command() throws Exception {
+    public void should_fail_when_workspace_path_not_passed_to_publish_command() {
         init();
         execute("validate", workspaceRoot);
 
@@ -99,7 +99,7 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void publishes_workspace_when_workspace_path_passed_to_validate_command() throws Exception {
+    public void publishes_workspace_when_workspace_path_passed_to_validate_command() {
         init();
         int exitCode = importWorkspace();
         assertThat(exitCode, equalTo(0));
@@ -112,20 +112,20 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void fails_when_exported_workspace_path_not_passed_to_import_command() throws Exception {
+    public void fails_when_exported_workspace_path_not_passed_to_import_command() {
         int exitCode = execute("import");
 
         assertThat(exitCode, equalTo(2));
     }
 
     @Test
-    public void imports_exported_workspace_when_workspace_path_passed_to_import_command() throws Exception {
+    public void imports_exported_workspace_when_workspace_path_passed_to_import_command() {
         int exitCode = importWorkspace();
 
         assertThat(exitCode, equalTo(0));
     }
 
-    private int init() throws Exception {
+    private int init() {
         return execute("init",
                 "-i", String.valueOf(config.getWorkspaceId()),
                 "-k", config.getApiKey(),
@@ -133,7 +133,7 @@ public class UserJourneyTest {
                 workspaceRoot);
     }
 
-    private int importWorkspace() throws Exception {
+    private int importWorkspace() {
         return execute("import", exportedWorkspacePath.getAbsolutePath(), workspaceRoot);
     }
 }
