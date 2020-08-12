@@ -1,5 +1,6 @@
 package net.trilogy.arch.e2e;
 
+import com.structurizr.Workspace;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
@@ -47,7 +48,7 @@ public class PublishCommandE2ETest {
     public void shouldSuccessfullyPublish() {
         // Given
         StructurizrAdapter structurizrAdapter = mock(StructurizrAdapter.class);
-        when(structurizrAdapter.publish(any())).thenReturn(true);
+        when(structurizrAdapter.publish(any(Workspace.class))).thenReturn(true);
 
         Application app = Application.builder()
                 .structurizrAdapter(structurizrAdapter)
