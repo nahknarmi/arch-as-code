@@ -89,29 +89,6 @@ public class UserJourneyTest {
     }
 
     @Test
-    public void should_fail_when_workspace_path_not_passed_to_publish_command() {
-        init();
-        execute("validate", workspaceRoot);
-
-        int exitCode = execute("publish");
-
-        assertThat(exitCode, equalTo(2));
-    }
-
-    @Test
-    public void publishes_workspace_when_workspace_path_passed_to_validate_command() {
-        init();
-        int exitCode = importWorkspace();
-        assertThat(exitCode, equalTo(0));
-
-        execute("validate", workspaceRoot);
-
-        exitCode = execute("publish", workspaceRoot);
-
-        assertThat(exitCode, equalTo(0));
-    }
-
-    @Test
     public void fails_when_exported_workspace_path_not_passed_to_import_command() {
         int exitCode = execute("import");
 
