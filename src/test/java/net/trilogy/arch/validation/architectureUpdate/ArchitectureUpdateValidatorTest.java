@@ -493,4 +493,36 @@ public class ArchitectureUpdateValidatorTest {
         collector.checkThat(actualErrors, not(hasItem(forAmbiguousTddContentReference(new Tdd.ComponentReference("10"), new Tdd.Id("TDD OK file")))));
         collector.checkThat(actualErrors, not(hasItem(forAmbiguousTddContentReference(new Tdd.ComponentReference("10"), new Tdd.Id("TDD OK text")))));
     }
+
+    @Test
+    public void shouldValidate_TddContentsFileExists() {
+        String fileName = "TDD 1.1 : Component-10.md";
+        String noErrorFilename = "TDD 2.1 : Component-10.md";
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("10"),
+                                        false,
+                                        Map.of(new Tdd.Id("TDD 1.1"), new Tdd("overridden-text", null),
+                                                new Tdd.Id("TDD 2.1"), new Tdd(null, noErrorFilename))
+                                )
+                        )
+                ).tddContents(List.of(
+                        new TddContent("contents", fileName),
+                        new TddContent("contents", noErrorFilename),
+                        new TddContent("contents", "UNRELATED-DECISION : Component-0.md")
+                ))
+                .build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forOverriddenByTddContentFile(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 1.1"), fileName)
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+        collector.checkThat(actualErrors, not(hasItem(forOverriddenByTddContentFile(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 2.1"), noErrorFilename))));
+
+    }
 }

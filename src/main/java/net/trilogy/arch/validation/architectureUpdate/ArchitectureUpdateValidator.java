@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 public class ArchitectureUpdateValidator {
@@ -289,6 +290,28 @@ public class ArchitectureUpdateValidator {
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .collect(toSet());
+    }
+
+    private Set<ValidationError> getErrors_TddContentsFileExists() {
+        List<TddContent> tddContents = architectureUpdate.getTddContents();
+        if (tddContents == null || tddContents.isEmpty()) return Set.of();
+
+        var tddFilename = tddContents.stream()
+                .map(tddContent -> new AbstractMap.SimpleEntry(tddContent.getTdd(), tddContent.getFilename()))
+                .collect(toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+
+        return architectureUpdate.getTddContainersByComponent().stream()
+                .flatMap(tddContainer -> tddContainer.getTdds().entrySet().stream()
+                        .map(pair -> {
+                            Tdd.Id id = pair.getKey();
+                            Tdd tdd = pair.getValue();
+                            if (tddFilename.containsKey(id.toString()) && tdd.getText() != null) {
+                                // Error only if text is not null
+                                return ValidationError.forOverriddenByTddContentFile(tddContainer.getComponentId(), id, (String) tddFilename.get(id.toString()));
+                            }
+                            return null;
+                        })
+                ).collect(Collectors.toSet());
     }
 
     private ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<Tdd.Id, Tdd> pair) {
