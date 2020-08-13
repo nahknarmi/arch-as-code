@@ -20,8 +20,8 @@ public enum ValidationErrorType {
     DUPLICATE_COMPONENT_ID("Duplicate Component ID", TDD),
     LINK_NOT_AVAILABLE ("Link value is N/A", TDD),
     NO_PR_COMBINED_WITH_ANOTHER_TDD ("No-Pr is combined with another TDD", TDD),
-    AMBIGUOUS_TDD_CONTENT_REFERENCE("TDD has both text and file fields present", TDD),
-    OVERRIDDEN_BY_TDD_CONTENT_FILE("TDD has both text field present and TDD content file in AU directory", TDD);
+    AMBIGUOUS_TDD_CONTENT_REFERENCE("Ambiguous TDD content reference", TDD),
+    OVERRIDDEN_BY_TDD_CONTENT_FILE("TDD content overridden by file", TDD);
 
     @Getter private final String label;
     @Getter private final ValidationStage stage;
