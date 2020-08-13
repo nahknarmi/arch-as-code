@@ -76,8 +76,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         final var baseBranchArch = loadArchitectureFromGitOrPrintError(baseBranch, "Unable to load '" + baseBranch + "' branch architecture");
         if (baseBranchArch.isEmpty()) return 1;
 
-        File auFile = architectureUpdateDirectory;
-        final var au = loadAndValidateAu(auFile);
+        final var au = loadAndValidateAu(architectureUpdateDirectory);
         if (au.isEmpty()) return 1;
 
         final ValidationResult validationResults = ArchitectureUpdateValidator.validate(
@@ -101,24 +100,24 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
             if (validateAuSchema(auDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile())) {
-                return Optional.of(
-                        architectureUpdateReader.load(auDirectory.toPath())
-                );
+                return Optional.of(architectureUpdateReader.load(auDirectory.toPath()));
             }
         } catch (final Exception e) {
             printError("Unable to load architecture update file", e);
         }
+
         return Optional.empty();
     }
 
     private boolean validateAuSchema(File auFile) throws FileNotFoundException {
         InputStream auInputStream = new FileInputStream(auFile);
         Set<ValidationMessage> validationMessages = new SchemaValidator().validateArchitectureUpdateDocument(auInputStream);
-        if (validationMessages.isEmpty()) {
-            return true;
-        }
+
+        if (validationMessages.isEmpty()) return true;
+
         printError("Architecture update schema validation failed.");
-        validationMessages.stream().forEach(m -> printError(m.getMessage()));
+        validationMessages.forEach(m -> printError(m.getMessage()));
+
         return false;
     }
 
@@ -169,12 +168,15 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         if (tddValidation && capabilityValidation) {
             return List.of(ValidationStage.TDD, ValidationStage.STORY);
         }
+
         if (tddValidation) {
             return List.of(ValidationStage.TDD);
         }
+
         if (capabilityValidation) {
             return List.of(ValidationStage.STORY);
         }
+
         return List.of(ValidationStage.values());
     }
 
