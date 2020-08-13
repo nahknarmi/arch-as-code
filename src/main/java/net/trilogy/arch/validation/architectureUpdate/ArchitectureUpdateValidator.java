@@ -305,8 +305,9 @@ public class ArchitectureUpdateValidator {
                         .map(pair -> {
                             Tdd.Id id = pair.getKey();
                             Tdd tdd = pair.getValue();
-                            if (tddFilename.containsKey(id.toString()) && tdd.getText() != null) {
-                                // Error only if text is not null
+                            // Error condition: Text exists and is overridden by found matching file
+                            boolean errorCondition = tddFilename.containsKey(id.toString()) && tdd.getText() != null;
+                            if (errorCondition) {
                                 return ValidationError.forOverriddenByTddContentFile(tddContainer.getComponentId(), id, (String) tddFilename.get(id.toString()));
                             }
                             return null;
