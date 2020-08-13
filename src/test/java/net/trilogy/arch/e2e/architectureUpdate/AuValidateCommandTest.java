@@ -88,6 +88,17 @@ public class AuValidateCommandTest {
     }
 
     @Test
+    public void shouldBeFullyValidWithTddContent() {
+        var auPath = auDir.resolve("tdd-content-valid/").toString();
+
+        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        collector.checkThat(status, equalTo(0));
+        collector.checkThat(out.toString(), containsString("Success, no errors found."));
+        collector.checkThat(err.toString(), equalTo(""));
+    }
+
+    @Test
     public void shouldBeTDDValid() {
         var auPath = auDir.resolve("invalid-capabilities/").toString();
 
@@ -147,6 +158,18 @@ public class AuValidateCommandTest {
                 containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."));
         collector.checkThat(err.toString(),
                 containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."));
+    }
+
+    @Test
+    public void shouldBeTddContentInvalid() {
+        var auPath = auDir.resolve("tdd-content-invalid/").toString();
+
+        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        collector.checkThat(status, not(equalTo(0)));
+        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(err.toString(),
+                containsString("TDD content file \"TDD 1.0 : Component-38.md\" matching Component id \"38\" and TDD \"TDD 1.0\" will override existing TDD text."));
     }
 
     @Test

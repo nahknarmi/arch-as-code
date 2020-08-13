@@ -3,7 +3,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
@@ -58,13 +58,13 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     @CommandLine.Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
     boolean capabilityValidation;
 
-    private final ArchitectureUpdateObjectMapper architectureUpdateObjectMapper;
+    private final ArchitectureUpdateReader architectureUpdateReader;
 
     public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface) {
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
-        this.architectureUpdateObjectMapper = new ArchitectureUpdateObjectMapper();
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
+        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
+        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         final var baseBranchArch = loadArchitectureFromGitOrPrintError(baseBranch, "Unable to load '" + baseBranch + "' branch architecture");
         if (baseBranchArch.isEmpty()) return 1;
 
-        File auFile = architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile();
+        File auFile = architectureUpdateDirectory;
         final var au = loadAndValidateAu(auFile);
         if (au.isEmpty()) return 1;
 
@@ -98,13 +98,11 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAndValidateAu(File auFile) {
+    private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
-            if (validateAu(auFile)) {
+            if (validateAuSchema(auDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile())) {
                 return Optional.of(
-                        architectureUpdateObjectMapper.readValue(
-                                filesFacade.readString(auFile.toPath())
-                        )
+                        architectureUpdateReader.load(auDirectory.toPath())
                 );
             }
         } catch (final Exception e) {
@@ -113,7 +111,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return Optional.empty();
     }
 
-    private boolean validateAu(File auFile) throws FileNotFoundException {
+    private boolean validateAuSchema(File auFile) throws FileNotFoundException {
         InputStream auInputStream = new FileInputStream(auFile);
         Set<ValidationMessage> validationMessages = new SchemaValidator().validateArchitectureUpdateDocument(auInputStream);
         if (validationMessages.isEmpty()) {
