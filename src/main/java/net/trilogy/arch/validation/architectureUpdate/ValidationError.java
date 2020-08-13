@@ -122,7 +122,7 @@ public class ValidationError {
     public static ValidationError forOverriddenByTddContentFile(Tdd.ComponentReference componentReference, Tdd.Id id, String fileName) {
         return new ValidationError(
                 ValidationErrorType.OVERRIDDEN_BY_TDD_CONTENT_FILE,
-                String.format("TDD content file \"%s\" matching Component id \"%s\" and TDD \"%s\" is present and will override TDD text.", fileName, componentReference.toString(), id.toString())
+                String.format("TDD content file \"%s\" matching Component id \"%s\" and TDD \"%s\" will override existing TDD text.", fileName, componentReference.toString(), id.toString())
         );
     }
 
