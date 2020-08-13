@@ -2,7 +2,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
 
-    @Parameters(index = "0", description = "File name of architecture update to annotate")
-    private File architectureUpdateFilePath;
+    @Parameters(index = "0", description = "Directory name of architecture update to annotate")
+    private File architectureUpdateDirectory;
 
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
@@ -42,11 +42,13 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
 
     @Getter
     private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
+    private final ArchitectureUpdateReader architectureUpdateReader;
     private static final String REGEX = "(\\n\\s*-\\s['\\\"]?component-id['\\\"]?:\\s+['\\\"]?(\\d+)['\\\"]?).*((^\\n)*\\n)";
 
     public AuAnnotateCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
         architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
+        architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
     @Override
@@ -57,8 +59,8 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         String auAsString = null;
         ArchitectureUpdate au = null;
         try {
-            auAsString = filesFacade.readString(architectureUpdateFilePath.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
-            au = new ArchitectureUpdateObjectMapper().readValue(auAsString);
+            auAsString = filesFacade.readString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
+            au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
         } catch (Exception e) {
             printError(e, "Unable to load Architecture Update.");
             return 2;
@@ -92,7 +94,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         }
 
         try {
-            filesFacade.writeString(architectureUpdateFilePath.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), auAsString);
+            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), auAsString);
         } catch (Exception e) {
             printError(e, "Unable to write annotations to Architecture Update.");
             return 2;
