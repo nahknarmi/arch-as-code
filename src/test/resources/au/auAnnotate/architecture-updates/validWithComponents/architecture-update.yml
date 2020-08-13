@@ -41,12 +41,12 @@ tdds-per-component:
 - component-id: '34'
   deleted: false
   tdds:
-    'TDDD 2.1':
+    'TDD 2.1':
       text: '[SAMPLE TDD TEXT]'
 - component-id: "30"
   deleted: false
   tdds:
-    'TDDD 2.1':
+    'TDD 2.1':
       text: '[SAMPLE TDD TEXT]'
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
