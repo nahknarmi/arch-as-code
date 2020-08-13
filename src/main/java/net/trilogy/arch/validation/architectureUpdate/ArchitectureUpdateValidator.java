@@ -312,7 +312,8 @@ public class ArchitectureUpdateValidator {
                             }
                             return null;
                         })
-                ).collect(Collectors.toSet());
+                ).filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     private ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<Tdd.Id, Tdd> pair) {
