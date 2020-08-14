@@ -6,6 +6,7 @@ import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.facade.FilesFacade;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -32,26 +33,72 @@ public class JiraStoryTest {
         final JiraStory expected = new JiraStory(
                 "story title",
                 List.of(
-                    new JiraStory.JiraTdd(
-                        new Tdd.Id("TDD 1"),
-                        new Tdd("TDD 1 text", null),
-                        "c4://Internet Banking System/API Application/Reset Password Controller"
-                    ),
-                    new JiraStory.JiraTdd(
-                        new Tdd.Id("TDD 3"),
-                        new Tdd("TDD 3 text", null),
-                        "c4://Internet Banking System/API Application/Sign In Controller" // deleted component id: 29
-                    )
+                        new JiraStory.JiraTdd(
+                                new Tdd.Id("TDD 1"),
+                                new Tdd("TDD 1 text", null),
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                null
+                        ),
+                        new JiraStory.JiraTdd(
+                                new Tdd.Id("TDD 3"),
+                                new Tdd("TDD 3 text", null),
+                                "c4://Internet Banking System/API Application/Sign In Controller", // deleted component id: 29
+                                null
+                        )
                 ),
                 List.of(
-                    new JiraStory.JiraFunctionalRequirement(
-                        new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
-                        new FunctionalRequirement(
-                            "[SAMPLE REQUIREMENT TEXT]",
-                            "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                            List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                        new JiraStory.JiraFunctionalRequirement(
+                                new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                                )
                         )
-                    )
+                )
+        );
+
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    @Ignore("wip")
+    public void ShouldConstructJiraStoryWithTddContent() throws Exception {
+        // GIVEN:
+        var au = getAu();
+        var afterAuArchitecture = getArchitectureAfterAu();
+        var beforeAuArchitecture = getArchitectureBeforeAu();
+        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+
+        // WHEN:
+        final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+
+        // THEN:
+        final JiraStory expected = new JiraStory(
+                "story title",
+                List.of(
+                        new JiraStory.JiraTdd(
+                                new Tdd.Id("TDD 1"),
+                                new Tdd("TDD 1 text", null),
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                null
+                        ),
+                        new JiraStory.JiraTdd(
+                                new Tdd.Id("TDD 3"),
+                                new Tdd("TDD 3 text", null),
+                                "c4://Internet Banking System/API Application/Sign In Controller", // deleted component id: 29
+                                null
+                        )
+                ),
+                List.of(
+                        new JiraStory.JiraFunctionalRequirement(
+                                new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                                )
+                        )
                 )
         );
 
@@ -133,37 +180,37 @@ public class JiraStoryTest {
 
     private ArchitectureUpdate getAu() {
         return ArchitectureUpdate.builderPreFilledWithBlanks()
-            .tddContainersByComponent(List.of(
-                new TddContainerByComponent(
-                    new Tdd.ComponentReference("31"),
-                    false,
-                    Map.of(
-                        new Tdd.Id("TDD 1"), new Tdd("TDD 1 text", null),
-                        new Tdd.Id("TDD 2"), new Tdd("TDD 2 text", null),
-                        new Tdd.Id("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null)
-                    )
-                ),
-                new TddContainerByComponent(
-                    new Tdd.ComponentReference("404"),
-                    true,
-                    Map.of(
-                        new Tdd.Id("TDD 3"), new Tdd("TDD 3 text", null),
-                        new Tdd.Id("TDD 4"), new Tdd("TDD 4 text", null)
-                    )
+                .tddContainersByComponent(List.of(
+                        new TddContainerByComponent(
+                                new Tdd.ComponentReference("31"),
+                                false,
+                                Map.of(
+                                        new Tdd.Id("TDD 1"), new Tdd("TDD 1 text", null),
+                                        new Tdd.Id("TDD 2"), new Tdd("TDD 2 text", null),
+                                        new Tdd.Id("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null)
+                                )
+                        ),
+                        new TddContainerByComponent(
+                                new Tdd.ComponentReference("404"),
+                                true,
+                                Map.of(
+                                        new Tdd.Id("TDD 3"), new Tdd("TDD 3 text", null),
+                                        new Tdd.Id("TDD 4"), new Tdd("TDD 4 text", null)
+                                )
+                        )
+                ))
+                .capabilityContainer(new CapabilitiesContainer(
+                                Epic.blank(),
+                                List.of(
+                                        new FeatureStory(
+                                                "story title",
+                                                new Jira("", ""),
+                                                List.of(new Tdd.Id("TDD 1"), new Tdd.Id("TDD 3")),
+                                                List.of(FunctionalRequirement.Id.blank()))
+                                )
+                        )
                 )
-            ))
-            .capabilityContainer(new CapabilitiesContainer(
-                    Epic.blank(), 
-                    List.of(
-                        new FeatureStory(
-                            "story title", 
-                            new Jira("", ""), 
-                            List.of(new Tdd.Id("TDD 1"), new Tdd.Id("TDD 3")), 
-                            List.of(FunctionalRequirement.Id.blank()))
-                    )
-                )
-            )
-            .build();
+                .build();
     }
 
     private ArchitectureUpdate getAuWithInvalidComponent() {

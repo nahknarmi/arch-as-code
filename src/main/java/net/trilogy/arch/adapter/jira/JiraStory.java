@@ -53,7 +53,8 @@ public class JiraStory {
                     .map(container -> new JiraTdd(
                             tddId,
                             container.getTdds().get(tddId),
-                            getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow()
+                            getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                            null
                     ))
                     .findAny()
                     .orElseThrow(InvalidStoryException::new);
@@ -87,6 +88,7 @@ public class JiraStory {
         private final Tdd.Id id;
         private final Tdd tdd;
         private final String component;
+        private final TddContent tddContent;
 
         public String getId() {
             return id.toString();
@@ -97,7 +99,11 @@ public class JiraStory {
         }
 
         public String getText() {
-            return tdd.getText();
+            if (tddContent == null) {
+                return tdd.getText();
+            } else {
+                return tddContent.getContent();
+            }
         }
     }
 

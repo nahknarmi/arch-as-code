@@ -391,12 +391,14 @@ public class AuPublishStoriesCommandTest {
                                 new JiraStory.JiraTdd(
                                         new Tdd.Id("[SAMPLE-TDD-ID]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/Reset Password Controller"
+                                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                                        null
                                 ),
                                 new JiraStory.JiraTdd(
                                         new Tdd.Id("[SAMPLE-TDD-ID-2]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/E-mail Component"
+                                        "c4://Internet Banking System/API Application/E-mail Component",
+                                        null
                                 )
                         ),
                         List.of(
@@ -416,7 +418,8 @@ public class AuPublishStoriesCommandTest {
                                 new JiraStory.JiraTdd(
                                         new Tdd.Id("[SAMPLE-TDD-ID]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/Reset Password Controller"
+                                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                                        null
                                 )
                         ),
                         List.of(
