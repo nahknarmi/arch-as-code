@@ -87,15 +87,22 @@ public class JiraStory {
     public static class JiraTdd {
         private final Tdd.Id id;
         private final Tdd tdd;
+        @Getter
         private final String component;
+        @Getter
         private final TddContent tddContent;
+
+        public static JiraTdd make(Tdd.Id id, Tdd tdd, String componentId, List<TddContent> tddContents) {
+            Optional<TddContent> tddContent = tddContents.stream()
+                    .filter(content -> content.getTdd().equals(id.toString()))
+                    .filter(content -> content.getComponentId().equals(componentId))
+                    .findFirst();
+
+            return new JiraTdd(id, tdd, componentId, tddContent.orElse(null));
+        }
 
         public String getId() {
             return id.toString();
-        }
-
-        public String getComponent() {
-            return component;
         }
 
         public String getText() {
