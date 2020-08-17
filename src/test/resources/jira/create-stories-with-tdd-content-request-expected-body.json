@@ -1,0 +1,30 @@
+{
+  "issueUpdates": [
+    {
+      "fields": {
+        "customfield_10002": "EPIC KEY",
+        "project": {
+          "id": "PROJECT ID"
+        },
+        "summary": "STORY TITLE 1",
+        "issuetype": {
+          "name": "Feature Story"
+        },
+        "description": "h3. Implements functionality:\n||Id||Source||Description||\nh3. Technical Design:\nh4. Component: c4://pathToComponent-1\n||TDD||Description||\n| TDD ID 1 | {noformat}TDD CONTENT FILE TDD ID 1{noformat} |\n"
+      }
+    },
+    {
+      "fields": {
+        "customfield_10002": "EPIC KEY",
+        "project": {
+          "id": "PROJECT ID"
+        },
+        "summary": "STORY TITLE 2",
+        "issuetype": {
+          "name": "Feature Story"
+        },
+        "description": "h3. Implements functionality:\n||Id||Source||Description||\n| FUNCTIONAL REQUIREMENT ID 1 | FUNCTIONAL REQUIREMENT SOURCE 1 | {noformat}FUNCTIONAL REQUIREMENT TEXT 1{noformat} |\n| FUNCTIONAL REQUIREMENT ID 2 | FUNCTIONAL REQUIREMENT SOURCE 2 | {noformat}FUNCTIONAL REQUIREMENT TEXT 2{noformat} |\nh3. Technical Design:\nh4. Component: c4://pathToComponent-1\n||TDD||Description||\n| TDD ID 1 | {noformat}TDD CONTENT FILE TDD ID 1{noformat} |\nh4. Component: c4://pathToComponent-2\n||TDD||Description||\n| TDD ID 2 | {noformat}TDD CONTENT FILE TDD ID 2{noformat} |\n"
+      }
+    }
+  ]
+}

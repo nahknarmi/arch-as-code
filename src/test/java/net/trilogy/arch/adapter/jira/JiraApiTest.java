@@ -6,6 +6,7 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -234,6 +235,67 @@ public class JiraApiTest {
         verify(mockHttpClient).send(captor.capture(), ArgumentMatchers.any());
 
         String expectedBody = loadResource(getClass(), JSON_JIRA_CREATE_STORIES_REQUEST_EXPECTED_BODY);
+        String actualBody = HttpRequestParserForTests.getBody(captor.getValue());
+
+        var expectedBodyJson = new ObjectMapper().readValue(expectedBody, JsonNode.class);
+        var actualBodyJson = new ObjectMapper().readValue(actualBody, JsonNode.class);
+
+        collector.checkThat(actualBodyJson, equalTo(expectedBodyJson));
+    }
+
+    @Test
+    public void shouldMakeCreateStoryRequestWithCorrectBodyUsingTddContentFiles() throws Exception {
+        // GIVEN:
+        var jiraTdd1 = new JiraStory.JiraTdd(
+                new Tdd.Id("TDD ID 1"),
+                new Tdd("Ignored text", "TDD ID 1 : Component-1.md"),
+                "c4://pathToComponent-1",
+                new TddContent("TDD CONTENT FILE TDD ID 1", "TDD ID 1 : Component-1.md")
+        );
+
+        var jiraTdd2 = new JiraStory.JiraTdd(
+                new Tdd.Id("TDD ID 2"),
+                new Tdd(null, "TDD ID 2 : Component-1.md"),
+                "c4://pathToComponent-2",
+                new TddContent("TDD CONTENT FILE TDD ID 2", "TDD ID 2 : Component-1.md")
+
+        );
+
+        var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
+                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 1"),
+                new FunctionalRequirement(
+                        "FUNCTIONAL REQUIREMENT TEXT 1",
+                        "FUNCTIONAL REQUIREMENT SOURCE 1",
+                        List.of(new Tdd.Id("TDD REFERENCE 1"))
+                )
+        );
+        var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
+                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 2"),
+                new FunctionalRequirement(
+                        "FUNCTIONAL REQUIREMENT TEXT 2",
+                        "FUNCTIONAL REQUIREMENT SOURCE 2",
+                        List.of(new Tdd.Id("TDD REFERENCE 2"))
+                )
+        );
+
+        List<JiraStory> sampleJiraStories = List.of(
+                new JiraStory("STORY TITLE 1", List.of(jiraTdd1), List.of()),
+                new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2))
+        );
+
+        var mockedResponse = mock(HttpResponse.class);
+        when(mockedResponse.statusCode()).thenReturn(201);
+        when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
+        when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
+
+        // WHEN:
+        jiraApi.createStories(sampleJiraStories, "EPIC KEY", "PROJECT ID", "username", "password".toCharArray());
+
+        // THEN:
+        var captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(mockHttpClient).send(captor.capture(), ArgumentMatchers.any());
+
+        String expectedBody = loadResource(getClass(), JSON_JIRA_CREATE_STORIES_WITH_TDD_CONTENT_REQUEST_EXPECTED_BODY);
         String actualBody = HttpRequestParserForTests.getBody(captor.getValue());
 
         var expectedBodyJson = new ObjectMapper().readValue(expectedBody, JsonNode.class);
