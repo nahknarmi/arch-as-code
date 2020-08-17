@@ -195,7 +195,7 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         List<JiraStory> expected = getExpectedJiraStoriesToCreate();
-        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), epicInformation.getProjectKey(), "user", "password".toCharArray());
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
     }
 
     @Test
@@ -205,7 +205,7 @@ public class AuPublishStoriesCommandTest {
         final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
         when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any(), any()))
+        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(
                         JiraCreateStoryStatus.succeeded("ABC-123", "link-to-ABC-123"),
                         JiraCreateStoryStatus.succeeded("ABC-223", "link-to-ABC-223")
@@ -236,7 +236,7 @@ public class AuPublishStoriesCommandTest {
         final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
         when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any(), any()))
+        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenReturn(List.of(
                         JiraCreateStoryStatus.succeeded("ABC-123", "link-to-ABC-123"),
                         JiraCreateStoryStatus.failed("error-message")
@@ -266,7 +266,7 @@ public class AuPublishStoriesCommandTest {
         final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
         when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any(), any()))
+        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenReturn(
                         List.of(JiraCreateStoryStatus.succeeded("ABC-123", "link-to-ABC-123"),
                                 JiraCreateStoryStatus.failed("error-message"))
@@ -295,7 +295,7 @@ public class AuPublishStoriesCommandTest {
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
         when(mockedJiraApi.getStory(any(), any(), any()))
                 .thenReturn(new JiraQueryResult("ABC", "DEF"));
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any(), any()))
+        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").cause(new RuntimeException("Details")).build());
         mockGitInterface();
 
@@ -363,7 +363,7 @@ public class AuPublishStoriesCommandTest {
         final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
         when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any(), any()))
+        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenReturn(
                         List.of(JiraCreateStoryStatus.succeeded("ABC-123", "link-to-ABC-123"),
                                 JiraCreateStoryStatus.succeeded("ABC-223", "link-to-ABC-223"))

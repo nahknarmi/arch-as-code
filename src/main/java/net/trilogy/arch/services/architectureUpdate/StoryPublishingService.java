@@ -55,7 +55,6 @@ public class StoryPublishingService {
                 jiraStories,
                 epicJiraTicket.getTicket(),
                 informationAboutTheEpic.getProjectId(),
-                informationAboutTheEpic.getProjectKey(),
                 username,
                 password
         );

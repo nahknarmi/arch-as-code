@@ -103,7 +103,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.createStories(createSampleJiraStories(), "EPIC KEY", "PROJECT ID", "PROJECT KEY", "username", "password".toCharArray());
+            jiraApi.createStories(createSampleJiraStories(), "EPIC KEY", "PROJECT ID", "username", "password".toCharArray());
 
             //THEN:
             fail("Exception not thrown.");
@@ -163,7 +163,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.createStories(List.of(new JiraStory("", List.of(), List.of())), "", "", "", "", "".toCharArray());
+            jiraApi.createStories(List.of(new JiraStory("", List.of(), List.of())), "", "", "", "".toCharArray());
 
             //THEN:
             fail("Exception not thrown.");
@@ -201,7 +201,7 @@ public class JiraApiTest {
         when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
-        var actual = jiraApi.createStories(List.of(new JiraStory("", List.of(), List.of())), "", "", "", "", "".toCharArray());
+        var actual = jiraApi.createStories(List.of(new JiraStory("", List.of(), List.of())), "", "", "", "".toCharArray());
 
         var expected = List.of(
                 JiraCreateStoryStatus.failed("customfield_1123: Field 'customfield_1123' cannot be set. It is not on the appropriate screen, or unknown.\n"),
@@ -227,7 +227,7 @@ public class JiraApiTest {
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         // WHEN:
-        jiraApi.createStories(sampleJiraStories, "EPIC KEY", "PROJECT ID", "PROJECT KEY", "username", "password".toCharArray());
+        jiraApi.createStories(sampleJiraStories, "EPIC KEY", "PROJECT ID", "username", "password".toCharArray());
 
         // THEN:
         var captor = ArgumentCaptor.forClass(HttpRequest.class);
@@ -251,7 +251,7 @@ public class JiraApiTest {
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         // WHEN:
-        jiraApi.createStories(createSampleJiraStories(), "EPIC KEY", "PROJECT ID", "PROJECT KEY", "username", "password".toCharArray());
+        jiraApi.createStories(createSampleJiraStories(), "EPIC KEY", "PROJECT ID", "username", "password".toCharArray());
 
         // THEN:
         var captor = ArgumentCaptor.forClass(HttpRequest.class);
