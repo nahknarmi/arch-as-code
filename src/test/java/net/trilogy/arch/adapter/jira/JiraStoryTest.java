@@ -6,7 +6,6 @@ import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.facade.FilesFacade;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -62,10 +61,17 @@ public class JiraStoryTest {
     }
 
     @Test
-    @Ignore("wip")
     public void ShouldConstructJiraStoryWithTddContent() throws Exception {
         // GIVEN:
-        var au = getAu();
+        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
+        TddContent notUsedTddContent = new TddContent("content-file-2", "TDD 2 : Component-10.md");
+        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt"); // Component deleted in AU
+
+        var au = getAuWithTddContent(List.of(
+                tddContent1,
+                notUsedTddContent,
+                tddContent3
+        ));
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
@@ -81,13 +87,13 @@ public class JiraStoryTest {
                                 new Tdd.Id("TDD 1"),
                                 new Tdd("TDD 1 text", null),
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null
+                                tddContent1
                         ),
                         new JiraStory.JiraTdd(
                                 new Tdd.Id("TDD 3"),
                                 new Tdd("TDD 3 text", null),
-                                "c4://Internet Banking System/API Application/Sign In Controller", // deleted component id: 29
-                                null
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                tddContent3
                         )
                 ),
                 List.of(
@@ -163,7 +169,6 @@ public class JiraStoryTest {
         // Raise Error
     }
 
-
     private ArchitectureDataStructure getArchitectureBeforeAu() throws Exception {
         final String archAsString = new FilesFacade().readString(TestHelper.getPath(
                 getClass(),
@@ -211,6 +216,10 @@ public class JiraStoryTest {
                         )
                 )
                 .build();
+    }
+
+    private ArchitectureUpdate getAuWithTddContent(List<TddContent> tddContents) {
+        return getAu().toBuilder().tddContents(tddContents).build();
     }
 
     private ArchitectureUpdate getAuWithInvalidComponent() {

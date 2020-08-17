@@ -8,6 +8,7 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,13 +51,15 @@ public class JiraStory {
                     .stream()
                     .filter(container -> container.getTdds().containsKey(tddId))
                     .filter(container -> getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
-                    .map(container -> new JiraTdd(
-                            tddId,
-                            container.getTdds().get(tddId),
-                            getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                            null
-                    ))
-                    .findAny()
+                    .map(container ->
+                            JiraTdd.constructFrom(
+                                    tddId,
+                                    container.getTdds().get(tddId),
+                                    getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                                    au.getTddContents(),
+                                    container.getComponentId().getId()
+                            )
+                    ).findAny()
                     .orElseThrow(InvalidStoryException::new);
             tdds.add(tdd);
         }
@@ -92,13 +95,15 @@ public class JiraStory {
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd make(Tdd.Id id, Tdd tdd, String componentId, List<TddContent> tddContents) {
+        public static JiraTdd constructFrom(Tdd.Id id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
+            if (tddContents == null) tddContents = Collections.emptyList();
+
             Optional<TddContent> tddContent = tddContents.stream()
                     .filter(content -> content.getTdd().equals(id.toString()))
                     .filter(content -> content.getComponentId().equals(componentId))
                     .findFirst();
 
-            return new JiraTdd(id, tdd, componentId, tddContent.orElse(null));
+            return new JiraTdd(id, tdd, component, tddContent.orElse(null));
         }
 
         public String getId() {
@@ -137,4 +142,3 @@ public class JiraStory {
     public static class InvalidStoryException extends Exception {
     }
 }
-
