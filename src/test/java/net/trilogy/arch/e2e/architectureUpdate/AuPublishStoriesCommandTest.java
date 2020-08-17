@@ -7,10 +7,7 @@ import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMappe
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.*;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
@@ -195,6 +192,23 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         List<JiraStory> expected = getExpectedJiraStoriesToCreate();
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
+    }
+
+    @Test
+    public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
+        // GIVEN:
+        Jira epic = Jira.blank();
+        final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        mockGitInterface();
+
+        // WHEN:
+        String command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/tdd-content/ " + rootDir.getAbsolutePath();
+        execute(app, command);
+
+        // THEN:
+        List<JiraStory> expected = getExpectedJiraStoriesWithTddContentToCreate();
         verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
     }
 
@@ -429,6 +443,32 @@ public class AuPublishStoriesCommandTest {
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                                 List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    private List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+        return List.of(
+                new JiraStory(
+                        "story that should be created",
+                        List.of(
+                                new JiraStory.JiraTdd(
+                                        new Tdd.Id("TDD 1.0"),
+                                        new Tdd(null, "TDD 1.0 : Component-29.md"),
+                                        "c4://Internet Banking System/API Application/Sign In Controller",
+                                        new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md")
+                                )
+                        ),
+                        List.of(
+                                new JiraStory.JiraFunctionalRequirement(
+                                        new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                        new FunctionalRequirement(
+                                                "[SAMPLE REQUIREMENT TEXT]",
+                                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                                List.of(new Tdd.Id("TDD 1.0"))
                                         )
                                 )
                         )

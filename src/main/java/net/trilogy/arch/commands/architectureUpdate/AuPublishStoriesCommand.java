@@ -3,6 +3,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
@@ -26,6 +27,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private final JiraApiFactory jiraApiFactory;
     private final ArchitectureUpdateObjectMapper architectureUpdateObjectMapper;
+    private final ArchitectureUpdateReader architectureUpdateReader;
     @Getter
     private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     @Getter
@@ -54,16 +56,17 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     private CommandLine.Model.CommandSpec spec;
 
     public AuPublishStoriesCommand(JiraApiFactory jiraApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
-        this.jiraApiFactory = jiraApiFactory;
-        this.architectureUpdateObjectMapper = new ArchitectureUpdateObjectMapper();
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
-        architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
+        this.jiraApiFactory = jiraApiFactory;
+        this.architectureUpdateObjectMapper = new ArchitectureUpdateObjectMapper();
+        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
     }
 
     public Integer call() {
         logArgs();
-        final Path auPath = architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME);
+        final Path auPath = architectureUpdateDirectory.toPath();
 
         var au = loadAu(auPath);
         if (au.isEmpty()) return 1;
@@ -86,7 +89,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         if (updatedAu.isEmpty()) return 1;
 
         try {
-            filesFacade.writeString(auPath, architectureUpdateObjectMapper.writeValueAsString(updatedAu.get()));
+            filesFacade.writeString(auPath.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), architectureUpdateObjectMapper.writeValueAsString(updatedAu.get()));
         } catch (Exception e) {
             printError("Unable to write update to AU.", e);
             return 1;
@@ -120,7 +123,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<ArchitectureUpdate> loadAu(Path auPath) {
         try {
-            return Optional.of(architectureUpdateObjectMapper.readValue(filesFacade.readString(auPath)));
+            return Optional.of( architectureUpdateReader.load(auPath));
         } catch (Exception e) {
             printError("Unable to load architecture update.", e);
             return Optional.empty();

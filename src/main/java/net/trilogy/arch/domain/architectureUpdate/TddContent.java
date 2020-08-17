@@ -23,6 +23,7 @@ public class TddContent {
 
     private static final String REGEX = "(.*) : Component-(\\d+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
+    @EqualsAndHashCode.Exclude
     private Matcher matcher;
 
 
