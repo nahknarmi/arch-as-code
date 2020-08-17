@@ -22,6 +22,7 @@ public class ArchitectureUpdateObjectMapper {
                 new YAMLFactory()
                         .configure(YAMLGenerator.Feature.SPLIT_LINES, false)
                         .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+                        .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
                         .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
                         .configure(JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true)
         );
