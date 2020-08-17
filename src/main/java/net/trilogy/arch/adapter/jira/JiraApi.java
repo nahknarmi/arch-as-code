@@ -200,7 +200,6 @@ public class JiraApi {
                 + funcReq.getSource()
                 + " | {noformat}" + funcReq.getText() + "{noformat} |\n"
                 + "";
-
     }
 
     private String getEncodeAuth(String username, char[] password) {
