@@ -50,12 +50,12 @@ public class JiraStory {
             var tdd = au.getTddContainersByComponent()
                     .stream()
                     .filter(container -> container.getTdds().containsKey(tddId))
-                    .filter(container -> getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
+                    .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
                     .map(container ->
                             JiraTdd.constructFrom(
                                     tddId,
                                     container.getTdds().get(tddId),
-                                    getComponentHeader(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                                    getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
                                     au.getTddContents(),
                                     container.getComponentId().getId()
                             )
@@ -67,7 +67,9 @@ public class JiraStory {
         return tdds;
     }
 
-    private Optional<String> getComponentHeader(ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture, TddContainerByComponent tddContainerByComponent) {
+    private Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
+                                              ArchitectureDataStructure afterAuArchitecture,
+                                              TddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
             if (tddContainerByComponent.isDeleted()) architecture = beforeAuArchitecture;
@@ -91,7 +93,7 @@ public class JiraStory {
         private final Tdd.Id id;
         private final Tdd tdd;
         @Getter
-        private final String component;
+        private final String componentPath;
         @Getter
         private final TddContent tddContent;
 

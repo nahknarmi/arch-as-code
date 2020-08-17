@@ -173,9 +173,7 @@ public class JiraApi {
     private String makeTddTablesByComponent(JiraStory story) {
         Map<String, List<JiraStory.JiraTdd>> compMap = story.getTdds()
                 .stream()
-                .collect(
-                        Collectors.groupingBy(JiraStory.JiraTdd::getComponent)
-                );
+                .collect(Collectors.groupingBy(JiraStory.JiraTdd::getComponentPath));
 
         return "h3. Technical Design:\n" +
                 compMap.entrySet().stream().map(
