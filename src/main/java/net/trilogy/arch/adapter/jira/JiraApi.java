@@ -123,21 +123,21 @@ public class JiraApi {
         try {
             response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if(response.statusCode() == 401) {
+            if (response.statusCode() == 401) {
                 throw JiraApiException.builder()
-                    .message("Failed to log into Jira. Please check your credentials.")
-                    .response(response)
-                    .build();
+                        .message("Failed to log into Jira. Please check your credentials.")
+                        .response(response)
+                        .build();
             }
-            if(response.statusCode() == 404) {
+            if (response.statusCode() == 404) {
                 throw JiraApiException.builder()
-                    .message("Story \""+ jira.getTicket() +"\" not found. URL: " + request.uri().toURL().toString())
-                    .response(response)
-                    .build();
+                        .message("Story \"" + jira.getTicket() + "\" not found. URL: " + request.uri().toURL().toString())
+                        .response(response)
+                        .build();
             }
 
             return new JiraQueryResult(response);
-        } catch(JiraApiException e) {
+        } catch (JiraApiException e) {
             throw e;
         } catch (Throwable e) {
             throw JiraApiException.builder()
@@ -251,7 +251,8 @@ public class JiraApi {
 
     @Getter
     public static class JiraApiException extends Exception {
-        @NonNull private final String message;
+        @NonNull
+        private final String message;
         private final Throwable cause;
         private final HttpResponse<?> response;
 
