@@ -113,11 +113,15 @@ public class JiraStory {
         }
 
         public String getText() {
-            if (tddContent == null) {
-                return tdd.getText();
-            } else {
+            if (hasTddContent()) {
                 return tddContent.getContent();
+            } else {
+                return tdd.getText();
             }
+        }
+
+        public boolean hasTddContent() {
+            return tddContent != null;
         }
     }
 

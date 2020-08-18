@@ -26,6 +26,7 @@ public class JiraTddTest {
         );
 
         collector.checkThat(tdd.getText(), equalTo("text"));
+        collector.checkThat(tdd.hasTddContent(), equalTo(false));
     }
 
     @Test
@@ -38,6 +39,7 @@ public class JiraTddTest {
         );
 
         collector.checkThat(tdd.getText(), equalTo("#Content\nTdd Content"));
+        collector.checkThat(tdd.hasTddContent(), equalTo(true));
     }
 
     @Test
@@ -83,6 +85,7 @@ public class JiraTddTest {
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));
         collector.checkThat(tdd.getComponentPath(), equalTo("c4://path"));
+        collector.checkThat(tdd.hasTddContent(), equalTo(true));
         collector.checkThat(tdd.getTddContent(), equalTo(correctContent));
         collector.checkThat(tdd.getText(), equalTo("correct content"));
     }
@@ -106,6 +109,7 @@ public class JiraTddTest {
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));
         collector.checkThat(tdd.getComponentPath(), equalTo("10"));
+        collector.checkThat(tdd.hasTddContent(), equalTo(true));
         collector.checkThat(tdd.getTddContent(), equalTo(correctContent));
         collector.checkThat(tdd.getText(), equalTo("correct content"));
     }
@@ -122,6 +126,7 @@ public class JiraTddTest {
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));
         collector.checkThat(tdd.getComponentPath(), equalTo("10"));
+        collector.checkThat(tdd.hasTddContent(), equalTo(false));
         collector.checkThat(tdd.getTddContent(), equalTo(null));
         collector.checkThat(tdd.getText(), equalTo("text"));
     }
