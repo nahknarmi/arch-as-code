@@ -177,11 +177,19 @@ public class JiraApi {
         return "h3. Technical Design:\n" +
                 compMap.entrySet().stream().map(
                         entry -> "h4. Component: " + entry.getKey() + "\n||TDD||Description||\n" +
-                                entry.getValue().stream().map(
-                                        tdd -> "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n"
-                                ).collect(Collectors.joining())
+                                entry.getValue().stream()
+                                        .map(tdd -> buildTddRow(tdd))
+                                        .collect(Collectors.joining())
                 ).collect(Collectors.joining()) +
                 "";
+    }
+
+    private String buildTddRow(JiraStory.JiraTdd tdd) {
+        if (tdd.hasTddContent()) {
+            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
+        } else {
+            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
+        }
     }
 
     private String makeFunctionalRequirementTable(JiraStory story) {
