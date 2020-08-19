@@ -42,7 +42,7 @@ public class ArchitectureDataStructureTransformerTest {
 
     @Test
     public void shouldHandleMultipleRelationshipsWithSameSourceAndDestination() throws Exception {
-        ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_VIEWS);
+        ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File structurizrJson = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_MULTIPLE_RELATIONSHIPS).getPath());
         ArchitectureDataStructure ourYaml = new WorkspaceReader().load(structurizrJson);
 
@@ -60,7 +60,7 @@ public class ArchitectureDataStructureTransformerTest {
     @Test
     public void should_transform_a_json_with_tricky_deployment_node_scopes() throws Exception {
         // given
-        ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_VIEWS);
+        ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File jsonFromStructurizr = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_TRICKY_DEPLOYMENT_NODE_SCOPES).getPath());
         ArchitectureDataStructure ourDataStructure = new WorkspaceReader().load(jsonFromStructurizr);
 

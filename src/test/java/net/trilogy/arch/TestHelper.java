@@ -34,6 +34,7 @@ public abstract class TestHelper {
     public static final String JSON_JIRA_CREATE_STORIES_WITH_TDD_CONTENT_REQUEST_EXPECTED_BODY = "/jira/create-stories-with-tdd-content-request-expected-body.json";
     public static final String JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY = "/jira/create-stories-response-expected-body.json";
 
+    public static final String ROOT_PATH_TO_TEST_BIG_BANK = "/architecture/products/bigBank/";
     public static final String ROOT_PATH_TO_TEST_GENERALLY = "/architecture/products/testspaces/";
     public static final String ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION = "/architecture/products/testspaces/";
     public static final String ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE = "/architecture/products/testspaces/";
@@ -41,7 +42,6 @@ public abstract class TestHelper {
     public static final String ROOT_PATH_TO_TEST_VALIDATION = "/yaml/validation/";
     public static final String ROOT_PATH_TO_TEST_AU_VALIDATION_E2E = "/au/auValidation/e2e/";
     public static final String ROOT_PATH_TO_TEST_AU_PUBLISH = "/au/auPublish/";
-    public static final String ROOT_PATH_TO_TEST_VIEWS = "/architecture/products/bigBank/";
     public static final String ROOT_PATH_TO_TEST_AU_ANNOTATE = "/au/auAnnotate/";
 
     public static final String ROOT_PATH_TO_GOOGLE_DOC_P1S = "google-docs/P1";
