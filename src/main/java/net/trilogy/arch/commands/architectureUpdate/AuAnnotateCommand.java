@@ -3,6 +3,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
+import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
@@ -21,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -57,14 +57,12 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         var regexToGetComponentReferences = Pattern.compile(REGEX);
 
         String auAsString = null;
-        ArchitectureUpdate au = null;
-        try {
-            auAsString = filesFacade.readString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
-            au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
-        } catch (Exception e) {
-            printError(e, "Unable to load Architecture Update.");
-            return 2;
-        }
+        var auAsStringOpt = loadAuString(architectureUpdateDirectory);
+        if (auAsStringOpt.isEmpty()) return 2;
+        else auAsString = auAsStringOpt.get();
+
+        var au = loadAu(auAsString);
+        if (au.isEmpty()) return 2;
 
         final Matcher matcher = regexToGetComponentReferences.matcher(auAsString);
 
@@ -72,31 +70,22 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         if (architecture.isEmpty()) return 2;
 
         ArchitectureDataStructure dataStructure = architecture.get();
-        Set<Entity> collect = au.getTddContainersByComponent().stream()
-                .map(tdd -> dataStructure
-                        .getModel()
-                        .findEntityById(tdd.getComponentId().getId())
-                )
-                .flatMap(Optional::stream)
-                .collect(Collectors.toSet());
 
-        if (collect.isEmpty()) {
+        Set<Entity> componentsToValidate = new ArchitectureUpdateAnnotator().getComponentsToValidate(dataStructure, au.get());
+        if (componentsToValidate.isEmpty()) {
             printError("No valid components to annotate.");
             return 1;
         }
 
-        while (matcher.find()) {
-            auAsString = matcher.replaceAll((res) ->
-                    res.group(1) +
-                            getComponentPathComment(res.group(2), architecture.get()) +
-                            res.group(3)
-            );
-        }
-
         try {
-            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), auAsString);
+            new ArchitectureUpdateAnnotator()
+                    .annotateC4Paths(
+                            dataStructure,
+                            auAsString,
+                            architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME),
+                            filesFacade);
         } catch (Exception e) {
-            printError(e, "Unable to write annotations to Architecture Update.");
+            printError("Unable to write annotations to Architecture Update.", e);
             return 2;
         }
 
@@ -104,16 +93,27 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         return 0;
     }
 
-    private void printError(Exception e, String s) {
-        printError(s +
-                "\nError: " + e + "\nCause: " + e.getCause());
+    private Optional<String> loadAuString(File architectureUpdateDirectory) {
+        String auAsString = null;
+        try {
+            auAsString = filesFacade.readString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
+        } catch (Exception e) {
+            printError("Unable to load Architecture Update.", e);
+            return Optional.empty();
+        }
+
+        return Optional.of(auAsString);
     }
 
-    private String getComponentPathComment(String id, ArchitectureDataStructure architecture) {
+    private Optional<ArchitectureUpdate> loadAu(String auAsString) {
+        ArchitectureUpdate au = null;
         try {
-            return "  # " + architecture.getModel().findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id)).getPath().getPath();
-        } catch (Exception ignored) {
-            return "";
+            au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
+        } catch (Exception e) {
+            printError("Unable to load Architecture Update.", e);
+            return Optional.empty();
         }
+
+        return Optional.of(au);
     }
 }

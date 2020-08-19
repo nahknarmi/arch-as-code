@@ -205,7 +205,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load Architecture Update.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load Architecture Update.\nError thrown: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
@@ -239,7 +239,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to write annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\nCause: null\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to write annotations to Architecture Update.\nError thrown: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
