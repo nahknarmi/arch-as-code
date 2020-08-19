@@ -221,7 +221,7 @@ public class AuValidateCommandTest {
         Integer status = execute("architecture-update", "validate", "-b", "invalid", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Unable to load 'invalid' branch architecture\nError thrown: net.trilogy.arch.adapter.git.GitInterface$BranchNotFoundException"));
+        collector.checkThat(err.toString(), containsString("Unable to load 'invalid' branch architecture\nError: net.trilogy.arch.adapter.git.GitInterface$BranchNotFoundException"));
     }
 
     @Test
@@ -231,7 +231,7 @@ public class AuValidateCommandTest {
         Integer status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath() + "invalid");
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Error thrown: java.nio.file.NoSuchFileException"));
+        collector.checkThat(err.toString(), containsString("Error: java.nio.file.NoSuchFileException"));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class AuValidateCommandTest {
 
         collector.checkThat(
                 err.toString(),
-                containsString("Unable to load architecture update file\nError thrown: com.fasterxml")
+                containsString("Unable to load architecture update file\nError: com.fasterxml")
         );
     }
 

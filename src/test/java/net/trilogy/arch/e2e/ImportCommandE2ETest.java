@@ -99,7 +99,7 @@ public class ImportCommandE2ETest {
         // Then
         collector.checkThat(statusCode, not(0));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Failed to import\nError thrown: java.io.IOException: Ran out of bytes!"));
+        collector.checkThat(err.toString(), containsString("Failed to import\nError: java.io.IOException: Ran out of bytes!"));
     }
 
     @Test
@@ -121,6 +121,6 @@ public class ImportCommandE2ETest {
 
         collector.checkThat(status, not(0));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Failed to import\nError thrown: java.io.IOException: Boom!"));
+        collector.checkThat(err.toString(), containsString("Failed to import\nError: java.io.IOException: Boom!"));
     }
 }

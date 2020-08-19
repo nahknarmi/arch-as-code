@@ -92,9 +92,7 @@ public class AuNewCommandTest {
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString(
-                "ERROR: Unable to check git branch\nError thrown:"
-        ));
+        collector.checkThat(err.toString(), containsString("ERROR: Unable to check git branch\nError:"));
     }
 
     @Test

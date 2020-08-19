@@ -119,7 +119,7 @@ public class ListComponentsCommandE2ETest {
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to load architecture\nError thrown: java.nio.file.NoSuchFileException"));
+        collector.checkThat(err.toString(), containsString("Unable to load architecture\nError: java.nio.file.NoSuchFileException"));
     }
 
 }

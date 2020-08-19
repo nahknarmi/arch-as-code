@@ -108,6 +108,6 @@ public class PublishCommandE2ETest {
         // Then
         collector.checkThat(statusCode, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to publish to Structurizer\nError thrown: java.lang.RuntimeException: Boom!"));
+        collector.checkThat(err.toString(), containsString("Unable to publish to Structurizer\nError: java.lang.RuntimeException: Boom!"));
     }
 }

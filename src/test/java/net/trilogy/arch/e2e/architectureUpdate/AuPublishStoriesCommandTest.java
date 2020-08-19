@@ -103,7 +103,7 @@ public class AuPublishStoriesCommandTest {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to load configuration.\nError thrown: java.nio.file.NoSuchFileException"));
+        collector.checkThat(err.toString(), containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class AuPublishStoriesCommandTest {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load architecture update.\nError thrown: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class AuPublishStoriesCommandTest {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load architecture.\nError thrown: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -316,7 +316,7 @@ public class AuPublishStoriesCommandTest {
         String command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         Integer statusCode = execute(app, command);
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError thrown: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
+        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
         assertThat(
                 out.toString(),
                 equalTo(
@@ -352,7 +352,7 @@ public class AuPublishStoriesCommandTest {
         String command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         Integer statusCode = execute(app, command);
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError thrown: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
+        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
         assertThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
         assertThat(statusCode, not(equalTo(0)));
     }
@@ -366,7 +366,7 @@ public class AuPublishStoriesCommandTest {
         final Integer status = execute(app, command);
 
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load product architecture in branch: master\nError thrown: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
 
@@ -392,7 +392,7 @@ public class AuPublishStoriesCommandTest {
         // THEN:
         collector.checkThat(
                 err.toString(),
-                equalTo("Unable to write update to AU.\nError thrown: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n")
+                equalTo("Unable to write update to AU.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n")
         );
         collector.checkThat(status, not(equalTo(0)));
     }
