@@ -19,6 +19,7 @@ public abstract class TestHelper {
 
     public static final String MANIFEST_PATH_TO_TEST_SERIALIZATION = "/yaml/big-bank.yml";
     public static final String MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES = "/architecture/products/bigBank/product-architecture.yml";
+    public static final String MANIFEST_PATH_TO_TEST_ANNOTATOR = "/architecture/products/bigBank/product-architecture.yml";
 
     public static final String JSON_STRUCTURIZR_TEST_SPACES = "/structurizr/test-spaces.json";
     public static final String JSON_STRUCTURIZR_BIG_BANK = "/structurizr/big-bank.json";
