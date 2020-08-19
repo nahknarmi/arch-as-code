@@ -2,6 +2,7 @@ package net.trilogy.arch.domain.diff;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.trilogy.arch.domain.c4.C4Type;
 import net.trilogy.arch.domain.c4.Entity;
 
@@ -13,6 +14,10 @@ public class DiffableEntity implements Diffable {
 
     @Getter
     private final Entity entity;
+
+    @Getter
+    @Setter
+    private String[] relatedTo = new String[0];
 
     @Override
     public String getId() {

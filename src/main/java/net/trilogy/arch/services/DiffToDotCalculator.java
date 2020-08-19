@@ -7,8 +7,10 @@ import net.trilogy.arch.domain.diff.DiffableEntity;
 import net.trilogy.arch.domain.diff.DiffableRelationship;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DiffToDotCalculator {
 
@@ -32,8 +34,10 @@ public class DiffToDotCalculator {
             dot.add(0, "");
         }
         diffs.stream()
-                .map(diff -> toDot(diff, diffs, linkPrefix))
-                .forEach(line -> dot.add(1, line));
+                .forEach(diff -> {
+                    dot.add(1, toDot(diff, diffs, linkPrefix));
+                });
+
         dot.add(0, "}");
         return dot.toString();
     }
@@ -52,7 +56,14 @@ public class DiffToDotCalculator {
 
     @VisibleForTesting
     static String getDotLabel(DiffableEntity entity) {
-        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>"+entity.getName()+"</TD></TR><TR><TD>"+entity.getType()+"</TD></TR><TR><TD>"+getPath(entity)+"</TD></TR></TABLE>>";
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>"+entity.getName()+"</TD></TR>" +
+                "<TR><TD>"+entity.getType()+"</TD></TR>" +
+                "<TR><TD>"+getPath(entity)+"</TD></TR>" +
+                getRelatedTdds(entity)+"</TABLE>>";
+    }
+
+    static String getDotToolTip(DiffableEntity entity) {
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>"+entity.getRelatedTo()[0] +"</TD></TR></TABLE>>";
     }
 
     @VisibleForTesting
@@ -88,6 +99,10 @@ public class DiffToDotCalculator {
         return entity.getEntity().getPath() == null ? "" : entity.getEntity().getPath().getPath();
     }
 
+    private static String getRelatedTdds(DiffableEntity entity) {
+        return entity.getRelatedTo() == null || entity.getRelatedTo().length == 0 ? "" : Arrays.stream(entity.getRelatedTo()).map( r -> "<TR><TD> TDD: " + r + "</TD></TR>").reduce("", String::concat);
+    }
+
     @VisibleForTesting
     static String toDot(Diff diff, Collection<Diff> allDiffs, String linkPrefix) {
         if (diff.getElement() instanceof DiffableEntity) {
@@ -98,6 +113,7 @@ public class DiffToDotCalculator {
                     ", fontcolor=" + getDotColor(diff) +
                     ", shape=plaintext" +
                     ", URL=\"" + getUrl(diff, linkPrefix) + "\"" +
+                     getTooltip(diff) +
                     "];";
         }
         final var relationship = (DiffableRelationship) diff.getElement();
@@ -109,6 +125,34 @@ public class DiffToDotCalculator {
                 ", fontcolor=" + getDotColor(diff) +
                 ", tooltip=\"" + getTooltip(relationship, allDiffs) + "\"" +
                 ", labeltooltip=\"" + getTooltip(relationship, allDiffs) + "\"" +
+                "];";
+    }
+
+    private static String getTooltip(Diff diff) {
+        if (diff.getElement().getRelatedTo() == null || diff.getElement().getRelatedTo().length == 0 )
+            return "";
+        return " ,tooltip=\"" + Arrays.stream(diff.getElement().getRelatedTo()).collect(Collectors.joining(",")) + "\"";
+    }
+
+    private static String createText(Diff diff, String linkPrefix, DiffableEntity entity) {
+        return "\"" + entity.getId() + "\" " +
+                "[label=" + getDotLabel(entity) +
+                ", color=" + getDotColor(diff) +
+                ", fontcolor=" + getDotColor(diff) +
+                ", shape=plaintext" +
+                ", URL=\"" + getUrl(diff, linkPrefix) + "\"" +
+                "];";
+    }
+
+
+    private static String createHoverText(Diff diff, String linkPrefix, DiffableEntity entity) {
+        return "\"" + entity.getId() + "-TDD\" " +
+                "[label=" + getDotToolTip(entity) +
+                ", color=" + getDotColor(diff) +
+                ", fontcolor=" + getDotColor(diff) +
+                ", shape=plaintext" +
+                ", class=tooltip" +
+                ", URL=\"" + getUrl(diff, linkPrefix) + "\"" +
                 "];";
     }
 

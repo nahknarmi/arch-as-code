@@ -6,5 +6,7 @@ public interface Diffable {
     C4Type getType();
     String getId();
     String getName();
+    String[] getRelatedTo();
+    void setRelatedTo(String[] relatedTo);
     boolean equals(Object o);
 }
