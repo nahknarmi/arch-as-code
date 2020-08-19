@@ -10,7 +10,7 @@ import com.structurizr.model.Container;
 import com.structurizr.model.Model;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
+import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
@@ -81,7 +81,8 @@ public class ArchitectureDataStructureTransformerTest {
         File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(getClass().getResource(TestHelper.MANIFEST_PATH_TO_TEST_GENERALLY).getPath());
 
-        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader(new FilesFacade()).load(manifestFile);
+        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureObjectMapper()
+                .readValue(new FilesFacade().readString(manifestFile.toPath()));
 
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
         Workspace workspace = transformer.toWorkSpace(dataStructure);
