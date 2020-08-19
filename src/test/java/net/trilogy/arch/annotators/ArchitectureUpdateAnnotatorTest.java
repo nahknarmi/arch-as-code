@@ -54,10 +54,12 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldAnnotateIds() throws Exception {
         String auLineSingleQuote = "\n- component-id: '13'\n";
-        String expectedSingleQuote = "\n- component-id: '13'  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineSingleQuote), equalTo(expectedSingleQuote));
         String auLineDoubleQuote = "\n- component-id: \"13\"\n";
+
+        String expectedSingleQuote = "\n- component-id: '13'  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
         String expectedDoubleQuote = "\n- component-id: \"13\"  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
+
+        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineSingleQuote), equalTo(expectedSingleQuote));
         collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineDoubleQuote), equalTo(expectedDoubleQuote));
     }
 
