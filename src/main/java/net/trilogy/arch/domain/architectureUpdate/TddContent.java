@@ -21,7 +21,7 @@ public class TddContent {
     private final String content;
     private final String filename;
 
-    private static final String REGEX = "(.*) : Component-(\\d+)";
+    private static final String REGEX = "(.*) : Component-([a-zA-Z\\d]+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
     @EqualsAndHashCode.Exclude
     private Matcher matcher;

@@ -40,10 +40,12 @@ public class TddContentTest {
         File tempMarkdown = Files.createTempFile("markdown", ".md").toFile();
         File tddMarkdown = Files.createTempFile("TDD 1.1 : Component-10", ".md").toFile();
         File tddText = Files.createTempFile("IFD 2.3.4 : Component-101", ".txt").toFile();
+        File arbitraryIdText = Files.createTempFile("TDD 1.0 : Component-ArbitraryId42", ".txt").toFile();
 
         collector.checkThat(TddContent.isTddContentName(tempMarkdown), equalTo(false));
         collector.checkThat(TddContent.isTddContentName(tddMarkdown), equalTo(true));
         collector.checkThat(TddContent.isTddContentName(tddText), equalTo(true));
+        collector.checkThat(TddContent.isTddContentName(arbitraryIdText), equalTo(true));
 
     }
 
