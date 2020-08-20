@@ -45,10 +45,12 @@ tdds-per-component:
     '111':
       text: SAMPLE TDD TEXT LONG TEXT FORMAT
     '112':
-      text: Several lines for the tdd text
+      text: |
+        Several lines for the tdd text
         Multi line text line 1
         Another Line for tdd with multiline text line 2
         One more line line 3
+
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
     text: '[SAMPLE REQUIREMENT TEXT]'

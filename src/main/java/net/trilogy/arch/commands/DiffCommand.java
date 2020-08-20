@@ -99,6 +99,14 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
                 connectToTdds(componentLevelDiffs, architectureUpdate);
                 if (componentLevelDiffs.size() == 0) continue;
                 success = render(componentLevelDiffs, container, outputDir.resolve("assets/" + containerId + ".svg"), "");
+                for (var component : componentLevelDiffs) {
+                    if (!success) return 1;
+                    String[] relatedTo = component.getElement().getRelatedTo();
+                    if (relatedTo != null && relatedTo.length > 0) {
+                        String componentId = component.getElement().getId();
+                        success = renderTdds(component, outputDir.resolve("assets/" + componentId + ".svg"));
+                    }
+                }
             }
         }
         if (!success) return 1;
@@ -135,9 +143,13 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         return Optional.empty();
     }
 
-    private boolean render(Set<Diff> diffs, Diff parentEntityDiff, Path outputFile, String linkPrefix) {
-        final String dotGraph = DiffToDotCalculator.toDot("diff", diffs, parentEntityDiff, linkPrefix);
+    private boolean renderTdds(Diff component, Path outputFile) {
+        final String dotGraph = DiffToDotCalculator.toDot("diff", component);
 
+        return createSvg(outputFile, dotGraph);
+    }
+
+    private boolean createSvg(Path outputFile, String dotGraph) {
         var name = outputFile.getFileName().toString().replaceAll(".svg", ".gv");
 
         try {
@@ -149,5 +161,11 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         }
 
         return true;
+    }
+
+    private boolean render(Set<Diff> diffs, Diff parentEntityDiff, Path outputFile, String linkPrefix) {
+        final String dotGraph = DiffToDotCalculator.toDot("diff", diffs, parentEntityDiff, linkPrefix);
+
+        return createSvg(outputFile, dotGraph);
     }
 }
