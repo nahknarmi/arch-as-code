@@ -7,7 +7,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ArchitectureUpdateAnnotator {
-    private static final String REGEX = "(\\n\\s*-\\s['\\\"]?component-id['\\\"]?:\\s+['\\\"]?(\\d+)['\\\"]?).*((^\\n)*\\n)";
+    private static final String REGEX = "(\\n\\s*-\\s['\\\"]?component-id['\\\"]?:\\s+['\\\"]?([a-zA-Z\\d]+)['\\\"]?).*((^\\n)*\\n)";
+    public static final int ORIGINAL_LINE = 1;
+    public static final int COMPONENT_ID = 2;
+    public static final int TRAILING_WHITESPACE = 3;
 
     public String annotateC4Paths(ArchitectureDataStructure dataStructure, String auAsString) {
         Pattern regexToGetComponentReferences = Pattern.compile(REGEX);
@@ -16,9 +19,9 @@ public class ArchitectureUpdateAnnotator {
         String annotatedAu = null;
         while (matcher.find()) {
             annotatedAu = matcher.replaceAll((res) ->
-                    res.group(1) +
-                            getComponentPathComment(res.group(2), dataStructure) +
-                            res.group(3)
+                    res.group(ORIGINAL_LINE) +
+                            getComponentPathComment(dataStructure, res.group(COMPONENT_ID)) +
+                            res.group(TRAILING_WHITESPACE)
             );
         }
 
@@ -35,9 +38,9 @@ public class ArchitectureUpdateAnnotator {
                 .isEmpty();
     }
 
-    private String getComponentPathComment(String id, ArchitectureDataStructure architecture) {
+    public String getComponentPathComment(ArchitectureDataStructure architecture, String id) {
         try {
-            return "  # " + architecture.getModel().findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id)).getPath().getPath();
+            return "  # " + architecture.getModel().findEntityById(id).get().getPath().getPath();
         } catch (Exception ignored) {
             return "";
         }
