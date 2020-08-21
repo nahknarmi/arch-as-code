@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.trilogy.arch.domain.c4.C4Type;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.Diffable;
+import net.trilogy.arch.domain.diff.DiffableWithRelatedTdds;
 import org.junit.Test;
 
 import java.util.Set;
@@ -122,7 +123,7 @@ public class DiffTest {
     }
 
     @EqualsAndHashCode
-    private static class Thing implements Diffable {
+    private static class Thing extends DiffableWithRelatedTdds implements Diffable {
         @Getter private final String id;
         @Getter private final String name;
         @Getter private final C4Type type;

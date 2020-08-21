@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class DiffToDotCalculator {
 
+    public static final int MAX_TOOLTIP_TEXT_SIZE = 50;
+
     public static String toDot(String title, Collection<Diff> diffs, @Nullable Diff parentEntityDiff, String linkPrefix) {
         final var dot = new Dot();
         dot.add(0, "digraph \"" + title + "\" {");
@@ -81,7 +83,7 @@ public class DiffToDotCalculator {
     }
 
     static String getDotTddAsTable(Diffable entity) {
-        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"+ Arrays.stream(entity.getRelatedTo()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + Arrays.stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(Collectors.joining()) + "</TABLE></TD></TR>").collect(Collectors.joining()) +"</TABLE>>";
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"+ Arrays.stream(entity.getRelatedTddsText()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + Arrays.stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(Collectors.joining()) + "</TABLE></TD></TR>").collect(Collectors.joining()) +"</TABLE>>";
     }
 
     @VisibleForTesting
@@ -104,10 +106,9 @@ public class DiffToDotCalculator {
 
     @VisibleForTesting
     static String getUrl(Diff diff, String linkPrefix) {
-        boolean shouldHaveDiagram = diff.getDescendants().stream()
+        boolean shouldHaveDiagram = diff.getElement().hasRelatedTdds() || diff.getDescendants().stream()
                 .anyMatch(it -> Set.of(C4Type.COMPONENT, C4Type.CONTAINER)
-                        .contains(it.getType()) ) ||
-                (diff.getElement().getRelatedTo() != null && diff.getElement().getRelatedTo().length > 0);
+                        .contains(it.getType()) );
 
         if (!shouldHaveDiagram) return "";
 
@@ -144,16 +145,17 @@ public class DiffToDotCalculator {
     }
 
     private static String getTooltip(Diff diff) {
-        if (diff.getElement().getRelatedTo() == null || diff.getElement().getRelatedTo().length == 0 )
-            return "";
-        return " ,tooltip=\"" + Arrays.stream(diff.getElement().getRelatedTo()).map(DiffToDotCalculator::truncateLongText).collect(Collectors.joining("\n")) + "\"";
+        if (diff.getElement().hasRelatedTdds()) {
+            return " ,tooltip=\"" + Arrays.stream(diff.getElement().getRelatedTddsText()).map(DiffToDotCalculator::truncateLongText).collect(Collectors.joining("\n")) + "\"";
+        }
+        return "";
     }
 
     private static String truncateLongText(String text) {
-        if (text.length() < 50) {
+        if (text.length() < MAX_TOOLTIP_TEXT_SIZE) {
             return text;
         }
-        return text.substring(0, 50) + "...";
+        return text.substring(0, MAX_TOOLTIP_TEXT_SIZE) + "...";
     }
 
     @VisibleForTesting

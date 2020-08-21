@@ -101,8 +101,7 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
                 success = render(componentLevelDiffs, container, outputDir.resolve("assets/" + containerId + ".svg"), "");
                 for (var component : componentLevelDiffs) {
                     if (!success) return 1;
-                    String[] relatedTo = component.getElement().getRelatedTo();
-                    if (relatedTo != null && relatedTo.length > 0) {
+                    if (component.getElement().hasRelatedTdds()) {
                         String componentId = component.getElement().getId();
                         success = renderTdds(component, outputDir.resolve("assets/" + componentId + ".svg"));
                     }
@@ -123,10 +122,7 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
                 String componentId = c.getElement().getId();
                 Optional<TddContainerByComponent> tddC = tddContainersByComponent.stream().filter(tC -> tC.getComponentId().getId().equalsIgnoreCase(componentId)).findFirst();
                 if (tddC.isPresent()) {
-                    String[] relatedTdds = tddC.get().getTdds().entrySet().stream().map(e -> e.getKey() + " - " + e.getValue().getText()).toArray(String[]::new);
-                    if (relatedTdds != null && relatedTdds.length > 0) {
-                        c.getElement().setRelatedTo(relatedTdds);
-                    }
+                    c.getElement().setRelatedTdds(tddC.get().getTdds());
                 }
             });
         }

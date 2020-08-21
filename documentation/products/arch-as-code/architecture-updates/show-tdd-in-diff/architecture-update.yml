@@ -43,7 +43,8 @@ tdds-per-component:
   deleted: false
   tdds:
     '111':
-      text: SAMPLE TDD TEXT LONG TEXT FORMAT
+      file: "111 : Component-113.md"
+      text: Should use file
     '112':
       text: |
         Several lines for the tdd text

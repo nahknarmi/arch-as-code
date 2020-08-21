@@ -3,7 +3,6 @@ package net.trilogy.arch.domain.diff;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.c4.C4Relationship;
 import net.trilogy.arch.domain.c4.C4Type;
@@ -11,15 +10,11 @@ import net.trilogy.arch.domain.c4.Entity;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class DiffableRelationship implements Diffable {
+public class DiffableRelationship extends DiffableWithRelatedTdds implements Diffable {
     @Getter
     private final String sourceId;
     @Getter
     private final C4Relationship relationship;
-
-    @Getter
-    @Setter
-    private String[] relatedTo = new String[0];
 
     public DiffableRelationship(Entity entity, C4Relationship c4Relationship) {
         this.sourceId = entity.getId();

@@ -228,10 +228,10 @@ model:
           technology: HTTPS
 
     - id: "113"
-      alias: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+      alias: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
-      name: "DevSpaces/DevSpaces API/Sign In Controller"
+      name: "DevSpaces/DevSpaces API/Reset Password Controller"
       description: "Allows users to reset password"
       technology: "Spring MVC Rest Controller"
       tags:
