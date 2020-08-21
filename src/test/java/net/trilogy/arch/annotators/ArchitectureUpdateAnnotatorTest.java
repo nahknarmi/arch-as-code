@@ -6,6 +6,7 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Rule;
@@ -112,6 +113,98 @@ public class ArchitectureUpdateAnnotatorTest {
         String id = "DoesNotExist";
         String expectedComment = "";
         collector.checkThat(annotator.getComponentPathComment(getArchitecture(), id), equalTo(expectedComment));
+    }
+
+    @Test
+    public void shouldAnnotateAuWithTddContentFile() {
+        // GIVEN
+        List<TddContent> tddContents = List.of(
+                new TddContent("content", "TDD 1.0 : Component-100.txt"),
+                new TddContent("content", "TDD 2.0 : Component-200.txt"),
+                new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt")
+        );
+        List<TddContainerByComponent> tddContainers = List.of(
+                new TddContainerByComponent(
+                        new Tdd.ComponentReference("100"),
+                        false,
+                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                ),
+                new TddContainerByComponent(
+                        new Tdd.ComponentReference("200"),
+                        false,
+                        Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+                )
+        );
+        ArchitectureUpdate au = getAuWith(tddContents, tddContainers);
+
+        // WHEN
+        ArchitectureUpdate annotatedAu = annotator.annotateTddContentFiles(au);
+
+        // THEN
+        ArchitectureUpdate expectedAu = au.toBuilder()
+                .tddContainersByComponent(
+                        List.of(
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("100"),
+                                        false,
+                                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt"))
+                                ),
+                                new TddContainerByComponent(
+                                        new Tdd.ComponentReference("200"),
+                                        false,
+                                        Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt"))
+                                )
+                        )
+                ).build();
+
+        collector.checkThat(annotatedAu, equalTo(expectedAu));
+    }
+
+    @Test
+    public void shouldDoNothingWhenNoMatch() {
+        // GIVEN
+        List<TddContent> tddContents = List.of(
+                new TddContent("content", "MatchedTDD 1.0 : Component-13.txt"),
+                new TddContent("content", "Unrelated 1.0 : Component-13.txt"),
+                new TddContent("content", "TDD 1.0 : Component-Unrelated.txt"),
+                new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt")
+        );
+        List<TddContainerByComponent> tddContainers = List.of(new TddContainerByComponent(
+                        new Tdd.ComponentReference("13"),
+                        false,
+                        Map.of(
+                                new Tdd.Id("TDD 1.0"), new Tdd(null, null),
+                                new Tdd.Id("TDD 1.1"), new Tdd("text", null),
+                                new Tdd.Id("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")
+                        )
+                )
+        );
+        ArchitectureUpdate au = getAuWith(tddContents, tddContainers);
+
+        // WHEN
+        ArchitectureUpdate annotatedAu = annotator.annotateTddContentFiles(au);
+
+        // THEN
+        ArchitectureUpdate expectedAu = au.toBuilder()
+                .tddContainersByComponent(
+                        List.of(new TddContainerByComponent(
+                                new Tdd.ComponentReference("13"),
+                                false,
+                                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null),
+                                        new Tdd.Id("TDD 1.1"), new Tdd("text", null),
+                                        new Tdd.Id("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")))
+                        )
+                ).build();
+
+        collector.checkThat(annotatedAu, equalTo(expectedAu));
+    }
+
+    private ArchitectureUpdate getAuWith(List<TddContent> tddContents, List<TddContainerByComponent> tddContainersByComponent) {
+        return ArchitectureUpdate.blank()
+                .toBuilder()
+                .tddContents(tddContents)
+                .tddContainersByComponent(tddContainersByComponent)
+                .build();
     }
 
     private ArchitectureDataStructure getArchitecture() throws Exception {
