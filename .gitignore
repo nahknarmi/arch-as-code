@@ -13,10 +13,7 @@ build
 bin/
 # Ignore vim
 .vim/
-
-# Ignore credentials.json
-credentials.json
-
+# Ignore AaC configuration
 .arch-as-code/
 
 .DS_Store
