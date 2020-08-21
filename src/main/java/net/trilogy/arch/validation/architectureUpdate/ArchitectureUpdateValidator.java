@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 public class ArchitectureUpdateValidator {
@@ -297,8 +296,7 @@ public class ArchitectureUpdateValidator {
         if (tddContents == null || tddContents.isEmpty()) return Set.of();
 
         var tddFilename = tddContents.stream()
-                .map(tddContent -> new AbstractMap.SimpleEntry(tddContent.getTdd(), tddContent.getFilename()))
-                .collect(toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+                .collect(Collectors.toMap(TddContent::getTdd, TddContent::getFilename));
 
         return architectureUpdate.getTddContainersByComponent().stream()
                 .flatMap(tddContainer -> tddContainer.getTdds().entrySet().stream()
@@ -308,7 +306,7 @@ public class ArchitectureUpdateValidator {
                             // Error condition: Text exists and is overridden by found matching file
                             boolean errorCondition = tddFilename.containsKey(id.toString()) && tdd.getText() != null;
                             if (errorCondition) {
-                                return ValidationError.forOverriddenByTddContentFile(tddContainer.getComponentId(), id, (String) tddFilename.get(id.toString()));
+                                return ValidationError.forOverriddenByTddContentFile(tddContainer.getComponentId(), id, tddFilename.get(id.toString()));
                             }
                             return null;
                         })
