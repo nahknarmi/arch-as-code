@@ -228,11 +228,11 @@ model:
           technology: HTTPS
 
     - id: "113"
-      alias: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
+      alias: "c4://DevSpaces/DevSpaces API/OAuth2 Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
-      name: "DevSpaces/DevSpaces API/Reset Password Controller"
-      description: "Allows users to reset password"
+      name: "DevSpaces/DevSpaces API/OAuth2 Controller"
+      description: "Allows users to login with oath2"
       technology: "Spring MVC Rest Controller"
       tags:
         - "DevSpaces API Component View"
