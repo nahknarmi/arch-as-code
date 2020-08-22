@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public class DiffableEntity implements Diffable {
+public class DiffableEntity extends DiffableWithRelatedTdds implements Diffable {
 
     @Getter
     private final Entity entity;

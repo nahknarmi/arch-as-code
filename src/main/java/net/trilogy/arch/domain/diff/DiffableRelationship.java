@@ -10,7 +10,7 @@ import net.trilogy.arch.domain.c4.Entity;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class DiffableRelationship implements Diffable {
+public class DiffableRelationship extends DiffableWithRelatedTdds implements Diffable {
     @Getter
     private final String sourceId;
     @Getter

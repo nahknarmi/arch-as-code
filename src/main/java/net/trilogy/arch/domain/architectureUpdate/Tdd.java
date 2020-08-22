@@ -1,12 +1,12 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.Optional;
 
 @Getter
 @ToString
@@ -17,11 +17,23 @@ public class Tdd {
     @JsonProperty(value = "file")
     private final String file;
 
+    @Getter
+    @Setter
+    @JsonIgnore
+    private Optional<TddContent> content = Optional.empty();
+
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Tdd(@JsonProperty("text") String text,
                @JsonProperty("file") String file) {
         this.text = text;
         this.file = file;
+    }
+
+    public String getDetails() {
+        if (content.isPresent()) {
+            return content.get().getContent();
+        }
+        return text;
     }
 
     public static Tdd blank() {

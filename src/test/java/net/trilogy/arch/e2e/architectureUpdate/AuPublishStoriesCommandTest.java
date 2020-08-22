@@ -23,6 +23,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -451,15 +452,18 @@ public class AuPublishStoriesCommandTest {
     }
 
     private List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+        Tdd tdd = new Tdd(null, "TDD 1.0 : Component-29.md");
+        TddContent tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
+        tdd.setContent(Optional.of(tddContent));
         return List.of(
                 new JiraStory(
                         "story that should be created",
                         List.of(
                                 new JiraStory.JiraTdd(
                                         new Tdd.Id("TDD 1.0"),
-                                        new Tdd(null, "TDD 1.0 : Component-29.md"),
+                                        tdd,
                                         "c4://Internet Banking System/API Application/Sign In Controller",
-                                        new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md")
+                                        tddContent
                                 )
                         ),
                         List.of(
