@@ -104,3 +104,8 @@ arch-as-code publish .
 Once you've published your changes, you and others can view your
 architecture assets online through your previously created Structurizr
 workspace (https://structurizr.com/workspace/${WORKSPACE_ID}).
+
+## Build maintenance
+
+Use `./gradlew dependencyUpdates` for a list of out-of-date dependencies and
+plugins.
