@@ -20,7 +20,12 @@ Specifically we are making use of the
 for structuring and storing our architecture models, decisions, views
 and documentation.
 
-## Getting Started
+## Table of Contents
+
+* [Getting started](#getting-started)
+* [Building locally](#building-locally)
+
+## Getting started
 
 ### 1. Create Structurizr account
 
@@ -108,3 +113,20 @@ arch-as-code publish .
 Once you've published your changes, you and others can view your
 architecture assets online through your previously created Structurizr
 workspace (https://structurizr.com/workspace/${WORKSPACE_ID}).
+
+## Building locally
+
+Use `./gradlew` (Gradle) or `./batect build` (Batect) to build or run tests.
+
+[Batect](https://batect.dev/) works "out of the box", however, an important
+optimization is to avoid redownloading plugins and dependencies from within
+a Docker container.
+
+With Batect, link to your user local Gradle cache directory:
+
+```
+$ ln -s ~/.gradle .gradle-cache
+```
+
+This shares Gradle plugin and dependency downloads with the Docker container
+run by Batect.
