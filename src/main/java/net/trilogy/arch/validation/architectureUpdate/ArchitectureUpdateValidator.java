@@ -81,7 +81,8 @@ public class ArchitectureUpdateValidator {
                 getErrors_LinksAreAvailable(),
 
                 getError_OnlyOneTddContentsReference(),
-                getErrors_TddContentsFileExists()
+                getErrors_TddContentsFileExists(),
+                getErrors_TddsMustHaveOnlyOneTddContentFile()
         ).collect(Collectors.toList()));
     }
 
@@ -295,7 +296,12 @@ public class ArchitectureUpdateValidator {
         List<TddContent> tddContents = architectureUpdate.getTddContents();
         if (tddContents == null || tddContents.isEmpty()) return Set.of();
 
+        var tddGroupings = tddContents.stream()
+                .collect(Collectors.groupingBy(TddContent::getTdd));
+
         var tddFilename = tddContents.stream()
+                // Duplicate keys are ignored because they are caught by getErrors_TddsMustHaveOnlyOneTddContentFile()
+                .filter(tc -> tddGroupings.get(tc.getTdd()).size() == 1)
                 .collect(Collectors.toMap(TddContent::getTdd, TddContent::getFilename));
 
         return architectureUpdate.getTddContainersByComponent().stream()
@@ -303,7 +309,8 @@ public class ArchitectureUpdateValidator {
                         .map(pair -> {
                             Tdd.Id id = pair.getKey();
                             Tdd tdd = pair.getValue();
-                            // Error condition: Text exists and is overridden by found matching file
+
+                            // Error condition: Text exists and is overridden by found matching file.
                             boolean errorCondition = tddFilename.containsKey(id.toString()) && tdd.getText() != null;
                             if (errorCondition) {
                                 return ValidationError.forOverriddenByTddContentFile(tddContainer.getComponentId(), id, tddFilename.get(id.toString()));
@@ -318,8 +325,8 @@ public class ArchitectureUpdateValidator {
         Tdd.Id id = pair.getKey();
         Tdd tdd = pair.getValue();
 
-        if ((tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty()))
-            return null;
+        boolean tddContentIsEmpty = (tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty());
+        if (tddContentIsEmpty) return null;
 
         boolean errorCondition =
                 tdd.getText() != null &&
@@ -331,6 +338,24 @@ public class ArchitectureUpdateValidator {
         }
 
         return null;
+    }
+
+    private Set<ValidationError> getErrors_TddsMustHaveOnlyOneTddContentFile() {
+        List<TddContent> tddContentFiles = architectureUpdate.getTddContents();
+        if (tddContentFiles == null || tddContentFiles.isEmpty()) return Set.of();
+
+        return tddContentFiles.stream()
+                .collect(Collectors.groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))
+                .entrySet().stream()
+                .filter(es -> es.getValue().size() > 1)
+                .map(es -> {
+                    var pair = es.getKey();
+                    List<TddContent> tddContents = es.getValue();
+                    String tddId = pair.getLeft();
+                    String componentId = pair.getRight();
+
+                    return ValidationError.forMultipleTddContentFilesForTdd(new Tdd.ComponentReference(componentId), new Tdd.Id(tddId), tddContents);
+                }).collect(Collectors.toSet());
     }
 
     private List<Tdd.Id> getAllTddIds() {

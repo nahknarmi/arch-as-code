@@ -530,4 +530,29 @@ public class ArchitectureUpdateValidatorTest {
         collector.checkThat(actualErrors, not(hasItem(forOverriddenByTddContentFile(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 2.1"), noErrorFilename))));
 
     }
+
+    @Test
+    public void shouldValidate_getErrors_TddsMustHaveOnlyOneTddContentFile() {
+        List<TddContent> tddContents = List.of(
+                new TddContent("contents", "TDD 1.1 : Component-10.md"),
+                new TddContent("contents", "TDD 1.1 : Component-10.txt")
+        );
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .tddContainersByComponent(
+                        List.of(new TddContainerByComponent(
+                                new Tdd.ComponentReference("10"),
+                                false,
+                                Map.of(new Tdd.Id("TDD 1.1"), new Tdd(null, null)))
+                        )
+                ).tddContents(tddContents)
+                .build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forMultipleTddContentFilesForTdd(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 1.1"), tddContents)
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
 }
