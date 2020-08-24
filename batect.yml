@@ -1,0 +1,22 @@
+containers:
+  build-env:
+    image: adoptopenjdk:11-jdk-hotspot
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - local: .gradle-cache
+        container: /home/container-user/.gradle
+        options: cached
+    working_directory: /code
+    run_as_current_user:
+      enabled: true
+      home_directory: /home/container-user
+
+tasks:
+  build:
+    description: Build (and test) the program
+    run:
+      container: build-env
+      # No daemon to avoid corrupting local Gradle cache
+      command: ./gradlew --no-daemon build
