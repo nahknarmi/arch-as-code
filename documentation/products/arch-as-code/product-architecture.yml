@@ -109,19 +109,19 @@ model:
 
   systems:
     - id: "4"
-      alias: "c4://XO Chat"
+      path: "c4://XO Chat"
       name: "XO Chat"
       description: "Realtime team communication"
       tags:
         - "Trilogy System View"
 
     - id: "5"
-      alias: "c4://SalesForce"
+      path: "c4://SalesForce"
       name: "SalesForce"
       description: "SalesForce rules"
 
     - id: "6"
-      alias: "c4://Trilogy Google G Suite"
+      path: "c4://Trilogy Google G Suite"
       name: "Trilogy Google G Suite"
       description: "Team collaboration via sheets, docs and presentations"
       tags:
@@ -135,7 +135,7 @@ model:
           technology: HTTPS
 
     - id: "7"
-      alias: "c4://GitHub"
+      path: "c4://GitHub"
       name: "GitHub"
       description: "Hosts code and used for identity management"
       tags:
@@ -143,7 +143,7 @@ model:
         - "DevSpaces Container View"
 
     - id: "8"
-      alias: "c4://DevSpaces"
+      path: "c4://DevSpaces"
       name: "DevSpaces"
       description: "allows developers to collaborate"
       tags:
@@ -151,7 +151,7 @@ model:
 
   containers:
     - id: "9"
-      alias: "c4://DevSpaces/DevSpaces CLI"
+      path: "c4://DevSpaces/DevSpaces CLI"
       systemAlias: "c4://DevSpaces"
       systemId: "8"
       name: "DevSpaces/DevSpaces CLI"
@@ -166,7 +166,7 @@ model:
           technology: HTTPS
 
     - id: "10"
-      alias: "c4://DevSpaces/DevSpaces Backend"
+      path: "c4://DevSpaces/DevSpaces Backend"
       systemAlias: "c4://DevSpaces"
       systemId: "8"
       name: "DevSpaces/DevSpaces Backend"
@@ -183,7 +183,7 @@ model:
           technology: HTTPS
 
     - id: "11"
-      alias: "c4://DevSpaces/DevSpaces Web Application"
+      path: "c4://DevSpaces/DevSpaces Web Application"
       systemAlias: "c4://DevSpaces"
       systemId: "8"
       name: "DevSpaces/DevSpaces Web Application"
@@ -200,7 +200,7 @@ model:
           technology: HTTPS
 
     - id: "12"
-      alias: "c4://DevSpaces/DevSpaces API"
+      path: "c4://DevSpaces/DevSpaces API"
       systemAlias: "c4://DevSpaces"
       systemId: "8"
       name: "DevSpaces/DevSpaces API"
@@ -211,7 +211,7 @@ model:
 
   components:
     - id: "13"
-      alias: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+      path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
       name: "DevSpaces/DevSpaces API/Sign In Controller"
@@ -228,7 +228,7 @@ model:
           technology: HTTPS
 
     - id: "113"
-      alias: "c4://DevSpaces/DevSpaces API/OAuth2 Controller"
+      path: "c4://DevSpaces/DevSpaces API/OAuth2 Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
       name: "DevSpaces/DevSpaces API/OAuth2 Controller"
@@ -245,7 +245,7 @@ model:
           technology: HTTPS
 
     - id: "14"
-      alias: "c4://DevSpaces/DevSpaces API/Security Component"
+      path: "c4://DevSpaces/DevSpaces API/Security Component"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
       name: "DevSpaces/DevSpaces API/Security Component"
@@ -255,7 +255,7 @@ model:
         - "DevSpaces API Component View"
 
     - id: "15"
-      alias: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
+      path: "c4://DevSpaces/DevSpaces API/Reset Password Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
       name: "DevSpaces/DevSpaces API/Reset Password Controller"
@@ -279,7 +279,7 @@ model:
           technology: HTTPS
 
     - id: "16"
-      alias: "c4://DevSpaces/DevSpaces API/E-mail Component"
+      path: "c4://DevSpaces/DevSpaces API/E-mail Component"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
       name: "DevSpaces/DevSpaces API/E-mail Component"
