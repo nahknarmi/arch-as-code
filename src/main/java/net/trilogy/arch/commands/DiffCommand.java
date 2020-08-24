@@ -49,18 +49,19 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
     @CommandLine.Option(names = {"-b", "--branch-of-diff-architecture"}, description = "Name of git branch to compare against current architecture. Usually 'master'. Also can be a git commit or tag.", required = true)
     private String baseBranch;
 
+    @Getter
     @CommandLine.Option(names = {"-u", "--architecture-update"}, description = "Name of the architecture update folder, to use it fo show related TDDs.", required = false)
     private File architectureUpdateDirectory;
 
     @CommandLine.Option(names = {"-o", "--output-directory"}, description = "New directory in which svg files will be created.", required = true)
     private File outputDirectory;
 
-    public DiffCommand(FilesFacade filesFacade, GitInterface gitInterface, GraphvizInterface graphvizInterface) {
+    public DiffCommand(FilesFacade filesFacade, GitInterface gitInterface, GraphvizInterface graphvizInterface, ArchitectureUpdateReader architectureUpdateReader) {
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
         this.graphvizInterface = graphvizInterface;
         this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
-        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+        this.architectureUpdateReader = architectureUpdateReader;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         return 0;
     }
 
-    private void connectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
+    void connectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
         if (architectureUpdate.isPresent()) {
             List<TddContainerByComponent> tddContainersByComponent = architectureUpdate.get().getTddContainersByComponent();
             componentLevelDiffs.stream().forEach(c -> {
@@ -128,10 +129,10 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         }
     }
 
-    private Optional<ArchitectureUpdate> loadArchitectureUpdate() {
-        if (architectureUpdateDirectory != null) {
+    Optional<ArchitectureUpdate> loadArchitectureUpdate() {
+        if (getArchitectureUpdateDirectory() != null) {
             try {
-                return Optional.of(architectureUpdateReader.load(architectureUpdateDirectory.toPath()));
+                return Optional.of(architectureUpdateReader.load(getArchitectureUpdateDirectory().toPath()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -141,6 +142,12 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
 
     private boolean renderTdds(Diff component, Path outputFile) {
         final String dotGraph = DiffToDotCalculator.toDot("diff", component);
+
+        return createSvg(outputFile, dotGraph);
+    }
+
+    private boolean render(Set<Diff> diffs, Diff parentEntityDiff, Path outputFile, String linkPrefix) {
+        final String dotGraph = DiffToDotCalculator.toDot("diff", diffs, parentEntityDiff, linkPrefix);
 
         return createSvg(outputFile, dotGraph);
     }
@@ -157,11 +164,5 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         }
 
         return true;
-    }
-
-    private boolean render(Set<Diff> diffs, Diff parentEntityDiff, Path outputFile, String linkPrefix) {
-        final String dotGraph = DiffToDotCalculator.toDot("diff", diffs, parentEntityDiff, linkPrefix);
-
-        return createSvg(outputFile, dotGraph);
     }
 }

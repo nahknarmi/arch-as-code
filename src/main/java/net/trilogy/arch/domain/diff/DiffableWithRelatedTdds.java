@@ -2,18 +2,19 @@ package net.trilogy.arch.domain.diff;
 
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class DiffableWithRelatedTdds {
+public abstract class DiffableWithRelatedTdds {
 
-    private Map<Tdd.Id, Tdd> relatedTdds;
+    private Map<Tdd.Id, Tdd> relatedTdds = new HashMap<>();
 
     public String[] getRelatedTddsText() {
         return relatedTdds.entrySet().stream().map(e -> e.getKey() + " - " + e.getValue().getDetails()).toArray(String[]::new);
     }
 
     public void setRelatedTdds(Map<Tdd.Id, Tdd> relatedTo) {
-        relatedTdds = relatedTo;
+        this.relatedTdds = relatedTo;
     }
 
     public boolean hasRelatedTdds() {

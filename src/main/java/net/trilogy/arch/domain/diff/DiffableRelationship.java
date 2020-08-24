@@ -8,7 +8,7 @@ import net.trilogy.arch.domain.c4.C4Relationship;
 import net.trilogy.arch.domain.c4.C4Type;
 import net.trilogy.arch.domain.c4.Entity;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class DiffableRelationship extends DiffableWithRelatedTdds implements Diffable {
     @Getter

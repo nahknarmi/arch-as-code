@@ -27,14 +27,19 @@ and documentation.
 
 ## Getting started
 
-### 0. Create Structurizr account
+### 1. Create Structurizr account
 
 First you'll need to create a Structurizr account. You can do this by
 following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide
 that describes how to setup a new account and get a **free** workspace.
 
-### 1. Install arch-as-code CLI
+### 2. Use Java 11 locally
+
+The build currently assumes Java 11.  Several tools exist to manage multiple
+JDK versions.  A good choice is [jEnv](https://www.jenv.be/).
+
+### 3. Install arch-as-code CLI
 
 Arch as code requires Java 11 or greater to be installed.
 
@@ -71,8 +76,7 @@ Invoke-Expression "& { $(Invoke-RestMethod -Uri https://raw.githubusercontent.co
 arch-as-code --help
 ```
 
-
-### 2. Initialize local workspace
+### 4. Initialize local workspace
 
 Next we'll initialize a new local workspace to store our architecture
 assets as code.
@@ -93,7 +97,7 @@ cd ${PATH_TO_WORKSPACE}
 arch-as-code init -i ${WORKSPACE_ID} -k ${WORKSPACE_API_KEY} -s ${WORKSPACE_API_SECRET} .
 ```
 
-### 3. Publish to Structurizr
+### 5. Publish to Structurizr
 
 We can now publish our local workspace to Structurizr using the
 following command:
@@ -104,7 +108,7 @@ cd ${PATH_TO_WORKSPACE}
 arch-as-code publish .
 ```
 
-### 4. View changes on Structurizr
+### 6. View changes on Structurizr
 
 Once you've published your changes, you and others can view your
 architecture assets online through your previously created Structurizr
