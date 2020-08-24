@@ -84,7 +84,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:all" << "-Werror"
+    options.compilerArgs << "-Xlint:all,-serial,-unchecked,-deprecation" << "-Werror"
 }
 
 jacocoTestCoverageVerification {
@@ -154,8 +154,8 @@ project.test {
 
     beforeTest { TestDescriptor td -> outputCache.clear() }
 
-    onOutput { 
-        TestDescriptor td, TestOutputEvent toe ->   
+    onOutput {
+        TestDescriptor td, TestOutputEvent toe ->
             outputCache.add(toe.getMessage())
             while (outputCache.size() > 1000) outputCache.remove()
     }
@@ -169,7 +169,7 @@ project.test {
         showStandardStreams false
     }
 
-    afterTest { 
+    afterTest {
         TestDescriptor td, TestResult tr ->
             if (tr.resultType == TestResult.ResultType.FAILURE) {
                 println()

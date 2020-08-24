@@ -47,7 +47,7 @@ public class JiraApiTest {
     @Test
     public void shouldMakeRequestToGetJiraStory() throws Exception {
         // GIVEN:
-        @SuppressWarnings("rawtypes") HttpResponse mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mock(HttpResponse.class);
         when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_GET_EPIC));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
         final Jira jiraToQuery = new Jira("JIRA-TICKET-123", "http://link");

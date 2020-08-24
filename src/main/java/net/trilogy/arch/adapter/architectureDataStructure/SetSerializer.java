@@ -9,13 +9,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class SetSerializer extends StdSerializer<Set> {
+public class SetSerializer extends StdSerializer<Set<?>> {
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public SetSerializer(Class<Set> t) {
-        super(t);
+        super((Class) t);
     }
 
     @Override
-    public void serialize(Set set, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    public void serialize(Set<?> set, JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (set == null) {
             gen.writeNull();
             return;
@@ -29,7 +30,7 @@ public class SetSerializer extends StdSerializer<Set> {
 
                 // SortedSet elements must implement the Comparable interface
                 if (Comparable.class.isAssignableFrom(item.getClass())) {
-                    set = new TreeSet(set);
+                    set = new TreeSet<>(set);
                 }
             }
 
