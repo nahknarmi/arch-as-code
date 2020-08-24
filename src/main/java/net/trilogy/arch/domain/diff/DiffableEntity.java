@@ -1,5 +1,6 @@
 package net.trilogy.arch.domain.diff;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.c4.C4Type;

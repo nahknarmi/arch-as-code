@@ -1,6 +1,7 @@
 package net.trilogy.arch;
 
 import lombok.Builder;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
@@ -38,7 +39,7 @@ public class Application {
                 .addSubcommand(new PublishCommand(structurizrAdapter))
                 .addSubcommand(new ImportCommand(filesFacade))
                 .addSubcommand(new ListComponentsCommand(filesFacade))
-                .addSubcommand(new DiffCommand(filesFacade, gitInterface, graphvizInterface))
+                .addSubcommand(new DiffCommand(filesFacade, gitInterface, graphvizInterface, new ArchitectureUpdateReader(filesFacade)))
                 .addSubcommand(
                         new CommandLine(new AuCommand())
                                 .addSubcommand(new AuInitializeCommand(filesFacade))

@@ -3,17 +3,19 @@ package net.trilogy.arch.domain;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.c4.C4Type;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.Diffable;
 import net.trilogy.arch.domain.diff.DiffableWithRelatedTdds;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 
 public class DiffTest {
 
@@ -122,7 +124,21 @@ public class DiffTest {
         assertThat(diff.getDescendants(), is(children));
     }
 
-    @EqualsAndHashCode
+    @Test
+    public void shouldGetTddsTextWhenRelatedTddsAreSet() {
+        final var thing = new Thing("A");
+        final var children = Set.of(new Thing("B"));
+        final var diff = new Diff(thing, children, null, null);
+
+        HashMap<Tdd.Id, Tdd> relatedTo = new HashMap<>();
+        relatedTo.put(new Tdd.Id("1"), Tdd.blank());
+        diff.getElement().setRelatedTdds(relatedTo);
+
+        assertTrue(diff.getElement().hasRelatedTdds());
+        assertThat(diff.getElement().getRelatedTddsText(), hasItemInArray("1 - [SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3"));
+    }
+
+    @EqualsAndHashCode(callSuper = false)
     private static class Thing extends DiffableWithRelatedTdds implements Diffable {
         @Getter private final String id;
         @Getter private final String name;
