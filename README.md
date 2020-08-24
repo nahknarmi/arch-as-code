@@ -130,3 +130,8 @@ $ ln -s ~/.gradle .gradle-cache
 
 This shares Gradle plugin and dependency downloads with the Docker container
 run by Batect.
+
+## Build maintenance
+
+Use `./gradlew dependencyUpdates` for a list of out-of-date dependencies and
+plugins.
