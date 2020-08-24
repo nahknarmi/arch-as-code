@@ -9,10 +9,9 @@ import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 public class ArchitectureUpdateValidator {
 
@@ -83,7 +82,7 @@ public class ArchitectureUpdateValidator {
                 getError_OnlyOneTddContentsReference(),
                 getErrors_TddContentsFileExists(),
                 getErrors_TddsMustHaveOnlyOneTddContentFile()
-        ).collect(Collectors.toList()));
+        ).collect(toList()));
     }
 
     private Set<ValidationError> getErrors_NoPrNotCombinedWithAnotherTddId() {
@@ -147,7 +146,7 @@ public class ArchitectureUpdateValidator {
         var allComponentReferences = architectureUpdate.getTddContainersByComponent()
                 .stream()
                 .map(it -> new ComponentReferenceAndIsDeleted(it.getComponentId(), it.isDeleted()))
-                .collect(Collectors.toList());
+                .collect(toList());
         return findDuplicates(allComponentReferences)
                 .stream()
                 .map(it -> ValidationError.forDuplicatedComponent(it.getComponentReference()))
@@ -297,12 +296,12 @@ public class ArchitectureUpdateValidator {
         if (tddContents == null || tddContents.isEmpty()) return Set.of();
 
         var tddGroupings = tddContents.stream()
-                .collect(Collectors.groupingBy(TddContent::getTdd));
+                .collect(groupingBy(TddContent::getTdd));
 
         var tddFilename = tddContents.stream()
                 // Duplicate keys are ignored because they are caught by getErrors_TddsMustHaveOnlyOneTddContentFile()
                 .filter(tc -> tddGroupings.get(tc.getTdd()).size() == 1)
-                .collect(Collectors.toMap(TddContent::getTdd, TddContent::getFilename));
+                .collect(toMap(TddContent::getTdd, TddContent::getFilename));
 
         return architectureUpdate.getTddContainersByComponent().stream()
                 .flatMap(tddContainer -> tddContainer.getTdds().entrySet().stream()
@@ -318,7 +317,7 @@ public class ArchitectureUpdateValidator {
                             return null;
                         })
                 ).filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 
     private ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<Tdd.Id, Tdd> pair) {
@@ -345,7 +344,7 @@ public class ArchitectureUpdateValidator {
         if (tddContentFiles == null || tddContentFiles.isEmpty()) return Set.of();
 
         return tddContentFiles.stream()
-                .collect(Collectors.groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))
+                .collect(groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))
                 .entrySet().stream()
                 .filter(es -> es.getValue().size() > 1)
                 .map(es -> {
@@ -355,7 +354,7 @@ public class ArchitectureUpdateValidator {
                     String componentId = pair.getRight();
 
                     return ValidationError.forMultipleTddContentFilesForTdd(new Tdd.ComponentReference(componentId), new Tdd.Id(tddId), tddContents);
-                }).collect(Collectors.toSet());
+                }).collect(toSet());
     }
 
     private List<Tdd.Id> getAllTddIds() {
@@ -365,7 +364,7 @@ public class ArchitectureUpdateValidator {
         return Stream.concat(
                 tddIds,
                 Stream.of(Tdd.Id.noPr()))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Set<FunctionalRequirement.Id> getAllFunctionalRequirementIds() {
