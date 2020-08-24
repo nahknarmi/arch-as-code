@@ -79,7 +79,7 @@ public class ArchitectureUpdateValidator {
                 getErrors_NoPrNotCombinedWithAnotherTddId(),
                 getErrors_LinksAreAvailable(),
 
-                getError_OnlyOneTddContentsReference(),
+                getErrors_OnlyOneTddContentsReference(),
                 getErrors_TddContentsFileExists(),
                 getErrors_TddsMustHaveOnlyOneTddContentFile()
         ).collect(toList()));
@@ -281,7 +281,7 @@ public class ArchitectureUpdateValidator {
                 .collect(toSet());
     }
 
-    private Set<ValidationError> getError_OnlyOneTddContentsReference() {
+    private Set<ValidationError> getErrors_OnlyOneTddContentsReference() {
         return architectureUpdate.getTddContainersByComponent().stream()
                 .map(tddContainerByComponent -> tddContainerByComponent.getTdds().entrySet().stream()
                         .map(pair -> createAmbiguousTddContentReferenceValidationError(tddContainerByComponent, pair))
