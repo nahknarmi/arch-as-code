@@ -72,7 +72,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
             return 2;
         }
 
-        print("AU has been annotated with component paths.");
+        print("AU has been annotated.");
 
         return 0;
     }

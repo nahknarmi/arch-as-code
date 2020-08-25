@@ -28,9 +28,12 @@ public class AuAnnotateCommandTest {
 
     Path rootPath;
     Path originalAuWithComponentsDirectoryPath;
-    Path changedAuWithComponentsDirectoryPath;
     Path originalAuWithoutComponentsDirectoryPath;
+    Path originalAuWithTddContentsDirectoryPath;
+
+    Path changedAuWithComponentsDirectoryPath;
     Path changedAuWithoutComponentsDirectoryPath;
+    Path changedAuWithTddContentsDirectoryPath;
 
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
@@ -42,9 +45,11 @@ public class AuAnnotateCommandTest {
         rootPath = TestHelper.getPath(getClass(), TestHelper.ROOT_PATH_TO_TEST_AU_ANNOTATE);
         originalAuWithComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponents/");
         originalAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponents/");
+        originalAuWithTddContentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsAndTddContentFiles/");
 
         changedAuWithComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsClone/");
         changedAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponentsClone/");
+        changedAuWithTddContentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsAndTddContentFilesClone/");
 
         if (!Files.exists(changedAuWithComponentsDirectoryPath))
             Files.createDirectory(changedAuWithComponentsDirectoryPath);
@@ -52,10 +57,15 @@ public class AuAnnotateCommandTest {
         if (!Files.exists(changedAuWithoutComponentsDirectoryPath))
             Files.createDirectory(changedAuWithoutComponentsDirectoryPath);
 
+        if (!Files.exists(changedAuWithTddContentsDirectoryPath))
+            Files.createDirectory(changedAuWithTddContentsDirectoryPath);
+
         Files.copy(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"),
                 changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
         Files.copy(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"),
                 changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
+        Files.copy(originalAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"),
+                changedAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"));
 
         out.reset();
         err.reset();
@@ -67,8 +77,10 @@ public class AuAnnotateCommandTest {
     public void tearDown() throws Exception {
         Files.deleteIfExists(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
         Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
+        Files.deleteIfExists(changedAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"));
         Files.deleteIfExists(changedAuWithComponentsDirectoryPath);
         Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath);
+        Files.deleteIfExists(changedAuWithTddContentsDirectoryPath);
 
 
         System.setOut(originalOut);
@@ -76,7 +88,7 @@ public class AuAnnotateCommandTest {
     }
 
     @Test
-    public void shouldAnnotate() throws Exception {
+    public void shouldAnnotateAuWithPath() throws Exception {
         // WHEN
         int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
 
@@ -91,7 +103,7 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("component-id: '34'",
                         "component-id: '34'  # c4://Internet Banking System/API Application/E-mail Component");
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated with component paths.\n"));
+        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
@@ -186,7 +198,7 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("component-id: '31'",
                         "component-id: '31'  # c4://Internet Banking System/API Application/Reset Password Controller");
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated with component paths.\n"));
+        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(actual, equalTo(expected));
         collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
