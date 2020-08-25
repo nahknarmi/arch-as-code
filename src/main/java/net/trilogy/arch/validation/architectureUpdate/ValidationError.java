@@ -3,11 +3,11 @@ package net.trilogy.arch.validation.architectureUpdate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Decision;
-import net.trilogy.arch.domain.architectureUpdate.EntityReference;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.ComponentReference;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.LINK_NOT_AVAILABLE;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.NO_PR_COMBINED_WITH_ANOTHER_TDD;
@@ -126,6 +126,22 @@ public class ValidationError {
         );
     }
 
+    public static ValidationError forMultipleTddContentFilesForTdd(Tdd.ComponentReference componentReference, Tdd.Id id, List<TddContent> tddContents) {
+        return new ValidationError(
+                ValidationErrorType.MULTIPLE_TDD_CONTENT_FILES_REFERENCE_TDD,
+                String.format(
+                        "Component id \"%s\" with TDD \"%s\" has the following TDD content files associated with it:\n%s",
+                        componentReference.toString(),
+                        id.toString(),
+                        tddContents.stream().map(tc -> "  - " + tc.getFilename() + "\n").collect(Collectors.joining())
+                )
+        );
+    }
+
+    public static ValidationError forNoPrWithAnotherTdd(String path) {
+        return new ValidationError(NO_PR_COMBINED_WITH_ANOTHER_TDD, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
+    }
+
     private static String getEntityTypeString(EntityReference entityId) {
         if (entityId instanceof Tdd.Id) {
             return "TDD";
@@ -133,9 +149,5 @@ public class ValidationError {
             return "Functional Requirement";
         }
         return "Entity";
-    }
-
-    public static ValidationError forNoPrWithAnotherTdd(String path) {
-        return new ValidationError(NO_PR_COMBINED_WITH_ANOTHER_TDD, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
     }
 }

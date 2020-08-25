@@ -112,7 +112,7 @@ public class DiffToDotCalculator {
 
         if (!shouldHaveDiagram) return "";
 
-        return linkPrefix + diff.getElement().getId() + ".svg";
+        return (linkPrefix.isEmpty() || linkPrefix.endsWith("/") ? linkPrefix : linkPrefix + "/") + diff.getElement().getId() + ".svg";
     }
 
     private static String getPath(DiffableEntity entity) {

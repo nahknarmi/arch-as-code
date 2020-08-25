@@ -29,19 +29,16 @@ public class ArchitectureUpdateReader {
 
         List<TddContent> tddContents = getTddContent(path);
         au = au.toBuilder().tddContents(tddContents).build();
-        assignTddContents(au, tddContents);
+
+        au = assignTddContents(au, tddContents);
+
         return au;
     }
 
     private ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
         au.getTddContainersByComponent().stream().forEach(componentTdds -> {
             componentTdds.getTdds().entrySet().stream().forEach(tdd -> {
-                //TODO check if this is valid?
-                Optional<TddContent> tddContent = contentByMatchingFileName(tddContents, tdd.getValue());
-
-                if (tddContent.isEmpty()) {
-                 tddContent = contentByMatchingIds(tddContents, componentTdds, tdd.getKey());
-                }
+                Optional<TddContent> tddContent = contentByMatchingIds(tddContents, componentTdds, tdd.getKey());
                 tdd.getValue().setContent(tddContent);
             });
         });
@@ -50,7 +47,7 @@ public class ArchitectureUpdateReader {
 
     private Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, Tdd.Id tddId) {
         return tddContents.stream()
-                .filter(content -> content.getTdd().equals(tddId))
+                .filter(content -> content.getTdd().equals(tddId.toString()))
                 .filter(content -> content.getComponentId().equals(componentTdds.getComponentId().getId()))
                 .findFirst();
     }

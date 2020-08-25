@@ -1,6 +1,8 @@
 package net.trilogy.arch.services;
 
 import net.trilogy.arch.ArchitectureDataStructureHelper;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.C4Path;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.DiffableEntity;
@@ -8,6 +10,7 @@ import net.trilogy.arch.domain.diff.DiffableRelationship;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static net.trilogy.arch.ArchitectureDataStructureHelper.*;
@@ -282,6 +285,65 @@ public class DiffToDotCalculatorTest {
         var expected = "\"4\" [label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>person-4</TD></TR><TR><TD>PERSON</TD></TR><TR><TD>@person-4</TD></TR></TABLE>>, color=black, fontcolor=black, shape=plaintext, URL=\"\"];";
 
         assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void shouldGenerateComponentWithTddTooltipWhenComponentHasTdds() {
+        C4Component component = createComponent("4", "3");
+        DiffableEntity after = new DiffableEntity(component);
+        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"), new Tdd("Some text", null)));
+
+        var diff = new Diff(null, after);
+
+        var actual = DiffToDotCalculator.toDot(diff, Set.of(diff), "assets/");
+
+        var expected = "\"4\" [label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>component-4</TD></TR><TR><TD>COMPONENT</TD></TR><TR><TD></TD></TR></TABLE>>, color=darkgreen, fontcolor=darkgreen, shape=plaintext, URL=\"assets/4.svg\" ,tooltip=\"TDD 1.1 - Some text\"];";
+
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void shouldGenerateComponentWithTddTuncatedTooltipWhenComponentHasTddsWithLongText() {
+        C4Component component = createComponent("4", "3");
+        DiffableEntity after = new DiffableEntity(component);
+        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"),
+                new Tdd("Some text for this tdd that is longer than 50 character and should be truncated with added elipses.", null)));
+
+        var diff = new Diff(null, after);
+
+        var actual = DiffToDotCalculator.toDot(
+                diff,
+                Set.of(diff),
+                "assets"
+        );
+
+        var expected = "\"4\" [label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>component-4</TD></TR><TR><TD>COMPONENT</TD></TR><TR><TD></TD></TR></TABLE>>, color=darkgreen, fontcolor=darkgreen, shape=plaintext, URL=\"assets/4.svg\" ,tooltip=\"TDD 1.1 - Some text for this tdd that is longer th...\"];";
+
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void shouldRenderRelatedTdds() {
+        C4Component component = createComponent("4", "3");
+        DiffableEntity after = new DiffableEntity(component);
+        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"), new Tdd("Some text", null)));
+
+        var diff = new Diff(
+                null,
+                after
+        );
+
+        var actual = DiffToDotCalculator.toDot("Tdds", diff);
+
+        var expected = String.join("\n",
+     "digraph \"Tdds\" {",
+                "    graph [rankdir=LR];",
+                "",
+                "    \"tdds\" [label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\"><TR><TD align=\"text\">TDD 1.1 - Some text<br align=\"left\" /></TD></TR></TABLE></TD></TR></TABLE>>, color=black, fontcolor=black, shape=plaintext];",
+                "    ",
+                "}");
+
+        assertThat(actual.trim(), equalTo(expected));
     }
 
     private void appendln(StringBuilder builder, String line) {
