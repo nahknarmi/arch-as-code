@@ -47,7 +47,7 @@ public class JiraApiTest {
     @Test
     public void shouldMakeRequestToGetJiraStory() throws Exception {
         // GIVEN:
-        final var mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_GET_EPIC));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
         final Jira jiraToQuery = new Jira("JIRA-TICKET-123", "http://link");
@@ -85,7 +85,7 @@ public class JiraApiTest {
     @Test
     public void shouldParseResponseWhenGetJiraStory() throws Exception {
         // GIVEN:
-        @SuppressWarnings("rawtypes") HttpResponse mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_GET_EPIC));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
@@ -97,7 +97,7 @@ public class JiraApiTest {
 
     @Test
     public void shouldThrowPresentableExceptionIfCreateStoryFails() throws Exception {
-        var mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_STRUCTURIZR_BIG_BANK)); // <-- this is the wrong response
         when(mockedResponse.statusCode()).thenReturn(201);
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
@@ -115,9 +115,14 @@ public class JiraApiTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static HttpResponse<Object> mockedGenericHttpResponse() {
+        return (HttpResponse<Object>) mock(HttpResponse.class);
+    }
+
     @Test
     public void shouldThrowPresentableExceptionIfGetStoryFails() throws Exception {
-        @SuppressWarnings("rawtypes") HttpResponse mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_STRUCTURIZR_BIG_BANK)); // <-- this is the wrong response
         when(mockedResponse.statusCode()).thenReturn(200);
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
@@ -138,7 +143,7 @@ public class JiraApiTest {
     @Test
     public void shouldThrowProperExceptionIfGetStoryNotFound() throws Exception {
         // GIVEN:
-        HttpResponse<Object> mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(404); // not found
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
@@ -158,7 +163,7 @@ public class JiraApiTest {
     @Test
     public void shouldThrowProperExceptionIfUnauthorizedForCreateStory() throws Exception {
         // GIVEN:
-        HttpResponse<Object> mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(401); // unauthorized
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
@@ -178,7 +183,7 @@ public class JiraApiTest {
     @Test
     public void shouldThrowProperExceptionIfUnauthorizedForGetStory() throws Exception {
         // GIVEN:
-        HttpResponse<Object> mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(401); // unauthorized
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
@@ -197,7 +202,7 @@ public class JiraApiTest {
 
     @Test
     public void shouldParseJiraResponseOfCreateStories() throws Exception {
-        HttpResponse<Object> mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
         when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
@@ -222,7 +227,7 @@ public class JiraApiTest {
     public void shouldMakeCreateStoryRequestWithCorrectBody() throws Exception {
         // GIVEN:
         List<JiraStory> sampleJiraStories = createSampleJiraStories();
-        var mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
         when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
@@ -283,7 +288,7 @@ public class JiraApiTest {
                 new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2))
         );
 
-        var mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
         when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
@@ -307,7 +312,7 @@ public class JiraApiTest {
     @Test
     public void shouldMakeCreateStoryRequestWithCorrectHeaders() throws Exception {
         // GIVEN:
-        var mockedResponse = mock(HttpResponse.class);
+        final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
         when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
