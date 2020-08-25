@@ -31,22 +31,22 @@ decisions:
     tdd-references:
     - '[SAMPLE-TDD-ID]'
 tdds-per-component:
-- component-id: '31'
+- component-id: "31"
   deleted: false
   tdds:
-    'TDD 1.1':
+    TDD 1.1:
       text: '[SAMPLE TDD TEXT]'
-    'TDD 1.2':
+    TDD 1.2:
       text: '[SAMPLE TDD TEXT]'
-- component-id: '34'
+- component-id: "34"
   deleted: false
   tdds:
-    'TDD 2.1':
+    TDD 2.1:
       text: '[SAMPLE TDD TEXT]'
 - component-id: "30"
   deleted: false
   tdds:
-    'TDD 3.1':
+    TDD 3.1:
       text: '[SAMPLE TDD TEXT]'
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':

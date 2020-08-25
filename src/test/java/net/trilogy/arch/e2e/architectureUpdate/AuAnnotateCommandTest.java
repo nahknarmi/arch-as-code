@@ -81,12 +81,12 @@ public class AuAnnotateCommandTest {
 
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replaceFirst("component-id: '31'",
-                        "component-id: '31'  # c4://Internet Banking System/API Application/Reset Password Controller")
+                .replaceFirst("component-id: \"31\"",
+                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
-                .replaceFirst("component-id: '34'",
-                        "component-id: '34'  # c4://Internet Banking System/API Application/E-mail Component");
+                .replaceFirst("component-id: \"34\"",
+                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component");
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(err.toString(), equalTo(""));
@@ -101,7 +101,7 @@ public class AuAnnotateCommandTest {
 
         Path writeDestination = changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml");
         String writeSource = Files.readString(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replace("component-id: '31'", "component-id: '29'");
+                .replace("component-id: \"31\"", "component-id: \"29\"");
         Files.writeString(writeDestination, writeSource);
 
         // WHEN
@@ -111,12 +111,12 @@ public class AuAnnotateCommandTest {
 
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replaceFirst("component-id: '31'",
-                        "component-id: '29'  # c4://Internet Banking System/API Application/Sign In Controller")
+                .replaceFirst("component-id: \"31\"",
+                        "component-id: \"29\"  # c4://Internet Banking System/API Application/Sign In Controller")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
-                .replaceFirst("component-id: '34'",
-                        "component-id: '34'  # c4://Internet Banking System/API Application/E-mail Component");
+                .replaceFirst("component-id: \"34\"",
+                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component");
 
         collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
@@ -144,7 +144,7 @@ public class AuAnnotateCommandTest {
         // GIVEN
         Path writeDestination = changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml");
         String writeSource = Files.readString(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
+                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: \"404\"");
         Files.writeString(writeDestination, writeSource);
 
         // WHEN
@@ -154,7 +154,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         var expected = Files.readString(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: '404'");
+                .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: \"404\"");
 
         collector.checkThat(actual, equalTo(expected));
         collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
@@ -167,7 +167,7 @@ public class AuAnnotateCommandTest {
         // GIVEN
         Path writeDestination = this.changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml");
         String writeSource = Files.readString(this.changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replace("component-id: '34'", "component-id: '404'");
+                .replace("component-id: \"34\"", "component-id: \"404\"");
         Files.writeString(writeDestination, writeSource);
 
         // WHEN
@@ -177,11 +177,11 @@ public class AuAnnotateCommandTest {
 
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
-                .replaceFirst("component-id: '34'", "component-id: '404'")
+                .replaceFirst("component-id: \"34\"", "component-id: \"404\"")
                 .replaceFirst("component-id: \"30\"",
                         "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
-                .replaceFirst("component-id: '31'",
-                        "component-id: '31'  # c4://Internet Banking System/API Application/Reset Password Controller");
+                .replaceFirst("component-id: \"31\"",
+                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller");
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(actual, equalTo(expected));
