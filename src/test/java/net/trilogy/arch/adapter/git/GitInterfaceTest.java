@@ -33,7 +33,7 @@ public class GitInterfaceTest {
     private Path archPath;
     private String architectureAsString;
     private String masterCommitSha;
-    private String masterCommitTagName = "masterCommitTagName";
+    private final String masterCommitTagName = "masterCommitTagName";
 
     @After
     public void tearDown() throws Exception {

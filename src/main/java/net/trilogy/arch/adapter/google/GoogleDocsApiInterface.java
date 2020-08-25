@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 @EqualsAndHashCode
 public class GoogleDocsApiInterface {
-    private static final Pattern pattern = Pattern.compile("\\/document\\/d\\/([^\\/]+)");
-    private Docs api;
+    private static final Pattern pattern = Pattern.compile("/document/d/([^/]+)");
+    private final Docs api;
 
     public GoogleDocsApiInterface(Docs rawGoogleDocsApi){
         this.api = rawGoogleDocsApi;
@@ -26,9 +26,9 @@ public class GoogleDocsApiInterface {
 
         Document doc = api.documents().get(getDocumentId(url)).execute();
 
-        // TODO [OPTIONAL] [TECHNINCAL ENHANCEMENT]: We are converting Google's API response to JSON 
-            // instead of using their API methods to make testing easier. This could be changed.
-            // Related issue: https://issuetracker.google.com/issues/152645656
+        // TODO [OPTIONAL] [TECHNICAL ENHANCEMENT]: We are converting Google's API response to JSON/
+        //      instead of using their API methods to make testing easier. This could be changed.
+        //      Related issue: https://issuetracker.google.com/issues/152645656
         final ObjectMapper mapper = new ObjectMapper();
         final String jsonString = mapper.writeValueAsString(doc);
         final JsonNode jsonNode = mapper.readValue(jsonString, JsonNode.class);

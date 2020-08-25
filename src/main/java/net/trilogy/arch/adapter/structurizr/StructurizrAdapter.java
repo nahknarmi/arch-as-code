@@ -20,12 +20,9 @@ public class StructurizrAdapter {
     }
 
     /**
-     * It will use following order to determine which workspace id to use:
-     * - from environment variable
-     * - from ./.arch-as-code/structurizr/credentials.json
+     * It will use following order to determine which workspace id to use: -
+     * from environment variable - from ./.arch-as-code/structurizr/credentials.json
      * - from workspace configured in passed in workspace
-     *
-     * @param workspace
      */
     public Boolean publish(Workspace workspace) {
         checkNotNull(workspace, "Workspace must not be null!");
@@ -43,11 +40,9 @@ public class StructurizrAdapter {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     StructurizrClient buildClient() {
         StructurizrClient client = new StructurizrClient(config().getApiKey(), config().getApiSecret());
         client.setWorkspaceArchiveLocation(null);
         return client;
     }
-
 }

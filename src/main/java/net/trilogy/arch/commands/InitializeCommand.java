@@ -33,7 +33,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
     @CommandLine.Spec
     private CommandLine.Model.CommandSpec spec;
 
-    private FilesFacade filesFacade;
+    private final FilesFacade filesFacade;
 
     public InitializeCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

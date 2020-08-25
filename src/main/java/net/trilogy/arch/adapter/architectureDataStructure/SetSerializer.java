@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * @todo Modern Jackson does this out of box.  What is this class for?
+ */
 public class SetSerializer extends StdSerializer<Set> {
     public SetSerializer(Class<Set> t) {
         super(t);
@@ -29,7 +32,7 @@ public class SetSerializer extends StdSerializer<Set> {
 
                 // SortedSet elements must implement the Comparable interface
                 if (Comparable.class.isAssignableFrom(item.getClass())) {
-                    set = new TreeSet(set);
+                    set = new TreeSet<>(set);
                 }
             }
 

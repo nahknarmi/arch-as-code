@@ -4,6 +4,7 @@ import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -13,14 +14,13 @@ public class Base64Converter {
         byte[] inFileBytes = Files.readAllBytes(path);
         final byte[] encoded = Base64.getEncoder().encode(inFileBytes);
 
-        return new String(encoded, "UTF-8");
+        return new String(encoded, StandardCharsets.UTF_8);
     }
 
     public static String toString(String string) {
         byte[] bytes = string.getBytes();
-        String encoded = Base64.getEncoder().encodeToString(bytes);
 
-        return encoded;
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
 

@@ -36,7 +36,7 @@ public class C4Model {
 
     public C4Model addPerson(C4Person person) {
         checkArgument(!personWithNameExists(person), format("Person with name '%s' already exists.", person.getName()));
-        checkArgument(!entityWithIdExists(person, people), format("Person with path '%s' already exists.", person));
+        checkArgument(noEntityWithIdExists(person, people), format("Person with path '%s' already exists.", person));
 
         people.add(person);
 
@@ -45,7 +45,7 @@ public class C4Model {
 
     public C4Model addSoftwareSystem(C4SoftwareSystem softwareSystem) {
         checkArgument(!systemWithNameExists(softwareSystem), format("Software System with name '%s' already exists.", softwareSystem.getName()));
-        checkArgument(!entityWithIdExists(softwareSystem, systems), format("Software System given path '%s' already exists.", softwareSystem));
+        checkArgument(noEntityWithIdExists(softwareSystem, systems), format("Software System given path '%s' already exists.", softwareSystem));
 
         systems.add(softwareSystem);
 
@@ -104,10 +104,8 @@ public class C4Model {
     // [TODO] [TESTING] Testing gap
     public Set<Tuple2<Entity, C4Relationship>> allRelationships() {
         return allEntities().stream()
-                .flatMap(entity -> {
-                    return entity.getRelationships().stream()
-                            .map(r -> Tuple.of(entity, r));
-                }).collect(toSet());
+                .flatMap(entity -> entity.getRelationships().stream()
+                        .map(r -> Tuple.of(entity, r))).collect(toSet());
     }
 
     public C4Person findPersonByName(String name) {
@@ -206,8 +204,8 @@ public class C4Model {
                 .collect(toSet());
     }
 
-    private <T extends HasRelation & HasTag & HasIdentity> boolean entityWithIdExists(T entity, Set<T> set) {
-        return set.stream().anyMatch(e -> e.getId().equals(entity.getId()));
+    private <T extends HasRelation & HasTag & HasIdentity> boolean noEntityWithIdExists(T entity, Set<T> set) {
+        return set.stream().noneMatch(e -> e.getId().equals(entity.getId()));
     }
 
     private boolean systemPathExists(C4Path path) {

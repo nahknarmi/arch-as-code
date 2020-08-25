@@ -6,6 +6,7 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
+import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.*;
 import org.junit.Rule;
@@ -154,7 +155,7 @@ public class WorkspaceReaderTest {
 
         final int size = dataStructure.getDocumentation().size();
         final Set<String> titles = dataStructure.getDocumentation().stream()
-                .map(doc -> doc.getTitle()).collect(Collectors.toSet());
+                .map(DocumentationSection::getTitle).collect(Collectors.toSet());
 
         collector.checkThat(size, equalTo(5));
         collector.checkThat(titles, containsInAnyOrder("Context", "Components", "Development Environment", "Containers", "Deployment"));

@@ -2,6 +2,7 @@ package net.trilogy.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Image;
+import com.structurizr.documentation.Section;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.After;
@@ -82,7 +83,7 @@ public class DocumentationEnhancerTest {
                 4, "no_order"
         );
         final var actual = workspace.getDocumentation().getSections().stream()
-                .collect(Collectors.toMap(d -> d.getOrder(), d -> d.getTitle()));
+                .collect(Collectors.toMap(Section::getOrder, Section::getTitle));
 
         collector.checkThat(actual, equalTo(expected));
     }

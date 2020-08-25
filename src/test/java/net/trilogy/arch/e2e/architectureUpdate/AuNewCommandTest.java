@@ -34,7 +34,6 @@ import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTUR
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AuNewCommandTest {

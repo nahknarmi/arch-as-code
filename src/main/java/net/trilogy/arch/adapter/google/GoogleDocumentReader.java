@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 public class GoogleDocumentReader {
-    private GoogleDocsApiInterface api;
+    private final GoogleDocsApiInterface api;
 
     public GoogleDocumentReader(GoogleDocsApiInterface api) {
         this.api = api;

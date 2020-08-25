@@ -2,7 +2,6 @@ package net.trilogy.arch.domain.c4;
 
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 

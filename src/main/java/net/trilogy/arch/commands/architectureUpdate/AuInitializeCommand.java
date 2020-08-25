@@ -16,6 +16,15 @@ import java.util.concurrent.Callable;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
 import static net.trilogy.arch.adapter.jira.JiraApiFactory.JIRA_API_SETTINGS_FILE_PATH;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_AUTH_PROVIDER_CERT_URL;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_AUTH_URI;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_REDIRECT_URI;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_REDIRECT_URN;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_TOKEN_URI;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_BASE_URI;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_BULK_CREATE_ENDPOINT;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_GET_STORY_ENDPOINT;
+import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_LINK_PREFIX;
 
 @Command(name = "initialize", aliases = "init", mixinStandardHelpOptions = true, description = "Initialize the architecture updates work space within a single product's existing workspace. Sets up Google API credentials to import P1 documents.")
 public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -37,16 +46,6 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     @CommandLine.Spec
     private CommandLine.Model.CommandSpec spec;
 
-    private final String INITIAL_GOOGLE_API_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
-    private final String INITIAL_GOOGLE_API_TOKEN_URI = "https://oauth2.googleapis.com/token";
-    private final String INITIAL_GOOGLE_API_AUTH_PROVIDER_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs";
-    private final String INITIAL_GOOGLE_API_REDIRECT_URN = "urn:ietf:wg:oauth:2.0:oob";
-    private final String INITIAL_GOOGLE_API_REDIRECT_URI = "http://localhost";
-    private final String INITIAL_JIRA_BASE_URI = "http://jira.devfactory.com";
-    private final String INITIAL_JIRA_LINK_PREFIX = "/browse/";
-    private final String INITIAL_JIRA_GET_STORY_ENDPOINT = "/rest/api/2/issue/";
-    private final String INITIAL_JIRA_BULK_CREATE_ENDPOINT = "/rest/api/2/issue/bulk";
-
     public AuInitializeCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
     }
@@ -57,7 +56,8 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
         if (!makeAuFolder()) return 1;
         if (!makeJiraSettingsFile()) return 1;
         if (!makeGoogleApiCredentialsFolder()) return 1;
-        if (!createGoogleApiClientCredentialsFile(googleApiClientId, googleApiProjectId, googleApiSecret)) return 1;
+        if (!createGoogleApiClientCredentialsFile(googleApiClientId, googleApiProjectId, googleApiSecret))
+            return 1;
 
         print(String.format("Architecture updates initialized under - %s", productArchitectureDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER).toFile()));
         return 0;
@@ -94,7 +94,6 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
                 "    \"get_story_endpoint\": \"" + INITIAL_JIRA_GET_STORY_ENDPOINT + "\",\n" +
                 "    \"bulk_create_endpoint\": \"" + INITIAL_JIRA_BULK_CREATE_ENDPOINT + "\"\n" +
                 "}";
-
     }
 
     private String buildCredentialJsonString(String clientId, String projectId, String secret) {
@@ -119,7 +118,7 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
 
         boolean succeeded = true;
         if (Files.exists(auFolder.toPath())) {
-            print(String.format("Architecture Updates directory $s already exists", auFolder.getAbsolutePath()));
+            print(String.format("Architecture Updates directory %s already exists", auFolder.getAbsolutePath()));
         } else {
             succeeded = auFolder.mkdir();
         }

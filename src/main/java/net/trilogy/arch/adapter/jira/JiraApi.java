@@ -178,7 +178,7 @@ public class JiraApi {
                 compMap.entrySet().stream().map(
                         entry -> "h4. Component: " + entry.getKey() + "\n||TDD||Description||\n" +
                                 entry.getValue().stream()
-                                        .map(tdd -> buildTddRow(tdd))
+                                        .map(this::buildTddRow)
                                         .collect(Collectors.joining())
                 ).collect(Collectors.joining()) +
                 "";

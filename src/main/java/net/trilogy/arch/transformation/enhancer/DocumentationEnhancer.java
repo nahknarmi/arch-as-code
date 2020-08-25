@@ -4,15 +4,18 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.AutomaticDocumentationTemplate;
 import com.structurizr.documentation.Section;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
 import static net.trilogy.arch.domain.DocumentationImage.isImage;
 
 public class DocumentationEnhancer implements WorkspaceEnhancer {
@@ -30,10 +33,10 @@ public class DocumentationEnhancer implements WorkspaceEnhancer {
 
         final AutomaticDocumentationTemplate docTemplate = new AutomaticDocumentationTemplate(workspace);
         final File[] files = documentationPath().listFiles();
-        final Set<DocumentationSection> docsToAdd = Arrays.stream(files)
-                .filter(file -> isDocumentation(file))
-                .map(f -> createDocFromFile(f))
-                .filter(doc -> doc != null)
+        final Set<DocumentationSection> docsToAdd = stream(requireNonNull(files))
+                .filter(this::isDocumentation)
+                .map(this::createDocFromFile)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         // Add ordered documentation
@@ -41,15 +44,14 @@ public class DocumentationEnhancer implements WorkspaceEnhancer {
                 .filter(doc -> doc.getOrder() != null)
                 .forEach(doc -> addDocumentationToWorkspace(docTemplate, doc));
 
-
         // Add un-ordered documentation
         docsToAdd.stream()
                 .filter(doc -> doc.getOrder() == null)
                 .forEach(doc -> addDocumentationToWorkspace(docTemplate, doc));
 
         // Add images
-        Arrays.stream(files)
-                .filter(file -> isImage(file))
+        stream(files)
+                .filter(DocumentationImage::isImage)
                 .forEach(image -> {
                     try {
                         docTemplate.addImage(image);
@@ -60,6 +62,9 @@ public class DocumentationEnhancer implements WorkspaceEnhancer {
                 });
     }
 
+    // Java lacks a rich switch statement; suppress warnings that the final
+    // if statement could be merged: The current style is more clear
+    @SuppressWarnings("RedundantIfStatement")
     private boolean isDocumentation(File file) {
         if (file == null) return false;
         if (file.isDirectory()) return false;
@@ -89,7 +94,6 @@ public class DocumentationEnhancer implements WorkspaceEnhancer {
 
         return doc;
     }
-
 
     private File documentationPath() {
         return new File(String.format("%s/documentation/", documentationRoot.getAbsolutePath()));

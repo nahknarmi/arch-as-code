@@ -16,22 +16,22 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.nio.file.Files.createTempDirectory;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
 import static net.trilogy.arch.adapter.jira.JiraApiFactory.JIRA_API_SETTINGS_FILE_PATH;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class AuInitializeCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private final String client_id = "id";
-    private final String project_id = "proj";
-    private final String secret = "secret";
 
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
@@ -255,10 +255,10 @@ public class AuInitializeCommandTest {
     public void shouldFailIfAuDirectoryAlreadyExists() throws Exception {
         Path rootDir = getTempDirectory();
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-        Files.writeString(auPathFrom(rootDir, "name"), "EXISTING CONTENTS");
+        Files.writeString(auPathFrom(rootDir), "EXISTING CONTENTS");
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
-                Files.readString(auPathFrom(rootDir, "name")),
+                Files.readString(auPathFrom(rootDir)),
                 equalTo("EXISTING CONTENTS")
         );
 
@@ -269,13 +269,13 @@ public class AuInitializeCommandTest {
                 not(equalTo(0))
         );
         collector.checkThat(
-                Files.readString(auPathFrom(rootDir, "name")),
+                Files.readString(auPathFrom(rootDir)),
                 equalTo("EXISTING CONTENTS")
         );
     }
 
     @Test
-    public void shouldRequireDocumentRootParameter() throws Exception {
+    public void shouldRequireDocumentRootParameter() {
         collector.checkThat(
                 execute("au", "init"),
                 is(equalTo(2))
@@ -285,13 +285,16 @@ public class AuInitializeCommandTest {
     @Test
     public void shouldCreateGoogleApiClientCredentialsFile() throws Exception {
         Path rootDir = getTempDirectory();
-        execute("au", "init", str(rootDir), "-c " + client_id, "-p " + project_id, "-s " + secret);
+        String clientId = "id";
+        String projectId = "proj";
+        String secret = "secret";
+        execute("au", "init", str(rootDir), "-c " + clientId, "-p " + projectId, "-s " + secret);
 
         Path auCredFile = rootDir.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME);
         String expected = "{\n" +
                 "  \"installed\": {\n" +
-                "    \"client_id\": \"" + client_id + "\",\n" +
-                "    \"project_id\": \"" + project_id + "\",\n" +
+                "    \"client_id\": \"" + clientId + "\",\n" +
+                "    \"project_id\": \"" + projectId + "\",\n" +
                 "    \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n" +
                 "    \"token_uri\": \"https://oauth2.googleapis.com/token\",\n" +
                 "    \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n" +
@@ -333,8 +336,8 @@ public class AuInitializeCommandTest {
         );
     }
 
-    private Path auPathFrom(Path rootPath, String auName) {
-        return rootPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER).resolve(auName).toAbsolutePath();
+    private Path auPathFrom(Path rootPath) {
+        return rootPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER).resolve("name").toAbsolutePath();
     }
 
     private String str(Path tempDirPath) {
@@ -342,6 +345,6 @@ public class AuInitializeCommandTest {
     }
 
     private Path getTempDirectory() throws IOException {
-        return Files.createTempDirectory("arch-as-code_architecture-update_command_tests");
+        return createTempDirectory("arch-as-code_architecture-update_command_tests");
     }
 }

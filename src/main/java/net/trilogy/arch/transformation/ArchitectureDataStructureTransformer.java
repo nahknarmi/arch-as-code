@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ArchitectureDataStructureTransformer {
     private final List<WorkspaceEnhancer> enhancers;
-    private StructurizrViewsMapper structurizrViewsMapper;
+    private final StructurizrViewsMapper structurizrViewsMapper;
 
     public ArchitectureDataStructureTransformer(List<WorkspaceEnhancer> enhancers, StructurizrViewsMapper structurizrViewsMapper) {
         this.enhancers = enhancers;
