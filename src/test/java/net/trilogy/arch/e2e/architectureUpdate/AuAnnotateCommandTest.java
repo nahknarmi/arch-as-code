@@ -3,6 +3,7 @@ package net.trilogy.arch.e2e.architectureUpdate;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.facade.FilesFacade;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,21 +52,9 @@ public class AuAnnotateCommandTest {
         changedAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponentsClone/");
         changedAuWithTddContentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsAndTddContentFilesClone/");
 
-        if (!Files.exists(changedAuWithComponentsDirectoryPath))
-            Files.createDirectory(changedAuWithComponentsDirectoryPath);
-
-        if (!Files.exists(changedAuWithoutComponentsDirectoryPath))
-            Files.createDirectory(changedAuWithoutComponentsDirectoryPath);
-
-        if (!Files.exists(changedAuWithTddContentsDirectoryPath))
-            Files.createDirectory(changedAuWithTddContentsDirectoryPath);
-
-        Files.copy(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"),
-                changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
-        Files.copy(originalAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"),
-                changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
-        Files.copy(originalAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"),
-                changedAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"));
+        FileUtils.copyDirectory(originalAuWithComponentsDirectoryPath.toFile(), changedAuWithComponentsDirectoryPath.toFile());
+        FileUtils.copyDirectory(originalAuWithoutComponentsDirectoryPath.toFile(), changedAuWithoutComponentsDirectoryPath.toFile());
+        FileUtils.copyDirectory(originalAuWithTddContentsDirectoryPath.toFile(), changedAuWithTddContentsDirectoryPath.toFile());
 
         out.reset();
         err.reset();
@@ -75,13 +64,9 @@ public class AuAnnotateCommandTest {
 
     @After
     public void tearDown() throws Exception {
-        Files.deleteIfExists(changedAuWithComponentsDirectoryPath.resolve("architecture-update.yml"));
-        Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath.resolve("architecture-update.yml"));
-        Files.deleteIfExists(changedAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"));
-        Files.deleteIfExists(changedAuWithComponentsDirectoryPath);
-        Files.deleteIfExists(changedAuWithoutComponentsDirectoryPath);
-        Files.deleteIfExists(changedAuWithTddContentsDirectoryPath);
-
+        FileUtils.deleteDirectory(changedAuWithComponentsDirectoryPath.toFile());
+        FileUtils.deleteDirectory(changedAuWithoutComponentsDirectoryPath.toFile());
+        FileUtils.deleteDirectory(changedAuWithTddContentsDirectoryPath.toFile());
 
         System.setOut(originalOut);
         System.setErr(originalErr);
