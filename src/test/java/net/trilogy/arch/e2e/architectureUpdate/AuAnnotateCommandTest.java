@@ -95,6 +95,34 @@ public class AuAnnotateCommandTest {
     }
 
     @Test
+    public void shouldAnnotateAuWithTddContentFile() throws Exception {
+        // WHEN
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithTddContentsDirectoryPath), toString(rootPath));
+
+        var actual = Files.readString(changedAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"));
+
+        // THEN
+        var expected = Files.readString(originalAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"))
+                .replaceFirst("component-id: \"31\"",
+                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller")
+                .replaceFirst("component-id: \"30\"",
+                        "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
+                .replaceFirst("component-id: \"34\"",
+                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component")
+                .replaceFirst("TDD 1.1:\n\\s*file: null",
+                        "TDD 1.1:\n      file: 'TDD 1.1 : Component-31.txt'")
+                .replaceFirst("TDD 1.2:\n\\s*file: null",
+                        "TDD 1.2:\n      file: 'TDD 1.2 : Component-31.txt'")
+                .replaceFirst("TDD 2.1:\n\\s*file: null",
+                        "TDD 2.1:\n      file: 'TDD 2.1 : Component-30.txt'");
+
+        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
+        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(status, equalTo(0));
+        collector.checkThat(actual, equalTo(expected));
+    }
+
+    @Test
     public void shouldRefreshAnnotations() throws Exception {
         // GIVEN
         TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
@@ -236,7 +264,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to write C4 path annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to write TDD content files annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
