@@ -86,7 +86,7 @@ version: "0.17.0"
 }
 
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:all,-serial,-deprecation" << "-Werror"
+    options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
 }
 
 jacocoTestCoverageVerification {
