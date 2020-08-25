@@ -109,9 +109,7 @@ public class ArchitectureUpdate {
                                             return story;
                                         })
                                         .collect(Collectors.toList())
-                        )
-                        .build()
-        )
-                .build();
+                        ).build()
+        ).build();
     }
 }
