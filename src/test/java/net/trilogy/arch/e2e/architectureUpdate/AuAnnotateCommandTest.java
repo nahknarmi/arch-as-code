@@ -251,7 +251,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to write annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to write C4 path annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
     }
 

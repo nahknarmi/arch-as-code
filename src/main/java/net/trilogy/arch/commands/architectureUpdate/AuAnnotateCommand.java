@@ -68,7 +68,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
             String annotatedAu = annotator.annotateC4Paths(architecture.get(), auAsString.get());
             filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), annotatedAu);
         } catch (Exception e) {
-            printError("Unable to write annotations to Architecture Update.", e);
+            printError("Unable to write C4 path annotations to Architecture Update.", e);
             return 2;
         }
 
