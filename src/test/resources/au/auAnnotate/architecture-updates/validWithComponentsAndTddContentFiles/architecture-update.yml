@@ -35,19 +35,19 @@ tdds-per-component:
   deleted: false
   tdds:
     TDD 1.1:
-      text: '[SAMPLE TDD TEXT]'
+      file: null
     TDD 1.2:
-      text: '[SAMPLE TDD TEXT]'
+      file: null
 - component-id: "34"
-  deleted: false
-  tdds:
-    TDD 2.1:
-      text: '[SAMPLE TDD TEXT]'
-- component-id: "30"
   deleted: false
   tdds:
     TDD 3.1:
       text: '[SAMPLE TDD TEXT]'
+- component-id: "30"
+  deleted: false
+  tdds:
+    TDD 2.1:
+      file: null
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
     text: '[SAMPLE REQUIREMENT TEXT]'
