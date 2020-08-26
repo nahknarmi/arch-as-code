@@ -66,9 +66,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
 
 
     private void addDeploymentNodes(C4Model dataStructureModel, ModelMediator modelMediator) {
-        dataStructureModel.getDeploymentNodes().forEach(dNode -> {
-            modelMediator.addDeploymentNode(dataStructureModel, dNode);
-        });
+        dataStructureModel.getDeploymentNodes().forEach(dNode -> modelMediator.addDeploymentNode(dataStructureModel, dNode));
     }
 
     private void addRelationships(C4Model dataStructureModel, ModelMediator modelMediator) {

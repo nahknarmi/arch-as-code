@@ -50,7 +50,7 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
     private String baseBranch;
 
     @Getter
-    @CommandLine.Option(names = {"-u", "--architecture-update"}, description = "Name of the architecture update folder, to use it fo show related TDDs.", required = false)
+    @CommandLine.Option(names = {"-u", "--architecture-update"}, description = "Name of the architecture update folder, to use it fo show related TDDs.")
     private File architectureUpdateDirectory;
 
     @CommandLine.Option(names = {"-o", "--output-directory"}, description = "New directory in which svg files will be created.", required = true)
@@ -119,12 +119,10 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
     void connectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
         if (architectureUpdate.isPresent()) {
             List<TddContainerByComponent> tddContainersByComponent = architectureUpdate.get().getTddContainersByComponent();
-            componentLevelDiffs.stream().forEach(c -> {
+            componentLevelDiffs.forEach(c -> {
                 String componentId = c.getElement().getId();
                 Optional<TddContainerByComponent> tddC = tddContainersByComponent.stream().filter(tC -> tC.getComponentId().getId().equalsIgnoreCase(componentId)).findFirst();
-                if (tddC.isPresent()) {
-                    c.getElement().setRelatedTdds(tddC.get().getTdds());
-                }
+                tddC.ifPresent(tddContainerByComponent -> c.getElement().setRelatedTdds(tddContainerByComponent.getTdds()));
             });
         }
     }

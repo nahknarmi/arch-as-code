@@ -27,7 +27,7 @@ public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, Di
     @CommandLine.Spec
     private CommandLine.Model.CommandSpec spec;
 
-    private FilesFacade filesFacade;
+    private final FilesFacade filesFacade;
 
     public ImportCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

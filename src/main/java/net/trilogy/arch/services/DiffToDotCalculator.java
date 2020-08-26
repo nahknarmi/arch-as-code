@@ -36,7 +36,7 @@ public class DiffToDotCalculator {
             dot.add(1, "}");
             dot.add(0, "");
         }
-        diffs.stream()
+        diffs
                 .forEach(diff -> dot.add(1, toDot(diff, diffs, linkPrefix)));
 
         dot.add(0, "}");
@@ -77,13 +77,13 @@ public class DiffToDotCalculator {
 
     @VisibleForTesting
     static String getDotLabel(DiffableEntity entity) {
-        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>"+entity.getName()+"</TD></TR>" +
-                "<TR><TD>"+entity.getType()+"</TD></TR>" +
-                "<TR><TD>"+getPath(entity)+"</TD></TR></TABLE>>";
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>" + entity.getName() + "</TD></TR>" +
+                "<TR><TD>" + entity.getType() + "</TD></TR>" +
+                "<TR><TD>" + getPath(entity) + "</TD></TR></TABLE>>";
     }
 
     static String getDotTddAsTable(Diffable entity) {
-        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"+ Arrays.stream(entity.getRelatedTddsText()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + Arrays.stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(Collectors.joining()) + "</TABLE></TD></TR>").collect(Collectors.joining()) +"</TABLE>>";
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" + Arrays.stream(entity.getRelatedTddsText()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + Arrays.stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(Collectors.joining()) + "</TABLE></TD></TR>").collect(Collectors.joining()) + "</TABLE>>";
     }
 
     @VisibleForTesting
@@ -100,7 +100,8 @@ public class DiffToDotCalculator {
             case NO_UPDATE:
                 return "black";
             default:
-                return "black";
+                // Java does not recognize when branches are exhausted
+                throw new IllegalStateException("Unknown color diff: " + diff.getStatus());
         }
     }
 
@@ -108,7 +109,7 @@ public class DiffToDotCalculator {
     static String getUrl(Diff diff, String linkPrefix) {
         boolean shouldHaveDiagram = diff.getElement().hasRelatedTdds() || diff.getDescendants().stream()
                 .anyMatch(it -> Set.of(C4Type.COMPONENT, C4Type.CONTAINER)
-                        .contains(it.getType()) );
+                        .contains(it.getType()));
 
         if (!shouldHaveDiagram) return "";
 
@@ -129,7 +130,7 @@ public class DiffToDotCalculator {
                     ", fontcolor=" + getDotColor(diff) +
                     ", shape=plaintext" +
                     ", URL=\"" + getUrl(diff, linkPrefix) + "\"" +
-                     getTooltip(diff) +
+                    getTooltip(diff) +
                     "];";
         }
         final var relationship = (DiffableRelationship) diff.getElement();
@@ -161,15 +162,15 @@ public class DiffToDotCalculator {
     @VisibleForTesting
     static String getTooltip(DiffableRelationship rel, Collection<Diff> allDiffs) {
         String source = allDiffs.stream()
-            .filter(it -> it.getElement().getId().equals(rel.getSourceId()))
-            .findAny()
-            .map(it -> it.getElement().getName())
-            .orElse(rel.getSourceId());
+                .filter(it -> it.getElement().getId().equals(rel.getSourceId()))
+                .findAny()
+                .map(it -> it.getElement().getName())
+                .orElse(rel.getSourceId());
         String destination = allDiffs.stream()
-            .filter(it -> it.getElement().getId().equals(rel.getDestinationId()))
-            .findAny()
-            .map(it -> it.getElement().getName())
-            .orElse(rel.getDestinationId());
+                .filter(it -> it.getElement().getId().equals(rel.getDestinationId()))
+                .findAny()
+                .map(it -> it.getElement().getName())
+                .orElse(rel.getDestinationId());
         return source + " -> " + destination;
     }
 }

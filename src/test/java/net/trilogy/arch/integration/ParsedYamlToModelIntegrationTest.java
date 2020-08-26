@@ -168,7 +168,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
         Set<Container> containers = system.getContainers();
-        List<String> containerNames = system.getContainers().stream().map(c -> c.getName()).collect(Collectors.toList());
+        List<String> containerNames = system.getContainers().stream().map(Element::getName).collect(Collectors.toList());
 
         assertTrue(tagSet.contains("DevSpaces System View"));
 
@@ -237,7 +237,7 @@ public class ParsedYamlToModelIntegrationTest {
         Container container = system.getContainerWithName(containerName);
         Set<String> tagSet = container.getTagsAsSet();
         Set<Component> components = container.getComponents();
-        List<String> componentNames = components.stream().map(c -> c.getName()).collect(Collectors.toList());
+        List<String> componentNames = components.stream().map(Element::getName).collect(Collectors.toList());
 
         Set<Relationship> relationships = container.getRelationships();
 

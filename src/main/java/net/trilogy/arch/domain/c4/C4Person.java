@@ -2,7 +2,6 @@ package net.trilogy.arch.domain.c4;
 
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;

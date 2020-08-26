@@ -19,7 +19,6 @@ import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 public class GoogleDocsAuthorizedApiFactory {

@@ -9,11 +9,13 @@ import net.trilogy.arch.facade.FilesFacade;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 public class ArchitectureUpdateReader {
     public static final String ARCHITECTURE_UPDATE_YML = "architecture-update.yml";
@@ -24,15 +26,14 @@ public class ArchitectureUpdateReader {
     }
 
     public ArchitectureUpdate load(Path path) throws IOException {
-        String auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
-        ArchitectureUpdate au = new ArchitectureUpdateObjectMapper().readValue(auAsString);
+        final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
+        var au = new ArchitectureUpdateObjectMapper().readValue(auAsString);
 
-        List<TddContent> tddContents = getTddContent(path);
-        au = au.toBuilder().tddContents(tddContents).build();
+        // TODO: Mutable object are bug-prone and dangerous and it confuses
+        //       that the content path is added twice
+        au = au.toBuilder().tddContents(getTddContent(path)).build();
 
-        au = assignTddContents(au, tddContents);
-
-        return au;
+        return assignTddContents(au, getTddContent(path));
     }
 
     private ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
@@ -52,21 +53,12 @@ public class ArchitectureUpdateReader {
                 .findFirst();
     }
 
-    private Optional<TddContent> contentByMatchingFileName(List<TddContent> tddContents, Tdd tdd) {
-        if(tdd.getFile() == null){
-            return Optional.empty();
-        }
-        return tddContents.stream().filter(content -> content.getFilename().equals(tdd.getFile())).findFirst();
-    }
-
     private List<TddContent> getTddContent(Path path) {
-        final File[] files = path.toFile().listFiles();
-
-        return Arrays.stream(files)
+        return stream(requireNonNull(path.toFile().listFiles()))
                 .filter(TddContent::isContentType)
                 .filter(TddContent::isTddContentName)
                 .map((File file) -> TddContent.createCreateFromFile(file, filesFacade))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 }

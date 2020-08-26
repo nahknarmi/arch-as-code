@@ -31,7 +31,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
     @CommandLine.Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
 
-    @CommandLine.Option(names = {"-p", "--p1-url"}, description = "Url to P1 Google Document, used to import decisions and other data", required = false)
+    @CommandLine.Option(names = {"-p", "--p1-url"}, description = "Url to P1 Google Document, used to import decisions and other data")
     private String p1GoogleDocUrl;
 
     @Getter

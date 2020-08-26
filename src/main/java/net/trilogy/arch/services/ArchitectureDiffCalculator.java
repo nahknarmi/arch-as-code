@@ -10,7 +10,6 @@ import net.trilogy.arch.domain.diff.DiffableRelationship;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.C4Container;
 import net.trilogy.arch.domain.c4.C4SoftwareSystem;
-import net.trilogy.arch.domain.c4.Entity;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -6,6 +6,7 @@ import net.trilogy.arch.domain.c4.*;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.Diff.Status;
 import net.trilogy.arch.domain.diff.DiffSet;
+import net.trilogy.arch.domain.diff.Diffable;
 import net.trilogy.arch.domain.diff.DiffableEntity;
 import net.trilogy.arch.domain.diff.DiffableRelationship;
 import org.junit.Rule;
@@ -78,7 +79,7 @@ public class ArchitectureDiffCalculatorTest {
 
         collector.checkThat(
                 actual.getDiffs().stream()
-                        .filter(it -> it.getElement().getId() == "rel1")
+                        .filter(it -> it.getElement().getId().equals("rel1"))
                         .findAny()
                         .orElseThrow()
                         .getStatus(),
@@ -106,7 +107,7 @@ public class ArchitectureDiffCalculatorTest {
 
         collector.checkThat(
                 actual.getDiffs().stream()
-                        .filter(it -> it.getElement().getId() == "1")
+                        .filter(it -> it.getElement().getId().equals("1"))
                         .findAny()
                         .orElseThrow()
                         .getStatus(),
@@ -157,10 +158,10 @@ public class ArchitectureDiffCalculatorTest {
         var diffs = ArchitectureDiffCalculator.diff(first, second);
 
         // THEN
-        var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId() == "1").findAny().get();
+        var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId().equals("1")).findAny().get();
 
         collector.checkThat(
-                actual.getDescendants().stream().map(it -> it.getId()).collect(Collectors.toSet()),
+                actual.getDescendants().stream().map(Diffable::getId).collect(Collectors.toSet()),
                 equalTo(Set.of("2", "4"))
         );
 
@@ -192,10 +193,10 @@ public class ArchitectureDiffCalculatorTest {
         var diffs = ArchitectureDiffCalculator.diff(first, second);
 
         // THEN
-        var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId() == "1").findAny().get();
+        var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId().equals("1")).findAny().get();
 
         collector.checkThat(
-                actual.getDescendants().stream().map(it -> it.getId()).collect(Collectors.toSet()),
+                actual.getDescendants().stream().map(Diffable::getId).collect(Collectors.toSet()),
                 equalTo(Set.of("2", "3", "r"))
         );
 
