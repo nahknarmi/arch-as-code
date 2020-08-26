@@ -37,7 +37,8 @@ that describes how to setup a new account and get a **free** workspace.
 ### 2. Use Java 11 locally
 
 The build currently assumes Java 11.  Several tools exist to manage multiple
-JDK versions.  A good choice is [jEnv](https://www.jenv.be/).
+JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
+[section on jEnv](#jenv).
 
 ### 3. Install arch-as-code CLI
 
@@ -116,11 +117,47 @@ workspace (https://structurizr.com/workspace/${WORKSPACE_ID}).
 
 ## Building locally
 
+### Setup
+
+#### jEnv
+
+Recommended is [jEnv](https://www.jenv.be/) for local builds Linux or MacOS.
+This tool sets up your local environment to use the version of Java
+relevant to your project&mdash;in this case, 11&mdash;without you needing
+to manually update `PATH` or `JAVA_HOME`.
+
+After following instructions, you should find that the AaC repository is
+setup for you as Java 11:
+
+```bash
+$ cd <your root of the AaC project git clone>
+$  java -version
+<output which indicates a build of Java 11>
+```
+
+### Running
+
 Use `./gradlew` (Gradle) or `./batect build` (Batect) to build or run tests.
 
-[Batect](https://batect.dev/) works "out of the box", however, an important
-optimization is to avoid redownloading plugins and dependencies from within
-a Docker container.
+Batect runs `./gradlew` inside a Docker container against the current git
+clone project root, and should _always_ produce the same results.
+
+#### Batect
+
+[Batect](https://batect.dev/) is a local script which runs your project in
+Docker, similar to your CI system, provided by Charles Korn, a ThoughtWorker.
+This ensures your local build is as close to CI and Production as possible.
+See [batect.yml](./batect.yml) to update the Docker image used, and the
+target commands for the command line.
+
+Batect works "out of the box", however, an important optimization is to
+avoid redownloading plugins and dependencies from within a Docker container.
+Use `./batect -T` to list available targets.  Currently:
+```bash
+$ ./batect -T
+Available tasks:
+- build: Build (and test) the program
+```
 
 With Batect, link to your user local Gradle cache directory:
 
