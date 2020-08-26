@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ArchitectureUpdateAnnotator {
     private static final String REGEX = "(\\n\\s*-\\s['\\\"]?component-id['\\\"]?:\\s+['\\\"]?([a-zA-Z\\d]+)['\\\"]?).*((^\\n)*\\n)";
@@ -36,15 +38,15 @@ public class ArchitectureUpdateAnnotator {
     }
 
     public ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
-        List<TddContainerByComponent> tddContainers = au.getTddContainersByComponent().stream()
+        var tddContainers = au.getTddContainersByComponent().stream()
                 .map(c -> new TddContainerByComponent(
                                 c.getComponentId(),
                                 c.isDeleted(),
-                                c.getTdds().entrySet().stream().collect(Collectors.toMap(
+                                c.getTdds().entrySet().stream().collect(toMap(
                                         Map.Entry::getKey,
                                         (tdd) -> addFileNameToTdd(c.getComponentId(), tdd, au.getTddContents())))
                         )
-                ).collect(Collectors.toList());
+                ).collect(toList());
 
         return au.toBuilder().tddContainersByComponent(tddContainers).build();
     }

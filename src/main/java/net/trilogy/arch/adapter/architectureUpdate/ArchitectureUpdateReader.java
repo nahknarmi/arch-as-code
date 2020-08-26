@@ -37,10 +37,12 @@ public class ArchitectureUpdateReader {
     }
 
     private ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
-        au.getTddContainersByComponent().forEach(componentTdds -> componentTdds.getTdds().forEach((key, value) -> {
-            Optional<TddContent> tddContent = contentByMatchingIds(tddContents, componentTdds, key);
-            value.setContent(tddContent);
-        }));
+        au.getTddContainersByComponent().forEach(componentTdds -> {
+            componentTdds.getTdds().forEach((tddId, tdd) -> {
+                Optional<TddContent> tddContent = contentByMatchingIds(tddContents, componentTdds, tddId);
+                tdd.setContent(tddContent);
+            });
+        });
         return au;
     }
 

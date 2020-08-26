@@ -2,6 +2,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
@@ -49,30 +50,40 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
     public Integer call() {
         logArgs();
 
-        var auAsString = loadAuString(architectureUpdateDirectory);
-        if (auAsString.isEmpty()) return 2;
+        ArchitectureUpdateAnnotator annotator = new ArchitectureUpdateAnnotator();
 
         var au = loadAu(architectureUpdateDirectory);
         if (au.isEmpty()) return 2;
 
+        try {
+            ArchitectureUpdate tddContentAnnotatedAu = annotator.annotateTddContentFiles(au.get());
+            String s = new ArchitectureUpdateObjectMapper().writeValueAsString(tddContentAnnotatedAu);
+            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), s);
+        } catch (Exception e) {
+            printError("Unable to write TDD content files annotations to Architecture Update.", e);
+            return 2;
+        }
+
+        var auAsString = loadAuString(architectureUpdateDirectory);
+        if (auAsString.isEmpty()) return 2;
+
         final var architecture = loadArchitectureOrPrintError("Unable to load Architecture product-architecture.yml.");
         if (architecture.isEmpty()) return 2;
 
-        ArchitectureUpdateAnnotator annotator = new ArchitectureUpdateAnnotator();
         if (annotator.isComponentsEmpty(architecture.get(), au.get())) {
             printError("No valid components to annotate.");
             return 1;
         }
 
         try {
-            String annotatedAu = annotator.annotateC4Paths(architecture.get(), auAsString.get());
-            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), annotatedAu);
+            String c4PathAnnotatedAu = annotator.annotateC4Paths(architecture.get(), auAsString.get());
+            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), c4PathAnnotatedAu);
         } catch (Exception e) {
-            printError("Unable to write annotations to Architecture Update.", e);
+            printError("Unable to write C4 path annotations to Architecture Update.", e);
             return 2;
         }
 
-        print("AU has been annotated with component paths.");
+        print("AU has been annotated.");
 
         return 0;
     }
