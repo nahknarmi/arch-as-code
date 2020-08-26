@@ -43,6 +43,8 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "tdds-per-component") private final List<TddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements") private final Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements;
     @JsonProperty(value = "capabilities") private final CapabilitiesContainer capabilityContainer;
+
+    //TODO remove tddContents per https://tw-trilogy.atlassian.net/browse/AAC-160
     @JsonIgnore private final List<TddContent> tddContents;
 
     @Builder(toBuilder = true)
