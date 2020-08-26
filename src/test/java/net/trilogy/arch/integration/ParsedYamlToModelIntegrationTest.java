@@ -350,6 +350,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
     }
 
+    @SuppressWarnings("deprecation")
     private Workspace getWorkspace() throws IOException {
         File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "product-architecture.yml");

@@ -73,6 +73,7 @@ public class IdGenerationTest {
         });
     }
 
+    @SuppressWarnings("deprecation")
     private ArchitectureDataStructure getDataStructure() throws IOException {
         File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "product-architecture.yml");

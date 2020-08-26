@@ -6,7 +6,7 @@ import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.schema.SchemaValidator;
 
 public abstract class ArchitectureDataStructureValidatorFactory {
-
+    @SuppressWarnings("deprecation")
     public static ArchitectureDataStructureValidator create() {
         return new ArchitectureDataStructureValidator(
                 ImmutableList.of(

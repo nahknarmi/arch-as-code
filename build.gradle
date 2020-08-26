@@ -85,6 +85,10 @@ version: "0.17.0"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
+}
+
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -152,8 +156,8 @@ project.test {
 
     beforeTest { TestDescriptor td -> outputCache.clear() }
 
-    onOutput { 
-        TestDescriptor td, TestOutputEvent toe ->   
+    onOutput {
+        TestDescriptor td, TestOutputEvent toe ->
             outputCache.add(toe.getMessage())
             while (outputCache.size() > 1000) outputCache.remove()
     }
@@ -167,7 +171,7 @@ project.test {
         showStandardStreams false
     }
 
-    afterTest { 
+    afterTest {
         TestDescriptor td, TestResult tr ->
             if (tr.resultType == TestResult.ResultType.FAILURE) {
                 println()

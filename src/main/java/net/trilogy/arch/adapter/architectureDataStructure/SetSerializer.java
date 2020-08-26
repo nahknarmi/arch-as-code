@@ -12,13 +12,14 @@ import java.util.TreeSet;
 /**
  * @todo Modern Jackson does this out of box.  What is this class for?
  */
-public class SetSerializer extends StdSerializer<Set> {
+public class SetSerializer extends StdSerializer<Set<?>> {
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public SetSerializer(Class<Set> t) {
-        super(t);
+        super((Class) t);
     }
 
     @Override
-    public void serialize(Set set, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    public void serialize(Set<?> set, JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (set == null) {
             gen.writeNull();
             return;

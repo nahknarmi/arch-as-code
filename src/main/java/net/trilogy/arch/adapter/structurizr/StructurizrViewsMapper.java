@@ -95,7 +95,7 @@ public class StructurizrViewsMapper {
         }
     }
 
-    private Method findSetter(Class model, Object objectToSet, String methodName) {
+    private Method findSetter(Class<?> model, Object objectToSet, String methodName) {
         try {
             return model.getDeclaredMethod(methodName, objectToSet.getClass());
         } catch (NoSuchMethodException e) {

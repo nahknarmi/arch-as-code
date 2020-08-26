@@ -13,6 +13,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 
+@SuppressWarnings("deprecation") // ArchitectureDataStructureReader
 public class ArchitectureDataStructureValidator {
     private final List<DataStructureValidator> dataStructureDataStructureValidators;
     private final SchemaValidator schemaValidator;
