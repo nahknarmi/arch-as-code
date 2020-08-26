@@ -7,11 +7,14 @@ import net.trilogy.arch.domain.c4.C4Container;
 import net.trilogy.arch.domain.c4.C4Type;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 @EqualsAndHashCode
 public class DiffSet {
@@ -35,40 +38,43 @@ public class DiffSet {
 
         var relationships = findRelationshipsThatReferToAnyOf(systemsAndPeople).stream()
                 .filter(r -> doesRelationshipRefersToOneOfTypes(r, Set.of(C4Type.PERSON, C4Type.SYSTEM)))
-                .collect(Collectors.toSet());
-        return setOf(systemsAndPeople, relationships);
+                .collect(toSet());
+        return merge(systemsAndPeople, relationships);
     }
 
     public Set<Diff> getContainerLevelDiffs(String systemId) {
         var containers = this.diffs.stream()
                 .filter(diff -> diff.getElement().getType().equals(C4Type.CONTAINER))
                 .filter(diff -> ((C4Container) ((DiffableEntity) diff.getElement()).getEntity()).getSystemId().equals(systemId))
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         var relationships = findRelationshipsThatReferToAnyOf(containers).stream()
                 .filter(r -> doesRelationshipRefersToOneOfTypes(r, Set.of(C4Type.PERSON, C4Type.SYSTEM, C4Type.CONTAINER)))
-                .collect(Collectors.toSet());
+                .collect(toSet());
         var otherRelatedEntities = findDiffsReferredToBy(relationships);
 
-        return setOf(containers, relationships, otherRelatedEntities);
+        return merge(containers, relationships, otherRelatedEntities);
     }
 
     public Set<Diff> getComponentLevelDiffs(String containerId) {
         var containers = this.diffs.stream()
                 .filter(diff -> diff.getElement().getType().equals(C4Type.COMPONENT))
                 .filter(diff -> ((C4Component) ((DiffableEntity) diff.getElement()).getEntity()).getContainerId().equals(containerId))
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         var relationships = findRelationshipsThatReferToAnyOf(containers);
         var otherRelatedEntities = findDiffsReferredToBy(relationships);
-        return setOf(containers, relationships, otherRelatedEntities);
+
+        return merge(containers, relationships, otherRelatedEntities);
     }
 
     @SafeVarargs
-    private <T> Set<T> setOf(Collection<T>... itemCollections) {
-        return Stream.of(itemCollections)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+    private <T> Set<T> merge(Collection<T>... itemCollections) {
+        final var merged = new HashSet<T>();
+        for (final Collection<T> items : itemCollections) {
+            merged.addAll(items);
+        }
+        return merged;
     }
 
     private List<Diff> findById(String id) {

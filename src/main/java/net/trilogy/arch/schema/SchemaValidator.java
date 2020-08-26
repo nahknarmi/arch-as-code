@@ -36,7 +36,9 @@ public class SchemaValidator {
         return errors;
     }
 
+    @SuppressWarnings("deprecation")
     private JsonSchema getJsonSchemaFromClasspath(String schemaResource) {
+        // TODO: See if Jackson has a non-deprecated means of doing this
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaResource);
         return factory.getSchema(is);

@@ -113,6 +113,6 @@ public class GitInterface {
         return dir.toPath().toAbsolutePath().toFile();
     }
 
-    public class BranchNotFoundException extends Exception {
+    public static class BranchNotFoundException extends Exception {
     }
 }

@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -109,16 +111,22 @@ public class DocumentationEnhancerTest {
     @Test
     public void shouldAddDocumentationImages() {
         // Given
-        Workspace workspace = new Workspace("Foo", "Bar");
-        final String file = getClass().getResource(ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getFile();
+        final var workspace = new Workspace("Foo", "Bar");
+        final var file = getClass().getResource(ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getFile();
 
         // When
         new DocumentationEnhancer(new File(file), new FilesFacade()).enhance(workspace, new ArchitectureDataStructure());
 
         // Then
-        Set<Image> images = workspace.getDocumentation().getImages();
+        final Set<Image> images = workspace.getDocumentation().getImages();
         collector.checkThat(images.size(), equalTo(1));
-        Image image = (Image) new ArrayList(images).get(0);
+        final Image image = first(images);
         collector.checkThat(image.getName(), equalTo("devfactory.png"));
+    }
+
+    private static <T> T first(final Collection<T> first) {
+        final Iterator<T> it = first.iterator();
+        if (!it.hasNext()) throw new IllegalStateException("No first element");
+        return it.next();
     }
 }

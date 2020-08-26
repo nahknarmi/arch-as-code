@@ -10,6 +10,7 @@ import java.util.Date;
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +26,7 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertThat(workspace.getDocumentation().getDecisions(), hasSize(0));
+        assertEquals(workspace.getDocumentation().getDecisions().size(), 0);
     }
 
     @Test
@@ -37,7 +38,7 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertThat(workspace.getDocumentation().getDecisions(), hasSize(1));
+        assertEquals(workspace.getDocumentation().getDecisions().size(), 1);
     }
 
     @Test
@@ -53,6 +54,6 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertThat(workspace.getDocumentation().getDecisions(), hasSize(2));
+        assertEquals(workspace.getDocumentation().getDecisions().size(), 2);
     }
 }
