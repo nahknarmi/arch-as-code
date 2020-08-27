@@ -150,23 +150,13 @@ This ensures your local build is as close to CI and Production as possible.
 See [batect.yml](./batect.yml) to update the Docker image used, and the
 target commands for the command line.
 
-Batect works "out of the box", however, an important optimization is to
-avoid redownloading plugins and dependencies from within a Docker container.
 Use `./batect -T` to list available targets.  Currently:
 ```bash
 $ ./batect -T
 Available tasks:
 - build: Build (and test) the program
 ```
-
-With Batect, link to your user local Gradle cache directory:
-
-```
-$ ln -s ~/.gradle .gradle-cache
-```
-
-This shares Gradle plugin and dependency downloads with the Docker container
-run by Batect.
+Batect should share local Gradle downloads with the Docker container.
 
 ## Build maintenance
 

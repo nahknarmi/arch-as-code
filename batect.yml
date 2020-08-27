@@ -5,7 +5,7 @@ containers:
       - local: .
         container: /code
         options: cached
-      - local: .gradle-cache
+      - local: ~/.gradle
         container: /home/container-user/.gradle
         options: cached
     working_directory: /code
