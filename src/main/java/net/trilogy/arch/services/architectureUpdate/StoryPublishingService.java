@@ -65,6 +65,14 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, stories, createStoriesResults);
     }
 
+    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
+        return au.getCapabilityContainer()
+                .getFeatureStories()
+                .stream()
+                .filter(StoryPublishingService::shouldCreateStory)
+                .collect(Collectors.toList());
+    }
+
     private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
@@ -117,22 +125,15 @@ public class StoryPublishingService {
         }
     }
 
-    private static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
-        return au.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .filter(StoryPublishingService::shouldCreateStory)
-                .collect(Collectors.toList());
-    }
-
     private static boolean shouldCreateStory(FeatureStory story) {
         return !isStoryAlreadyCreated(story);
     }
 
     private static boolean isStoryAlreadyCreated(FeatureStory story) {
         return !(
-                story.getJira().getTicket().isBlank() &&
-                        story.getJira().getLink().isBlank()
+                story.getJira() == null ||
+                        (story.getJira().getTicket() == null || story.getJira().getTicket().isBlank() &&
+                                story.getJira().getLink() == null || story.getJira().getLink().isBlank())
         );
     }
 
