@@ -171,4 +171,4 @@ run by Batect.
 ## Build maintenance
 
 Use `./gradlew dependencyUpdates` for a list of out-of-date dependencies and
-plugins.
+plugins, or Gradle itself.
