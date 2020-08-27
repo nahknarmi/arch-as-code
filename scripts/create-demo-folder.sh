@@ -1,61 +1,87 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]
-then
-    echo "This script will:"
-    echo " - run ./gradlew clean"
-    echo " - run ./gradlew distZip"
-    echo " - create a demo folder where it's easy to execute the binary"
-    echo " - that folder will be as if `init` and `au init` had already been run"
-else
-    # find and go to repo root dir
-    d="$(dirname "${BASH_SOURCE[0]}")"
-    dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"
-    cd "$dir"
-    cd ..
+export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]:+${FUNCNAME[0]}():} '
 
-    rm -rf /tmp/aac/demo-folder/.arch-as-code
-    rm -rf /tmp/aac/demo-folder/.install
-    mkdir -p /tmp/aac/demo-folder/.install
+set -e
+set -u
+set -o pipefail
 
-    # remove existing
-    ./gradlew clean
-    rm -rf build
+function print-usage() {
+    echo "Usage: $0 [-h|--help]"
+}
 
-    cp ./scripts/demo-git-ignore /tmp/aac/demo-folder/.gitignore
+function print-help() {
+    cat <<EOH
+This script will:
+ - run ./gradlew clean
+ - run ./gradlew distZip
+ - create a demo folder where it's easy to execute the binary
+ - that folder will be as if 'init' and 'au init' had already been run
+EOH
+}
 
-    # build
-    ./gradlew distZip
-    cd build/distributions
-    unzip *.zip
-    rm *.zip
-    cd *
-    mv ./* /tmp/aac/demo-folder/.install/
+# shellcheck disable=SC2214
+while getopts :h-: opt; do
+    [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
+    case $opt in
+    h | help ) print-help ; exit 0 ;;
+    * ) print-usage ; exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
 
-    cd /tmp/aac/demo-folder
+tmpdir="${TMPDIR-/tmp}"
 
-    git init
+# find and go to repo root dir
+d="$(dirname "${BASH_SOURCE[0]}")"
+dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"
+cd "$dir"
+cd ..
 
-    mv product-architecture.yml product-architecture.yml.bak
+rm -rf "$tmpdir"/aac/demo-folder/.arch-as-code
+rm -rf "$tmpdir"/aac/demo-folder/.install
+mkdir -p "$tmpdir"/aac/demo-folder/.install
 
-    .install/bin/arch-as-code init -i i -k i -s s .
-    .install/bin/arch-as-code au init -c c -p p -s s .
+# remove existing
+./gradlew clean
+rm -rf build
 
-    mv product-architecture.yml.bak product-architecture.yml
+cp ./scripts/demo-git-ignore $tmpdir/aac/demo-folder/.gitignore
 
-    # copy .arch-as-code from repo root
-    rm -rf .arch-as-code
-    cp -r $dir/../.arch-as-code .
+# build
+./gradlew distZip
+cd build/distributions
+unzip *.zip
+rm *.zip
+cd *
+mv ./* $tmpdir/aac/demo-folder/.install/
 
-    # add executable to folder
-    echo 'd="$(dirname "${BASH_SOURCE[0]}")"; dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"; "${dir}"/.install/bin/arch-as-code "$@";' > arch-as-code.sh
-    chmod +x arch-as-code.sh
+cd "$tmpdir"/aac/demo-folder
 
-    echo ""
-    echo ""
-    echo ""
-    echo ""
-    echo "Demo folder created. To cd there, run:"
-    echo "   cd $(pwd)"
-    echo "Run ./arch-as-code.sh as an alias for the execcutable"
-fi
+git init
+
+mv product-architecture.yml product-architecture.yml.bak
+
+.install/bin/arch-as-code init -i i -k i -s s .
+.install/bin/arch-as-code au init -c c -p p -s s .
+
+mv product-architecture.yml.bak product-architecture.yml
+
+# copy .arch-as-code from repo root
+rm -rf .arch-as-code
+cp -r $dir/../.arch-as-code .
+
+# add executable to folder
+# shellcheck disable=SC2016
+echo 'd="$(dirname "${BASH_SOURCE[0]}")"; dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"; "${dir}"/.install/bin/arch-as-code "$@";' > arch-as-code.sh
+chmod +x arch-as-code.sh
+
+cat <<EOM
+
+
+
+
+Demo folder created. To cd there, run:
+   cd $(pwd)
+Run ./arch-as-code.sh as an alias for the executable
+EOM
