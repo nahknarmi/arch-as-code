@@ -13,6 +13,7 @@ buildscript {
 plugins {
     id "info.solidsoft.pitest" version "1.5.2"
     id "com.github.ben-manes.versions" version "0.29.0"
+    id "org.springframework.boot" version "2.3.3.RELEASE"
 }
 
 apply plugin: "java"
@@ -181,17 +182,6 @@ project.test {
     }
 }
 
-
-jar {
-    manifest {
-        attributes "Main-Class": "net.trilogy.arch.Application", "Multi-Release": true
-    }
-
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
+bootJar {
+    mainClassName = "net.trilogy.arch.Application"
 }
