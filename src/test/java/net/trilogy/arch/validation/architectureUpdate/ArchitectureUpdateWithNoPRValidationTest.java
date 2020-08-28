@@ -68,7 +68,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                 )
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
-                        false,
+                        null, false,
                         Map.of(Tdd.Id.blank(), new Tdd("text", null))
                 )))
                 .build();
@@ -149,7 +149,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                         ))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
-                        false,
+                        null, false,
                         Map.of(Tdd.Id.blank(), new Tdd("text", null))
                 )))
                 .build();
@@ -202,7 +202,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                         ))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
-                        false,
+                        null, false,
                         Map.of(Tdd.Id.blank(), new Tdd("text", null))
                 )))
                 .build();

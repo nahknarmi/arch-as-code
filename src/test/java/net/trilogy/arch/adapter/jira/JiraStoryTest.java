@@ -188,7 +188,7 @@ public class JiraStoryTest {
                 .tddContainersByComponent(List.of(
                         new TddContainerByComponent(
                                 new Tdd.ComponentReference("31"),
-                                false,
+                                null, false,
                                 Map.of(
                                         new Tdd.Id("TDD 1"), new Tdd("TDD 1 text", null),
                                         new Tdd.Id("TDD 2"), new Tdd("TDD 2 text", null),
@@ -197,7 +197,7 @@ public class JiraStoryTest {
                         ),
                         new TddContainerByComponent(
                                 new Tdd.ComponentReference("404"),
-                                true,
+                                null, true,
                                 Map.of(
                                         new Tdd.Id("TDD 3"), new Tdd("TDD 3 text", null),
                                         new Tdd.Id("TDD 4"), new Tdd("TDD 4 text", null)
@@ -240,7 +240,7 @@ public class JiraStoryTest {
         }
         final TddContainerByComponent newComponentWithTdds = new TddContainerByComponent(
                 new Tdd.ComponentReference(newComponentId),
-                false,
+                null, false,
                 oldTdds
         );
         return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();

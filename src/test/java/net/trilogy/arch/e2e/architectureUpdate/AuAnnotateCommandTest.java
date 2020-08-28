@@ -81,11 +81,11 @@ public class AuAnnotateCommandTest {
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: \"31\"",
-                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller")
+                        "component-id: \"31\"\n  component-path: c4://Internet Banking System/API Application/Reset Password Controller")
                 .replaceFirst("component-id: \"30\"",
-                        "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
+                        "component-id: \"30\"\n  component-path: c4://Internet Banking System/API Application/Accounts Summary Controller")
                 .replaceFirst("component-id: \"34\"",
-                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component");
+                        "component-id: \"34\"\n  component-path: c4://Internet Banking System/API Application/E-mail Component");
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(err.toString(), equalTo(""));
@@ -103,11 +103,11 @@ public class AuAnnotateCommandTest {
         // THEN
         var expected = Files.readString(originalAuWithTddContentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: \"31\"",
-                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller")
+                        "component-id: \"31\"\n  component-path: c4://Internet Banking System/API Application/Reset Password Controller")
                 .replaceFirst("component-id: \"30\"",
-                        "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
+                        "component-id: \"30\"\n  component-path: c4://Internet Banking System/API Application/Accounts Summary Controller")
                 .replaceFirst("component-id: \"34\"",
-                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component")
+                        "component-id: \"34\"\n  component-path: c4://Internet Banking System/API Application/E-mail Component")
                 .replaceFirst("TDD 1.1:\n\\s*file: null",
                         "TDD 1.1:\n      file: 'TDD 1.1 : Component-31.txt'")
                 .replaceFirst("TDD 1.2:\n\\s*file: null",
@@ -139,11 +139,11 @@ public class AuAnnotateCommandTest {
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: \"31\"",
-                        "component-id: \"29\"  # c4://Internet Banking System/API Application/Sign In Controller")
+                        "component-id: \"29\"\n  component-path: c4://Internet Banking System/API Application/Sign In Controller")
                 .replaceFirst("component-id: \"30\"",
-                        "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
+                        "component-id: \"30\"\n  component-path: c4://Internet Banking System/API Application/Accounts Summary Controller")
                 .replaceFirst("component-id: \"34\"",
-                        "component-id: \"34\"  # c4://Internet Banking System/API Application/E-mail Component");
+                        "component-id: \"34\"\n  component-path: c4://Internet Banking System/API Application/E-mail Component");
 
         collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
@@ -206,9 +206,9 @@ public class AuAnnotateCommandTest {
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve("architecture-update.yml"))
                 .replaceFirst("component-id: \"34\"", "component-id: \"404\"")
                 .replaceFirst("component-id: \"30\"",
-                        "component-id: \"30\"  # c4://Internet Banking System/API Application/Accounts Summary Controller")
+                        "component-id: \"30\"\n  component-path: c4://Internet Banking System/API Application/Accounts Summary Controller")
                 .replaceFirst("component-id: \"31\"",
-                        "component-id: \"31\"  # c4://Internet Banking System/API Application/Reset Password Controller");
+                        "component-id: \"31\"\n  component-path: c4://Internet Banking System/API Application/Reset Password Controller");
 
         collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
         collector.checkThat(actual, equalTo(expected));
@@ -263,7 +263,7 @@ public class AuAnnotateCommandTest {
 
         // THEN
         collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to write TDD content files annotations to Architecture Update.\nError: java.io.IOException: Ran out of bytes!\n"));
+        collector.checkThat(err.toString(), equalTo("Unable to write annotated Architecture Update to yaml file.\nError: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
     }
 

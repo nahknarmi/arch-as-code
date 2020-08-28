@@ -17,11 +17,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class ArchitectureUpdateAnnotatorTest {
     @Rule
@@ -49,7 +46,7 @@ public class ArchitectureUpdateAnnotatorTest {
         ArchitectureUpdate au = ArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(
-                        List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), false, Map.of()))
+                        List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), null,false, Map.of()))
                 )
                 .build();
 
@@ -57,62 +54,100 @@ public class ArchitectureUpdateAnnotatorTest {
     }
 
     @Test
-    public void shouldAnnotateIds() throws Exception {
-        String auLineSingleQuote = "\n- component-id: '13'\n";
-        String auLineDoubleQuote = "\n- component-id: \"13\"\n";
+    public void shouldAnnotateComponentPathWhenIdsAreFound() throws Exception {
+        // GIVEN
+        TddContainerByComponent firstComponent = new TddContainerByComponent(
+                new Tdd.ComponentReference("13"),
+                null, false,
+                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+        );
+        TddContainerByComponent secondComponent = new TddContainerByComponent(
+                new Tdd.ComponentReference("14"),
+                null, false,
+                Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+        );
 
-        String expectedSingleQuote = "\n- component-id: '13'  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
-        String expectedDoubleQuote = "\n- component-id: \"13\"  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
+        List<TddContainerByComponent> tddContainers = List.of(
+                firstComponent,
+                secondComponent
+        );
+        ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
 
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineSingleQuote), equalTo(expectedSingleQuote));
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineDoubleQuote), equalTo(expectedDoubleQuote));
+        //When
+        annotator.annotateC4Paths(getArchitecture(), au);
+
+        // Then
+        assertThat(firstComponent.getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller"));
+        assertThat(secondComponent.getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Reset Password Controller"));
     }
 
     @Test
-    public void shouldAnnotateIndentedIds() throws Exception {
-        String auLineSingleQuote = "\n  - component-id: '13'\n";
-        String auLineDoubleQuote = "\n  - component-id: \"13\"\n";
+    public void shouldNotSetPathWhenIdIsNotFound() throws Exception {
+        // GIVEN
+        List<TddContainerByComponent> tddContainers = List.of(
+                new TddContainerByComponent(
+                        new Tdd.ComponentReference("Non Existing"),
+                        null, false,
+                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                )
+        );
+        ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
 
-        String expectedSingleQuote = "\n  - component-id: '13'  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
-        String expectedDoubleQuote = "\n  - component-id: \"13\"  # c4://Internet Banking System/Internet Banking System/API Application/Internet Banking System/API Application/Sign In Controller\n";
+        //When
+        annotator.annotateC4Paths(getArchitecture(), au);
 
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineSingleQuote), equalTo(expectedSingleQuote));
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLineDoubleQuote), equalTo(expectedDoubleQuote));
+        // Then
+        assertThat(au.getTddContainersByComponent().get(0).getComponentPath(), equalTo(null));
     }
 
     @Test
-    public void shouldAnnotateNonNumberStringIds() throws Exception {
-        annotator = spy(ArchitectureUpdateAnnotator.class);
-        when(annotator.getComponentPathComment(any(ArchitectureDataStructure.class), eq("ArbitraryId42")))
-                .thenReturn("  # c4://CommentPath");
+    public void shouldAnnotateComponentIdWhenPathIsFound() throws Exception {
+        // GIVEN
+        TddContainerByComponent firstComponent = new TddContainerByComponent(
+                null,
+                "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller",
+                false,
+                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+        );
+        TddContainerByComponent secondComponent = new TddContainerByComponent(
+                null,
+                "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Reset Password Controller",
+                false,
+                Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+        );
+        List<TddContainerByComponent> tddContainers = List.of(
+                firstComponent,
+                secondComponent
+        );
 
-        String auLine = "\n- component-id: \"ArbitraryId42\"\n";
-        String expected = "\n- component-id: \"ArbitraryId42\"  # c4://CommentPath\n";
+        ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
 
-        collector.checkThat(this.annotator.annotateC4Paths(getArchitecture(), auLine), equalTo(expected));
+        //When
+        annotator.annotateC4Paths(getArchitecture(), au);
+
+        // Then
+        assertThat(firstComponent.getComponentId().getId(), equalTo("13"));
+        assertThat(secondComponent.getComponentId().getId(), equalTo("14"));
     }
 
-
     @Test
-    public void shouldLeaveLineUnchangedIfIdNotFound() throws Exception {
-        String auLine = "\n- component-id: \"DoesNotExist\"\n";
-        String expected = "\n- component-id: \"DoesNotExist\"\n";
+    public void shouldNotSetComponentIdWhenPathIsNotFound() throws Exception {
+        // GIVEN
+        List<TddContainerByComponent> tddContainers = List.of(
+                new TddContainerByComponent(
+                        null,
+                        "Non existing path",
+                        false,
+                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                )
+        );
+        ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
 
-        collector.checkThat(annotator.annotateC4Paths(getArchitecture(), auLine), equalTo(expected));
-    }
+        //When
+        annotator.annotateC4Paths(getArchitecture(), au);
 
-    @Test
-    public void shouldReturnPathComment() throws Exception {
-        String id = "13";
-        String expectedComment = "  # c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller";
-        collector.checkThat(annotator.getComponentPathComment(getArchitecture(), id), equalTo(expectedComment));
-    }
-
-    @Test
-    public void shouldReturnEmptyComment() throws Exception {
-        String id = "DoesNotExist";
-        String expectedComment = "";
-        collector.checkThat(annotator.getComponentPathComment(getArchitecture(), id), equalTo(expectedComment));
+        // Then
+        assertThat(au.getTddContainersByComponent().get(0).getComponentId(), equalTo(null));
     }
 
     @Test
@@ -126,12 +161,12 @@ public class ArchitectureUpdateAnnotatorTest {
         List<TddContainerByComponent> tddContainers = List.of(
                 new TddContainerByComponent(
                         new Tdd.ComponentReference("100"),
-                        false,
+                        null, false,
                         Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
                 ),
                 new TddContainerByComponent(
                         new Tdd.ComponentReference("200"),
-                        false,
+                        null, false,
                         Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
                 )
         );
@@ -146,12 +181,12 @@ public class ArchitectureUpdateAnnotatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("100"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt"))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("200"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt"))
                                 )
                         )
@@ -171,7 +206,7 @@ public class ArchitectureUpdateAnnotatorTest {
         );
         List<TddContainerByComponent> tddContainers = List.of(new TddContainerByComponent(
                         new Tdd.ComponentReference("13"),
-                        false,
+                null, false,
                         Map.of(
                                 new Tdd.Id("TDD 1.0"), new Tdd(null, null),
                                 new Tdd.Id("TDD 1.1"), new Tdd("text", null),
@@ -189,7 +224,7 @@ public class ArchitectureUpdateAnnotatorTest {
                 .tddContainersByComponent(
                         List.of(new TddContainerByComponent(
                                 new Tdd.ComponentReference("13"),
-                                false,
+                                null, false,
                                 Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null),
                                         new Tdd.Id("TDD 1.1"), new Tdd("text", null),
                                         new Tdd.Id("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")))

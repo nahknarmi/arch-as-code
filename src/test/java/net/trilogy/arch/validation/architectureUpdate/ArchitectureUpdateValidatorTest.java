@@ -114,19 +114,19 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("1"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("Dupe-1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("1"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("Dupe-1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("1"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("Dupe-2"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("1"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("Dupe-2"), new Tdd("text", null))
                                 )
                         )
@@ -149,19 +149,19 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Dupe-1"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("Dupe-1"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("2"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("Dupe-2"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("3"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("Dupe-2"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("4"), new Tdd("text", null))
                                 )
                         )
@@ -184,11 +184,11 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Non-existent-1"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("Non-existent-2"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("2"), new Tdd("text", null))
                                 )
                         )
@@ -213,17 +213,17 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Non-existent-deleted-1"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("1"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Non-existent-deleted-2"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("2"), new Tdd("text", null))
                                 ),
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("Valid-Deleted-Component-Id"),  // Present in beforeUpdate Architecture
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("3"), new Tdd("text", null))
                                 )
                         )
@@ -255,11 +255,11 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("No-decision-or-req-1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("No-decision-or-req-2"), new Tdd("text", null))
                                 )
                         )
@@ -391,11 +391,11 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
-                                        false,
+                                        null, false,
                                         Map.of(new Tdd.Id("TDD-with-no-story-1"), new Tdd("text", null))
                                 ), new TddContainerByComponent(
                                         new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),
-                                        true,
+                                        null, true,
                                         Map.of(new Tdd.Id("TDD-with-no-story-2"), new Tdd("text", null))
                                 )
                         )
@@ -472,7 +472,7 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("10"),
-                                        false,
+                                        null, false,
                                         Map.of(
                                                 new Tdd.Id("TDD 1.1"), new Tdd("text", "file"),
                                                 new Tdd.Id("TDD OK file"), new Tdd(null, "file"),
@@ -504,7 +504,7 @@ public class ArchitectureUpdateValidatorTest {
                         List.of(
                                 new TddContainerByComponent(
                                         new Tdd.ComponentReference("10"),
-                                        false,
+                                        null, false,
                                         Map.of(
                                                 new Tdd.Id("TDD 1.1"), new Tdd("overridden-text", null),
                                                 new Tdd.Id("TDD 1.2"), new Tdd("", null),
@@ -541,7 +541,7 @@ public class ArchitectureUpdateValidatorTest {
                 .tddContainersByComponent(
                         List.of(new TddContainerByComponent(
                                 new Tdd.ComponentReference("10"),
-                                false,
+                                null, false,
                                 Map.of(new Tdd.Id("TDD 1.1"), new Tdd(null, null)))
                         )
                 ).tddContents(tddContents)

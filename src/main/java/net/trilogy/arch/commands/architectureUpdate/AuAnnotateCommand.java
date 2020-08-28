@@ -2,8 +2,8 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
+import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter;
 import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
@@ -55,18 +55,6 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         var au = loadAu(architectureUpdateDirectory);
         if (au.isEmpty()) return 2;
 
-        try {
-            ArchitectureUpdate tddContentAnnotatedAu = annotator.annotateTddContentFiles(au.get());
-            String s = new ArchitectureUpdateObjectMapper().writeValueAsString(tddContentAnnotatedAu);
-            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), s);
-        } catch (Exception e) {
-            printError("Unable to write TDD content files annotations to Architecture Update.", e);
-            return 2;
-        }
-
-        var auAsString = loadAuString(architectureUpdateDirectory);
-        if (auAsString.isEmpty()) return 2;
-
         final var architecture = loadArchitectureOrPrintError("Unable to load Architecture product-architecture.yml.");
         if (architecture.isEmpty()) return 2;
 
@@ -75,11 +63,14 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
             return 1;
         }
 
+        ArchitectureUpdate architectureUpdate = annotator.annotateC4Paths(architecture.get(), au.get());
+
+        architectureUpdate = annotator.annotateTddContentFiles(architectureUpdate);
+
         try {
-            String c4PathAnnotatedAu = annotator.annotateC4Paths(architecture.get(), auAsString.get());
-            filesFacade.writeString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), c4PathAnnotatedAu);
+            new ArchitectureUpdateWriter(filesFacade).export(architectureUpdate, architectureUpdateDirectory.toPath());
         } catch (Exception e) {
-            printError("Unable to write C4 path annotations to Architecture Update.", e);
+            printError("Unable to write annotated Architecture Update to yaml file.", e);
             return 2;
         }
 
@@ -88,27 +79,13 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         return 0;
     }
 
-    private Optional<String> loadAuString(File architectureUpdateDirectory) {
-        String auAsString = null;
-        try {
-            auAsString = filesFacade.readString(architectureUpdateDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME));
-        } catch (Exception e) {
-            printError("Unable to load Architecture Update.", e);
-            return Optional.empty();
-        }
-
-        return Optional.of(auAsString);
-    }
-
     private Optional<ArchitectureUpdate> loadAu(File architectureUpdateDirectory) {
-        ArchitectureUpdate au = null;
         try {
-            au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
+            ArchitectureUpdate au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
+            return Optional.of(au);
         } catch (Exception e) {
             printError("Unable to load Architecture Update.", e);
             return Optional.empty();
         }
-
-        return Optional.of(au);
     }
 }

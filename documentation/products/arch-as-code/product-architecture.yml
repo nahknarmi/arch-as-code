@@ -231,7 +231,7 @@ model:
       path: "c4://DevSpaces/DevSpaces API/OAuth2 Controller"
       containerAlias: "c4://DevSpaces/DevSpaces API"
       containerId: "12"
-      name: "DevSpaces/DevSpaces API/OAuth2 Controller"
+      name: "OAuth2 Controller"
       description: "Allows users to login with oath2"
       technology: "Spring MVC Rest Controller"
       tags:

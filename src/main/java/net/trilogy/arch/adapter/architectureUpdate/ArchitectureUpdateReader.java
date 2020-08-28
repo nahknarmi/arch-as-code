@@ -49,7 +49,7 @@ public class ArchitectureUpdateReader {
     private Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, Tdd.Id tddId) {
         return tddContents.stream()
                 .filter(content -> content.getTdd().equals(tddId.toString()))
-                .filter(content -> content.getComponentId().equals(componentTdds.getComponentId().getId()))
+                .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
                 .findFirst();
     }
 

@@ -3,19 +3,22 @@ package net.trilogy.arch.domain.architectureUpdate;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
 public class TddContainerByComponent {
-    @Getter 
+    @Getter
+    @Setter
     @JsonProperty(value = "component-id")
-    private final Tdd.ComponentReference componentId;
+    private Tdd.ComponentReference componentId;
+
+    @Getter
+    @Setter
+    @JsonProperty(value = "component-path")
+    private String componentPath;
 
     @Getter 
     @JsonProperty(value = "tdds") 
@@ -28,10 +31,12 @@ public class TddContainerByComponent {
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public TddContainerByComponent(
             @JsonProperty(value = "component-id") Tdd.ComponentReference componentId,
+            @JsonProperty(value = "component-path") String componentPath,
             @JsonProperty(value = "deleted") Boolean deleted,
             @JsonProperty(value = "tdds") Map<Tdd.Id, Tdd> tdds
     ) {
         this.componentId = componentId;
+        this.componentPath = componentPath;
         this.deleted = deleted;
         this.tdds = tdds;
     }
@@ -41,6 +46,6 @@ public class TddContainerByComponent {
     }
 
     public static TddContainerByComponent blank() {
-        return new TddContainerByComponent(Tdd.ComponentReference.blank(), false, Map.of(Tdd.Id.blank(), Tdd.blank()));
+        return new TddContainerByComponent(Tdd.ComponentReference.blank(), null, false, Map.of(Tdd.Id.blank(), Tdd.blank()));
     }
 }
