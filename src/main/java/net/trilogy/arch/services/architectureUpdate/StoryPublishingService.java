@@ -47,7 +47,7 @@ public class StoryPublishingService {
         out.println("Attempting to create stories...\n");
 
         List<JiraStory> jiraStories = new ArrayList<>();
-        for(var story : stories) {
+        for (var story : stories) {
             jiraStories.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }
 
@@ -65,29 +65,37 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, stories, createStoriesResults);
     }
 
+    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
+        return au.getCapabilityContainer()
+                .getFeatureStories()
+                .stream()
+                .filter(StoryPublishingService::shouldCreateStory)
+                .collect(Collectors.toList());
+    }
+
     private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
-        for(int i = 0; i < createStoriesResults.size(); ++i) {
-            if(!createStoriesResults.get(i).isSucceeded()) continue;
+        for (int i = 0; i < createStoriesResults.size(); ++i) {
+            if (!createStoriesResults.get(i).isSucceeded()) continue;
             successfulStories.append("\n  - ").append(stories.get(i).getTitle());
         }
 
         String heading = "Successfully created:";
 
-        if(!successfulStories.toString().isBlank()){
+        if (!successfulStories.toString().isBlank()) {
             out.println(heading + successfulStories);
         }
     }
 
     private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
-        for(int i = 0; i < createStoriesResults.size(); ++i) {
-            if(createStoriesResults.get(i).isSucceeded()) continue;
+        for (int i = 0; i < createStoriesResults.size(); ++i) {
+            if (createStoriesResults.get(i).isSucceeded()) continue;
             errors.append("Story: \"").append(stories.get(i).getTitle()).append("\":\n  - ").append(createStoriesResults.get(i).getError());
         }
         String heading = "Error! Some stories failed to publish. Please retry. Errors reported by Jira:";
-        if(!errors.toString().isBlank()){
+        if (!errors.toString().isBlank()) {
             err.println("\n" + heading + "\n\n" + errors);
         }
     }
@@ -117,25 +125,19 @@ public class StoryPublishingService {
         }
     }
 
-    private static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
-        return au.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .filter(StoryPublishingService::shouldCreateStory)
-                .collect(Collectors.toList());
-    }
-
     private static boolean shouldCreateStory(FeatureStory story) {
         return !isStoryAlreadyCreated(story);
     }
 
     private static boolean isStoryAlreadyCreated(FeatureStory story) {
         return !(
-                story.getJira().getTicket().isBlank() &&
-                        story.getJira().getLink().isBlank()
+                story.getJira() == null ||
+                        (story.getJira().getTicket() == null || story.getJira().getTicket().isBlank() &&
+                                story.getJira().getLink() == null || story.getJira().getLink().isBlank())
         );
     }
 
-    public static class NoStoriesToCreateException extends Exception {}
+    public static class NoStoriesToCreateException extends Exception {
+    }
 }
 
