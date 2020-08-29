@@ -135,7 +135,7 @@ $  java -version
 <output which indicates a build of Java 11>
 ```
 
-### Running
+### Building
 
 Use `./gradlew` (Gradle) or `./batect build` (Batect) to build or run tests.
 
@@ -157,6 +157,15 @@ Available tasks:
 - build: Build (and test) the program
 ```
 Batect should share local Gradle downloads with the Docker container.
+
+#### Code coverage
+
+To view HTML coverage reports, use:
+```
+$ (cd build/reports/jacoco/test/html/; open index.html)
+```
+The subshell syntax is to avoid changing your current terminal directory.
+The `open` command is MacOS-specific; for Linux, use `alias open=xdg-open`.
 
 ## Build maintenance
 
