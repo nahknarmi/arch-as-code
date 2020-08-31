@@ -113,7 +113,7 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 // Fail build if coverage drops
-                minimum = 0.94
+                minimum = 0.93
             }
         }
     }
