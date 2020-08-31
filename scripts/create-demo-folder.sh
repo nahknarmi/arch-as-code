@@ -25,8 +25,9 @@ EOH
 export TTY=false
 [[ -t 1 ]] && TTY=true
 
-tmpdir="${TMPDIR-/tmp}/aac"
-# trap 'rm -rf "$tmpdir"' EXIT  # Avoid leaving behind disk junk; use `bash -x`
+tmpdir="${TMPDIR-/tmp}/aac-$$"
+# Avoid leaving behind junk on disk unless a command fails
+trap '[[ 0 == $? ]] && rm -rf "$tmpdir"' EXIT
 # A trick to show output on failure, but not on success
 outfile="$tmpdir/out"
 
