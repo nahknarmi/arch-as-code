@@ -3,6 +3,10 @@ package net.trilogy.arch.domain.c4;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
+import static net.trilogy.arch.domain.c4.C4Action.DELIVERS;
 import static net.trilogy.arch.domain.c4.C4Path.path;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -148,7 +152,7 @@ public class C4ModelTest {
                         .relationship(C4Relationship.builder()
                                 .id("3")
                                 .alias("relation")
-                                .action(C4Action.DELIVERS)
+                                .action(DELIVERS)
                                 .withAlias("bobby")
                                 .description("desc")
                                 .build())
@@ -174,7 +178,7 @@ public class C4ModelTest {
                         .relationship(C4Relationship.builder()
                                 .id("3")
                                 .alias("relation")
-                                .action(C4Action.DELIVERS)
+                                .action(DELIVERS)
                                 .withAlias("bobby")
                                 .description("desc")
                                 .build())
@@ -188,7 +192,7 @@ public class C4ModelTest {
         C4Relationship relationship = C4Relationship.builder()
                 .id("3")
                 .alias("relation")
-                .action(C4Action.DELIVERS)
+                .action(DELIVERS)
                 .withAlias("bobby")
                 .description("desc")
                 .build();
@@ -227,5 +231,37 @@ public class C4ModelTest {
 
         assertThat(c4Model.findEntityByReference(idRef).getId(), equalTo("2"));
         assertThat(c4Model.findEntityByReference(aliasRef).getId(), equalTo("2"));
+    }
+
+    @Test
+    public void find_with_tag() {
+        final var tagToFind = new C4Tag("YOU'RE IT");
+        final var tagToIgnore = new C4Tag("SORRY, NOT YOU");
+        final var c4Model = new C4Model()
+                .addPerson(C4Person.builder()
+                        .path(path("@alice"))
+                        .name("Alice")
+                        .tag(tagToFind)
+                        .description("first person")
+                        .id("2")
+                        .build())
+                .addPerson(C4Person.builder()
+                        .path(path("@bob"))
+                        .name("Bob")
+                        .tag(tagToIgnore)
+                        .description("second person")
+                        .id("3")
+                        .build())
+                .addPerson(C4Person.builder()
+                        .path(path("@carol"))
+                        .name("Carol")
+                        .tag(tagToFind)
+                        .tag(tagToIgnore)
+                        .description("third person")
+                        .id("4")
+                        .build());
+
+        assertThat(c4Model.findWithTag(tagToFind).stream().map(Entity::getName).collect(toSet()),
+                equalTo(Set.of("Alice", "Carol")));
     }
 }
