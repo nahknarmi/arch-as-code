@@ -19,22 +19,37 @@ public class ArchitectureUpdateAnnotator {
 
     public ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         Set<C4Component> c4Components = dataStructure.getModel().getComponents();
-        List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
+            List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
 
-        tddContainersByComponent.stream().filter(c -> c.getComponentId() == null).forEach(c -> {
-            Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c4c.getPath().getPath().equals(c.getComponentPath())).findFirst();
-            if (c4Component.isPresent()) {
-                c.setComponentId(new Tdd.ComponentReference(c4Component.get().getId()));
-            }
-        });
+        List<TddContainerByComponent> withUpdatedIds = updateIdBasedOnPath(c4Components, tddContainersByComponent);
 
-        tddContainersByComponent.stream().forEach(c -> {
+        List<TddContainerByComponent> withUpdatedPath = updatePathBasedOnId(c4Components, withUpdatedIds);
+
+        ArchitectureUpdate architectureUpdate = au.toBuilder().tddContainersByComponent(withUpdatedPath).build();
+        return architectureUpdate;
+    }
+
+    private List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
+        return withUpdatedIds.stream().map(c -> {
             Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c.getComponentId() != null && c4c.getId().equals(c.getComponentId().getId())).findFirst();
             if (c4Component.isPresent()) {
-                c.setComponentPath(c4Component.get().getPath().getPath());
+                return new TddContainerByComponent(c.getComponentId(), c4Component.get().getPath().getPath(), c.isDeleted(), c.getTdds());
             }
-        });
-        return au;
+            return c;
+        }).collect(toList());
+    }
+
+    private List<TddContainerByComponent> updateIdBasedOnPath(Set<C4Component> c4Components, List<TddContainerByComponent> tddContainersByComponent) {
+        return tddContainersByComponent.stream().map(c -> {
+            if (c.getComponentId() != null) {
+                return c;
+            }
+            Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c4c.getPath().getPath().equals(c.getComponentPath())).findFirst();
+            if (c4Component.isPresent()) {
+                return new TddContainerByComponent(new Tdd.ComponentReference(c4Component.get().getId()), c.getComponentPath(), c.isDeleted(), c.getTdds());
+            }
+            return c;
+        }).collect(toList());
     }
 
     public ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
