@@ -1,13 +1,30 @@
 package net.trilogy.arch.domain.c4.view;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.structurizr.model.*;
-import net.trilogy.arch.domain.c4.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
+import com.structurizr.model.DeploymentNode;
+import com.structurizr.model.Location;
+import com.structurizr.model.Model;
+import com.structurizr.model.Person;
+import com.structurizr.model.SoftwareSystem;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4Container;
+import net.trilogy.arch.domain.c4.C4DeploymentNode;
+import net.trilogy.arch.domain.c4.C4Model;
+import net.trilogy.arch.domain.c4.C4Path;
+import net.trilogy.arch.domain.c4.C4Person;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
+import net.trilogy.arch.domain.c4.C4Tag;
+import net.trilogy.arch.domain.c4.HasTag;
 import net.trilogy.arch.generator.FunctionalIdGenerator;
-import net.trilogy.arch.transformation.DeploymentNodeTransformer;
-import net.trilogy.arch.transformation.LocationTransformer;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.joining;
+import static net.trilogy.arch.transformation.DeploymentNodeTransformer.addDeploymentNodeFromC4ToModel;
+import static net.trilogy.arch.transformation.LocationTransformer.c4LocationToLocation;
 
 public class ModelMediator {
     private final Model model;
@@ -59,18 +76,17 @@ public class ModelMediator {
         return (Component) model.getElement(id);
     }
 
-
     public SoftwareSystem addSoftwareSystem(C4SoftwareSystem softwareSystem) {
-        Location location = LocationTransformer.c4LocationToLocation(softwareSystem.getLocation());
+        Location location = c4LocationToLocation(softwareSystem.getLocation());
         idGenerator.setNext(softwareSystem.getId());
-        SoftwareSystem result = this.model.addSoftwareSystem(location, softwareSystem.getName(), softwareSystem.getDescription());
+        SoftwareSystem result = model.addSoftwareSystem(location, softwareSystem.getName(), softwareSystem.getDescription());
         result.addTags(getTags(softwareSystem));
         return result;
     }
 
     public Person addPerson(C4Person person) {
         // TODO [ENHANCEMENT]: Add aliases as property here (and also read them on import)
-        Location location = LocationTransformer.c4LocationToLocation(person.getLocation());
+        Location location = c4LocationToLocation(person.getLocation());
         idGenerator.setNext(person.getId());
         Person result = model.addPerson(location, person.getName(), person.getDescription());
         result.addTags(getTags(person));
@@ -97,14 +113,24 @@ public class ModelMediator {
     }
 
     public DeploymentNode addDeploymentNode(C4Model dataStructureModel, C4DeploymentNode c4DeploymentNode) {
-        return DeploymentNodeTransformer.addDeploymentNodeFromC4ToModel(c4DeploymentNode, dataStructureModel, model, idGenerator);
+        return addDeploymentNodeFromC4ToModel(c4DeploymentNode, dataStructureModel, model, idGenerator);
     }
 
-    private String str(List<String> lst) {
-        return "[" + lst.stream().map(i -> '"' + i + '"').collect(Collectors.joining(","))+ "]";
+    private static final ObjectMapper jackson = new ObjectMapper();
+
+    private static String str(List<String> lst) {
+        try {
+            return jackson.writeValueAsString(lst);
+        } catch (final JsonProcessingException e) {
+            final var x = new IllegalStateException("BUG: Impossible exception: " + e, e);
+            x.setStackTrace(e.getStackTrace());
+            throw x;
+        }
     }
 
     private String[] getTags(HasTag t) {
-        return t.getTags().stream().map(C4Tag::getTag).toArray(String[]::new);
+        return t.getTags().stream()
+                .map(C4Tag::getTag)
+                .toArray(String[]::new);
     }
 }
