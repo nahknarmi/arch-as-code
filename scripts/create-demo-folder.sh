@@ -20,16 +20,18 @@ This script will:
 EOH
 }
 
+# shellcheck disable=SC1090
 . "${0%/*}/colors.sh"
 export TTY=false
 [[ -t 1 ]] && TTY=true
 
-tmpdir="${TMPDIR-/tmp}"
+tmpdir="${TMPDIR-/tmp}/aac"
+trap 'rm -rf "$tmpdir"' EXIT  # Avoid leaving behind disk junk; use `bash -x`
 # A trick to show output on failure, but not on success
 outfile="$tmpdir/out"
 
-# Note: STDOOUT and STDERR may be mixed.  This function does not attempt to
-# address this: STDERR will always appear before STDERR
+# Note: STDOUT and STDERR may be mixed.  This function does not attempt to
+# address this: STDERR will always appear before STDOUT using this function
 function run() {
     "$@" >"$outfile" || {
         rc=$?
@@ -54,15 +56,15 @@ dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"
 cd "$dir"
 cd ..
 
-rm -rf "$tmpdir"/aac/demo-folder/.arch-as-code
-rm -rf "$tmpdir"/aac/demo-folder/.install
-mkdir -p "$tmpdir"/aac/demo-folder/.install
+rm -rf "$tmpdir"/demo-folder/.arch-as-code
+rm -rf "$tmpdir"/demo-folder/.install
+mkdir -p "$tmpdir"/demo-folder/.install
 
 # remove existing
 run ./gradlew clean
 rm -rf build
 
-cp ./scripts/demo-git-ignore $tmpdir/aac/demo-folder/.gitignore
+cp ./scripts/demo-git-ignore $tmpdir/demo-folder/.gitignore
 
 # build
 run ./gradlew distZip
@@ -70,10 +72,11 @@ cd build/distributions
 run unzip *.zip
 rm *.zip
 cd *
-mv ./* $tmpdir/aac/demo-folder/.install/
+mv ./* $tmpdir/demo-folder/.install/
 
-cd "$tmpdir"/aac/demo-folder
+cd "$tmpdir"/demo-folder
 
+pwd
 run git init
 
 mv product-architecture.yml product-architecture.yml.bak
