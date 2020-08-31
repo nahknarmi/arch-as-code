@@ -32,7 +32,7 @@ and documentation.
 First you'll need to create a Structurizr account. You can do this by
 following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide
-that describes how to setup a new account and get a **free** workspace.
+that describes how to set up a new account and get a **free** workspace.
 
 ### 2. Use Java 11 locally
 
@@ -126,8 +126,8 @@ This tool sets up your local environment to use the version of Java
 relevant to your project&mdash;in this case, 11&mdash;without you needing
 to manually update `PATH` or `JAVA_HOME`.
 
-After following instructions, you should find that the AaC repository is
-setup for you as Java 11:
+After following instructions, the AaC repository should be set up for you
+as Java 11:
 
 ```bash
 $ cd <your root of the AaC project git clone>
@@ -135,7 +135,7 @@ $  java -version
 <output which indicates a build of Java 11>
 ```
 
-### Running
+### Building
 
 Use `./gradlew` (Gradle) or `./batect build` (Batect) to build or run tests.
 
@@ -157,6 +157,15 @@ Available tasks:
 - build: Build (and test) the program
 ```
 Batect should share local Gradle downloads with the Docker container.
+
+#### Code coverage
+
+To view HTML coverage reports, use:
+```
+$ (cd build/reports/jacoco/test/html/; open index.html)
+```
+The subshell syntax is to avoid changing your current terminal directory.
+The `open` command is MacOS-specific; for Linux, use `alias open=xdg-open`.
 
 ## Build maintenance
 

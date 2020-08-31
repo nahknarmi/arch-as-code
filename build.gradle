@@ -92,15 +92,36 @@ jacocoTestCoverageVerification {
     }
 }
 
+test {
+    // Provide coverage HTML as soon as available
+    finalizedBy jacocoTestReport
+}
+
 jacocoTestReport {
+    dependsOn test
+
     reports {
         xml.enabled true
-        html.destination file("${buildDir}/jacocoHtml")
+        // Use standard location for HTML coverage results
+        html.enabled true
         csv.enabled false
     }
 }
 
-check.dependsOn jacocoTestCoverageVerification
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                // Fail build if coverage drops
+                minimum = 0.93
+            }
+        }
+    }
+}
+
+check {
+    dependsOn jacocoTestCoverageVerification
+}
 
 plugins.withType(DistributionPlugin) {
     distTar {
