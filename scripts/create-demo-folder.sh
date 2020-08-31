@@ -20,6 +20,24 @@ This script will:
 EOH
 }
 
+. "${0%/*}/colors.sh"
+export TTY=false
+[[ -t 1 ]] && TTY=true
+
+tmpdir="${TMPDIR-/tmp}"
+# A trick to show output on failure, but not on success
+outfile="$tmpdir/out"
+
+# Note: STDOOUT and STDERR may be mixed.  This function does not attempt to
+# address this: STDERR will always appear before STDERR
+function run() {
+    "$@" >"$outfile" || {
+        rc=$?
+        cat "$outfile"
+        exit $rc
+    }
+}
+
 # shellcheck disable=SC2214
 while getopts :h-: opt; do
     [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
@@ -29,8 +47,6 @@ while getopts :h-: opt; do
     esac
 done
 shift $((OPTIND - 1))
-
-tmpdir="${TMPDIR-/tmp}"
 
 # find and go to repo root dir
 d="$(dirname "${BASH_SOURCE[0]}")"
@@ -43,22 +59,22 @@ rm -rf "$tmpdir"/aac/demo-folder/.install
 mkdir -p "$tmpdir"/aac/demo-folder/.install
 
 # remove existing
-./gradlew clean
+run ./gradlew clean
 rm -rf build
 
 cp ./scripts/demo-git-ignore $tmpdir/aac/demo-folder/.gitignore
 
 # build
-./gradlew distZip
+run ./gradlew distZip
 cd build/distributions
-unzip *.zip
+run unzip *.zip
 rm *.zip
 cd *
 mv ./* $tmpdir/aac/demo-folder/.install/
 
 cd "$tmpdir"/aac/demo-folder
 
-git init
+run git init
 
 mv product-architecture.yml product-architecture.yml.bak
 
