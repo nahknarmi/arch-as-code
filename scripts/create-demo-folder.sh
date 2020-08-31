@@ -44,8 +44,14 @@ function run() {
 while getopts :h-: opt; do
     [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
     case $opt in
-    h | help ) print-help ; exit 0 ;;
-    * ) print-usage ; exit 2 ;;
+    h | help)
+        print-help
+        exit 0
+        ;;
+    *)
+        print-usage
+        exit 2
+        ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -79,12 +85,16 @@ cd "$tmpdir"/demo-folder
 pwd
 run git init
 
-mv product-architecture.yml product-architecture.yml.bak
+# This file is optional; created locally
+mv product-architecture.yml product-architecture.yml.bak || {
+    echo "$0: WARNING: No locally edited product-architecture.yml: continuing" >&2
+}
 
-.install/bin/arch-as-code init -i i -k i -s s .
-.install/bin/arch-as-code au init -c c -p p -s s .
+run .install/bin/arch-as-code init -i i -k i -s s .
+run .install/bin/arch-as-code au init -c c -p p -s s .
 
-mv product-architecture.yml.bak product-architecture.yml
+# Optionally restore the backup
+[[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml || true
 
 # copy .arch-as-code from repo root
 rm -rf .arch-as-code
@@ -92,7 +102,7 @@ cp -r $dir/../.arch-as-code .
 
 # add executable to folder
 # shellcheck disable=SC2016
-echo 'd="$(dirname "${BASH_SOURCE[0]}")"; dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"; "${dir}"/.install/bin/arch-as-code "$@";' > arch-as-code.sh
+echo 'd="$(dirname "${BASH_SOURCE[0]}")"; dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"; "${dir}"/.install/bin/arch-as-code "$@";' >arch-as-code.sh
 chmod +x arch-as-code.sh
 
 cat <<EOM
