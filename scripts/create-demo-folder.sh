@@ -37,7 +37,7 @@ function run() {
     "$@" >"$outfile" || {
         rc=$?
         cat "$outfile"
-        exit $rc
+        return $rc
     }
 }
 
@@ -79,23 +79,23 @@ cd build/distributions
 run unzip *.zip
 rm *.zip
 cd *
-mv ./* $tmpdir/demo-folder/.install/
+mv ./* "$tmpdir"/demo-folder/.install/
 
 cd "$tmpdir"/demo-folder
 
 pwd
 run git init
 
-# This file is optional; created locally
-mv product-architecture.yml product-architecture.yml.bak || {
-    echo "$0: WARNING: No locally edited product-architecture.yml: continuing" >&2
+# This file is optional
+mv product-architecture.yml product-architecture.yml.bak 2>/dev/null || {
+    echo "$0: WARNING: No locally edited product-architecture.yml; ignoring" >&2
 }
 
 run .install/bin/arch-as-code init -i i -k i -s s .
 run .install/bin/arch-as-code au init -c c -p p -s s .
 
-# Optionally restore the backup
-[[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml || true
+# Optionally restore the backup, if exists
+[[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml
 
 # copy .arch-as-code from repo root
 rm -rf .arch-as-code
