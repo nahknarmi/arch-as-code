@@ -11,12 +11,10 @@ import java.util.Map;
 @EqualsAndHashCode
 public class TddContainerByComponent {
     @Getter
-    @Setter
     @JsonProperty(value = "component-id")
     private Tdd.ComponentReference componentId;
 
     @Getter
-    @Setter
     @JsonProperty(value = "component-path")
     private String componentPath;
 
