@@ -12,6 +12,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ModelEnhancerTest {
+    @Test
+    public void shouldEnhance() {
+        Workspace workspace = new Workspace("foo", "bazz");
+        ArchitectureDataStructure dataStructure = mock(ArchitectureDataStructure.class);
+        C4Model model = mock(C4Model.class);
+
+        when(dataStructure.getModel()).thenReturn(model);
+        when(model.getPeople()).thenReturn(ImmutableSet.of());
+
+        new ModelEnhancer().enhance(workspace, dataStructure);
+
+        assertThat(workspace.getModel().getPeople(), hasSize(0));
+    }
 
     @Test
     public void enhance() {

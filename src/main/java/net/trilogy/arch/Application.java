@@ -1,6 +1,7 @@
 package net.trilogy.arch;
 
 import lombok.Builder;
+import lombok.Generated;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
@@ -14,8 +15,8 @@ import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
 
 @Builder
+@Generated // Lie to JaCoCo
 public class Application {
-
     @Builder.Default
     private final AppConfig appConfig = AppConfig.builder().build();
 

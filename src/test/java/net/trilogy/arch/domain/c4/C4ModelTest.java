@@ -7,7 +7,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class C4ModelTest {
-
     @Test(expected = IllegalArgumentException.class)
     public void fails_to_add_same_person_twice() {
         new C4Model()

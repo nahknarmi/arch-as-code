@@ -18,7 +18,6 @@ import static net.trilogy.arch.domain.c4.C4Model.NONE;
 import static net.trilogy.arch.domain.c4.C4Type.PERSON;
 
 public class ModelEnhancer implements WorkspaceEnhancer {
-
     private final FunctionalIdGenerator idGenerator = new FunctionalIdGenerator();
 
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
