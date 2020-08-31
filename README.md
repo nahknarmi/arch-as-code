@@ -32,7 +32,7 @@ and documentation.
 First you'll need to create a Structurizr account. You can do this by
 following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide
-that describes how to setup a new account and get a **free** workspace.
+that describes how to set up a new account and get a **free** workspace.
 
 ### 2. Use Java 11 locally
 
@@ -126,8 +126,8 @@ This tool sets up your local environment to use the version of Java
 relevant to your project&mdash;in this case, 11&mdash;without you needing
 to manually update `PATH` or `JAVA_HOME`.
 
-After following instructions, you should find that the AaC repository is
-setup for you as Java 11:
+After following instructions, the AaC repository should be set up for you
+as Java 11:
 
 ```bash
 $ cd <your root of the AaC project git clone>
