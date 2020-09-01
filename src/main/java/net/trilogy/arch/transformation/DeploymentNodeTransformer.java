@@ -4,16 +4,18 @@ import com.structurizr.model.Container;
 import com.structurizr.model.ContainerInstance;
 import com.structurizr.model.DeploymentNode;
 import com.structurizr.model.Model;
-import lombok.experimental.UtilityClass;
 import net.trilogy.arch.domain.c4.C4ContainerInstance;
 import net.trilogy.arch.domain.c4.C4DeploymentNode;
 import net.trilogy.arch.domain.c4.C4Model;
 import net.trilogy.arch.domain.c4.C4Reference;
 import net.trilogy.arch.generator.FunctionalIdGenerator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
-@UtilityClass
 public class DeploymentNodeTransformer {
     static public DeploymentNode addDeploymentNodeFromC4ToModel(C4DeploymentNode node, C4Model c4Model, Model model, FunctionalIdGenerator idGenerator) {
         idGenerator.setNext(node.getId());

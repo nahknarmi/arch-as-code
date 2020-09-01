@@ -52,8 +52,8 @@ public class TddContent {
     public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
         if (file == null) return null;
 
-        String content = null;
-        String filename = null;
+        String content;
+        String filename;
 
         try {
             content = filesFacade.readString(file.toPath());

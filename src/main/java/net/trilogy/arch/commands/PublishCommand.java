@@ -38,7 +38,7 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
     @Override
     public Integer call() {
         logArgs();
-        List<String> messageSet = List.of();
+        List<String> messageSet;
         try {
             messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME);
 

@@ -12,11 +12,11 @@ import java.util.Map;
 public class TddContainerByComponent {
     @Getter
     @JsonProperty(value = "component-id")
-    private Tdd.ComponentReference componentId;
+    private final Tdd.ComponentReference componentId;
 
     @Getter
     @JsonProperty(value = "component-path")
-    private String componentPath;
+    private final String componentPath;
 
     @Getter 
     @JsonProperty(value = "tdds") 

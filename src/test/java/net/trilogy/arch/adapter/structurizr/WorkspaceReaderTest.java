@@ -3,7 +3,6 @@ package net.trilogy.arch.adapter.structurizr;
 import com.structurizr.view.*;
 import lombok.NonNull;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;

@@ -13,7 +13,6 @@ import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.schema.SchemaValidator;
 import net.trilogy.arch.validation.architectureUpdate.*;
-import picocli.CommandLine;
 import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.File;

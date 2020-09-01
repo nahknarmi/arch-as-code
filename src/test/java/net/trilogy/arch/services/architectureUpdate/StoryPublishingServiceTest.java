@@ -53,9 +53,8 @@ public class StoryPublishingServiceTest {
                 new Epic("Epic Title", new Jira("AU-1", null)),
                 featureStories
         );
-        ArchitectureUpdate au = ArchitectureUpdate.blank().toBuilder()
+        return ArchitectureUpdate.blank().toBuilder()
                 .capabilityContainer(capabilitiesContainer)
                 .build();
-        return au;
     }
 }
