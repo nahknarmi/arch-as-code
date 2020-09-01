@@ -12,7 +12,6 @@ import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-
 public class UserJourneyTest {
     private WorkspaceConfig config;
     private String workspaceRoot;

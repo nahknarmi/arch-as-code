@@ -5,18 +5,21 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.validation.ArchitectureDataStructureValidatorFactory;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "validate", mixinStandardHelpOptions = true, description = "Validate a product's architecture")
+@Command(name = "validate", mixinStandardHelpOptions = true, description = "Validate a product's architecture")
 public class ValidateCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
-    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_ARCHITECTURE_PATH", description = "Product architecture root where product-architecture.yml is located.")
+    @Parameters(index = "0", paramLabel = "PRODUCT_ARCHITECTURE_PATH", description = "Product architecture root where product-architecture.yml is located.")
     File productArchitectureDirectory;
 
     @Getter
-    @CommandLine.Spec
+    @Spec
     private CommandLine.Model.CommandSpec spec;
 
     @Override

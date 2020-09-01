@@ -34,6 +34,16 @@ public class C4Model {
     @Setter(AccessLevel.PROTECTED)
     private Set<C4DeploymentNode> deploymentNodes = new TreeSet<>();
 
+    public static C4Model empty() {
+        return new C4Model(
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of()
+        );
+    }
+
     public C4Model addPerson(C4Person person) {
         checkArgument(!personWithNameExists(person), format("Person with name '%s' already exists.", person.getName()));
         checkArgument(noEntityWithIdExists(person, people), format("Person with path '%s' already exists.", person));

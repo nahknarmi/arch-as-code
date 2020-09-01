@@ -21,7 +21,6 @@ import java.util.concurrent.Callable;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
-
     @Parameters(index = "0", description = "Directory name of architecture update to annotate")
     private File architectureUpdateDirectory;
 

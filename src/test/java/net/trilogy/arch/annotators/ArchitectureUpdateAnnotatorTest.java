@@ -24,7 +24,6 @@ public class ArchitectureUpdateAnnotatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-
     private ArchitectureUpdateAnnotator annotator;
 
     @Before

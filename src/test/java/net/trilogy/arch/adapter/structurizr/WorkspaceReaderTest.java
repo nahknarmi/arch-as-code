@@ -1,4 +1,4 @@
-package net.trilogy.arch.adapter;
+package net.trilogy.arch.adapter.structurizr;
 
 import com.structurizr.view.*;
 import lombok.NonNull;
