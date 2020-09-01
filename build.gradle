@@ -1,4 +1,5 @@
 import static org.gradle.api.JavaVersion.VERSION_11
+import static org.gradle.api.tasks.bundling.Compression.GZIP
 
 plugins {
     id "java"
@@ -129,7 +130,7 @@ check {
 
 plugins.withType(DistributionPlugin) {
     distTar {
-        compression = Compression.GZIP
+        compression = GZIP
         extension = "tar.gz"
     }
 }
