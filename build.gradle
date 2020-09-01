@@ -10,7 +10,7 @@ plugins {
     id "info.solidsoft.pitest" version "1.5.2"
     // See https://www.baeldung.com/lombok-ide for how to configure intellij to work with lombok
     id "io.freefair.lombok" version "5.1.1"
-    id "com.palantir.git-version" version "0.12.3"
+    id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.springframework.boot" version "2.3.3.RELEASE"
 }
 
@@ -141,29 +141,6 @@ pitest {
     threads = 4
     outputFormats = ["XML", "HTML"]
     timestampedReports = true
-}
-
-def generatedResources = "$buildDir/generated-resources/main"
-sourceSets {
-    main {
-        //register an output folder on the main SourceSet:
-        output.dir(generatedResources, builtBy: "generateVersionTxt")
-        //it is now a part of the "main" classpath and will be a part of the jar
-    }
-}
-
-//a task that generates the resources:
-task generateVersionTxt {
-    description "Creates a version.txt file with build info that is added to the root of the jar"
-    doLast {
-        new File(generatedResources).mkdirs()
-        def generated = new File(generatedResources, "version.txt")
-
-        def details = versionDetails()
-        generated.text = """
-          Version: $rootProject.version, build $details.gitHash 
-          """
-    }
 }
 
 project.test {

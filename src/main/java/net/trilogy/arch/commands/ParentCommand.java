@@ -8,11 +8,11 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Spec;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 @Command(
         name = "arch-as-code",
@@ -37,11 +37,11 @@ public class ParentCommand implements Callable<Integer>, DisplaysOutputMixin {
     static class VersionProvider implements CommandLine.IVersionProvider {
         @Override
         public String[] getVersion() throws IOException {
-            URL url = getClass().getResource("/version.txt");
-            checkNotNull(url, "Failed to retrieve version information.");
-            Properties properties = new Properties();
-            properties.load(url.openStream());
-            return new String[]{"arch-as-code version " + properties.getProperty("Version")};
+            final var properties = new Properties();
+            properties.load(getClass().getResourceAsStream("/git.properties"));
+            return new String[]{format("arch-as-code version %s, build %s",
+                    properties.getProperty("git.build.version"),
+                    properties.getProperty("git.commit.id.abbrev"))};
         }
     }
 }
