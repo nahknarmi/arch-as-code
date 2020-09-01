@@ -87,20 +87,24 @@ mkdir -p "$tmpdir"/demo-folder/.install
 run ./gradlew clean # Start clean
 
 cp ./scripts/demo-git-ignore "$tmpdir"/demo-folder/.gitignore
-cp ./.java-version "$tmpdir"
+cp ./.java-version "$tmpdir"/demo-folder
 
-# build
-run ./gradlew distZip
-cd build/distributions
-run unzip *.zip
-rm *.zip
-cd *
-mv ./* "$tmpdir"/demo-folder/.install/
+run ./gradlew bootJar
+mkdir -p "$tmpdir"/demo-folder/.install/bin
+cp ./build/libs/arch-as-code-*.jar "$tmpdir"/demo-folder/.install/bin
+
+cat <<EOS >"$tmpdir"/demo-folder/.install/bin/arch-as-code
+#!/usr/bin/env bash
+
+exec java -jar "$tmpdir"/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
+EOS
+chmod a+rx "$tmpdir"/demo-folder/.install/bin/arch-as-code
 
 cd "$tmpdir"/demo-folder
 
-pwd
 run git init
+
+pwd  # Tell the user where to find the demo folder
 
 # This file is optional
 [[ -r product-architecture.yml ]] && {
