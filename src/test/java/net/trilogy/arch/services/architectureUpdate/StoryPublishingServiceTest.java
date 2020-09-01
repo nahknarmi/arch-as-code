@@ -1,6 +1,12 @@
 package net.trilogy.arch.services.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.Epic;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class StoryPublishingServiceTest {
-
     @Test
     public void shouldListStoriesToBeSentToJira() {
         // GIVEN

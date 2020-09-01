@@ -4,14 +4,29 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ArchitectureUpdateValidator {
 
@@ -118,7 +133,6 @@ public class ArchitectureUpdateValidator {
         links.add(Pair.of("P2.jira.link", architectureUpdate.getP2().getJira().getLink()));
 
         links.add(Pair.of("capabilities.epic.jira.link", architectureUpdate.getCapabilityContainer().getEpic().getJira().getLink()));
-
 
         List<MilestoneDependency> milestoneDependencies = architectureUpdate.getMilestoneDependencies();
 
@@ -341,7 +355,8 @@ public class ArchitectureUpdateValidator {
 
     private Set<ValidationError> getErrors_TddsMustHaveOnlyOneTddContentFile() {
         List<TddContent> tddContentFiles = architectureUpdate.getTddContents();
-        if (tddContentFiles == null || tddContentFiles.isEmpty()) return Set.of();
+        if (tddContentFiles == null || tddContentFiles.isEmpty())
+            return Set.of();
 
         return tddContentFiles.stream()
                 .collect(groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))

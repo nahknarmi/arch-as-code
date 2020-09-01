@@ -3,7 +3,14 @@ package net.trilogy.arch.domain.c4;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.structurizr.model.Element;
 import com.structurizr.model.Person;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -12,7 +19,10 @@ import java.util.regex.Pattern;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
-import static net.trilogy.arch.domain.c4.C4Type.*;
+import static net.trilogy.arch.domain.c4.C4Type.COMPONENT;
+import static net.trilogy.arch.domain.c4.C4Type.CONTAINER;
+import static net.trilogy.arch.domain.c4.C4Type.PERSON;
+import static net.trilogy.arch.domain.c4.C4Type.SYSTEM;
 
 @EqualsAndHashCode
 @Data

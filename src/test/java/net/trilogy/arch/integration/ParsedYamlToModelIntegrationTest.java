@@ -1,7 +1,13 @@
 package net.trilogy.arch.integration;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.*;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
+import com.structurizr.model.Element;
+import com.structurizr.model.Location;
+import com.structurizr.model.Person;
+import com.structurizr.model.Relationship;
+import com.structurizr.model.SoftwareSystem;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -22,7 +28,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 
 public class ParsedYamlToModelIntegrationTest {
-
     @Test
     public void should_build_person_developer() throws Exception {
         String personName = "Developer";

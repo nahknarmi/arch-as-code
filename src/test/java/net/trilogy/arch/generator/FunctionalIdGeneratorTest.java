@@ -1,16 +1,17 @@
 package net.trilogy.arch.generator;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.*;
+import com.structurizr.model.Model;
+import com.structurizr.model.Person;
+import com.structurizr.model.Relationship;
+import com.structurizr.model.SoftwareSystem;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-
 public class FunctionalIdGeneratorTest {
-
     @Test
     public void shouldReturnIDFromAnonymousFunctionForElements() {
         final FunctionalIdGenerator generator = new FunctionalIdGenerator();
@@ -92,5 +93,4 @@ public class FunctionalIdGeneratorTest {
         SoftwareSystem system = model.addSoftwareSystem("def", "ghi");
         return person.uses(system, "jkl");
     }
-
 }

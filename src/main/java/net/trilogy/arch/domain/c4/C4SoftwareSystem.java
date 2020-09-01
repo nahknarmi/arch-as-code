@@ -1,6 +1,11 @@
 package net.trilogy.arch.domain.c4;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.util.Optional;
 import java.util.Set;
@@ -16,7 +21,7 @@ import static net.trilogy.arch.domain.c4.C4Location.UNSPECIFIED;
 public class C4SoftwareSystem extends Entity implements HasLocation {
     private C4Location location;
 
-    @Builder(toBuilder=true)
+    @Builder(toBuilder = true)
     C4SoftwareSystem(String id,
                      String alias,
                      String name,
@@ -35,7 +40,7 @@ public class C4SoftwareSystem extends Entity implements HasLocation {
 
     public static class C4SoftwareSystemBuilder {
         public C4SoftwareSystemBuilder path(C4Path path) {
-            if(path == null) return this;
+            if (path == null) return this;
             checkArgument(C4Type.SYSTEM.equals(path.type()), format("Path %s is not valid for SoftwareSystem.", path));
             this.path = path;
             return this;

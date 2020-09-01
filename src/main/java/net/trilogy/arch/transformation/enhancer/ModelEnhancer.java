@@ -1,10 +1,23 @@
 package net.trilogy.arch.transformation.enhancer;
 
 import com.structurizr.Workspace;
-import com.structurizr.model.*;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
+import com.structurizr.model.Model;
+import com.structurizr.model.Person;
+import com.structurizr.model.SoftwareSystem;
+import com.structurizr.model.StaticStructureElement;
 import io.vavr.Tuple2;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.c4.*;
+import net.trilogy.arch.domain.c4.C4Action;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4Container;
+import net.trilogy.arch.domain.c4.C4Model;
+import net.trilogy.arch.domain.c4.C4Relationship;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
+import net.trilogy.arch.domain.c4.C4Type;
+import net.trilogy.arch.domain.c4.Entity;
+import net.trilogy.arch.domain.c4.HasRelation;
 import net.trilogy.arch.domain.c4.view.ModelMediator;
 import net.trilogy.arch.generator.FunctionalIdGenerator;
 
@@ -62,7 +75,6 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             modelMediator.addComponent(cont, comp);
         });
     }
-
 
     private void addDeploymentNodes(C4Model dataStructureModel, ModelMediator modelMediator) {
         dataStructureModel.getDeploymentNodes().forEach(dNode -> modelMediator.addDeploymentNode(dataStructureModel, dNode));

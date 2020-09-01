@@ -1,6 +1,12 @@
 package net.trilogy.arch.domain.c4;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Singular;
 
 import java.util.Set;
 
@@ -17,7 +23,6 @@ public class C4Container extends Entity implements HasTechnology, HasUrl {
     private String systemAlias;
     private String technology;
     private String url;
-
 
     @Builder(toBuilder = true)
     public C4Container(@NonNull String id,
@@ -50,7 +55,7 @@ public class C4Container extends Entity implements HasTechnology, HasUrl {
 
     public static class C4ContainerBuilder {
         public C4ContainerBuilder path(C4Path path) {
-            if(path == null) return this;
+            if (path == null) return this;
             checkArgument(C4Type.CONTAINER.equals(path.type()), format("Path %s is not valid for Container.", path));
             this.path = path;
             return this;

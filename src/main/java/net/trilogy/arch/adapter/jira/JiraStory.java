@@ -5,7 +5,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +38,8 @@ public class JiraStory {
     private List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
         final var requirements = new ArrayList<JiraFunctionalRequirement>();
         for (var reqId : featureStory.getRequirementReferences()) {
-            if (!au.getFunctionalRequirements().containsKey(reqId)) throw new InvalidStoryException();
+            if (!au.getFunctionalRequirements().containsKey(reqId))
+                throw new InvalidStoryException();
             requirements.add(new JiraFunctionalRequirement(reqId, au.getFunctionalRequirements().get(reqId)));
         }
         return requirements;
@@ -72,7 +78,8 @@ public class JiraStory {
                                               TddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
-            if (tddContainerByComponent.isDeleted()) architecture = beforeAuArchitecture;
+            if (tddContainerByComponent.isDeleted())
+                architecture = beforeAuArchitecture;
             else architecture = afterAuArchitecture;
 
             String id = tddContainerByComponent.getComponentId().toString();

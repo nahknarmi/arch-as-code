@@ -2,7 +2,20 @@ package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.Epic;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.Link;
+import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
+import net.trilogy.arch.domain.architectureUpdate.P1;
+import net.trilogy.arch.domain.architectureUpdate.P2;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,8 +29,25 @@ import java.util.Map;
 
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE;
-import static net.trilogy.arch.validation.architectureUpdate.ValidationError.*;
-import static org.hamcrest.Matchers.*;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDecisionsMustHaveTdds;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDeletedTddsComponentsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedComponent;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedTdd;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forFunctionalRequirementsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMultipleTddContentFilesForTdd;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMustHaveStories;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNotAvailableLink;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forOverriddenByTddContentFile;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesMustHaveFunctionalRequirements;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesMustHaveTdds;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesTddsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forTddsComponentsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forTddsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forTddsMustHaveDecisionsOrRequirements;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class ArchitectureUpdateValidatorTest {
     @Rule
@@ -203,7 +233,6 @@ public class ArchitectureUpdateValidatorTest {
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
-
 
     @Test
     public void shouldValidate_TddsDeletedComponentsMustBeValidReferences() {
@@ -528,7 +557,6 @@ public class ArchitectureUpdateValidatorTest {
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
         collector.checkThat(actualErrors, not(hasItem(forOverriddenByTddContentFile(new Tdd.ComponentReference("10"), new Tdd.Id("TDD 2.1"), noErrorFilename))));
-
     }
 
     @Test

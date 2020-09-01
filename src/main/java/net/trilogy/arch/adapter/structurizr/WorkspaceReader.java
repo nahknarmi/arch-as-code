@@ -5,14 +5,30 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.Image;
 import com.structurizr.documentation.Section;
-import com.structurizr.model.*;
+import com.structurizr.model.Component;
+import com.structurizr.model.Element;
+import com.structurizr.model.Enterprise;
+import com.structurizr.model.Location;
+import com.structurizr.model.Model;
+import com.structurizr.model.Person;
+import com.structurizr.model.Relationship;
 import com.structurizr.util.WorkspaceUtils;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
-import net.trilogy.arch.domain.c4.*;
+import net.trilogy.arch.domain.c4.C4Action;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4Container;
+import net.trilogy.arch.domain.c4.C4DeploymentNode;
+import net.trilogy.arch.domain.c4.C4Location;
+import net.trilogy.arch.domain.c4.C4Model;
+import net.trilogy.arch.domain.c4.C4Path;
+import net.trilogy.arch.domain.c4.C4Person;
+import net.trilogy.arch.domain.c4.C4Relationship;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
+import net.trilogy.arch.domain.c4.C4Tag;
 import net.trilogy.arch.transformation.DeploymentNodeTransformer;
 
 import java.io.File;
@@ -25,7 +41,9 @@ import static com.structurizr.documentation.DecisionStatus.Proposed;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static net.trilogy.arch.domain.c4.C4Action.*;
+import static net.trilogy.arch.domain.c4.C4Action.DELIVERS;
+import static net.trilogy.arch.domain.c4.C4Action.INTERACTS_WITH;
+import static net.trilogy.arch.domain.c4.C4Action.USES;
 import static net.trilogy.arch.domain.c4.C4Path.buildPath;
 
 public class WorkspaceReader {
@@ -254,7 +272,8 @@ public class WorkspaceReader {
 
     private DocumentationSection.Format getFormat(Section d) {
         DocumentationSection.Format format;
-        if (d.getFormat().toString().equals("Markdown")) format = DocumentationSection.Format.MARKDOWN;
+        if (d.getFormat().toString().equals("Markdown"))
+            format = DocumentationSection.Format.MARKDOWN;
         else format = DocumentationSection.Format.ASCIIDOC;
         return format;
     }
