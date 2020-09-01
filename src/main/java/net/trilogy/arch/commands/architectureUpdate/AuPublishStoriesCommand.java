@@ -98,7 +98,10 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> createStories(ArchitectureUpdate au, ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture, StoryPublishingService jiraService) {
+    private Optional<ArchitectureUpdate> createStories(ArchitectureUpdate au,
+                                                       ArchitectureDataStructure beforeAuArchitecture,
+                                                       ArchitectureDataStructure afterAuArchitecture,
+                                                       StoryPublishingService jiraService) {
         try {
             return Optional.of(jiraService.createStories(au, beforeAuArchitecture, afterAuArchitecture, username, password));
         } catch (JiraApi.JiraApiException e) {

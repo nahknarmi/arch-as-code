@@ -51,6 +51,7 @@ public class StoryPublishingService {
             jiraStories.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }
 
+        // create stories
         var createStoriesResults = this.api.createStories(
                 jiraStories,
                 epicJiraTicket.getTicket(),
@@ -58,6 +59,10 @@ public class StoryPublishingService {
                 username,
                 password
         );
+
+        // update stories
+
+        // delete stories
 
         printStoriesThatSucceeded(stories, createStoriesResults);
         printStoriesThatFailed(stories, createStoriesResults);
