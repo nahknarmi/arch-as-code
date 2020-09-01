@@ -1,3 +1,5 @@
+import static org.gradle.api.JavaVersion.VERSION_11
+
 plugins {
     id "java"
     id "application"
@@ -12,8 +14,6 @@ plugins {
 }
 
 mainClassName = "net.trilogy.arch.Application"
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 version = "0.1.6"
 
 compileJava.options.encoding = "UTF-8"
@@ -73,8 +73,17 @@ version: "0.17.0"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
 }
 
+java {
+    sourceCompatibility = VERSION_11
+    targetCompatibility = VERSION_11
+}
+
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
+}
+
+test {
+    finalizedBy jacocoTestReport // Provide coverate report ASAP
 }
 
 jacocoTestCoverageVerification {
@@ -90,11 +99,6 @@ jacocoTestCoverageVerification {
             ]
         }
     }
-}
-
-test {
-    // Provide coverage HTML as soon as available
-    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
@@ -131,6 +135,7 @@ plugins.withType(DistributionPlugin) {
 }
 
 pitest {
+    // TODO: Work with PITest (GitHub issues) to resolve the complaints
     targetClasses = ["net.trilogy.*"]
     threads = 4
     outputFormats = ["XML", "HTML"]
@@ -173,11 +178,11 @@ project.test {
 
     testLogging {
         events "FAILED", "SKIPPED"
-        exceptionFormat "FULL"
-        showCauses true
-        showExceptions true
-        showStackTraces true
-        showStandardStreams false
+        exceptionFormat = "FULL"
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = false
     }
 
     afterTest {
