@@ -178,11 +178,11 @@ project.test {
 
     testLogging {
         events "FAILED", "SKIPPED"
-        exceptionFormat "FULL"
-        showCauses true
-        showExceptions true
-        showStackTraces true
-        showStandardStreams false
+        exceptionFormat = "FULL"
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = false
     }
 
     afterTest {
