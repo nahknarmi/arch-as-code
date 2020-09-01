@@ -80,7 +80,8 @@ cp ./build/libs/arch-as-code-*.jar /tmp/aac/demo-folder/.install/bin
 cat <<EOS >/tmp/aac/demo-folder/.install/bin/arch-as-code
 #!/bin/sh
 
-exec java -jar /tmp/aac/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
+# The extra flag is to quiet WARNINGS from Jackson
+exec java --illegal-access=permit -jar /tmp/aac/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
 EOS
 chmod a+rx /tmp/aac/demo-folder/.install/bin/arch-as-code
 
@@ -109,7 +110,7 @@ cp -r "$dir"/../.arch-as-code .
 
 # add executable to folder
 # shellcheck disable=SC2016
-ln -s .install/bin/arch-as-code .
+ln -fs .install/bin/arch-as-code .
 
 cat <<EOM
 
