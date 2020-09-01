@@ -20,7 +20,6 @@ This script will:
 
 Options:
    -h, --help       Print this help and exit
-   -C, --cleanup    Remove temp demo folders
 EOH
 }
 
@@ -29,20 +28,8 @@ EOH
 export TTY=false
 [[ -t 1 ]] && TTY=true
 
-tmpdir="${TMPDIR-/tmp}/aac-$$"
 # A trick to show output on failure, but not on success
-outfile="$tmpdir/out"
-
-function cleanup-temp-folders() {
-    local rc=0
-    # Try to remove as many as possible; if any fail, let rm print the error,
-    # and continue to the next folder.
-    # If there are no temp folders, this becomes a no-op
-    while read -r f; do
-        rm -r "$f" && echo "Removed $f" || rc=1
-    done < <(ls -d "${TMPDIR-/tmp}"/aac-* 2>/dev/null)
-    return $rc
-}
+outfile="/tmp/out"
 
 # Note: STDOUT and STDERR may be mixed.  This function does not attempt to
 # address this: STDERR will always appear before STDOUT using this function
@@ -55,13 +42,9 @@ function run() {
 }
 
 # shellcheck disable=SC2214
-while getopts :Cch-: opt; do
+while getopts :h-: opt; do
     [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
     case $opt in
-    C | cleanup)
-        cleanup-temp-folders || exit 1
-        exit 0
-        ;;
     h | help)
         print-help
         exit 0
@@ -75,36 +58,38 @@ done
 shift $((OPTIND - 1))
 
 # find and go to repo root dir
+# TODO: Ask git directly: `git rev-parse --show-toplevel`
 d="$(dirname "${BASH_SOURCE[0]}")"
 dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"
 cd "$dir"
 cd ..
 
-rm -rf "$tmpdir"/demo-folder/.arch-as-code
-rm -rf "$tmpdir"/demo-folder/.install
-mkdir -p "$tmpdir"/demo-folder/.install
+rm -rf /tmp/aac/demo-folder/.arch-as-code
+rm -rf /tmp/aac/demo-folder/.install
+mkdir -p /tmp/aac/demo-folder/.install
 
 run ./gradlew clean # Start clean
 
-cp ./scripts/demo-git-ignore "$tmpdir"/demo-folder/.gitignore
-cp ./.java-version "$tmpdir"/demo-folder
+cp ./scripts/demo-git-ignore /tmp/aac/demo-folder/.gitignore
+cp ./.java-version /tmp/aac/demo-folder
 
 run ./gradlew bootJar
-mkdir -p "$tmpdir"/demo-folder/.install/bin
-cp ./build/libs/arch-as-code-*.jar "$tmpdir"/demo-folder/.install/bin
+mkdir -p /tmp/aac/demo-folder/.install/bin
+cp ./build/libs/arch-as-code-*.jar /tmp/aac/demo-folder/.install/bin
 
-cat <<EOS >"$tmpdir"/demo-folder/.install/bin/arch-as-code
-#!/usr/bin/env bash
+cat <<EOS >/tmp/aac/demo-folder/.install/bin/arch-as-code
+#!/bin/sh
 
-exec java -jar "$tmpdir"/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
+# The extra flag is to quiet WARNINGS from Jackson
+exec java --illegal-access=permit -jar /tmp/aac/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
 EOS
-chmod a+rx "$tmpdir"/demo-folder/.install/bin/arch-as-code
+chmod a+rx /tmp/aac/demo-folder/.install/bin/arch-as-code
 
-cd "$tmpdir"/demo-folder
+cd /tmp/aac/demo-folder
 
 run git init
 
-pwd  # Tell the user where to find the demo folder
+pwd # Tell the user where to find the demo folder
 
 # This file is optional
 [[ -r product-architecture.yml ]] && {
@@ -121,12 +106,11 @@ run .install/bin/arch-as-code au init -c c -p p -s s .
 
 # copy .arch-as-code from repo root
 rm -rf .arch-as-code
-cp -r $dir/../.arch-as-code .
+cp -r "$dir"/../.arch-as-code .
 
 # add executable to folder
 # shellcheck disable=SC2016
-echo 'd="$(dirname "${BASH_SOURCE[0]}")"; dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"; "${dir}"/.install/bin/arch-as-code "$@";' >arch-as-code.sh
-chmod +x arch-as-code.sh
+ln -fs .install/bin/arch-as-code .
 
 cat <<EOM
 
@@ -135,5 +119,5 @@ cat <<EOM
 
 Demo folder created. To cd there, run:
    cd $(pwd)
-Run ./arch-as-code.sh as an alias for the executable
+Run ./arch-as-code
 EOM
