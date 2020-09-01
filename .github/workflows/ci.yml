@@ -28,6 +28,10 @@ jobs:
 
       - name: Build and test
         run: ./gradlew build
+        env: # Or as an environment variable
+          STRUCTURIZR_API_KEY: ${{ secrets.TEST_STRUCTURIZR_API_KEY }}
+          STRUCTURIZR_API_SECRET: ${{ secrets.TEST_STRUCTURIZR_API_SECRET }}
+          STRUCTURIZR_WORKSPACE_ID: ${{ secrets.TEST_STRUCTURIZR_WORKSPACE_ID }}
 
       - name: Extract branch name
         shell: bash
