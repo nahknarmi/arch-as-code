@@ -17,9 +17,6 @@ plugins {
 mainClassName = "net.trilogy.arch.Application"
 version = "0.1.6"
 
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
-
 repositories {
     mavenCentral()
     jcenter()
@@ -81,6 +78,7 @@ java {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
+    options.encoding = "UTF-8"
 }
 
 test {
