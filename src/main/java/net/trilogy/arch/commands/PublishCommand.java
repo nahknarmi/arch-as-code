@@ -8,20 +8,23 @@ import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.publish.ArchitectureDataStructurePublisher;
 import net.trilogy.arch.validation.ArchitectureDataStructureValidatorFactory;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "publish", mixinStandardHelpOptions = true, description = "Publish architecture to structurizr.")
+@Command(name = "publish", mixinStandardHelpOptions = true, description = "Publish architecture to structurizr.")
 public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
     private final StructurizrAdapter structurizrAdapter;
 
-    @CommandLine.Parameters(index = "0", paramLabel = "PRODUCT_ARCHITECTURE_DIRECTORY", description = "Product architecture root where product-architecture.yml is located.")
+    @Parameters(index = "0", paramLabel = "PRODUCT_ARCHITECTURE_DIRECTORY", description = "Product architecture root where product-architecture.yml is located.")
     private File productArchitectureDirectory;
 
     @Getter
-    @CommandLine.Spec
+    @Spec
     private CommandLine.Model.CommandSpec spec;
 
     public PublishCommand() {
@@ -35,7 +38,7 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
     @Override
     public Integer call() {
         logArgs();
-        List<String> messageSet = List.of();
+        List<String> messageSet;
         try {
             messageSet = ArchitectureDataStructureValidatorFactory.create().validate(productArchitectureDirectory, ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME);
 

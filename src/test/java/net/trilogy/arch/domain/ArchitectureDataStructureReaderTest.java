@@ -1,8 +1,18 @@
 package net.trilogy.arch.domain;
 
-
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureReader;
-import net.trilogy.arch.domain.c4.*;
+import net.trilogy.arch.domain.c4.C4Action;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4Container;
+import net.trilogy.arch.domain.c4.C4ContainerInstance;
+import net.trilogy.arch.domain.c4.C4DeploymentNode;
+import net.trilogy.arch.domain.c4.C4Location;
+import net.trilogy.arch.domain.c4.C4Path;
+import net.trilogy.arch.domain.c4.C4Person;
+import net.trilogy.arch.domain.c4.C4Reference;
+import net.trilogy.arch.domain.c4.C4Relationship;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
+import net.trilogy.arch.domain.c4.C4Tag;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -13,7 +23,13 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
-import static net.trilogy.arch.TestHelper.*;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_DECISIONS;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_METADATA;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_COMPONENTS;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_CONTAINERS;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_PEOPLE;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_SYSTEMS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

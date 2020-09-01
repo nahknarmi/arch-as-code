@@ -2,8 +2,10 @@ package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Map;
 
@@ -12,17 +14,17 @@ import java.util.Map;
 public class TddContainerByComponent {
     @Getter
     @JsonProperty(value = "component-id")
-    private Tdd.ComponentReference componentId;
+    private final Tdd.ComponentReference componentId;
 
     @Getter
     @JsonProperty(value = "component-path")
-    private String componentPath;
+    private final String componentPath;
 
-    @Getter 
-    @JsonProperty(value = "tdds") 
+    @Getter
+    @JsonProperty(value = "tdds")
     private final Map<Tdd.Id, Tdd> tdds;
 
-    @JsonProperty(value = "deleted") 
+    @JsonProperty(value = "deleted")
     private final Boolean deleted;
 
     @Builder(toBuilder = true)

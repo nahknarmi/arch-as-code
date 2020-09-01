@@ -2,16 +2,19 @@ package net.trilogy.arch.services;
 
 import com.google.common.collect.Sets;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4Container;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.DiffSet;
 import net.trilogy.arch.domain.diff.Diffable;
 import net.trilogy.arch.domain.diff.DiffableEntity;
 import net.trilogy.arch.domain.diff.DiffableRelationship;
-import net.trilogy.arch.domain.c4.C4Component;
-import net.trilogy.arch.domain.c4.C4Container;
-import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,17 +22,17 @@ public class ArchitectureDiffCalculator {
     public static DiffSet diff(ArchitectureDataStructure beforeArch, ArchitectureDataStructure afterArch) {
         final Set<Diff> firstDiffs = getAllDiffables(beforeArch).stream()
                 .map(diffableInFirst -> {
-                        var diffableInSecond = findById(afterArch, diffableInFirst.getId()).orElse(null);
-                        return makeDiff(beforeArch, afterArch, diffableInFirst, diffableInSecond);
-                    }
+                            var diffableInSecond = findById(afterArch, diffableInFirst.getId()).orElse(null);
+                            return makeDiff(beforeArch, afterArch, diffableInFirst, diffableInSecond);
+                        }
                 )
                 .collect(Collectors.toSet());
 
         final Set<Diff> secondDiffs = getAllDiffables(afterArch).stream()
                 .map(thing2 -> {
-                        var thing1 = findById(beforeArch, thing2.getId()).orElse(null);
-                        return makeDiff(beforeArch, afterArch, thing1, thing2);
-                    }
+                            var thing1 = findById(beforeArch, thing2.getId()).orElse(null);
+                            return makeDiff(beforeArch, afterArch, thing1, thing2);
+                        }
                 )
                 .collect(Collectors.toSet());
 
@@ -49,30 +52,31 @@ public class ArchitectureDiffCalculator {
     private static Set<Diffable> getDescendants(Diffable diffable, ArchitectureDataStructure arch) {
         return getDescendants(diffable, arch, false);
     }
+
     private static Set<Diffable> getDescendants(Diffable diffable, ArchitectureDataStructure arch, boolean shouldAddRelationships) {
-        if(!(diffable instanceof DiffableEntity)) {
+        if (!(diffable instanceof DiffableEntity)) {
             return Set.of();
         }
         final var entity = ((DiffableEntity) diffable).getEntity();
         final var results = new HashSet<Diffable>();
 
-        if(shouldAddRelationships){
+        if (shouldAddRelationships) {
             results.addAll(
-                entity.getRelationships()
-                    .stream()
-                    .map(it -> new DiffableRelationship(entity, it))
-                    .collect(Collectors.toList())
+                    entity.getRelationships()
+                            .stream()
+                            .map(it -> new DiffableRelationship(entity, it))
+                            .collect(Collectors.toList())
             );
         }
 
-        if(entity instanceof C4SoftwareSystem) {
+        if (entity instanceof C4SoftwareSystem) {
             Set<C4Container> containers = getContainers((C4SoftwareSystem) entity, arch);
             for (C4Container container : containers) {
                 results.add(new DiffableEntity(container));
                 results.addAll(getDescendants(new DiffableEntity(container), arch, true));
             }
         }
-        if(entity instanceof C4Container) {
+        if (entity instanceof C4Container) {
             Set<C4Component> components = getComponents((C4Container) entity, arch);
             for (C4Component component : components) {
                 results.add(new DiffableEntity(component));
@@ -96,25 +100,25 @@ public class ArchitectureDiffCalculator {
                 arch.getModel()
                         .findEntityById(id)
                         .map(DiffableEntity::new)
-            )
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .findAny();
+        )
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findAny();
     }
 
     private static Set<Diffable> getAllDiffables(ArchitectureDataStructure arch) {
         return Sets.union(
                 arch.getModel()
-                    .allEntities()
-                    .stream()
-                    .map(DiffableEntity::new)
-                    .collect(Collectors.toSet()),
+                        .allEntities()
+                        .stream()
+                        .map(DiffableEntity::new)
+                        .collect(Collectors.toSet()),
 
                 arch.getModel()
-                    .allRelationships()
-                    .stream()
-                    .map(entityRelationshipPair -> new DiffableRelationship(entityRelationshipPair._1, entityRelationshipPair._2))
-                    .collect(Collectors.toSet())
+                        .allRelationships()
+                        .stream()
+                        .map(entityRelationshipPair -> new DiffableRelationship(entityRelationshipPair._1, entityRelationshipPair._2))
+                        .collect(Collectors.toSet())
         );
     }
 }

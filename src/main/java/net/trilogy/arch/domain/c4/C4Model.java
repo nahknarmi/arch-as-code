@@ -2,9 +2,18 @@ package net.trilogy.arch.domain.c4;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -33,6 +42,16 @@ public class C4Model {
     @NonNull
     @Setter(AccessLevel.PROTECTED)
     private Set<C4DeploymentNode> deploymentNodes = new TreeSet<>();
+
+    public static C4Model empty() {
+        return new C4Model(
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of(),
+                Set.of()
+        );
+    }
 
     public C4Model addPerson(C4Person person) {
         checkArgument(!personWithNameExists(person), format("Person with name '%s' already exists.", person.getName()));

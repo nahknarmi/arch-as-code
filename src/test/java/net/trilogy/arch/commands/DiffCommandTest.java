@@ -24,10 +24,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class DiffCommandTest {
-
     @Test
     public void shouldLoadArchitectureUpdateWhenFound() throws Exception {
         FilesFacade filesFacade = mock(FilesFacade.class);
@@ -103,5 +106,4 @@ public class DiffCommandTest {
 
         assertFalse(c3.getElement().hasRelatedTdds());
     }
-
 }

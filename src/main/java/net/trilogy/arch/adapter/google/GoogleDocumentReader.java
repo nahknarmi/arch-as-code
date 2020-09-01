@@ -1,12 +1,16 @@
 package net.trilogy.arch.adapter.google;
 
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.P1;
+import net.trilogy.arch.domain.architectureUpdate.P2;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class GoogleDocumentReader {
     private final GoogleDocsApiInterface api;
@@ -62,9 +66,7 @@ public class GoogleDocumentReader {
                 ).build();
     }
 
-
     private boolean isEmpty(GoogleDocsApiInterface.Response response) {
         return !response.asJson().hasNonNull("body");
     }
-
 }

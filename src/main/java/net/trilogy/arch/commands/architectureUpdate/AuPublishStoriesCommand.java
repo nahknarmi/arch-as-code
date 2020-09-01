@@ -15,16 +15,19 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.architectureUpdate.StoryPublishingService;
-import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
+@Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
-
     private final JiraApiFactory jiraApiFactory;
     private final ArchitectureUpdateObjectMapper architectureUpdateObjectMapper;
     private final ArchitectureUpdateReader architectureUpdateReader;
@@ -35,25 +38,25 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     @Getter
     private final GitInterface gitInterface;
 
-    @CommandLine.Parameters(index = "0", description = "Directory name of architecture update to validate")
+    @Parameters(index = "0", description = "Directory name of architecture update to validate")
     private File architectureUpdateDirectory;
 
     @Getter
-    @CommandLine.Parameters(index = "1", description = "Product architecture root directory")
+    @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
 
-    @CommandLine.Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to get names of components. Usually 'master'. Also can be a commit or tag.", required = true)
+    @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to get names of components. Usually 'master'. Also can be a commit or tag.", required = true)
     String baseBranch;
 
-    @CommandLine.Option(names = {"-u", "--username"}, description = "Jira username", required = true)
+    @Option(names = {"-u", "--username"}, description = "Jira username", required = true)
     private String username;
 
-    @CommandLine.Option(names = {"-p", "--password"}, description = "Jira password", arity = "0..1", interactive = true, required = true)
+    @Option(names = {"-p", "--password"}, description = "Jira password", arity = "0..1", interactive = true, required = true)
     private char[] password;
 
     @Getter
-    @CommandLine.Spec
-    private CommandLine.Model.CommandSpec spec;
+    @Spec
+    private CommandSpec spec;
 
     public AuPublishStoriesCommand(JiraApiFactory jiraApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;
@@ -126,7 +129,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<ArchitectureUpdate> loadAu(Path auPath) {
         try {
-            return Optional.of( architectureUpdateReader.load(auPath));
+            return Optional.of(architectureUpdateReader.load(auPath));
         } catch (Exception e) {
             printError("Unable to load architecture update.", e);
             return Optional.empty();

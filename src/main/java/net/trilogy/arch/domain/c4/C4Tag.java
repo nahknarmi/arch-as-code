@@ -1,7 +1,11 @@
 package net.trilogy.arch.domain.c4;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
 @AllArgsConstructor

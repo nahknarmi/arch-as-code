@@ -1,6 +1,10 @@
 package net.trilogy.arch.domain.c4;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.util.Set;
 
@@ -17,7 +21,7 @@ public class C4Person extends Entity implements HasLocation {
         return C4Type.PERSON;
     }
 
-    @Builder(toBuilder=true)
+    @Builder(toBuilder = true)
     C4Person(String id,
              String alias,
              String name,
@@ -32,7 +36,7 @@ public class C4Person extends Entity implements HasLocation {
 
     public static class C4PersonBuilder {
         public C4PersonBuilder path(C4Path path) {
-            if(path == null) return this;
+            if (path == null) return this;
             checkArgument(C4Type.PERSON.equals(path.type()), format("Path %s is not valid for Container.", path));
             this.path = path;
             return this;

@@ -22,7 +22,6 @@ import net.trilogy.arch.generator.FunctionalIdGenerator;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.joining;
 import static net.trilogy.arch.transformation.DeploymentNodeTransformer.addDeploymentNodeFromC4ToModel;
 import static net.trilogy.arch.transformation.LocationTransformer.c4LocationToLocation;
 

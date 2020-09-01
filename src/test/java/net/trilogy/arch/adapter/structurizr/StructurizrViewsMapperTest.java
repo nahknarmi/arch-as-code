@@ -1,7 +1,11 @@
 package net.trilogy.arch.adapter.structurizr;
 
 import com.structurizr.Workspace;
-import com.structurizr.view.*;
+import com.structurizr.view.ComponentView;
+import com.structurizr.view.ContainerView;
+import com.structurizr.view.SystemContextView;
+import com.structurizr.view.View;
+import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
@@ -16,7 +20,10 @@ import java.util.Collection;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
 
 public class StructurizrViewsMapperTest {
@@ -33,7 +40,7 @@ public class StructurizrViewsMapperTest {
         assertThat(views, notNullValue());
         Collection<SystemContextView> systemViews = views.getSystemContextViews();
         assertThat(systemViews.size(), equalTo(2));
-        assertThat(systemViews.stream().map(View::getSoftwareSystemId).collect(toList()), hasItems("7","9"));
+        assertThat(systemViews.stream().map(View::getSoftwareSystemId).collect(toList()), hasItems("7", "9"));
 
         Collection<ContainerView> containerViews = views.getContainerViews();
         assertThat(containerViews.size(), equalTo(1));

@@ -8,11 +8,24 @@ import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
-import net.trilogy.arch.commands.*;
-import net.trilogy.arch.commands.architectureUpdate.*;
+import net.trilogy.arch.commands.DiffCommand;
+import net.trilogy.arch.commands.ImportCommand;
+import net.trilogy.arch.commands.InitializeCommand;
+import net.trilogy.arch.commands.ListComponentsCommand;
+import net.trilogy.arch.commands.ParentCommand;
+import net.trilogy.arch.commands.PublishCommand;
+import net.trilogy.arch.commands.ValidateCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuAnnotateCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuInitializeCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuNewCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuPublishStoriesCommand;
+import net.trilogy.arch.commands.architectureUpdate.AuValidateCommand;
 import net.trilogy.arch.config.AppConfig;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
+
+import static java.lang.System.exit;
 
 @Builder
 @Generated // Lie to JaCoCo
@@ -60,11 +73,10 @@ public class Application {
             app.getCli().getCommandSpec().commandLine().getOut().println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
                     "/.arch-as-code/arch-as-code.log");
         }
-        System.exit(exitCode);
+        exit(exitCode);
     }
 
     public int execute(String[] args) {
         return getCli().execute(args);
     }
-
 }

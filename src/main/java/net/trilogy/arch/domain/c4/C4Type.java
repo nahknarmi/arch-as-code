@@ -1,6 +1,12 @@
 package net.trilogy.arch.domain.c4;
 
-import com.structurizr.model.*;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
+import com.structurizr.model.ContainerInstance;
+import com.structurizr.model.DeploymentNode;
+import com.structurizr.model.Element;
+import com.structurizr.model.Person;
+import com.structurizr.model.SoftwareSystem;
 
 public enum C4Type {
     RELATIONSHIP,
@@ -28,5 +34,4 @@ public enum C4Type {
             throw new IllegalArgumentException("Unrecognized element type - " + element.getClass().getCanonicalName());
         }
     }
-
 }

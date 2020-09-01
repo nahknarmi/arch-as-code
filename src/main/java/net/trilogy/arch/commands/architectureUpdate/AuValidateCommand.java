@@ -12,8 +12,11 @@ import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.schema.SchemaValidator;
-import net.trilogy.arch.validation.architectureUpdate.*;
-import picocli.CommandLine;
+import net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator;
+import net.trilogy.arch.validation.architectureUpdate.ValidationError;
+import net.trilogy.arch.validation.architectureUpdate.ValidationErrorType;
+import net.trilogy.arch.validation.architectureUpdate.ValidationResult;
+import net.trilogy.arch.validation.architectureUpdate.ValidationStage;
 import picocli.CommandLine.Model.CommandSpec;
 
 import java.io.File;
@@ -26,11 +29,13 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-import static picocli.CommandLine.*;
+import static picocli.CommandLine.Command;
+import static picocli.CommandLine.Option;
+import static picocli.CommandLine.Parameters;
+import static picocli.CommandLine.Spec;
 
 @Command(name = "validate", description = "Validate Architecture Update", mixinStandardHelpOptions = true)
 public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFromGitMixin, LoadArchitectureMixin, DisplaysErrorMixin, DisplaysOutputMixin {
-
     @Getter
     @Spec
     private CommandSpec spec;
@@ -49,13 +54,13 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     @Getter
     private final GitInterface gitInterface;
 
-    @CommandLine.Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to validate changes. Usually 'master'. Also can be a commit or tag.", required = true)
+    @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to validate changes. Usually 'master'. Also can be a commit or tag.", required = true)
     String baseBranch;
 
-    @CommandLine.Option(names = {"-t", "--TDDs"}, description = "Run validation for TDDs only")
+    @Option(names = {"-t", "--TDDs"}, description = "Run validation for TDDs only")
     boolean tddValidation;
 
-    @CommandLine.Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
+    @Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
     boolean capabilityValidation;
 
     private final ArchitectureUpdateReader architectureUpdateReader;
@@ -179,5 +184,4 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
 
         return List.of(ValidationStage.values());
     }
-
 }
