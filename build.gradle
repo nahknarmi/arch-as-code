@@ -1,10 +1,8 @@
 import static org.gradle.api.JavaVersion.VERSION_11
-import static org.gradle.api.tasks.bundling.Compression.GZIP
 
 plugins {
     id "java"
     id "application"
-    id "distribution"
     id "jacoco"
     id "com.github.ben-manes.versions" version "0.29.0"
     id "info.solidsoft.pitest" version "1.5.2"
@@ -39,7 +37,7 @@ dependencies {
     implementation group: "org.eclipse.jgit", name: "org.eclipse.jgit", version: "5.8.1.202007141445-r"
 
     implementation group: "guru.nidi", name: "graphviz-java-all-j2v8",
-version: "0.17.0"
+            version: "0.17.0"
 
     //Command line arguments
     implementation "info.picocli:picocli:4.5.1"
@@ -108,13 +106,6 @@ jacocoTestReport {
 
 check {
     dependsOn jacocoTestCoverageVerification
-}
-
-plugins.withType(DistributionPlugin) {
-    distTar {
-        compression = GZIP
-        extension = "tar.gz"
-    }
 }
 
 pitest {
