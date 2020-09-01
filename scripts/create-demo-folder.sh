@@ -7,7 +7,7 @@ set -u
 set -o pipefail
 
 function print-usage() {
-    echo "Usage: $0 [-h|--help]"
+    echo "Usage: $0 [-C|--cleanup][-h|--help]"
 }
 
 function print-help() {
@@ -17,6 +17,10 @@ This script will:
  - run ./gradlew distZip
  - create a demo folder where it's easy to execute the binary
  - that folder will be as if 'init' and 'au init' had already been run
+
+Options:
+   -h, --help       Print this help and exit
+   -C, --cleanup    Remove temp demo folders
 EOH
 }
 
@@ -26,25 +30,38 @@ export TTY=false
 [[ -t 1 ]] && TTY=true
 
 tmpdir="${TMPDIR-/tmp}/aac-$$"
-# Avoid leaving behind junk on disk unless a command fails
-trap '[[ 0 == $? ]] && rm -rf "$tmpdir"' EXIT
 # A trick to show output on failure, but not on success
 outfile="$tmpdir/out"
+
+function cleanup-temp-folders() {
+    local rc=0
+    # Try to remove as many as possible; if any fail, let rm print the error,
+    # and continue to the next folder.
+    # If there are no temp folders, this becomes a no-op
+    while read -r f; do
+        rm -r "$f" && echo "Removed $f" || rc=1
+    done < <(ls -d "${TMPDIR-/tmp}"/aac-* 2>/dev/null)
+    return $rc
+}
 
 # Note: STDOUT and STDERR may be mixed.  This function does not attempt to
 # address this: STDERR will always appear before STDOUT using this function
 function run() {
     "$@" >"$outfile" || {
-        rc=$?
+        local rc=$?
         cat "$outfile"
         return $rc
     }
 }
 
 # shellcheck disable=SC2214
-while getopts :h-: opt; do
+while getopts :Cch-: opt; do
     [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
     case $opt in
+    C | cleanup)
+        cleanup-temp-folders || exit 1
+        exit 0
+        ;;
     h | help)
         print-help
         exit 0
@@ -67,11 +84,10 @@ rm -rf "$tmpdir"/demo-folder/.arch-as-code
 rm -rf "$tmpdir"/demo-folder/.install
 mkdir -p "$tmpdir"/demo-folder/.install
 
-# remove existing
-run ./gradlew clean
-rm -rf build
+run ./gradlew clean # Start clean
 
-cp ./scripts/demo-git-ignore $tmpdir/demo-folder/.gitignore
+cp ./scripts/demo-git-ignore "$tmpdir"/demo-folder/.gitignore
+cp ./.java-version "$tmpdir"
 
 # build
 run ./gradlew distZip
@@ -87,8 +103,10 @@ pwd
 run git init
 
 # This file is optional
-mv product-architecture.yml product-architecture.yml.bak 2>/dev/null || {
-    echo "$0: WARNING: No locally edited product-architecture.yml; ignoring" >&2
+[[ -r product-architecture.yml ]] && {
+    mv product-architecture.yml product-architecture.yml.bak || {
+        echo "$0: WARNING: No locally edited product-architecture.yml; ignoring" >&2
+    }
 }
 
 run .install/bin/arch-as-code init -i i -k i -s s .
