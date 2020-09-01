@@ -135,6 +135,7 @@ plugins.withType(DistributionPlugin) {
 }
 
 pitest {
+    // TODO: Work with PITest (GitHub issues) to resolve the complaints
     targetClasses = ["net.trilogy.*"]
     threads = 4
     outputFormats = ["XML", "HTML"]
