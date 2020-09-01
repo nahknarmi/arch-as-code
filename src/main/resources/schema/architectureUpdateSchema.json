@@ -735,7 +735,7 @@
               "component-id",
               "tdds"
             ],
-            "additionalProperties": true,
+            "additionalProperties": false,
             "properties": {
               "component-id": {
                 "$id": "#/properties/tdds-per-component/items/anyOf/0/properties/component-id",
@@ -745,6 +745,16 @@
                 "default": "",
                 "examples": [
                   "[SAMPLE-COMPONENT-ID]"
+                ]
+              },
+              "component-path": {
+                "$id": "#/properties/tdds-per-component/items/anyOf/0/properties/component-path",
+                "type": "string",
+                "title": "The component-path schema",
+                "description": "A component c4 path that the TDD references.",
+                "default": "",
+                "examples": [
+                  "c4://DevSpaces/DevSpaces API/Sign In Controller"
                 ]
               },
               "deleted": {
@@ -1010,8 +1020,7 @@
                       }
                     ],
                     "required": [
-                      "ticket",
-                      "link"
+                      "ticket"
                     ],
                     "additionalProperties": true,
                     "properties": {

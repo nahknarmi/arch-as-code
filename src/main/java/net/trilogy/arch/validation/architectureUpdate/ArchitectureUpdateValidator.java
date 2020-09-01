@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -25,6 +27,7 @@ public class ArchitectureUpdateValidator {
     private final Set<FunctionalRequirement.Id> allFunctionalRequirementIds;
     private final Set<Tdd.Id> allTddIdsInDecisions;
     private final Set<Tdd.Id> allTddIdsInFunctionalRequirements;
+    private final Set<C4Component> allComponents;
 
     public static ValidationResult validate(
             ArchitectureUpdate architectureUpdateToValidate,
@@ -46,6 +49,9 @@ public class ArchitectureUpdateValidator {
 
         allComponentIdsInBeforeArchitecture = getAllComponentIdsIn(architectureBeforeUpdate);
         allComponentIdsInAfterArchitecture = getAllComponentIdsIn(architectureAfterUpdate);
+
+        allComponents = architectureAfterUpdate.getModel().getComponents();
+        allComponents.addAll(architectureBeforeUpdate.getModel().getComponents());
 
         allTddIdsInStories = getAllTddIdsReferencedByStories();
         allTddIds = getAllTddIds();
@@ -81,8 +87,20 @@ public class ArchitectureUpdateValidator {
 
                 getErrors_OnlyOneTddContentsReference(),
                 getErrors_TddContentsFileExists(),
-                getErrors_TddsMustHaveOnlyOneTddContentFile()
+                getErrors_TddsMustHaveOnlyOneTddContentFile(),
+
+                getErrors_ComponentPathMatchingId()
         ).collect(toList()));
+    }
+
+    private Set<ValidationError> getErrors_ComponentPathMatchingId() {
+        return architectureUpdate.getTddContainersByComponent().stream()
+                .filter(c -> c.getComponentId() != null && c.getComponentPath() != null)
+                .filter(c -> {
+                    Optional<C4Component> c4Component = allComponents.stream().filter(c4 -> c4.getId().equals(c.getComponentId().getId())).findFirst();
+                    if (c4Component.isEmpty() || c4Component.get().getPath() == null) return false;
+                    return ! c4Component.get().getPath().getPath().equalsIgnoreCase(c.getComponentPath());
+                }).map(c -> ValidationError.forComponentPathNotMatchingId(c.getComponentId().getId())).collect(Collectors.toSet());
     }
 
     private Set<ValidationError> getErrors_NoPrNotCombinedWithAnotherTddId() {
@@ -136,7 +154,7 @@ public class ArchitectureUpdateValidator {
                 links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink()))
         );
 
-        architectureUpdate.getCapabilityContainer().getFeatureStories().forEach(s ->
+        architectureUpdate.getCapabilityContainer().getFeatureStories().stream().filter(s -> s.getJira().getLink() != null ).forEach(s ->
                 links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink()))
         );
         return links;

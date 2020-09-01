@@ -30,6 +30,7 @@ decisions:
     text: "[SAMPLE DECISION TEXT]"
     tdd-references:
     - "[SAMPLE-TDD-ID]"
+    - "[SAMPLE-TDD-ID-2]"
 tdds-per-component:
   - component-id: "[SAMPLE-COMPONENT-ID]"
     component-path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
@@ -37,7 +38,7 @@ tdds-per-component:
       '[SAMPLE-TDD-ID]':
         text: "[SAMPLE TDD TEXT]"
       '[SAMPLE-TDD-ID-2]':
-        notext: "[SAMPLE TDD TEXT 2]"
+        text: "[SAMPLE TDD TEXT 2]"
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
     text: "[SAMPLE REQUIREMENT TEXT]"
@@ -52,7 +53,8 @@ capabilities:
   - title: "[SAMPLE FEATURE STORY TITLE]"
     jira:
       ticket: "[SAMPLE JIRA TICKET]"
-      link: "[SAMPLE JIRA TICKET LINK]"
-    tdd-references: []
+    tdd-references:
+      - '[SAMPLE-TDD-ID]'
+      - '[SAMPLE-TDD-ID-2]'
     functional-requirement-references:
     - "[SAMPLE-REQUIREMENT-ID]"
