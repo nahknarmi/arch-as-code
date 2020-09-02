@@ -161,7 +161,7 @@ bootJar {
 }
 
 def isStable = { String version ->
-    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it ->
+    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it ->
         version.toUpperCase().contains(it)
     }
     def regex = /^[0-9,.v-]+(-r)?$/
