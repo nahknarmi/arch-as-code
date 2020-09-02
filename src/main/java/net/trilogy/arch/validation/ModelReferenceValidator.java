@@ -1,8 +1,8 @@
 package net.trilogy.arch.validation;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.c4.Entity;
 import net.trilogy.arch.domain.c4.C4Model;
+import net.trilogy.arch.domain.c4.Entity;
 
 import java.util.List;
 

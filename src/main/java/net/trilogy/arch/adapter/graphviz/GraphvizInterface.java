@@ -1,12 +1,12 @@
 package net.trilogy.arch.adapter.graphviz;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.parse.Parser;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class GraphvizInterface {
     public void render(String dotGraph, Path outputPath) throws IOException {

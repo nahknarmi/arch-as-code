@@ -19,17 +19,14 @@ import java.util.concurrent.Callable;
 
 @Command(name = "import", mixinStandardHelpOptions = true, description = "Imports existing structurizr workspace, overwriting the existing product architecture.")
 public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
+    private final FilesFacade filesFacade;
     @Parameters(index = "0", paramLabel = "EXPORTED_WORKSPACE", description = "Exported structurizr workspace json file location.")
     private File exportedWorkspacePath;
-
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
-
     @Getter
     @Spec
     private CommandLine.Model.CommandSpec spec;
-
-    private final FilesFacade filesFacade;
 
     public ImportCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

@@ -23,7 +23,6 @@ public class Base64Converter {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-
     public static Boolean toFile(FilesFacade filesFacade, String encodedString, Path outputStreamPath) throws IOException {
         final byte[] decoded = Base64.getDecoder().decode(encodedString);
         final FileOutputStream outputStream = filesFacade.newFileOutputStream(outputStreamPath.toString());

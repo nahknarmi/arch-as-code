@@ -59,5 +59,4 @@ public class ArchitectureDataStructurePublisher {
 
         return new ArchitectureDataStructureObjectMapper().readValue(archAsString);
     }
-
 }

@@ -22,22 +22,18 @@ import static java.util.Comparator.comparing;
 
 @CommandLine.Command(name = "list-components", mixinStandardHelpOptions = true, description = "Outputs a CSV formatted list of components and their IDs, which are present in the architecture.")
 public class ListComponentsCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin {
+    @Getter
+    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
+    @Getter
+    private final FilesFacade filesFacade;
     @Option(names = {"-s", "--search"}, description = "Search string to be part of name or description to find matching components.")
     private String searchString;
-
     @Getter
     @Spec
     private CommandSpec spec;
-
     @Getter
     @Parameters(index = "0", description = "Directory containing the product architecture")
     private File productArchitectureDirectory;
-
-    @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
-
-    @Getter
-    private final FilesFacade filesFacade;
 
     public ListComponentsCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

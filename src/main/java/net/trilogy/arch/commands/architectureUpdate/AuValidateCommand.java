@@ -37,33 +37,26 @@ import static picocli.CommandLine.Spec;
 @Command(name = "validate", description = "Validate Architecture Update", mixinStandardHelpOptions = true)
 public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFromGitMixin, LoadArchitectureMixin, DisplaysErrorMixin, DisplaysOutputMixin {
     @Getter
-    @Spec
-    private CommandSpec spec;
-
-    @Parameters(index = "0", description = "Directory name of architecture update to validate")
-    private File architectureUpdateDirectory;
-
-    @Getter
-    @Parameters(index = "1", description = "Product architecture root directory")
-    private File productArchitectureDirectory;
-
-    @Getter
     private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     @Getter
     private final FilesFacade filesFacade;
     @Getter
     private final GitInterface gitInterface;
-
+    private final ArchitectureUpdateReader architectureUpdateReader;
     @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to validate changes. Usually 'master'. Also can be a commit or tag.", required = true)
     String baseBranch;
-
     @Option(names = {"-t", "--TDDs"}, description = "Run validation for TDDs only")
     boolean tddValidation;
-
     @Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
     boolean capabilityValidation;
-
-    private final ArchitectureUpdateReader architectureUpdateReader;
+    @Getter
+    @Spec
+    private CommandSpec spec;
+    @Parameters(index = "0", description = "Directory name of architecture update to validate")
+    private File architectureUpdateDirectory;
+    @Getter
+    @Parameters(index = "1", description = "Product architecture root directory")
+    private File productArchitectureDirectory;
 
     public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;

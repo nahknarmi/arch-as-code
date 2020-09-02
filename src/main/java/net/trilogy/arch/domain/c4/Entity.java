@@ -26,15 +26,6 @@ public abstract class Entity implements HasRelation, HasTag, HasIdentity, Compar
     protected Set<C4Tag> tags = emptySet();
     protected Set<C4Relationship> relationships = emptySet();
 
-    abstract public Entity shallowCopy();
-
-    abstract public C4Type getType();
-
-    @Override
-    public int compareTo(Entity other) {
-        return this.getId().compareTo(other.getId());
-    }
-
     public Entity(@NonNull String id, String alias, C4Path path, @NonNull String name, String description, Set<C4Tag> tags, Set<C4Relationship> relationships) {
         this.id = id;
         this.alias = alias;
@@ -43,6 +34,15 @@ public abstract class Entity implements HasRelation, HasTag, HasIdentity, Compar
         this.tags = ofNullable(tags).orElse(emptySet());
         this.relationships = ofNullable(relationships).orElse(emptySet());
         this.name = name;
+    }
+
+    abstract public Entity shallowCopy();
+
+    abstract public C4Type getType();
+
+    @Override
+    public int compareTo(Entity other) {
+        return this.getId().compareTo(other.getId());
     }
 
     public void setPath(String path) {

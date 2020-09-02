@@ -32,7 +32,8 @@ public class ArchitectureDataStructureWriter {
         filesFacade.writeString(writeFile.toPath(), mapper.writeValueAsString(dataStructure));
 
         final Path writePath = Path.of(writeFile.getParent()).resolve("documentation");
-        if (!writePath.toFile().exists()) filesFacade.createDirectory(writePath);
+        if (!writePath.toFile().exists())
+            filesFacade.createDirectory(writePath);
 
         writeDocumentation(dataStructure, writePath);
         writeDocumentationImages(filesFacade, dataStructure, writePath);

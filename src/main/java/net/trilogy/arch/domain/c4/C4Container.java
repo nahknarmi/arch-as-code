@@ -53,6 +53,11 @@ public class C4Container extends Entity implements HasTechnology, HasUrl {
         return C4Type.CONTAINER;
     }
 
+    @Override
+    public C4Container shallowCopy() {
+        return this.toBuilder().build();
+    }
+
     public static class C4ContainerBuilder {
         public C4ContainerBuilder path(C4Path path) {
             if (path == null) return this;
@@ -60,10 +65,5 @@ public class C4Container extends Entity implements HasTechnology, HasUrl {
             this.path = path;
             return this;
         }
-    }
-
-    @Override
-    public C4Container shallowCopy() {
-        return this.toBuilder().build();
     }
 }

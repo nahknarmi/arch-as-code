@@ -26,6 +26,7 @@ import static net.trilogy.arch.transformation.DeploymentNodeTransformer.addDeplo
 import static net.trilogy.arch.transformation.LocationTransformer.c4LocationToLocation;
 
 public class ModelMediator {
+    private static final ObjectMapper jackson = new ObjectMapper();
     private final Model model;
     private final FunctionalIdGenerator idGenerator;
 
@@ -37,6 +38,16 @@ public class ModelMediator {
     public ModelMediator(Model model) {
         this.model = model;
         this.idGenerator = new FunctionalIdGenerator();
+    }
+
+    private static String str(List<String> lst) {
+        try {
+            return jackson.writeValueAsString(lst);
+        } catch (final JsonProcessingException e) {
+            final var x = new IllegalStateException("BUG: Impossible exception: " + e, e);
+            x.setStackTrace(e.getStackTrace());
+            throw x;
+        }
     }
 
     public Person person(String id) {
@@ -113,18 +124,6 @@ public class ModelMediator {
 
     public DeploymentNode addDeploymentNode(C4Model dataStructureModel, C4DeploymentNode c4DeploymentNode) {
         return addDeploymentNodeFromC4ToModel(c4DeploymentNode, dataStructureModel, model, idGenerator);
-    }
-
-    private static final ObjectMapper jackson = new ObjectMapper();
-
-    private static String str(List<String> lst) {
-        try {
-            return jackson.writeValueAsString(lst);
-        } catch (final JsonProcessingException e) {
-            final var x = new IllegalStateException("BUG: Impossible exception: " + e, e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        }
     }
 
     private String[] getTags(HasTag t) {

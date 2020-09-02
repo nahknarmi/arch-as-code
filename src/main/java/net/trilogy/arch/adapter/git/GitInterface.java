@@ -28,6 +28,10 @@ public class GitInterface {
         this.objMapper = objMapper;
     }
 
+    private static File toAbsolute(File dir) {
+        return dir.toPath().toAbsolutePath().toFile();
+    }
+
     public ArchitectureDataStructure load(String commitReference, Path architectureYamlFilePath)
             throws IOException, GitAPIException, BranchNotFoundException {
 
@@ -46,14 +50,14 @@ public class GitInterface {
             throw new BranchNotFoundException();
         }
 
-        if(!isAnnotatedTag(git, objId)){
+        if (!isAnnotatedTag(git, objId)) {
             return git.log().add(objId).call().iterator().next();
         }
 
         var realObjId = git.getRepository()
-                        .getRefDatabase()
-                        .peel(git.getRepository().getRefDatabase().findRef(commitReference))
-                        .getPeeledObjectId();
+                .getRefDatabase()
+                .peel(git.getRepository().getRefDatabase().findRef(commitReference))
+                .getPeeledObjectId();
 
         return git.log().add(realObjId).call().iterator().next();
     }
@@ -70,12 +74,12 @@ public class GitInterface {
 
     private String getRelativePath(Path architectureYamlFilePath, Git git) {
         var repoDirAbsolutePath = git.getRepository()
-            .getDirectory()
-            .getParentFile()
-            .toPath()
-            .toAbsolutePath() 
-            .normalize()
-            .toString();
+                .getDirectory()
+                .getParentFile()
+                .toPath()
+                .toAbsolutePath()
+                .normalize()
+                .toString();
         return architectureYamlFilePath
                 .toAbsolutePath()
                 .normalize()
@@ -105,10 +109,6 @@ public class GitInterface {
                         .findGitDir(toAbsolute(dir))
                         .build()
         );
-    }
-
-    private static File toAbsolute(File dir) {
-        return dir.toPath().toAbsolutePath().toFile();
     }
 
     public static class BranchNotFoundException extends Exception {

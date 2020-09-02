@@ -7,10 +7,16 @@ import java.util.Map;
 
 public interface Diffable {
     C4Type getType();
+
     String getId();
+
     String getName();
+
     String[] getRelatedTddsText();
+
     void setRelatedTdds(Map<Tdd.Id, Tdd> relatedTo);
+
     boolean hasRelatedTdds();
+
     boolean equals(Object o);
 }

@@ -17,10 +17,6 @@ import static java.lang.String.format;
 public class C4Person extends Entity implements HasLocation {
     private C4Location location;
 
-    public C4Type getType() {
-        return C4Type.PERSON;
-    }
-
     @Builder(toBuilder = true)
     C4Person(String id,
              String alias,
@@ -34,6 +30,15 @@ public class C4Person extends Entity implements HasLocation {
         this.location = location;
     }
 
+    public C4Type getType() {
+        return C4Type.PERSON;
+    }
+
+    @Override
+    public C4Person shallowCopy() {
+        return this.toBuilder().build();
+    }
+
     public static class C4PersonBuilder {
         public C4PersonBuilder path(C4Path path) {
             if (path == null) return this;
@@ -41,10 +46,5 @@ public class C4Person extends Entity implements HasLocation {
             this.path = path;
             return this;
         }
-    }
-
-    @Override
-    public C4Person shallowCopy() {
-        return this.toBuilder().build();
     }
 }

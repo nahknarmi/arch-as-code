@@ -13,9 +13,10 @@ public class Epic {
     public static final String BLANK_AU_EPIC_JIRA_LINK_VALUE = "Please enter epic link from Jira";
     public static final String BLANK_AU_EPIC_JIRA_TICKET_VALUE = "please-enter-epic-ticket-from-jira";
 
-
-    @JsonProperty(value = "title") private final String title;
-    @JsonProperty(value = "jira") private final Jira jira;
+    @JsonProperty(value = "title")
+    private final String title;
+    @JsonProperty(value = "jira")
+    private final Jira jira;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

@@ -11,8 +11,10 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 public class Jira {
-    @JsonProperty(value = "ticket") private final String ticket;
-    @JsonProperty(value = "link") private final String link;
+    @JsonProperty(value = "ticket")
+    private final String ticket;
+    @JsonProperty(value = "link")
+    private final String link;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

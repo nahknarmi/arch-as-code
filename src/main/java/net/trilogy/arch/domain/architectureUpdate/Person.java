@@ -6,8 +6,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class Person {
-    @JsonProperty(value = "name") private final String name;
-    @JsonProperty(value = "email") private final String email;
+    @JsonProperty(value = "name")
+    private final String name;
+    @JsonProperty(value = "email")
+    private final String email;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Person(

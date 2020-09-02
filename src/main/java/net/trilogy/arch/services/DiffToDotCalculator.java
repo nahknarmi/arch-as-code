@@ -63,18 +63,6 @@ public class DiffToDotCalculator {
         return dot.toString();
     }
 
-    private static class Dot {
-        private final StringBuilder builder = new StringBuilder();
-
-        public String toString() {
-            return builder.toString();
-        }
-
-        public void add(int indentationLevel, String line) {
-            builder.append("    ".repeat(indentationLevel)).append(line).append("\n");
-        }
-    }
-
     @VisibleForTesting
     static String getDotLabel(DiffableEntity entity) {
         return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD>" + entity.getName() + "</TD></TR>" +
@@ -172,5 +160,17 @@ public class DiffToDotCalculator {
                 .map(it -> it.getElement().getName())
                 .orElse(rel.getDestinationId());
         return source + " -> " + destination;
+    }
+
+    private static class Dot {
+        private final StringBuilder builder = new StringBuilder();
+
+        public String toString() {
+            return builder.toString();
+        }
+
+        public void add(int indentationLevel, String line) {
+            builder.append("    ".repeat(indentationLevel)).append(line).append("\n");
+        }
     }
 }

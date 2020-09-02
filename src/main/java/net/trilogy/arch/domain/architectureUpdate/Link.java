@@ -8,8 +8,10 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class Link {
-    @JsonProperty(value = "description") private final String description;
-    @JsonProperty(value = "link") private final String link;
+    @JsonProperty(value = "description")
+    private final String description;
+    @JsonProperty(value = "link")
+    private final String link;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Link(

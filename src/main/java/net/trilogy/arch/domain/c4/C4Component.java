@@ -58,6 +58,11 @@ public class C4Component extends Entity implements HasTechnology, HasUrl {
         return C4Type.COMPONENT;
     }
 
+    @Override
+    public C4Component shallowCopy() {
+        return this.toBuilder().build();
+    }
+
     public static class C4ComponentBuilder {
         public C4ComponentBuilder path(C4Path path) {
             if (path == null) return this;
@@ -65,10 +70,5 @@ public class C4Component extends Entity implements HasTechnology, HasUrl {
             this.path = path;
             return this;
         }
-    }
-
-    @Override
-    public C4Component shallowCopy() {
-        return this.toBuilder().build();
     }
 }

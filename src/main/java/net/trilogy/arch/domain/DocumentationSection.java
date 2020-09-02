@@ -18,11 +18,6 @@ public class DocumentationSection {
     private final Format format;
     private final String content;
 
-    public enum Format {
-        MARKDOWN,
-        ASCIIDOC
-    }
-
     public static DocumentationSection createFromFile(File file, FilesFacade filesFacade) throws IOException {
         if (file == null || file.isDirectory()) return null;
 
@@ -36,13 +31,6 @@ public class DocumentationSection {
         return new DocumentationSection(null, title, order, format, content);
     }
 
-    public String getFileName() {
-        if (getOrder() == null) return title + extensionFromFormat(getFormat());
-
-        return getOrder().toString() + "_" + title + extensionFromFormat(getFormat());
-    }
-
-
     private static String getTitleFromFullname(String fullName, Integer order) {
         final String nameWithoutExtension = Files.getNameWithoutExtension(fullName);
 
@@ -55,23 +43,10 @@ public class DocumentationSection {
         return s[1];
     }
 
-    public com.structurizr.documentation.Format getStructurizrFormat() {
-        if (getFormat().equals(Format.MARKDOWN)) return Markdown;
-
-        return AsciiDoc;
-    }
-
     private static Format formatFromExtension(String extension) {
         if (extension.equals("md")) return Format.MARKDOWN;
 
         return Format.ASCIIDOC;
-    }
-
-    private String extensionFromFormat(Format format) {
-        if (format == null) return "";
-        if (format.equals(Format.MARKDOWN)) return ".md";
-
-        return ".txt";
     }
 
     private static Integer getOrderFromFullname(String name) {
@@ -86,5 +61,30 @@ public class DocumentationSection {
         }
 
         return order;
+    }
+
+    public String getFileName() {
+        if (getOrder() == null)
+            return title + extensionFromFormat(getFormat());
+
+        return getOrder().toString() + "_" + title + extensionFromFormat(getFormat());
+    }
+
+    public com.structurizr.documentation.Format getStructurizrFormat() {
+        if (getFormat().equals(Format.MARKDOWN)) return Markdown;
+
+        return AsciiDoc;
+    }
+
+    private String extensionFromFormat(Format format) {
+        if (format == null) return "";
+        if (format.equals(Format.MARKDOWN)) return ".md";
+
+        return ".txt";
+    }
+
+    public enum Format {
+        MARKDOWN,
+        ASCIIDOC
     }
 }
