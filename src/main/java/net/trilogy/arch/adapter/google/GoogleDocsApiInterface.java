@@ -15,8 +15,18 @@ public class GoogleDocsApiInterface {
     private static final Pattern pattern = Pattern.compile("/document/d/([^/]+)");
     private final Docs api;
 
-    public GoogleDocsApiInterface(Docs rawGoogleDocsApi){
+    public GoogleDocsApiInterface(Docs rawGoogleDocsApi) {
         this.api = rawGoogleDocsApi;
+    }
+
+    private static String getDocumentId(String documentUrl) {
+        Matcher matcher = pattern.matcher(documentUrl);
+
+        if (!matcher.find()) {
+            throw new InvalidUrlException();
+        }
+
+        return matcher.group(1);
     }
 
     public Response fetch(String url) throws IOException {
@@ -34,16 +44,6 @@ public class GoogleDocsApiInterface {
         final JsonNode jsonNode = mapper.readValue(jsonString, JsonNode.class);
 
         return new Response(jsonNode, doc);
-    }
-
-    private static String getDocumentId(String documentUrl) {
-        Matcher matcher = pattern.matcher(documentUrl);
-
-        if (!matcher.find()) {
-            throw new InvalidUrlException();
-        }
-
-        return matcher.group(1);
     }
 
     public static class Response {
@@ -64,5 +64,6 @@ public class GoogleDocsApiInterface {
         }
     }
 
-    static class InvalidUrlException extends RuntimeException {}
+    static class InvalidUrlException extends RuntimeException {
+    }
 }

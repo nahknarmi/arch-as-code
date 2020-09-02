@@ -60,15 +60,6 @@ public class C4Path {
         return new C4Path(path);
     }
 
-    private Matcher matcher() {
-        if (this.matcher == null) {
-            this.matcher = pattern.matcher(this.path);
-            boolean found = matcher.find();
-            checkArgument(found, String.format("Path does not match expected pattern. (%s)", this.path));
-        }
-        return this.matcher;
-    }
-
     public static C4Path buildPath(Element element) {
         if (element.getParent() == null) {
             String prefix = "c4://";
@@ -83,6 +74,15 @@ public class C4Path {
         @NonNull String c4Path = buildPath(element.getParent()).getPath();
         String fullPath = c4Path + "/" + element.getName().replaceAll("/", "\\\\/");
         return new C4Path(fullPath);
+    }
+
+    private Matcher matcher() {
+        if (this.matcher == null) {
+            this.matcher = pattern.matcher(this.path);
+            boolean found = matcher.find();
+            checkArgument(found, String.format("Path does not match expected pattern. (%s)", this.path));
+        }
+        return this.matcher;
     }
 
     public String name() {

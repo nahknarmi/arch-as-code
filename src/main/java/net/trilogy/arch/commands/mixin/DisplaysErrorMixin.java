@@ -14,7 +14,7 @@ public interface DisplaysErrorMixin {
     default void printError(String errorMessage, Exception exception) {
         printError(errorMessage);
         printError("Error: " + exception);
-        if(exception.getCause() != null) {
+        if (exception.getCause() != null) {
             printError("Cause: " + exception.getCause());
         }
 

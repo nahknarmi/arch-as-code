@@ -30,7 +30,8 @@ public class DiffableEntity extends DiffableWithRelatedTdds implements Diffable 
         final var other = (DiffableEntity) otherObject;
 
         if (Objects.equals(entity, other.entity)) return true;
-        if (Objects.isNull(entity) != Objects.isNull(other.entity)) return false;
+        if (Objects.isNull(entity) != Objects.isNull(other.entity))
+            return false;
 
         var a = entity.shallowCopy();
         var b = other.entity.shallowCopy();

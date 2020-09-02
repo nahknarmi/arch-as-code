@@ -4,8 +4,11 @@ import com.structurizr.Workspace;
 import com.structurizr.documentation.DecisionStatus;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 
+import static com.structurizr.documentation.DecisionStatus.Accepted;
 import static com.structurizr.documentation.DecisionStatus.Deprecated;
-import static com.structurizr.documentation.DecisionStatus.*;
+import static com.structurizr.documentation.DecisionStatus.Proposed;
+import static com.structurizr.documentation.DecisionStatus.Rejected;
+import static com.structurizr.documentation.DecisionStatus.Superseded;
 import static com.structurizr.documentation.Format.Markdown;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
