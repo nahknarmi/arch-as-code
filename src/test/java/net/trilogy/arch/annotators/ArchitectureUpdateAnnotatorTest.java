@@ -45,7 +45,7 @@ public class ArchitectureUpdateAnnotatorTest {
         ArchitectureUpdate au = ArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(
-                        List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), null,false, Map.of()))
+                        List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), null, false, Map.of()))
                 )
                 .build();
 
@@ -205,7 +205,7 @@ public class ArchitectureUpdateAnnotatorTest {
         );
         List<TddContainerByComponent> tddContainers = List.of(new TddContainerByComponent(
                         new Tdd.ComponentReference("13"),
-                null, false,
+                        null, false,
                         Map.of(
                                 new Tdd.Id("TDD 1.0"), new Tdd(null, null),
                                 new Tdd.Id("TDD 1.1"), new Tdd("text", null),

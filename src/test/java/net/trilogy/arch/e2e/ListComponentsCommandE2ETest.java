@@ -14,18 +14,18 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 
 import static net.trilogy.arch.TestHelper.execute;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 public class ListComponentsCommandE2ETest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private File rootDir;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private File rootDir;
 
     @Before
     public void setUp() {
@@ -69,7 +69,7 @@ public class ListComponentsCommandE2ETest {
     public void shouldOutputComponentsListFilteredBySearchString() throws Exception {
         initFileForTest("allValidSchema.yml");
 
-        int status = TestHelper.execute("list-components",  "-s password", rootDir.getAbsolutePath());
+        int status = TestHelper.execute("list-components", "-s password", rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), equalTo(
@@ -121,5 +121,4 @@ public class ListComponentsCommandE2ETest {
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(err.toString(), containsString("Unable to load architecture\nError: java.nio.file.NoSuchFileException"));
     }
-
 }

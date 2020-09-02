@@ -23,11 +23,11 @@ import static org.mockito.Mockito.when;
 public class JiraApiFactoryTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-    private FilesFacade mockedFiles;
     private final String expectedBaseUri = "BASE-URI/";
     private final String expectedGetStoryEndpoint = "GET-STORY-ENDPOINT/";
     private final String expectedBulkCreateEndpoint = "BULK-CREATE-ENDPOINT/";
     private final String expectedLinkPrefix = "LINK-PREFIX/";
+    private FilesFacade mockedFiles;
     private Path rootDir;
 
     @Before
@@ -63,7 +63,6 @@ public class JiraApiFactoryTest {
         collector.checkThat(jiraApi.getBulkCreateEndpoint(), equalTo(expectedBulkCreateEndpoint));
         collector.checkThat(jiraApi.getLinkPrefix(), equalTo(expectedLinkPrefix));
     }
-
 
     @Test
     public void shouldCreateCorrectClient() throws NoSuchAlgorithmException, IOException {

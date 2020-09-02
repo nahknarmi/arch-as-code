@@ -19,7 +19,6 @@ public class ArchitectureUpdateWriterTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-
     @Test
     public void shouldWriteAuAndTddContentToAuDirectory() throws Exception {
         // Given

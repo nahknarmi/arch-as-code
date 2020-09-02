@@ -32,24 +32,29 @@ import java.util.Objects;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class AuNewCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
+    final PrintStream originalOut = System.out;
+    final PrintStream originalErr = System.err;
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    final ByteArrayOutputStream err = new ByteArrayOutputStream();
     private GoogleDocsApiInterface googleDocsApiMock;
     private FilesFacade filesFacadeSpy;
     private GitInterface gitInterfaceSpy;
     private Application app;
     private File rootDir;
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
     @Before
     public void setUp() throws Exception {

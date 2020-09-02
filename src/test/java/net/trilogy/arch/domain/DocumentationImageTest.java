@@ -11,7 +11,6 @@ import java.nio.file.Files;
 
 import static org.hamcrest.Matchers.equalTo;
 
-
 public class DocumentationImageTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();

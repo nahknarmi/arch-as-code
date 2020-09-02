@@ -15,7 +15,6 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-
 public class C4PathTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
@@ -83,7 +82,6 @@ public class C4PathTest {
 
         C4Path componentPath = C4Path.buildPath(buildComponent("component/3/container/2/system/1", container));
 
-
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person/1"));
         collector.checkThat(personPath.getPath(), equalTo("@person\\/1"));
@@ -108,7 +106,6 @@ public class C4PathTest {
         C4Path containerPath = C4Path.buildPath(buildContainer("container.1"));
         C4Path componentPath = C4Path.buildPath(buildComponent("component.1"));
 
-
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person.1"));
         collector.checkThat(personPath.getPath(), equalTo("@person.1"));
@@ -132,7 +129,6 @@ public class C4PathTest {
         C4Path systemPath = C4Path.buildPath(buildSoftwareSystem("system 1"));
         C4Path containerPath = C4Path.buildPath(buildContainer("container 1"));
         C4Path componentPath = C4Path.buildPath(buildComponent("component 1"));
-
 
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person 1"));
@@ -308,7 +304,6 @@ public class C4PathTest {
         C4Path path = C4Path.path("c4://sys1/container1");
         path.componentPath();
     }
-
 
     private Component buildComponent(String componentName) {
         return buildComponent(componentName, null);

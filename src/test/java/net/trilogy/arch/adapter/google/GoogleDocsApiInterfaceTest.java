@@ -14,7 +14,9 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GoogleDocsApiInterfaceTest {
@@ -22,7 +24,7 @@ public class GoogleDocsApiInterfaceTest {
     private GoogleDocsApiInterface apiInterface;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         mockedApi = mock(Docs.class);
         apiInterface = new GoogleDocsApiInterface(mockedApi);
     }

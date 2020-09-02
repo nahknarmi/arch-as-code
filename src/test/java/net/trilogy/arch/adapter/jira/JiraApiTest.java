@@ -24,12 +24,23 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 
-import static net.trilogy.arch.TestHelper.*;
+import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_REQUEST_EXPECTED_BODY;
+import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY;
+import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_WITH_TDD_CONTENT_REQUEST_EXPECTED_BODY;
+import static net.trilogy.arch.TestHelper.JSON_JIRA_GET_EPIC;
+import static net.trilogy.arch.TestHelper.JSON_STRUCTURIZR_BIG_BANK;
+import static net.trilogy.arch.TestHelper.loadResource;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JiraApiTest {
     @Rule
@@ -37,6 +48,11 @@ public class JiraApiTest {
 
     private HttpClient mockHttpClient;
     private JiraApi jiraApi;
+
+    @SuppressWarnings("unchecked")
+    private static HttpResponse<Object> mockedGenericHttpResponse() {
+        return (HttpResponse<Object>) mock(HttpResponse.class);
+    }
 
     @Before
     public void setUp() {
@@ -108,16 +124,11 @@ public class JiraApiTest {
 
             //THEN:
             fail("Exception not thrown.");
-        } catch( JiraApi.JiraApiException e ){
+        } catch (JiraApi.JiraApiException e) {
             collector.checkThat(e.getMessage(), equalTo("Unknown error occurred"));
             collector.checkThat(e.getCause(), is(instanceOf(Exception.class)));
             collector.checkThat(e.getResponse(), is(mockedResponse));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static HttpResponse<Object> mockedGenericHttpResponse() {
-        return (HttpResponse<Object>) mock(HttpResponse.class);
     }
 
     @Test
@@ -133,7 +144,7 @@ public class JiraApiTest {
 
             //THEN:
             fail("Exception not thrown.");
-        } catch( JiraApi.JiraApiException e ){
+        } catch (JiraApi.JiraApiException e) {
             collector.checkThat(e.getMessage(), equalTo("Unknown error occurred"));
             collector.checkThat(e.getCause(), is(instanceOf(Exception.class)));
             collector.checkThat(e.getResponse(), is(mockedResponse));
@@ -153,7 +164,7 @@ public class JiraApiTest {
 
             //THEN:
             fail("Exception not thrown.");
-        } catch( JiraApi.JiraApiException e ){
+        } catch (JiraApi.JiraApiException e) {
             collector.checkThat(e.getMessage(), equalTo("Story \"A\" not found. URL: " + jiraApi.getBaseUri() + jiraApi.getGetStoryEndpoint() + "A"));
             collector.checkThat(e.getCause(), is(nullValue()));
             collector.checkThat(e.getResponse(), is(mockedResponse));
@@ -173,7 +184,7 @@ public class JiraApiTest {
 
             //THEN:
             fail("Exception not thrown.");
-        } catch( JiraApi.JiraApiException e ){
+        } catch (JiraApi.JiraApiException e) {
             collector.checkThat(e.getMessage(), equalTo("Failed to log into Jira. Please check your credentials."));
             collector.checkThat(e.getCause(), is(nullValue()));
             collector.checkThat(e.getResponse(), is(mockedResponse));
@@ -193,7 +204,7 @@ public class JiraApiTest {
 
             //THEN:
             fail("Exception not thrown.");
-        } catch( JiraApi.JiraApiException e ){
+        } catch (JiraApi.JiraApiException e) {
             collector.checkThat(e.getMessage(), equalTo("Failed to log into Jira. Please check your credentials."));
             collector.checkThat(e.getCause(), is(nullValue()));
             collector.checkThat(e.getResponse(), is(mockedResponse));
@@ -377,8 +388,8 @@ public class JiraApiTest {
     }
 
     /**
-     * Used for parsing request objects, to ensure in tests we're creating the right ones.
-     * See: https://stackoverflow.com/questions/59342963/how-to-test-java-net-http-java-11-requests-bodypublisher
+     * Used for parsing request objects, to ensure in tests we're creating the
+     * right ones. See: https://stackoverflow.com/questions/59342963/how-to-test-java-net-http-java-11-requests-bodypublisher
      */
     private static class HttpRequestParserForTests<T> implements Flow.Subscriber<T> {
         private final CountDownLatch latch = new CountDownLatch(1);
@@ -429,5 +440,4 @@ public class JiraApiTest {
             this.latch.countDown();
         }
     }
-
 }

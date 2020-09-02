@@ -31,13 +31,11 @@ import static org.mockito.Mockito.when;
 public class ImportCommandE2ETest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private Path tempProductDirectory;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private Path tempProductDirectory;
 
     @Before
     public void setUp() throws Exception {
