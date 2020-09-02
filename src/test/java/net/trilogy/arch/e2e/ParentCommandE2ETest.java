@@ -13,7 +13,6 @@ import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-
 public class ParentCommandE2ETest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();

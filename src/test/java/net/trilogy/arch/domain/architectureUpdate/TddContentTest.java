@@ -19,7 +19,6 @@ public class TddContentTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-
     @Test
     public void shouldIdentifyAllowedFileTypes() throws IOException {
         File tempMarkdown = Files.createTempFile("markdown", ".md").toFile();
@@ -46,7 +45,6 @@ public class TddContentTest {
         collector.checkThat(TddContent.isTddContentName(tddMarkdown), equalTo(true));
         collector.checkThat(TddContent.isTddContentName(tddText), equalTo(true));
         collector.checkThat(TddContent.isTddContentName(arbitraryIdText), equalTo(true));
-
     }
 
     @Test
