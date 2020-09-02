@@ -46,6 +46,18 @@ public class Application {
     @Builder.Default
     private final GraphvizInterface graphvizInterface = new GraphvizInterface();
 
+    public static void main(String[] args) {
+        final var app = Application.builder().build();
+
+        int exitCode = app.execute(args);
+
+        if (exitCode != 0) {
+            app.getCli().getCommandSpec().commandLine().getOut().println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
+                    "/.arch-as-code/arch-as-code.log");
+        }
+        exit(exitCode);
+    }
+
     private CommandLine getCli() {
         return new CommandLine(new ParentCommand())
                 .addSubcommand(new InitializeCommand(filesFacade))
@@ -62,18 +74,6 @@ public class Application {
                                 .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
                                 .addSubcommand(new AuAnnotateCommand(filesFacade))
                 );
-    }
-
-    public static void main(String[] args) {
-        final var app = Application.builder().build();
-
-        int exitCode = app.execute(args);
-
-        if (exitCode != 0) {
-            app.getCli().getCommandSpec().commandLine().getOut().println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
-                    "/.arch-as-code/arch-as-code.log");
-        }
-        exit(exitCode);
     }
 
     public int execute(String[] args) {

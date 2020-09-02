@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
         name = "architecture-update",
         aliases = "au",
         description = "Namespace for Architecture Update commands.",
-        mixinStandardHelpOptions=true
+        mixinStandardHelpOptions = true
 )
 public class AuCommand implements Callable<Integer>, DisplaysOutputMixin {
     public static final String ARCHITECTURE_UPDATES_ROOT_FOLDER = "architecture-updates";

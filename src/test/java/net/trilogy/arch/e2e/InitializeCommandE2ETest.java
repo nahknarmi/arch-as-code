@@ -1,6 +1,5 @@
 package net.trilogy.arch.e2e;
 
-
 import net.trilogy.arch.Application;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.After;
@@ -18,21 +17,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static net.trilogy.arch.TestHelper.execute;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 
 public class InitializeCommandE2ETest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private Path tempProductDirectory;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private Path tempProductDirectory;
 
     @Before
     public void setUp() throws Exception {

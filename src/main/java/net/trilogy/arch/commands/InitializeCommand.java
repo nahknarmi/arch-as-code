@@ -20,23 +20,18 @@ import static net.trilogy.arch.adapter.structurizr.Credentials.createCredentials
 
 @Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
 public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
+    private final FilesFacade filesFacade;
     @Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
     private String workspaceId;
-
     @Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
     private String apiKey;
-
     @Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
     private String apiSecret;
-
     @Parameters(index = "0", description = "Directory to initialize")
     private File productArchitectureDirectory;
-
     @Getter
     @Spec
     private CommandLine.Model.CommandSpec spec;
-
-    private final FilesFacade filesFacade;
 
     public InitializeCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

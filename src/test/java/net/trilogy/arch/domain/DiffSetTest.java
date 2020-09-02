@@ -94,11 +94,9 @@ public class DiffSetTest {
         var outsideSystem = getSystemDiff("other-system");
         var containerOutsideSystem = getContainerDiff("other-container", "other-system");
 
-
         var relWithSystem = getRelationshipDiff("1", getId(container), getId(outsideSystem));
         var relWithPerson = getRelationshipDiff("2", getId(personOutsideSystem), getId(container));
         var relWithContainer = getRelationshipDiff("3", getId(containerOutsideSystem), getId(container));
-
 
         // WHEN
         var diffset = getDiffSetWithAllTypesOfDiffsPlus(

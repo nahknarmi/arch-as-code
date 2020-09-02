@@ -11,8 +11,10 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 public class MilestoneDependency {
-    @JsonProperty(value = "description") private final String description;
-    @JsonProperty(value = "links") private final List<Link> links;
+    @JsonProperty(value = "description")
+    private final String description;
+    @JsonProperty(value = "links")
+    private final List<Link> links;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

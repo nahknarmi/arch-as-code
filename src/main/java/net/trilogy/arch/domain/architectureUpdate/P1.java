@@ -9,9 +9,12 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class P1 {
-    @JsonProperty(value = "link") private final String link;
-    @JsonProperty(value = "jira") private final Jira jira;
-    @JsonProperty(value = "executive-summary") private final String executiveSummary;
+    @JsonProperty(value = "link")
+    private final String link;
+    @JsonProperty(value = "jira")
+    private final Jira jira;
+    @JsonProperty(value = "executive-summary")
+    private final String executiveSummary;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

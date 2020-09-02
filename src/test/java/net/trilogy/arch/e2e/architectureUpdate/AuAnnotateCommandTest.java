@@ -19,26 +19,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuAnnotateCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    Path rootPath;
-    Path originalAuWithComponentsDirectoryPath;
-    Path originalAuWithoutComponentsDirectoryPath;
-    Path originalAuWithTddContentsDirectoryPath;
-
-    Path changedAuWithComponentsDirectoryPath;
-    Path changedAuWithoutComponentsDirectoryPath;
-    Path changedAuWithTddContentsDirectoryPath;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    Path rootPath;
+    Path originalAuWithComponentsDirectoryPath;
+    Path originalAuWithoutComponentsDirectoryPath;
+    Path originalAuWithTddContentsDirectoryPath;
+    Path changedAuWithComponentsDirectoryPath;
+    Path changedAuWithoutComponentsDirectoryPath;
+    Path changedAuWithTddContentsDirectoryPath;
 
     @Before
     public void setUp() throws Exception {

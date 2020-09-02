@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnitParamsRunner.class)
 public class GoogleDocumentReaderTest {
 
-
     private final GoogleDocsApiInterface mockedApiInterface = mock(GoogleDocsApiInterface.class);
     private final GoogleDocumentReader reader = new GoogleDocumentReader(mockedApiInterface);
 
@@ -243,7 +242,6 @@ public class GoogleDocumentReaderTest {
                         "\n\n********* STATUS *********\n\n",
                 true, is(false)
         );
-
     }
 
     private JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {

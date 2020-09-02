@@ -50,19 +50,16 @@ import static org.mockito.Mockito.when;
 public class AuPublishStoriesCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private File rootDir;
-    private Path testCloneDirectory;
-
-    private JiraApi mockedJiraApi;
-    private Application app;
-    private FilesFacade spiedFilesFacade;
-    private GitInterface mockedGitInterface;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private File rootDir;
+    private Path testCloneDirectory;
+    private JiraApi mockedJiraApi;
+    private Application app;
+    private FilesFacade spiedFilesFacade;
+    private GitInterface mockedGitInterface;
 
     @Before
     public void setUp() throws Exception {

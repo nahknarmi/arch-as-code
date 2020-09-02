@@ -12,7 +12,9 @@ import java.io.IOException;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.annotation.PropertyAccessor.*;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.GETTER;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.IS_GETTER;
 
 public class ArchitectureUpdateObjectMapper {
     private final ObjectMapper mapper;

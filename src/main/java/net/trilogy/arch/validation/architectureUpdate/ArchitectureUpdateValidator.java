@@ -41,18 +41,6 @@ public class ArchitectureUpdateValidator {
     private final Set<Tdd.Id> allTddIdsInDecisions;
     private final Set<Tdd.Id> allTddIdsInFunctionalRequirements;
 
-    public static ValidationResult validate(
-            ArchitectureUpdate architectureUpdateToValidate,
-            ArchitectureDataStructure architectureAfterUpdate,
-            ArchitectureDataStructure architectureBeforeUpdate) {
-
-        return new ArchitectureUpdateValidator(
-                architectureUpdateToValidate,
-                architectureAfterUpdate,
-                architectureBeforeUpdate
-        ).run();
-    }
-
     private ArchitectureUpdateValidator(
             ArchitectureUpdate architectureUpdate,
             ArchitectureDataStructure architectureAfterUpdate,
@@ -67,6 +55,18 @@ public class ArchitectureUpdateValidator {
         allTddIdsInDecisions = getAllTddIdsReferencedByDecisions();
         allTddIdsInFunctionalRequirements = getAllTddIdsReferencedByFunctionalRequirements();
         allFunctionalRequirementIds = getAllFunctionalRequirementIds();
+    }
+
+    public static ValidationResult validate(
+            ArchitectureUpdate architectureUpdateToValidate,
+            ArchitectureDataStructure architectureAfterUpdate,
+            ArchitectureDataStructure architectureBeforeUpdate) {
+
+        return new ArchitectureUpdateValidator(
+                architectureUpdateToValidate,
+                architectureAfterUpdate,
+                architectureBeforeUpdate
+        ).run();
     }
 
     private ValidationResult run() {

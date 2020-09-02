@@ -37,17 +37,13 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     private final FilesFacade filesFacade;
     @Getter
     private final GitInterface gitInterface;
-
+    @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to get names of components. Usually 'master'. Also can be a commit or tag.", required = true)
+    String baseBranch;
     @Parameters(index = "0", description = "Directory name of architecture update to validate")
     private File architectureUpdateDirectory;
-
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
-
-    @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to get names of components. Usually 'master'. Also can be a commit or tag.", required = true)
-    String baseBranch;
-
     @Option(names = {"-u", "--username"}, description = "Jira username", required = true)
     private String username;
 

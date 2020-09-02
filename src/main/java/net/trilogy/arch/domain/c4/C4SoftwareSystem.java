@@ -38,6 +38,11 @@ public class C4SoftwareSystem extends Entity implements HasLocation {
         return C4Type.SYSTEM;
     }
 
+    @Override
+    public C4SoftwareSystem shallowCopy() {
+        return this.toBuilder().build();
+    }
+
     public static class C4SoftwareSystemBuilder {
         public C4SoftwareSystemBuilder path(C4Path path) {
             if (path == null) return this;
@@ -45,10 +50,5 @@ public class C4SoftwareSystem extends Entity implements HasLocation {
             this.path = path;
             return this;
         }
-    }
-
-    @Override
-    public C4SoftwareSystem shallowCopy() {
-        return this.toBuilder().build();
     }
 }

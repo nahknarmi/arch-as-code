@@ -31,21 +31,34 @@ import java.util.stream.Collectors;
         "capabilities"
 })
 public class ArchitectureUpdate {
-    @JsonProperty(value = "name") private final String name;
-    @JsonProperty(value = "milestone") private final String milestone;
-    @JsonProperty(value = "authors") private final List<Person> authors;
-    @JsonProperty(value = "PCAs") private final List<Person> PCAs;
-    @JsonProperty(value = "P2") private final P2 p2;
-    @JsonProperty(value = "P1") private final P1 p1;
-    @JsonProperty(value = "useful-links") private final List<Link> usefulLinks;
-    @JsonProperty(value = "milestone-dependencies") private final List<MilestoneDependency> milestoneDependencies;
-    @JsonProperty(value = "decisions") private final Map<Decision.Id, Decision> decisions;
-    @JsonProperty(value = "tdds-per-component") private final List<TddContainerByComponent> tddContainersByComponent;
-    @JsonProperty(value = "functional-requirements") private final Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements;
-    @JsonProperty(value = "capabilities") private final CapabilitiesContainer capabilityContainer;
+    @JsonProperty(value = "name")
+    private final String name;
+    @JsonProperty(value = "milestone")
+    private final String milestone;
+    @JsonProperty(value = "authors")
+    private final List<Person> authors;
+    @JsonProperty(value = "PCAs")
+    private final List<Person> PCAs;
+    @JsonProperty(value = "P2")
+    private final P2 p2;
+    @JsonProperty(value = "P1")
+    private final P1 p1;
+    @JsonProperty(value = "useful-links")
+    private final List<Link> usefulLinks;
+    @JsonProperty(value = "milestone-dependencies")
+    private final List<MilestoneDependency> milestoneDependencies;
+    @JsonProperty(value = "decisions")
+    private final Map<Decision.Id, Decision> decisions;
+    @JsonProperty(value = "tdds-per-component")
+    private final List<TddContainerByComponent> tddContainersByComponent;
+    @JsonProperty(value = "functional-requirements")
+    private final Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements;
+    @JsonProperty(value = "capabilities")
+    private final CapabilitiesContainer capabilityContainer;
 
     //TODO remove tddContents per https://tw-trilogy.atlassian.net/browse/AAC-160
-    @JsonIgnore private final List<TddContent> tddContents;
+    @JsonIgnore
+    private final List<TddContent> tddContents;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

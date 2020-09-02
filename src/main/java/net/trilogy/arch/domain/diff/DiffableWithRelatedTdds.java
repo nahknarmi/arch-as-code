@@ -18,6 +18,6 @@ public abstract class DiffableWithRelatedTdds {
     }
 
     public boolean hasRelatedTdds() {
-        return relatedTdds != null && ! relatedTdds.isEmpty();
+        return relatedTdds != null && !relatedTdds.isEmpty();
     }
 }

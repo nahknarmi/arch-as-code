@@ -33,15 +33,15 @@ public class Tdd {
         this.file = file;
     }
 
+    public static Tdd blank() {
+        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
+    }
+
     public String getDetails() {
         if (content.isPresent()) {
             return content.get().getContent();
         }
         return text;
-    }
-
-    public static Tdd blank() {
-        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
     }
 
     @EqualsAndHashCode

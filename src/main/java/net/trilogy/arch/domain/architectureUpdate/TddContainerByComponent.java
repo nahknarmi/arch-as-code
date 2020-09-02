@@ -41,11 +41,11 @@ public class TddContainerByComponent {
         this.tdds = tdds;
     }
 
-    public boolean isDeleted() {
-        return deleted != null && deleted;
-    }
-
     public static TddContainerByComponent blank() {
         return new TddContainerByComponent(Tdd.ComponentReference.blank(), null, false, Map.of(Tdd.Id.blank(), Tdd.blank()));
+    }
+
+    public boolean isDeleted() {
+        return deleted != null && deleted;
     }
 }
