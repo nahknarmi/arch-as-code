@@ -10,14 +10,15 @@ import static java.lang.System.out;
 public class RetrofitOrBust {
     public static void main(String[] args) throws IOException {
         final var retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
+                .baseUrl("https://tw-trilogy.atlassian.net/")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 
-        final var bob = retrofit.create(XTheBob.class);
+        // TODO: Hold onto this instance globally for reuse
+        final var jira = retrofit.create(RemoteJira.class);
 
-        final var callX = bob.get().execute();
-        out.println("callX status code = " + callX.code());
+        final var issue = jira.browseIssue("AAC-129").execute();
+        out.println("issue response = " + issue);
     }
 }
 
