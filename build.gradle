@@ -78,6 +78,12 @@ java {
     targetCompatibility = VERSION_11
 }
 
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        !isStable(it.candidate.version)
+    }
+}
+
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
     options.encoding = "UTF-8"
@@ -152,4 +158,13 @@ project.test {
 
 bootJar {
     mainClassName = "net.trilogy.arch.Application"
+}
+
+def isStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it ->
+        version.toUpperCase().contains(it)
+    }
+    def regex = /^[0-9,.v-]+(-r)?$/
+
+    return stableKeyword || version ==~ regex
 }
