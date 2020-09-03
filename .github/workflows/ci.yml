@@ -16,7 +16,7 @@ jobs:
         env:
           cache-name: cache-maven-dependencies
         with:
-          path: ~/.m2/repository
+          path: ~/.gradle
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{hashFiles('**/build.gradle.kts') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
