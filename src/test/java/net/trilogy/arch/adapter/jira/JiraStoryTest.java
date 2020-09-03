@@ -24,9 +24,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class JiraStoryTest {
-
     @Test
-    public void ShouldConstructJiraStory() throws Exception {
+    public void shouldConstructJiraStory() throws Exception {
         // GIVEN:
         var au = getAu();
         var afterAuArchitecture = getArchitectureAfterAu();
@@ -69,7 +68,7 @@ public class JiraStoryTest {
     }
 
     @Test
-    public void ShouldConstructJiraStoryWithTddContent() throws Exception {
+    public void shouldConstructJiraStoryWithTddContent() throws Exception {
         // GIVEN:
         TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
         TddContent notUsedTddContent = new TddContent("content-file-2", "TDD 2 : Component-10.md");

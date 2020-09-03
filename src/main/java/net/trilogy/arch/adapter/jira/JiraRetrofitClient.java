@@ -6,14 +6,14 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 
-public class JiraClient {
+public class JiraRetrofitClient {
     private static final String trilogyBaseUrl = "https://tw-trilogy.atlassian.net/";
 
-    private static final RemoteJira REMOTE_JIRA = new Builder()
+    private static final RemoteRetrofitJira REMOTE_JIRA = new Builder()
             .baseUrl(trilogyBaseUrl)
             .addConverterFactory(JacksonConverterFactory.create())
             .build()
-            .create(RemoteJira.class);
+            .create(RemoteRetrofitJira.class);
 
     public static Response<RemoteJiraIssue> browseIssue(final String issueId) throws IOException {
         // TODO: Use exceptions for non 2xx responses: See OpenFeign
