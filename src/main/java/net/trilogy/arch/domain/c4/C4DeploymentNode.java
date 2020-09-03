@@ -1,6 +1,11 @@
 package net.trilogy.arch.domain.c4;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.util.Set;
 import java.util.TreeSet;

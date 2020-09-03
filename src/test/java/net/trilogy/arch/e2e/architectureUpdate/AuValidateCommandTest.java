@@ -16,20 +16,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static net.trilogy.arch.TestHelper.execute;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 public class AuValidateCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private File rootDir;
-    private Path auDir;
-    private Git git;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private File rootDir;
+    private Path auDir;
+    private Git git;
 
     @Before
     public void setUp() throws Exception {

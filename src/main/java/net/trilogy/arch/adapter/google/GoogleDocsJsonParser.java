@@ -32,11 +32,50 @@ class GoogleDocsJsonParser {
         this.rootLevelTables = null;
     }
 
+    private static String getCombinedText(List<TextRun> runs) {
+        return runs.stream()
+                .map(TextRun::getTextFrom)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(joining(""))
+                .trim();
+    }
+
+    private static Set<String> getAllLinks(List<TextRun> runs) {
+        return runs.stream()
+                .map(TextRun::getLinkFrom)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(toSet());
+    }
+
+    private static List<TextRun> getTextRuns(JsonNode fromNode) {
+        List<TextRun> textRuns = new ArrayList<>();
+
+        if (!fromNode.hasNonNull("content")) return textRuns;
+
+        for (JsonNode contentItem : fromNode.get("content")) {
+            if (!contentItem.hasNonNull("paragraph")) continue;
+
+            var paragraph = contentItem.get("paragraph");
+
+            if (!paragraph.hasNonNull("elements")) continue;
+
+            for (JsonNode paragraphElement : paragraph.get("elements")) {
+                if (!paragraphElement.hasNonNull("textRun")) continue;
+                var textRunNode = paragraphElement.get("textRun");
+                textRuns.add(new TextRun(textRunNode));
+            }
+        }
+        return textRuns;
+    }
+
     private Optional<JsonNode> getContent() {
         if (this.content.isPresent()) return content;
 
         if (!this.json.hasNonNull("body")) return Optional.empty();
-        if (!this.json.get("body").hasNonNull("content")) return Optional.empty();
+        if (!this.json.get("body").hasNonNull("content"))
+            return Optional.empty();
 
         this.content = Optional.of(this.json.get("body").get("content"));
         return this.content;
@@ -86,44 +125,6 @@ class GoogleDocsJsonParser {
         return getFromMetaDataTable(MILESTONE_ROW_HEADER)
                 .map(GoogleDocsJsonParser::getTextRuns)
                 .map(GoogleDocsJsonParser::getCombinedText);
-    }
-
-    private static String getCombinedText(List<TextRun> runs) {
-        return runs.stream()
-                .map(TextRun::getTextFrom)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(joining(""))
-                .trim();
-    }
-
-    private static Set<String> getAllLinks(List<TextRun> runs) {
-        return runs.stream()
-                .map(TextRun::getLinkFrom)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(toSet());
-    }
-
-    private static List<TextRun> getTextRuns(JsonNode fromNode) {
-        List<TextRun> textRuns = new ArrayList<>();
-
-        if (!fromNode.hasNonNull("content")) return textRuns;
-
-        for (JsonNode contentItem : fromNode.get("content")) {
-            if (!contentItem.hasNonNull("paragraph")) continue;
-
-            var paragraph = contentItem.get("paragraph");
-
-            if (!paragraph.hasNonNull("elements")) continue;
-
-            for (JsonNode paragraphElement : paragraph.get("elements")) {
-                if (!paragraphElement.hasNonNull("textRun")) continue;
-                var textRunNode = paragraphElement.get("textRun");
-                textRuns.add(new TextRun(textRunNode));
-            }
-        }
-        return textRuns;
     }
 
     public Optional<String> getP1JiraTicket() {
@@ -210,12 +211,6 @@ class GoogleDocsJsonParser {
             this.node = node;
         }
 
-        private Optional<String> getTextFromFirstRow() {
-            if (getRows().size() == 0) return Optional.empty();
-            JsonNode firstRow = getRows().get(0);
-            return getCombinedTextFromRow(firstRow);
-        }
-
         private static Optional<String> getCombinedTextFromRow(JsonNode firstRow) {
             if (!firstRow.hasNonNull("tableCells")) return Optional.empty();
 
@@ -230,6 +225,12 @@ class GoogleDocsJsonParser {
 
             String joinedString = String.join(" - ", textPerCell).trim();
             return Optional.of(joinedString);
+        }
+
+        private Optional<String> getTextFromFirstRow() {
+            if (getRows().size() == 0) return Optional.empty();
+            JsonNode firstRow = getRows().get(0);
+            return getCombinedTextFromRow(firstRow);
         }
 
         private List<JsonNode> getRows() {
@@ -267,8 +268,10 @@ class GoogleDocsJsonParser {
 
         private Optional<String> getLinkFrom() {
             if (!getNode().hasNonNull("textStyle")) return Optional.empty();
-            if (!getNode().get("textStyle").hasNonNull("link")) return Optional.empty();
-            if (!getNode().get("textStyle").get("link").hasNonNull("url")) return Optional.empty();
+            if (!getNode().get("textStyle").hasNonNull("link"))
+                return Optional.empty();
+            if (!getNode().get("textStyle").get("link").hasNonNull("url"))
+                return Optional.empty();
 
             return Optional.of(getNode().get("textStyle").get("link").get("url").textValue());
         }

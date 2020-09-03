@@ -15,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,7 +23,9 @@ import java.util.stream.Collectors;
 
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,13 @@ public class DocumentationEnhancerTest {
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+    private static <T> T first(final Collection<T> first) {
+        final Iterator<T> it = first.iterator();
+        if (!it.hasNext())
+            throw new IllegalStateException("No first element");
+        return it.next();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -123,11 +131,5 @@ public class DocumentationEnhancerTest {
         collector.checkThat(images.size(), equalTo(1));
         final Image image = first(images);
         collector.checkThat(image.getName(), equalTo("devfactory.png"));
-    }
-
-    private static <T> T first(final Collection<T> first) {
-        final Iterator<T> it = first.iterator();
-        if (!it.hasNext()) throw new IllegalStateException("No first element");
-        return it.next();
     }
 }

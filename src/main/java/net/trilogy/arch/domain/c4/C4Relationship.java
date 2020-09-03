@@ -1,7 +1,10 @@
 package net.trilogy.arch.domain.c4;
 
-
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
@@ -15,12 +18,6 @@ public class C4Relationship implements Comparable<C4Relationship> {
     private String withId;
     @NonNull
     private String description;
-
-    @Override
-    public int compareTo(C4Relationship other) {
-        return this.getId().compareTo(other.getId());
-    }
-
     private String technology;
 
     @Builder(toBuilder = true)
@@ -32,5 +29,10 @@ public class C4Relationship implements Comparable<C4Relationship> {
         this.withId = withId;
         this.description = description;
         this.technology = technology;
+    }
+
+    @Override
+    public int compareTo(C4Relationship other) {
+        return this.getId().compareTo(other.getId());
     }
 }

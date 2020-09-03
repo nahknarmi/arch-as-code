@@ -11,6 +11,10 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -18,24 +22,24 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
+@Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
 public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, DisplaysOutputMixin {
     private static final ArchitectureUpdateObjectMapper objectMapper = new ArchitectureUpdateObjectMapper();
     private final GoogleDocsAuthorizedApiFactory googleDocsApiFactory;
     private final FilesFacade filesFacade;
     private final GitInterface gitInterface;
 
-    @CommandLine.Parameters(index = "0", description = "Name for new architecture update")
+    @Parameters(index = "0", description = "Name for new architecture update")
     private String name;
 
-    @CommandLine.Parameters(index = "1", description = "Product architecture root directory")
+    @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
 
-    @CommandLine.Option(names = {"-p", "--p1-url"}, description = "Url to P1 Google Document, used to import decisions and other data")
+    @Option(names = {"-p", "--p1-url"}, description = "Url to P1 Google Document, used to import decisions and other data")
     private String p1GoogleDocUrl;
 
     @Getter
-    @CommandLine.Spec
+    @Spec
     private CommandLine.Model.CommandSpec spec;
 
     public AuNewCommand(GoogleDocsAuthorizedApiFactory googleDocsApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {

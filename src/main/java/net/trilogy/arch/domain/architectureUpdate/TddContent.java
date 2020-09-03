@@ -17,15 +17,12 @@ import java.util.regex.Pattern;
 public class TddContent {
     public static final int TDD_MATCHER_GROUP = 1;
     public static final int COMPONENT_ID_MATCHER_GROUP = 2;
-
-    private final String content;
-    private final String filename;
-
     private static final String REGEX = "(.*) : Component-([a-zA-Z\\d]+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
+    private final String content;
+    private final String filename;
     @EqualsAndHashCode.Exclude
     private Matcher matcher;
-
 
     public TddContent(String content, String filename) {
         this.content = content;
@@ -52,8 +49,8 @@ public class TddContent {
     public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
         if (file == null) return null;
 
-        String content = null;
-        String filename = null;
+        String content;
+        String filename;
 
         try {
             content = filesFacade.readString(file.toPath());

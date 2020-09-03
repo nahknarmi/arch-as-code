@@ -13,7 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static net.trilogy.arch.ArchitectureDataStructureHelper.*;
+import static net.trilogy.arch.ArchitectureDataStructureHelper.createComponent;
+import static net.trilogy.arch.ArchitectureDataStructureHelper.createContainer;
+import static net.trilogy.arch.ArchitectureDataStructureHelper.createPerson;
+import static net.trilogy.arch.ArchitectureDataStructureHelper.createRelationship;
+import static net.trilogy.arch.ArchitectureDataStructureHelper.createSystem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -236,7 +240,7 @@ public class DiffToDotCalculatorTest {
     public void shouldGenerateUrlIfHasContainerChild() {
         var diff = new Diff(
                 new DiffableEntity(createPerson("5")),
-                Set.of( new DiffableEntity(createContainer("4", "3")) ),
+                Set.of(new DiffableEntity(createContainer("4", "3"))),
                 null,
                 null
         );
@@ -248,7 +252,7 @@ public class DiffToDotCalculatorTest {
     public void shouldGenerateUrlIfHasComponentChild() {
         var diff = new Diff(
                 new DiffableEntity(createPerson("5")),
-                Set.of( new DiffableEntity(createComponent("4", "3")) ),
+                Set.of(new DiffableEntity(createComponent("4", "3"))),
                 null,
                 null
         );
@@ -257,7 +261,7 @@ public class DiffToDotCalculatorTest {
     }
 
     @Test
-    public void shouldCalculateTooltipForRelationships(){
+    public void shouldCalculateTooltipForRelationships() {
         var p1Diff = new Diff(new DiffableEntity(createPerson("1")), null);
         var p2Diff = new Diff(null, new DiffableEntity(createPerson("2")));
         var rel = new DiffableRelationship("1", createRelationship("r", "2"));
@@ -336,7 +340,7 @@ public class DiffToDotCalculatorTest {
         var actual = DiffToDotCalculator.toDot("Tdds", diff);
 
         var expected = String.join("\n",
-     "digraph \"Tdds\" {",
+                "digraph \"Tdds\" {",
                 "    graph [rankdir=LR];",
                 "",
                 "    \"tdds\" [label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\"><TR><TD align=\"text\">TDD 1.1 - Some text<br align=\"left\" /></TD></TR></TABLE></TD></TR></TABLE>>, color=black, fontcolor=black, shape=plaintext];",
@@ -349,5 +353,4 @@ public class DiffToDotCalculatorTest {
     private void appendln(StringBuilder builder, String line) {
         builder.append(line).append("\n");
     }
-
 }

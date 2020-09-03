@@ -3,8 +3,12 @@ package net.trilogy.arch.validation.architectureUpdate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.EntityReference;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.ComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.List;
 import java.util.stream.Collectors;

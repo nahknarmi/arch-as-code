@@ -7,6 +7,10 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,26 +18,20 @@ import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.structurizr.Credentials.createCredentials;
 
-@CommandLine.Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
+@Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
 public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
-
-    @CommandLine.Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
-    private String workspaceId;
-
-    @CommandLine.Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
-    private String apiKey;
-
-    @CommandLine.Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
-    private String apiSecret;
-
-    @CommandLine.Parameters(index = "0", description = "Directory to initialize")
-    private File productArchitectureDirectory;
-
-    @Getter
-    @CommandLine.Spec
-    private CommandLine.Model.CommandSpec spec;
-
     private final FilesFacade filesFacade;
+    @Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
+    private String workspaceId;
+    @Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
+    private String apiKey;
+    @Option(names = {"-s", "--workspace-api-secret"}, description = "Structurizr workspace api secret", required = true)
+    private String apiSecret;
+    @Parameters(index = "0", description = "Directory to initialize")
+    private File productArchitectureDirectory;
+    @Getter
+    @Spec
+    private CommandLine.Model.CommandSpec spec;
 
     public InitializeCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
@@ -50,7 +48,6 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
             print("You're ready to go!!");
 
             return 0;
-
         } catch (Exception e) {
             printError("Unable to initialize", e);
         }

@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.git;
 
-
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import org.apache.commons.io.FileUtils;
@@ -27,13 +26,12 @@ import static org.mockito.Mockito.when;
 public class GitInterfaceTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
+    private final String masterCommitTagName = "masterCommitTagName";
     private File repoDir;
     private File rootDir;
     private Path archPath;
     private String architectureAsString;
     private String masterCommitSha;
-    private final String masterCommitTagName = "masterCommitTagName";
 
     @After
     public void tearDown() throws Exception {
@@ -196,5 +194,4 @@ public class GitInterfaceTest {
                 .getBranch(archPath.toFile().getParentFile())
                 .equals(wantedBranch);
     }
-
 }

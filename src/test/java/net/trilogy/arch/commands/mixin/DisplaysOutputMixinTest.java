@@ -3,18 +3,11 @@ package net.trilogy.arch.commands.mixin;
 import org.junit.Test;
 import picocli.CommandLine;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DisplaysOutputMixinTest {
-    static class TestCommand implements DisplaysOutputMixin {
-        @Override
-        public CommandLine.Model.CommandSpec getSpec() {
-            return null;
-        }
-    }
-
     @Test
     public void shouldMaskSecretValue() {
         CommandLine.Model.ArgSpec argSpec = mock(CommandLine.Model.ArgSpec.class);
@@ -46,5 +39,12 @@ public class DisplaysOutputMixinTest {
 
         var command = new TestCommand();
         assertEquals("<apiUser>:user123", command.maskedParamValue(argSpec));
+    }
+
+    static class TestCommand implements DisplaysOutputMixin {
+        @Override
+        public CommandLine.Model.CommandSpec getSpec() {
+            return null;
+        }
     }
 }

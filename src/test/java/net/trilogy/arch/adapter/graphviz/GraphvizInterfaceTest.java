@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.graphviz;
 
-
 import org.junit.Test;
 
 import java.nio.file.Files;

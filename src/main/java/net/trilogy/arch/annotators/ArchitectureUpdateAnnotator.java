@@ -16,26 +16,21 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class ArchitectureUpdateAnnotator {
-
     public ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         Set<C4Component> c4Components = dataStructure.getModel().getComponents();
-            List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
+        List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
 
         List<TddContainerByComponent> withUpdatedIds = updateIdBasedOnPath(c4Components, tddContainersByComponent);
 
         List<TddContainerByComponent> withUpdatedPath = updatePathBasedOnId(c4Components, withUpdatedIds);
 
-        ArchitectureUpdate architectureUpdate = au.toBuilder().tddContainersByComponent(withUpdatedPath).build();
-        return architectureUpdate;
+        return au.toBuilder().tddContainersByComponent(withUpdatedPath).build();
     }
 
     private List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
         return withUpdatedIds.stream().map(c -> {
             Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c.getComponentId() != null && c4c.getId().equals(c.getComponentId().getId())).findFirst();
-            if (c4Component.isPresent()) {
-                return new TddContainerByComponent(c.getComponentId(), c4Component.get().getPath().getPath(), c.isDeleted(), c.getTdds());
-            }
-            return c;
+            return c4Component.map(component -> new TddContainerByComponent(c.getComponentId(), component.getPath().getPath(), c.isDeleted(), c.getTdds())).orElse(c);
         }).collect(toList());
     }
 
@@ -45,10 +40,7 @@ public class ArchitectureUpdateAnnotator {
                 return c;
             }
             Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c4c.getPath().getPath().equals(c.getComponentPath())).findFirst();
-            if (c4Component.isPresent()) {
-                return new TddContainerByComponent(new Tdd.ComponentReference(c4Component.get().getId()), c.getComponentPath(), c.isDeleted(), c.getTdds());
-            }
-            return c;
+            return c4Component.map(component -> new TddContainerByComponent(new Tdd.ComponentReference(component.getId()), c.getComponentPath(), c.isDeleted(), c.getTdds())).orElse(c);
         }).collect(toList());
     }
 
@@ -71,7 +63,7 @@ public class ArchitectureUpdateAnnotator {
         return au.getTddContainersByComponent().stream()
                 .flatMap(tdd -> dataStructure
                         .getModel()
-                        .findEntityById(tdd.getComponentId() == null? "" : tdd.getComponentId().getId())
+                        .findEntityById(tdd.getComponentId() == null ? "" : tdd.getComponentId().getId())
                         .stream()
                 ).findAny()
                 .isEmpty();

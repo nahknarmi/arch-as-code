@@ -9,25 +9,24 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "import", mixinStandardHelpOptions = true, description = "Imports existing structurizr workspace, overwriting the existing product architecture.")
+@Command(name = "import", mixinStandardHelpOptions = true, description = "Imports existing structurizr workspace, overwriting the existing product architecture.")
 public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
-
-    @CommandLine.Parameters(index = "0", paramLabel = "EXPORTED_WORKSPACE", description = "Exported structurizr workspace json file location.")
-    private File exportedWorkspacePath;
-
-    @CommandLine.Parameters(index = "1", description = "Product architecture root directory")
-    private File productArchitectureDirectory;
-
-    @Getter
-    @CommandLine.Spec
-    private CommandLine.Model.CommandSpec spec;
-
     private final FilesFacade filesFacade;
+    @Parameters(index = "0", paramLabel = "EXPORTED_WORKSPACE", description = "Exported structurizr workspace json file location.")
+    private File exportedWorkspacePath;
+    @Parameters(index = "1", description = "Product architecture root directory")
+    private File productArchitectureDirectory;
+    @Getter
+    @Spec
+    private CommandLine.Model.CommandSpec spec;
 
     public ImportCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
@@ -47,7 +46,6 @@ public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, Di
             ViewSet workspaceViews = new WorkspaceReader().loadViews(this.exportedWorkspacePath);
             Path viewsPath = architectureDataStructureWriter.writeViews(workspaceViews, productArchitectureDirectory.toPath());
             print(String.format("Views were written to - %s", viewsPath));
-
         } catch (Exception e) {
             printError("Failed to import", e);
             return 1;

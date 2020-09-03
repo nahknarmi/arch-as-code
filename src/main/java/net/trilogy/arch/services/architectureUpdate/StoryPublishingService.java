@@ -25,6 +25,39 @@ public class StoryPublishingService {
         this.api = jiraApi;
     }
 
+    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
+        return au.getCapabilityContainer()
+                .getFeatureStories()
+                .stream()
+                .filter(StoryPublishingService::shouldCreateStory)
+                .collect(Collectors.toList());
+    }
+
+    private static ArchitectureUpdate updateJiraTicketsInAu(ArchitectureUpdate au, List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
+        ArchitectureUpdate resultingAu = au;
+        for (int i = 0; i < createStoriesResults.size(); ++i) {
+            if (createStoriesResults.get(i).isSucceeded()) {
+                resultingAu = resultingAu.addJiraToFeatureStory(
+                        stories.get(i),
+                        new Jira(createStoriesResults.get(i).getIssueKey(), createStoriesResults.get(i).getIssueLink())
+                );
+            }
+        }
+        return resultingAu;
+    }
+
+    private static boolean shouldCreateStory(FeatureStory story) {
+        return !isStoryAlreadyCreated(story);
+    }
+
+    private static boolean isStoryAlreadyCreated(FeatureStory story) {
+        return !(
+                story.getJira() == null ||
+                        (story.getJira().getTicket() == null || story.getJira().getTicket().isBlank() &&
+                                story.getJira().getLink() == null || story.getJira().getLink().isBlank())
+        );
+    }
+
     public ArchitectureUpdate createStories(
             final ArchitectureUpdate au,
             final ArchitectureDataStructure beforeAuArchitecture,
@@ -70,14 +103,6 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, stories, createStoriesResults);
     }
 
-    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
-        return au.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .filter(StoryPublishingService::shouldCreateStory)
-                .collect(Collectors.toList());
-    }
-
     private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
@@ -105,19 +130,6 @@ public class StoryPublishingService {
         }
     }
 
-    private static ArchitectureUpdate updateJiraTicketsInAu(ArchitectureUpdate au, List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
-        ArchitectureUpdate resultingAu = au;
-        for (int i = 0; i < createStoriesResults.size(); ++i) {
-            if (createStoriesResults.get(i).isSucceeded()) {
-                resultingAu = resultingAu.addJiraToFeatureStory(
-                        stories.get(i),
-                        new Jira(createStoriesResults.get(i).getIssueKey(), createStoriesResults.get(i).getIssueLink())
-                );
-            }
-        }
-        return resultingAu;
-    }
-
     private void printStoriesNotToBeSent(final ArchitectureUpdate au) {
         String stories = au.getCapabilityContainer()
                 .getFeatureStories()
@@ -128,18 +140,6 @@ public class StoryPublishingService {
         if (!stories.isBlank()) {
             out.println("Not re-creating stories:\n" + stories + "\n");
         }
-    }
-
-    private static boolean shouldCreateStory(FeatureStory story) {
-        return !isStoryAlreadyCreated(story);
-    }
-
-    private static boolean isStoryAlreadyCreated(FeatureStory story) {
-        return !(
-                story.getJira() == null ||
-                        (story.getJira().getTicket() == null || story.getJira().getTicket().isBlank() &&
-                                story.getJira().getLink() == null || story.getJira().getLink().isBlank())
-        );
     }
 
     public static class NoStoriesToCreateException extends Exception {

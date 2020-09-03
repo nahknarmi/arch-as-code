@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Optional;
 
@@ -29,15 +33,15 @@ public class Tdd {
         this.file = file;
     }
 
+    public static Tdd blank() {
+        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
+    }
+
     public String getDetails() {
         if (content.isPresent()) {
             return content.get().getContent();
         }
         return text;
-    }
-
-    public static Tdd blank() {
-        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
     }
 
     @EqualsAndHashCode
@@ -52,7 +56,10 @@ public class Tdd {
         public static Id blank() {
             return new Id("[SAMPLE-TDD-ID]");
         }
-        public static Id noPr() { return new Id("no-PR"); }
+
+        public static Id noPr() {
+            return new Id("no-PR");
+        }
 
         public String toString() {
             return this.id;

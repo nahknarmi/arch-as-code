@@ -2,7 +2,15 @@ package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.Epic;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +25,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ArchitectureUpdateWithNoPRValidationTest {
-
     private ArchitectureDataStructure validDataStructure;
 
     @Before
@@ -159,7 +166,6 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         assertThat(actualErrors.size(), equalTo(1));
         assertThat(actualErrors.get(0).getDescription(), equalTo("Feature story Feat Title 1 has no-PR, and shouldn't be combined with another TDD"));
     }
-
 
     // Functional Requirements
     @Test

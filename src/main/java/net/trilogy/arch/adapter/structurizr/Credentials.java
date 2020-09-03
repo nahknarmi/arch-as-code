@@ -24,7 +24,6 @@ public abstract class Credentials {
     private static final String API_KEY_ENV_VAR_NAME = "STRUCTURIZR_API_KEY";
     private static final String API_SECRET_ENV_VAR_NAME = "STRUCTURIZR_API_SECRET";
 
-
     public static WorkspaceConfig config() {
         checkArgument(workspaceId().isPresent(), "Workspace id missing. Check config.");
         checkArgument(apiKey().isPresent(), "Structurizr api key missing. Check config.");

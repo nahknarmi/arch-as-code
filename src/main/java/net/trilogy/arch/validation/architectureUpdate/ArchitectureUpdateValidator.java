@@ -4,16 +4,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ArchitectureUpdateValidator {
 
@@ -28,18 +36,6 @@ public class ArchitectureUpdateValidator {
     private final Set<Tdd.Id> allTddIdsInDecisions;
     private final Set<Tdd.Id> allTddIdsInFunctionalRequirements;
     private final Set<C4Component> allComponents;
-
-    public static ValidationResult validate(
-            ArchitectureUpdate architectureUpdateToValidate,
-            ArchitectureDataStructure architectureAfterUpdate,
-            ArchitectureDataStructure architectureBeforeUpdate) {
-
-        return new ArchitectureUpdateValidator(
-                architectureUpdateToValidate,
-                architectureAfterUpdate,
-                architectureBeforeUpdate
-        ).run();
-    }
 
     private ArchitectureUpdateValidator(
             ArchitectureUpdate architectureUpdate,
@@ -58,6 +54,18 @@ public class ArchitectureUpdateValidator {
         allTddIdsInDecisions = getAllTddIdsReferencedByDecisions();
         allTddIdsInFunctionalRequirements = getAllTddIdsReferencedByFunctionalRequirements();
         allFunctionalRequirementIds = getAllFunctionalRequirementIds();
+    }
+
+    public static ValidationResult validate(
+            ArchitectureUpdate architectureUpdateToValidate,
+            ArchitectureDataStructure architectureAfterUpdate,
+            ArchitectureDataStructure architectureBeforeUpdate) {
+
+        return new ArchitectureUpdateValidator(
+                architectureUpdateToValidate,
+                architectureAfterUpdate,
+                architectureBeforeUpdate
+        ).run();
     }
 
     private ValidationResult run() {
@@ -100,7 +108,7 @@ public class ArchitectureUpdateValidator {
                     Optional<C4Component> c4Component = allComponents.stream().filter(c4 -> c4.getId().equals(c.getComponentId().getId())).findFirst();
                     if (c4Component.isEmpty() || c4Component.get().getPath() == null) return false;
                     return ! c4Component.get().getPath().getPath().equalsIgnoreCase(c.getComponentPath());
-                }).map(c -> ValidationError.forComponentPathNotMatchingId(c.getComponentId().getId())).collect(Collectors.toSet());
+                }).map(c -> ValidationError.forComponentPathNotMatchingId(c.getComponentId().getId())).collect(toSet());
     }
 
     private Set<ValidationError> getErrors_NoPrNotCombinedWithAnotherTddId() {
@@ -136,7 +144,6 @@ public class ArchitectureUpdateValidator {
         links.add(Pair.of("P2.jira.link", architectureUpdate.getP2().getJira().getLink()));
 
         links.add(Pair.of("capabilities.epic.jira.link", architectureUpdate.getCapabilityContainer().getEpic().getJira().getLink()));
-
 
         List<MilestoneDependency> milestoneDependencies = architectureUpdate.getMilestoneDependencies();
 
@@ -359,7 +366,8 @@ public class ArchitectureUpdateValidator {
 
     private Set<ValidationError> getErrors_TddsMustHaveOnlyOneTddContentFile() {
         List<TddContent> tddContentFiles = architectureUpdate.getTddContents();
-        if (tddContentFiles == null || tddContentFiles.isEmpty()) return Set.of();
+        if (tddContentFiles == null || tddContentFiles.isEmpty())
+            return Set.of();
 
         return tddContentFiles.stream()
                 .collect(groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))

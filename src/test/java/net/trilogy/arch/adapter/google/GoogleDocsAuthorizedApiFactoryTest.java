@@ -31,11 +31,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 
 /*
-* NOTE: Mockito Strict Stubbing is required. This test walks through
-*     the process of obtaining a google API connection by
-*     mocking each individual step. Strict stubbing acts as assertions
-*     throughout this process.
-*/
+ * NOTE: Mockito Strict Stubbing is required. This test walks through
+ *     the process of obtaining a google API connection by
+ *     mocking each individual step. Strict stubbing acts as assertions
+ *     throughout this process.
+ */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class GoogleDocsAuthorizedApiFactoryTest {
     @Rule
@@ -44,13 +44,12 @@ public class GoogleDocsAuthorizedApiFactoryTest {
     private final String CLIENT_ID = "client-id";
     private final String CLIENT_SECRET = "client-secret";
     private final List<String> SCOPES = List.of(DocsScopes.DOCUMENTS_READONLY);
-
+    private final NetHttpTransport httpTransport = new NetHttpTransport();
+    private final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
     private GoogleDocsAuthorizedApiFactory.AuthorizationCodeInstalledAppFactory mockedAuthorizationCodeInstalledAppFactory;
     private GoogleDocsAuthorizedApiFactory.CodeFlowBuilderFactory mockedCodeFlowBuilderFactory;
     private GoogleDocsAuthorizedApiFactory.DocsFactory mockedDocsFactory;
     private Path rootDir;
-    private final NetHttpTransport httpTransport = new NetHttpTransport();
-    private final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -154,5 +153,4 @@ public class GoogleDocsAuthorizedApiFactoryTest {
         Mockito.when(mockedCodeFlowBuilder.build()).thenReturn(mockedCodeFlow);
         return mockedCodeFlow;
     }
-
 }

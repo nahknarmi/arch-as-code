@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.structurizr;
 
-
 import com.structurizr.Workspace;
 import com.structurizr.api.StructurizrClient;
 import org.junit.Test;
@@ -8,7 +7,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class StructurizrAdapterTest {
 
@@ -63,5 +66,4 @@ public class StructurizrAdapterTest {
         // Then
         assertThat(result, equalTo(false));
     }
-
 }

@@ -1,14 +1,27 @@
-package net.trilogy.arch.adapter;
+package net.trilogy.arch.adapter.structurizr;
 
-import com.structurizr.view.*;
+import com.structurizr.view.ComponentView;
+import com.structurizr.view.ContainerView;
+import com.structurizr.view.DeploymentView;
+import com.structurizr.view.DynamicView;
+import com.structurizr.view.SystemContextView;
+import com.structurizr.view.SystemLandscapeView;
+import com.structurizr.view.View;
+import com.structurizr.view.ViewSet;
 import lombok.NonNull;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
-import net.trilogy.arch.domain.c4.*;
+import net.trilogy.arch.domain.c4.C4Component;
+import net.trilogy.arch.domain.c4.C4ContainerInstance;
+import net.trilogy.arch.domain.c4.C4DeploymentNode;
+import net.trilogy.arch.domain.c4.C4Path;
+import net.trilogy.arch.domain.c4.C4Reference;
+import net.trilogy.arch.domain.c4.C4Relationship;
+import net.trilogy.arch.domain.c4.C4Tag;
+import net.trilogy.arch.domain.c4.C4Type;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -29,8 +42,14 @@ import static net.trilogy.arch.domain.c4.C4Action.USES;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 public class WorkspaceReaderTest {
     @Rule

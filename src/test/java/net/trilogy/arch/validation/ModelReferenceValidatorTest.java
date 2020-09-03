@@ -1,7 +1,12 @@
 package net.trilogy.arch.validation;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.c4.*;
+import net.trilogy.arch.domain.c4.C4Action;
+import net.trilogy.arch.domain.c4.C4Location;
+import net.trilogy.arch.domain.c4.C4Model;
+import net.trilogy.arch.domain.c4.C4Person;
+import net.trilogy.arch.domain.c4.C4Relationship;
+import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,7 +20,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 
 public class ModelReferenceValidatorTest {
-
     @Test
     public void validate_empty_data_structure() {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
@@ -81,7 +85,4 @@ public class ModelReferenceValidatorTest {
 
         assertThat(validationList, hasSize(1));
     }
-
-
-
 }

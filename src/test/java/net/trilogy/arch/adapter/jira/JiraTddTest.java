@@ -15,7 +15,6 @@ public class JiraTddTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-
     @Test
     public void shouldReturnInlinedTddContent() {
         JiraTdd tdd = new JiraTdd(

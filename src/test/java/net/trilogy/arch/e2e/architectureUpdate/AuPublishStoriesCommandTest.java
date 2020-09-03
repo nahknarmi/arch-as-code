@@ -6,8 +6,16 @@ import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStruct
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
-import net.trilogy.arch.adapter.jira.*;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.adapter.jira.JiraApi;
+import net.trilogy.arch.adapter.jira.JiraApiFactory;
+import net.trilogy.arch.adapter.jira.JiraCreateStoryStatus;
+import net.trilogy.arch.adapter.jira.JiraQueryResult;
+import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
@@ -27,26 +35,31 @@ import java.util.Optional;
 
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class AuPublishStoriesCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private File rootDir;
-    private Path testCloneDirectory;
-
-    private JiraApi mockedJiraApi;
-    private Application app;
-    private FilesFacade spiedFilesFacade;
-    private GitInterface mockedGitInterface;
-
     final PrintStream originalOut = System.out;
     final PrintStream originalErr = System.err;
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
+    private File rootDir;
+    private Path testCloneDirectory;
+    private JiraApi mockedJiraApi;
+    private Application app;
+    private FilesFacade spiedFilesFacade;
+    private GitInterface mockedGitInterface;
 
     @Before
     public void setUp() throws Exception {
@@ -77,7 +90,8 @@ public class AuPublishStoriesCommandTest {
         Path testDirectory = rootDir.toPath().resolve("architecture-updates/test/");
         testCloneDirectory = rootDir.toPath().resolve("architecture-updates/test-clone/");
 
-        if (!Files.exists(testCloneDirectory)) Files.createDirectory(testCloneDirectory);
+        if (!Files.exists(testCloneDirectory))
+            Files.createDirectory(testCloneDirectory);
         Files.copy(testDirectory.resolve("architecture-update.yml"), testCloneDirectory.resolve("architecture-update.yml"));
     }
 

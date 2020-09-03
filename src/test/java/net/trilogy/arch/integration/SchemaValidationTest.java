@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-
 public class SchemaValidationTest {
 
     @Test
@@ -60,12 +59,10 @@ public class SchemaValidationTest {
                 ));
     }
 
-
     private Set<ValidationMessage> getSchemaValidationMessages(String yamlFileName) throws FileNotFoundException {
         File validationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_VALIDATION).getPath());
         File yamlFile = new File(validationRoot + File.separator + yamlFileName);
         return new SchemaValidator()
                 .validateArchitectureDocument(new FileInputStream(yamlFile));
     }
-
 }

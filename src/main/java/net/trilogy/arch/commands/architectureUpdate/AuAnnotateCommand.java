@@ -21,24 +21,19 @@ import java.util.concurrent.Callable;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
-
-    @Parameters(index = "0", description = "Directory name of architecture update to annotate")
-    private File architectureUpdateDirectory;
-
-    @Getter
-    @Parameters(index = "1", description = "Product architecture root directory")
-    private File productArchitectureDirectory;
-
-    @Getter
-    @Spec
-    private CommandSpec spec;
-
     @Getter
     private final FilesFacade filesFacade;
-
     @Getter
     private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     private final ArchitectureUpdateReader architectureUpdateReader;
+    @Parameters(index = "0", description = "Directory name of architecture update to annotate")
+    private File architectureUpdateDirectory;
+    @Getter
+    @Parameters(index = "1", description = "Product architecture root directory")
+    private File productArchitectureDirectory;
+    @Getter
+    @Spec
+    private CommandSpec spec;
 
     public AuAnnotateCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;

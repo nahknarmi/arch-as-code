@@ -1,23 +1,19 @@
+import static org.gradle.api.JavaVersion.VERSION_11
+
 plugins {
     id "java"
     id "application"
-    id "distribution"
     id "jacoco"
     id "com.github.ben-manes.versions" version "0.29.0"
     id "info.solidsoft.pitest" version "1.5.2"
     // See https://www.baeldung.com/lombok-ide for how to configure intellij to work with lombok
     id "io.freefair.lombok" version "5.1.1"
-    id "com.palantir.git-version" version "0.12.3"
+    id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.springframework.boot" version "2.3.3.RELEASE"
 }
 
 mainClassName = "net.trilogy.arch.Application"
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 version = "0.1.6"
-
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
 
 repositories {
     mavenCentral()
@@ -41,7 +37,7 @@ dependencies {
     implementation group: "org.eclipse.jgit", name: "org.eclipse.jgit", version: "5.8.1.202007141445-r"
 
     implementation group: "guru.nidi", name: "graphviz-java-all-j2v8",
-version: "0.17.0"
+            version: "0.17.0"
 
     //Command line arguments
     implementation "info.picocli:picocli:4.5.1"
@@ -73,49 +69,44 @@ version: "0.17.0"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
 }
 
+java {
+    sourceCompatibility = VERSION_11
+    targetCompatibility = VERSION_11
+}
+
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        !isStable(it.candidate.version)
+    }
+}
+
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:all,-serial" << "-Werror"
+    options.encoding = "UTF-8"
+}
+
+test {
+    finalizedBy jacocoTestReport // Provide coverage report ASAP
 }
 
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = 0.80
+                minimum = 0.93
             }
-            excludes = [
-                    "net.trilogy.arch.Application",
-            ]
         }
     }
-}
-
-test {
-    // Provide coverage HTML as soon as available
-    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
     dependsOn test
 
     reports {
-        xml.enabled true
+        xml.enabled = true
         // Use standard location for HTML coverage results
-        html.enabled true
-        csv.enabled false
-    }
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                // Fail build if coverage drops
-                minimum = 0.93
-            }
-        }
+        html.enabled = true
+        csv.enabled = false
     }
 }
 
@@ -123,41 +114,12 @@ check {
     dependsOn jacocoTestCoverageVerification
 }
 
-plugins.withType(DistributionPlugin) {
-    distTar {
-        compression = Compression.GZIP
-        extension = "tar.gz"
-    }
-}
-
 pitest {
+    // TODO: Work with PITest (GitHub issues) to resolve the complaints
     targetClasses = ["net.trilogy.*"]
     threads = 4
     outputFormats = ["XML", "HTML"]
     timestampedReports = true
-}
-
-def generatedResources = "$buildDir/generated-resources/main"
-sourceSets {
-    main {
-        //register an output folder on the main SourceSet:
-        output.dir(generatedResources, builtBy: "generateVersionTxt")
-        //it is now a part of the "main" classpath and will be a part of the jar
-    }
-}
-
-//a task that generates the resources:
-task generateVersionTxt {
-    description "Creates a version.txt file with build info that is added to the root of the jar"
-    doLast {
-        new File(generatedResources).mkdirs()
-        def generated = new File(generatedResources, "version.txt")
-
-        def details = versionDetails()
-        generated.text = """
-          Version: $rootProject.version, build $details.gitHash 
-          """
-    }
 }
 
 project.test {
@@ -173,11 +135,11 @@ project.test {
 
     testLogging {
         events "FAILED", "SKIPPED"
-        exceptionFormat "FULL"
-        showCauses true
-        showExceptions true
-        showStackTraces true
-        showStandardStreams false
+        exceptionFormat = "FULL"
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = false
     }
 
     afterTest {
@@ -192,4 +154,13 @@ project.test {
 
 bootJar {
     mainClassName = "net.trilogy.arch.Application"
+}
+
+def isStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it ->
+        version.toUpperCase().contains(it)
+    }
+    def regex = /^[0-9,.v-]+(-r)?$/
+
+    return stableKeyword || version ==~ regex
 }

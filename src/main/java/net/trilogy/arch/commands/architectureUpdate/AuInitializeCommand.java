@@ -6,7 +6,9 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,20 +32,20 @@ import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants
 public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
     private final FilesFacade filesFacade;
 
-    @CommandLine.Option(names = {"-c", "--client-id"}, description = "Google API client id", required = true)
+    @Option(names = {"-c", "--client-id"}, description = "Google API client id", required = true)
     private String googleApiClientId;
 
-    @CommandLine.Option(names = {"-p", "--project-id"}, description = "Google API project id", required = true)
+    @Option(names = {"-p", "--project-id"}, description = "Google API project id", required = true)
     private String googleApiProjectId;
 
-    @CommandLine.Option(names = {"-s", "--secret"}, description = "Google API secret", required = true)
+    @Option(names = {"-s", "--secret"}, description = "Google API secret", required = true)
     private String googleApiSecret;
 
     @Parameters(index = "0", description = "Product workspace directory, containng the product's architecture")
     private File productArchitectureDirectory;
 
     @Getter
-    @CommandLine.Spec
+    @Spec
     private CommandLine.Model.CommandSpec spec;
 
     public AuInitializeCommand(FilesFacade filesFacade) {

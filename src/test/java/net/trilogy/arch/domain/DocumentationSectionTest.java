@@ -14,7 +14,6 @@ import static net.trilogy.arch.domain.DocumentationSection.Format.MARKDOWN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-
 public class DocumentationSectionTest {
     @Test
     public void shouldReturnStructurizrFormat() {
@@ -71,6 +70,5 @@ public class DocumentationSectionTest {
         assertThat(unorderedDoc.getFileName(), equalTo("UnorderedTitle.md"));
         assertThat(orderedNoExtension.getFileName(), equalTo("2_NoExtension"));
         assertThat(unorderedNoExtension.getFileName(), equalTo("NoExtension"));
-
     }
 }

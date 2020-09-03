@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 public class DiffTest {
@@ -140,10 +142,14 @@ public class DiffTest {
 
     @EqualsAndHashCode(callSuper = false)
     private static class Thing extends DiffableWithRelatedTdds implements Diffable {
-        @Getter private final String id;
-        @Getter private final String name;
-        @Getter private final C4Type type;
-        @Getter @Setter
+        @Getter
+        private final String id;
+        @Getter
+        private final String name;
+        @Getter
+        private final C4Type type;
+        @Getter
+        @Setter
         private String[] relatedTo = new String[0];
 
         public Thing(String id) {
