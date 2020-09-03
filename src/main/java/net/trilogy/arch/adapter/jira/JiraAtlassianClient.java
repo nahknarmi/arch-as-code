@@ -5,17 +5,9 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousHttpClientFactory;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import retrofit2.Response;
-import retrofit2.Retrofit.Builder;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
-
-import static java.lang.String.format;
 
 public class JiraAtlassianClient {
     private static final String trilogyJiraBaseUrl = "https://tw-trilogy.atlassian.net";
@@ -28,7 +20,7 @@ public class JiraAtlassianClient {
         return new AsynchronousJiraRestClient(
                 trilogyJiraBaseUri,
                 new AsynchronousHttpClientFactory().createClient(trilogyJiraBaseUri,
-                        new BasicHttpAuthenticationHandler("MY_USERNAME", "MY_PASSWORD")
+                        new BasicHttpAuthenticationHandler("MY_PASSWORD", "MY_TOKEN")
                 )
         );
     }
