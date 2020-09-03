@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if ! test -f build/libs/arch-as-code-*.jar ; then
+    echo "Needs build; please wait ..."
+    ./gradlew build >/dev/null
+fi
+
+exec java -jar build/libs/arch-as-code-*.jar "$@"
