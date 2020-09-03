@@ -11,8 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
 
-      - uses: Cache from previous runs
-        actions/cache@master
+      - name: Cache from previous runs
+        uses: actions/cache@master
         env:
           cache-name: cache-maven-dependencies
         with:
