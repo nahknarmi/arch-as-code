@@ -1,5 +1,7 @@
 package net.trilogy.arch.adapter.jira;
 
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
 import retrofit2.Response;
 import retrofit2.Retrofit.Builder;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -7,11 +9,20 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import java.io.IOException;
 
 public class JiraRetrofitClient {
-    private static final String trilogyBaseUrl = "https://tw-trilogy.atlassian.net/";
+    private static final String trilogyJiraBaseUrl = "https://tw-trilogy.atlassian.net/rest/api/latest/";
 
     private static final RemoteRetrofitJira REMOTE_JIRA = new Builder()
-            .baseUrl(trilogyBaseUrl)
+            .baseUrl(trilogyJiraBaseUrl)
             .addConverterFactory(JacksonConverterFactory.create())
+            .client(new OkHttpClient.Builder()
+                    .authenticator((route, response) -> {
+                        final var credential = Credentials.basic("a username", "a password");
+
+                        return response.request().newBuilder()
+                                .header("Authorization", credential)
+                                .build();
+                    })
+                    .build())
             .build()
             .create(RemoteRetrofitJira.class);
 
