@@ -24,6 +24,7 @@ import org.junit.rules.ErrorCollector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,9 @@ import static net.trilogy.arch.validation.architectureUpdate.ValidationError.for
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class ArchitectureUpdateValidatorTest {
     @Rule
@@ -489,6 +493,60 @@ public class ArchitectureUpdateValidatorTest {
                 forNotAvailableLink("capabilities.featurestory.jira.ticket ticket link"),
                 forNotAvailableLink("Useful link desc link"),
                 forNotAvailableLink("Milestone dependency milestone desc link")
+        );
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
+    @Test
+    public void shouldAllowJiraLinksToBeEmpty() {
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .p1(new P1("validLink", new Jira("ticket", "validLink"), "exec summary"))
+                .p2(new P2("validLink", new Jira("ticket", "validLink")))
+                .usefulLinks(List.of(new Link("desc", "validLink")))
+                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "validLink")))))
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("validLink").build()).build(),
+                                List.of(
+                                        new FeatureStory("Title", new Jira("jira ticket", null), List.of(), List.of())
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        assertThat(actualErrors, not(hasItem(forNotAvailableLink("capabilities.featurestory.jira.ticket jira ticket link"))));
+    }
+
+    @Test
+    public void shouldValidate_ComponentIdIsMatchingPath() {
+        var tdds = new HashMap<Tdd.Id, Tdd>();
+        tdds.put(new Tdd.Id("1"), new Tdd("abc", null));
+        ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
+                .p1(new P1("valid", new Jira("ticket", "valid"), "exec summary"))
+                .p2(new P2("valid", new Jira("ticket", "valid")))
+                .usefulLinks(List.of(new Link("desc", "valid")))
+                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "valid")))))
+                .tddContainersByComponent(List.of(
+                        new TddContainerByComponent(new Tdd.ComponentReference("14"), "bad path", false, tdds),
+                        new TddContainerByComponent(new Tdd.ComponentReference("15"), null, false, tdds),
+                        new TddContainerByComponent(new Tdd.ComponentReference("16"), "bad path on deleted component", false, tdds)
+                        ))
+                .capabilityContainer(
+                        new CapabilitiesContainer(
+                                Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("valid").build()).build(),
+                                List.of(
+                                        new FeatureStory("Title", new Jira("ticket", "valid"), List.of(new Tdd.Id("1")), List.of())
+                                )
+                        )
+                ).build();
+
+        var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, hasMissingComponentDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forComponentPathNotMatchingId("14"),
+                forComponentPathNotMatchingId("16")
         );
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));

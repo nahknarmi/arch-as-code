@@ -13,8 +13,7 @@ import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.LINK_NOT_AVAILABLE;
-import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.NO_PR_COMBINED_WITH_ANOTHER_TDD;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationErrorType.*;
 
 @ToString
 @Getter
@@ -144,6 +143,10 @@ public class ValidationError {
 
     public static ValidationError forNoPrWithAnotherTdd(String path) {
         return new ValidationError(NO_PR_COMBINED_WITH_ANOTHER_TDD, String.format("%s has no-PR, and shouldn't be combined with another TDD", path));
+    }
+
+    public static ValidationError forComponentPathNotMatchingId(String id) {
+        return new ValidationError(COMPONENT_ID_NOT_MATCHING_PATH, String.format("Component id %s is not matching component path specified. Please run au annotate.", id));
     }
 
     private static String getEntityTypeString(EntityReference entityId) {

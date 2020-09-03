@@ -20,6 +20,7 @@ public enum ValidationErrorType {
     DUPLICATE_COMPONENT_ID("Duplicate Component ID", TDD),
     LINK_NOT_AVAILABLE("Link value is N/A", TDD),
     NO_PR_COMBINED_WITH_ANOTHER_TDD("No-Pr is combined with another TDD", TDD),
+    COMPONENT_ID_NOT_MATCHING_PATH("ComponentId is not matching component path", TDD),
     AMBIGUOUS_TDD_CONTENT_REFERENCE("Ambiguous TDD content reference", TDD),
     MULTIPLE_TDD_CONTENT_FILES_REFERENCE_TDD("Multiple TDD content files associated with one TDD", TDD),
     OVERRIDDEN_BY_TDD_CONTENT_FILE("TDD content overridden by file", TDD);

@@ -264,6 +264,16 @@ public class AuValidateCommandTest {
     }
 
     @Test
+    public void shouldPassAUSchemaValidation() {
+        var auPath = auDir.resolve("valid-schema/").toString();
+
+        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+
+        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(status, equalTo(0));
+    }
+
+    @Test
     public void shouldBeInValidForNoPR() {
         var auPath = auDir.resolve("noPR/").toString();
 
