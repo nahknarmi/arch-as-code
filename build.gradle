@@ -18,6 +18,10 @@ version = "0.1.6"
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        // JIRA uses non-public repositories
+        url "https://m2proxy.atlassian.com/repository/public"
+    }
 }
 
 dependencies {
@@ -63,6 +67,10 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-core:2.13.3"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.13.3"
     implementation "org.slf4j:slf4j-api:1.7.30"
+
+    //jira
+    implementation "com.atlassian.jira:jira-rest-java-client-core:5.2.1"
+    implementation "io.atlassian.fugue:fugue:4.7.2" // Beware com.atlassian
 
     //Testing
     //Makesure hamcrest is above junit see - https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
