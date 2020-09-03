@@ -9,10 +9,10 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import java.io.IOException;
 
 public class JiraRetrofitClient {
-    private static final String trilogyJiraBaseUrl = "https://tw-trilogy.atlassian.net/rest/api/latest/";
+    private static final String trilogyJiraRestApiBaseUrl = "https://tw-trilogy.atlassian.net/rest/api/2/";
 
     private static final RemoteRetrofitJira REMOTE_JIRA = new Builder()
-            .baseUrl(trilogyJiraBaseUrl)
+            .baseUrl(trilogyJiraRestApiBaseUrl)
             .addConverterFactory(JacksonConverterFactory.create())
             .client(new OkHttpClient.Builder()
                     .authenticator((route, response) -> {
