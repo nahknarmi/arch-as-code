@@ -130,7 +130,7 @@ check {
 }
 
 pitest {
-    coverageThreshold.set(100)
+    coverageThreshold.set(95)
     mutationThreshold.set(100)
     targetClasses.set(["net.trilogy.*"])
     timestampedReports.set(true)
