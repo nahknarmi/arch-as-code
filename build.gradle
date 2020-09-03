@@ -5,6 +5,7 @@ plugins {
     id "application"
     id "jacoco"
     id "com.github.ben-manes.versions" version "0.29.0"
+    // See: https://gradle-pitest-plugin.solidsoft.info/
     id "info.solidsoft.pitest" version "1.5.2"
     // See https://www.baeldung.com/lombok-ide for how to configure intellij to work with lombok
     id "io.freefair.lombok" version "5.1.1"
@@ -13,6 +14,7 @@ plugins {
 }
 
 mainClassName = "net.trilogy.arch.Application"
+group = "net.trilogy.arch"
 version = "0.1.6"
 
 repositories {
@@ -124,14 +126,15 @@ jacocoTestReport {
 
 check {
     dependsOn jacocoTestCoverageVerification
+    // dependsOn "pitest" -- CI does this; it runs too long for local builds
 }
 
 pitest {
-    // TODO: Work with PITest (GitHub issues) to resolve the complaints
-    targetClasses = ["net.trilogy.*"]
-    threads = 4
-    outputFormats = ["XML", "HTML"]
-    timestampedReports = true
+    coverageThreshold.set(100)
+    mutationThreshold.set(100)
+    targetClasses.set(["net.trilogy.*"])
+    timestampedReports.set(true)
+    verbose.set(true)
 }
 
 project.test {
