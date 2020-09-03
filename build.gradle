@@ -125,32 +125,14 @@ pitest {
 }
 
 project.test {
-    def outputCache = new LinkedList<String>()
-
-    beforeTest { TestDescriptor td -> outputCache.clear() }
-
-    onOutput {
-        TestDescriptor td, TestOutputEvent toe ->
-            outputCache.add(toe.getMessage())
-            while (outputCache.size() > 1000) outputCache.remove()
-    }
-
     testLogging {
-        events "FAILED", "SKIPPED"
         exceptionFormat = "FULL"
         showCauses = true
         showExceptions = true
         showStackTraces = true
+        // TODO: A smell from noisy methods. Better is that tests capture
+        //       STDOUT and/or STDERR, asserting we print the right things
         showStandardStreams = false
-    }
-
-    afterTest {
-        TestDescriptor td, TestResult tr ->
-            if (tr.resultType == TestResult.ResultType.FAILURE) {
-                println()
-                println(" Output of ${td.className}.${td.name}:")
-                outputCache.each { print(" > $it") }
-            }
     }
 }
 
