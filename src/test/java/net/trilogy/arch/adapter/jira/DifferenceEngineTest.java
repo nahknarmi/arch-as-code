@@ -1,6 +1,7 @@
 package net.trilogy.arch.adapter.jira;
 
 import lombok.Data;
+import net.trilogy.arch.adapter.jira.DifferenceEngine.Difference;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
@@ -10,7 +11,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class DifferenceEngineTest {
-    private final static List<Left> ours = List.of(
+    private static final List<Left> ours = List.of(
             new Left("ALICE", 2), // common, unchanged
             new Left("BOB", 3), // added
             new Left("DAVE", 5)); // common, changed
@@ -19,8 +20,12 @@ public class DifferenceEngineTest {
             new Right("CAROL", "4"), // removed
             new Right("DAVE", "6")); // common, changed
 
-    private final DifferenceEngine<String, Left, Right> diff =
-            new TestDifferenceEngine(ours, theirs);
+    private static final DifferenceEngine<String, Left, Right> engine =
+            new DifferenceEngine<>(it -> it.key,
+                    it -> it.key,
+                    (a, b) -> a.key.equals(b.key)
+                            && String.valueOf(a.satelliteData).equals(b.satelliteData));
+    private static final Difference<String, Left, Right> diff = engine.diff(ours, theirs);
 
     @Test
     public void find_additions() {
@@ -47,29 +52,5 @@ public class DifferenceEngineTest {
     private static class Right {
         public final String key;
         public final String satelliteData;
-    }
-
-    private static class TestDifferenceEngine extends DifferenceEngine<String, Left, Right> {
-        public TestDifferenceEngine(
-                final List<Left> lefts,
-                final List<Right> rights) {
-            super(lefts, rights);
-        }
-
-        @Override
-        public boolean equivalent(final Left left, final Right right) {
-            return left.key.equals(right.key)
-                    && String.valueOf(left.satelliteData).equals(right.satelliteData);
-        }
-
-        @Override
-        public String ourCommonKey(final Left left) {
-            return left.key;
-        }
-
-        @Override
-        public String theirCommonKey(final Right right) {
-            return right.key;
-        }
     }
 }
