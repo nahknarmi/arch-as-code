@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+
 public class JiraApi {
     private final HttpClient client;
     private final String baseUri;
@@ -101,7 +103,7 @@ public class JiraApi {
                 .toList()
                 .stream()
                 .map(it -> it + "\n")
-                .collect(Collectors.joining());
+                .collect(joining());
 
         JSONObject mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
                 .getJSONObject("errors");
@@ -109,7 +111,7 @@ public class JiraApi {
         String mappedErrorMessages = mappedErrorsAsJson.keySet()
                 .stream()
                 .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
-                .collect(Collectors.joining());
+                .collect(joining());
 
         return errorMessages + mappedErrorMessages;
     }
@@ -174,14 +176,13 @@ public class JiraApi {
                 .stream()
                 .collect(Collectors.groupingBy(JiraStory.JiraTdd::getComponentPath));
 
-        return "h3. Technical Design:\n" +
-                compMap.entrySet().stream().map(
-                        entry -> "h4. Component: " + entry.getKey() + "\n||TDD||Description||\n" +
+        return "h3. Technical Design:\n" + compMap.entrySet().stream()
+                .map(entry ->
+                        "h4. Component: " + entry.getKey() + "\n||TDD||Description||\n" +
                                 entry.getValue().stream()
                                         .map(this::buildTddRow)
-                                        .collect(Collectors.joining())
-                ).collect(Collectors.joining()) +
-                "";
+                                        .collect(joining()))
+                .collect(joining()) + "";
     }
 
     private String buildTddRow(JiraStory.JiraTdd tdd) {
@@ -198,7 +199,7 @@ public class JiraApi {
                 story.getFunctionalRequirements()
                         .stream()
                         .map(this::makeFunctionalRequiremntRow)
-                        .collect(Collectors.joining());
+                        .collect(joining());
     }
 
     private String makeFunctionalRequiremntRow(JiraStory.JiraFunctionalRequirement funcReq) {

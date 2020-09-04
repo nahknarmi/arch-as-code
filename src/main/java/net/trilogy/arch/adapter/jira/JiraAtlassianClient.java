@@ -2,31 +2,45 @@ package net.trilogy.arch.adapter.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousHttpClientFactory;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClient;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.System.out;
+
 public class JiraAtlassianClient {
-    private static final String trilogyJiraBaseUrl = "https://tw-trilogy.atlassian.net";
+    private static final JiraRestClient liveClient =
+            new AsynchronousJiraRestClientFactory().createWithBasicHttpAuthentication(
+                    URI.create("https://tw-trilogy.atlassian.net"),
+                    "MY_PASSWORD",
+                    "MY_TOKEN");
 
-    private static final JiraRestClient ATLASSIAN_JIRA_CLIENT = newAtlassianJiraClient();
+    private final JiraRestClient client;
 
-    private static JiraRestClient newAtlassianJiraClient() {
-        final var trilogyJiraBaseUri = URI.create(trilogyJiraBaseUrl);
-
-        return new AsynchronousJiraRestClient(
-                trilogyJiraBaseUri,
-                new AsynchronousHttpClientFactory().createClient(trilogyJiraBaseUri,
-                        new BasicHttpAuthenticationHandler("MY_PASSWORD", "MY_TOKEN")
-                )
-        );
+    public JiraAtlassianClient() {
+        client = liveClient;
     }
 
-    public static Issue getIssue(final String issueId)
+    /**
+     * A testing-only client.
+     *
+     * @param client typically a mock of the Atlassian JIRA library client
+     */
+    @VisibleForTesting
+    JiraAtlassianClient(final JiraRestClient client) {
+        this.client = client;
+    }
+
+    /** @todo Avoid the duplication with Atlassian's library */
+    public Issue getIssue(final String issueId)
             throws ExecutionException, InterruptedException {
-        return ATLASSIAN_JIRA_CLIENT.getIssueClient().getIssue(issueId).get();
+        return client.getIssueClient().getIssue(issueId).get();
+    }
+
+    /** For live prototyping and spiking. */
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        out.println(new JiraAtlassianClient().getIssue("AAC-129"));
     }
 }
