@@ -60,10 +60,11 @@ public final class DifferenceEngine<KEY, OURS, THEIRS> {
                     .map(Entry::getValue)
                     .collect(toUnmodifiableSet());
 
+            // Avoid multiple map fetches by assuming theirs contains the key,
+            // and ignoring if not
             changedByUs = oursByKey.entrySet().stream()
-                    .filter(it -> theirsByKey.containsKey(it.getKey()))
-                    .filter(it -> !equivalent.apply(it.getValue(), theirsByKey.get(it.getKey())))
                     .map(it -> Pair.of(it.getValue(), theirsByKey.get(it.getKey())))
+                    .filter(it -> null != it.getValue() && !equivalent.apply(it.getKey(), it.getValue()))
                     .collect(toUnmodifiableSet());
         }
     }
