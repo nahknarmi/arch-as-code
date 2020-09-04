@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,17 +28,17 @@ public class DifferenceEngineTest {
 
     @Test
     public void find_additions() {
-        assertEquals(Set.of(ours.get(1)), diff.addedByUs);
+        assertEquals(List.of(ours.get(1)), diff.addedByUs);
     }
 
     @Test
     public void find_removals() {
-        assertEquals(Set.of(theirs.get(1)), diff.removedByUs);
+        assertEquals(List.of(theirs.get(1)), diff.removedByUs);
     }
 
     @Test
     public void find_changes() {
-        assertEquals(Set.of(Pair.of(ours.get(2), theirs.get(2))), diff.changedByUs);
+        assertEquals(List.of(Pair.of(ours.get(2), theirs.get(2))), diff.changedByUs);
     }
 
     @Data

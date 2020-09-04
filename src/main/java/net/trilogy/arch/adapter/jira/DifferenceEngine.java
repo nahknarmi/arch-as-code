@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toUnmodifiableSet;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 /**
  * Find the differences between two data collections where there is a common
@@ -35,9 +35,9 @@ public final class DifferenceEngine<KEY, OURS, THEIRS> {
     }
 
     public static final class Difference<KEY, OURS, THEIRS> {
-        public final Set<OURS> addedByUs;
-        public final Set<THEIRS> removedByUs;
-        public final Set<Pair<OURS, THEIRS>> changedByUs;
+        public final List<OURS> addedByUs;
+        public final List<THEIRS> removedByUs;
+        public final List<Pair<OURS, THEIRS>> changedByUs;
 
         private Difference(
                 final Function<OURS, KEY> ourCommonKey,
@@ -53,19 +53,19 @@ public final class DifferenceEngine<KEY, OURS, THEIRS> {
             addedByUs = oursByKey.entrySet().stream()
                     .filter(it -> !theirsByKey.containsKey(it.getKey()))
                     .map(Entry::getValue)
-                    .collect(toUnmodifiableSet());
+                    .collect(toUnmodifiableList());
 
             removedByUs = theirsByKey.entrySet().stream()
                     .filter(it -> !oursByKey.containsKey(it.getKey()))
                     .map(Entry::getValue)
-                    .collect(toUnmodifiableSet());
+                    .collect(toUnmodifiableList());
 
             // Avoid multiple map fetches by assuming theirs contains the key,
             // and ignoring if not
             changedByUs = oursByKey.entrySet().stream()
                     .map(it -> Pair.of(it.getValue(), theirsByKey.get(it.getKey())))
                     .filter(it -> null != it.getValue() && !equivalent.apply(it.getKey(), it.getValue()))
-                    .collect(toUnmodifiableSet());
+                    .collect(toUnmodifiableList());
         }
     }
 }
