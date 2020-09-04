@@ -1,7 +1,7 @@
 package net.trilogy.arch.adapter.jira;
 
 import lombok.Data;
-import net.trilogy.arch.adapter.jira.DifferenceEngine.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.List;
@@ -39,14 +39,14 @@ public class DifferenceEngineTest {
 
     @Data
     private static class Left {
-        private final String key;
-        private final int satelliteData;
+        public final String key;
+        public final int satelliteData;
     }
 
     @Data
     private static class Right {
-        private final String key;
-        private final String satelliteData;
+        public final String key;
+        public final String satelliteData;
     }
 
     private static class TestDifferenceEngine extends DifferenceEngine<String, Left, Right> {
@@ -57,19 +57,19 @@ public class DifferenceEngineTest {
         }
 
         @Override
-        public boolean equivalent(final Left us, final Right them) {
-            return us.key.equals(them.key)
-                    && String.valueOf(us.satelliteData).equals(them.satelliteData);
+        public boolean equivalent(final Left left, final Right right) {
+            return left.key.equals(right.key)
+                    && String.valueOf(left.satelliteData).equals(right.satelliteData);
         }
 
         @Override
-        public String keyFromUs(final Left us) {
-            return us.key;
+        public String ourCommonKey(final Left left) {
+            return left.key;
         }
 
         @Override
-        public String keyFromThem(final Right them) {
-            return them.key;
+        public String theirCommonKey(final Right right) {
+            return right.key;
         }
     }
 }
