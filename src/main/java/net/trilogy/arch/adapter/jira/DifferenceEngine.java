@@ -15,14 +15,20 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 /**
  * Find the differences between two data collections where there is a common
- * key to match them up.
+ * key to match them up.  This boils down to: <ol>
+ * <li>Convert each data collection to a map by key</li>
+ * <li>Look for disjoint keys (added items for the "ours" collection; removed
+ * items for the "theirs" collection)</li>
+ * <li>For common keys, use an "equivalence" function to find changed
+ * items</li>
+ * </ol>
  *
- * @param <KEY> the common key between data types of ours and theirs
- * @param <OURS> our data type, ie, AaC
- * @param <THEIRS> their data type, eg, JIRA and others
+ * @param <KEY> the common key between data types, eg, "AAC-129"
+ * @param <OURS> our data type, ie, AaC's notion of JIRA stories
+ * @param <THEIRS> their data type, ie, Atlassian's JIRA stories
  *
  * @todo Reinventing the wheel compared to other functional languages
- * @todo Research if one our 3rd-party libraries provides this
+ * @todo Research if one of our 3rd-party libraries provides this
  */
 @RequiredArgsConstructor
 public final class DifferenceEngine<KEY, OURS, THEIRS> {
@@ -30,7 +36,9 @@ public final class DifferenceEngine<KEY, OURS, THEIRS> {
     private final Function<THEIRS, KEY> theirCommonKey;
     private final BiFunction<OURS, THEIRS, Boolean> equivalent;
 
-    public Difference<KEY, OURS, THEIRS> diff(final Collection<OURS> ours, final Collection<THEIRS> theirs) {
+    public Difference<KEY, OURS, THEIRS> diff(
+            final Collection<OURS> ours,
+            final Collection<THEIRS> theirs) {
         return new Difference<>(ourCommonKey, theirCommonKey, equivalent, ours, theirs);
     }
 
@@ -64,7 +72,10 @@ public final class DifferenceEngine<KEY, OURS, THEIRS> {
             // and ignoring if not
             changedByUs = oursByKey.entrySet().stream()
                     .map(it -> Pair.of(it.getValue(), theirsByKey.get(it.getKey())))
-                    .filter(it -> null != it.getValue() && !equivalent.apply(it.getKey(), it.getValue()))
+                    .filter(it -> {
+                        final var them = it.getValue();
+                        return null != them && !equivalent.apply(it.getKey(), them);
+                    })
                     .collect(toUnmodifiableList());
         }
     }

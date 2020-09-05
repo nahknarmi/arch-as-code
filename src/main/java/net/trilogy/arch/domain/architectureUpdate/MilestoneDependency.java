@@ -8,6 +8,8 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @EqualsAndHashCode
 public class MilestoneDependency {
@@ -17,7 +19,7 @@ public class MilestoneDependency {
     private final List<Link> links;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public MilestoneDependency(
             @JsonProperty("description") String description,
             @JsonProperty("links") List<Link> links

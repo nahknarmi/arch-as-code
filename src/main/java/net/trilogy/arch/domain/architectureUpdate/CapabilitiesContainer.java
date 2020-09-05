@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -19,7 +21,7 @@ public class CapabilitiesContainer {
     private final List<FeatureStory> featureStories;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public CapabilitiesContainer(
             @JsonProperty("epic") Epic epic,
             @JsonProperty("feature-stories") List<FeatureStory> featureStories

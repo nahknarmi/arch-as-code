@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @ToString
 @EqualsAndHashCode
 public class TddContainerByComponent {
@@ -28,7 +30,7 @@ public class TddContainerByComponent {
     private final Boolean deleted;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public TddContainerByComponent(
             @JsonProperty(value = "component-id") Tdd.ComponentReference componentId,
             @JsonProperty(value = "component-path") String componentPath,

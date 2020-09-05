@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -61,7 +63,7 @@ public class ArchitectureUpdate {
     private final List<TddContent> tddContents;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public ArchitectureUpdate(
             @JsonProperty("name") String name,
             @JsonProperty("milestone") String milestone,
@@ -116,15 +118,15 @@ public class ArchitectureUpdate {
         return this.toBuilder().capabilityContainer(
                 this.getCapabilityContainer().toBuilder()
                         .featureStories(
-                                this.getCapabilityContainer().getFeatureStories().stream()
+                                getCapabilityContainer().getFeatureStories().stream()
                                         .map(story -> {
                                             if (story.equals(storyToChange)) {
                                                 return story.toBuilder().jira(jiraToAdd).build();
                                             }
                                             return story;
                                         })
-                                        .collect(Collectors.toList())
-                        ).build()
-        ).build();
+                                        .collect(Collectors.toList()))
+                        .build())
+                .build();
     }
 }

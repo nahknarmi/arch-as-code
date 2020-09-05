@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @EqualsAndHashCode
 public class Link {
@@ -13,7 +15,7 @@ public class Link {
     @JsonProperty(value = "link")
     private final String link;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Link(
             @JsonProperty("description") String description,
             @JsonProperty("link") String link

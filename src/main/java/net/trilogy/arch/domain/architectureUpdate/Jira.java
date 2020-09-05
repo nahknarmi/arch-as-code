@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @ToString
 @Getter
 @EqualsAndHashCode
@@ -17,7 +19,7 @@ public class Jira {
     private final String link;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Jira(
             @JsonProperty("ticket") String ticket,
             @JsonProperty("link") String link

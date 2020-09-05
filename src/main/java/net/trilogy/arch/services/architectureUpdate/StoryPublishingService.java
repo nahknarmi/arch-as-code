@@ -79,7 +79,7 @@ public class StoryPublishingService {
 
         out.println("Attempting to create stories...\n");
 
-        List<JiraStory> jiraStories = new ArrayList<>();
+        final var jiraStories = new ArrayList<JiraStory>(stories.size());
         for (var story : stories) {
             jiraStories.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }

@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -18,7 +20,7 @@ public class Decision {
     @JsonProperty(value = "tdd-references")
     private final List<Tdd.Id> tddReferences;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Decision(
             @JsonProperty("text") String text,
             @JsonProperty("tdd-references") List<Tdd.Id> tddReferences
@@ -37,7 +39,7 @@ public class Decision {
         @JsonProperty(value = "id")
         private final String id;
 
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        @JsonCreator(mode = PROPERTIES)
         public Id(
                 @JsonProperty("id") String id
         ) {
