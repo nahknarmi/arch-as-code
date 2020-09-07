@@ -18,5 +18,8 @@ tasks:
     description: Build (and test) the program
     run:
       container: build-env
-      # No daemon to avoid corrupting local Gradle cache
-      command: ./gradlew --no-daemon build
+      # No daemon as there's no point for an ephemeral container
+      # `./gradlew clean` to keep local runs from influencing the CI-ish build
+      # as Docker copies _all_ files, including `build/`
+      # TODO: Consider cloning the the remote `origin`
+      command: ./gradlew --no-daemon clean build
