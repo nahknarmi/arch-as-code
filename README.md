@@ -25,6 +25,7 @@ and documentation.
 * [Getting started](#getting-started)
 * [Building locally](#building-locally)
 * [Build maintenance](#build-maintenance)
+* [The demo folder](#the-demo-folder)
 
 ## Getting started
 
@@ -52,7 +53,7 @@ version of arch-as-code CLI.
 
 #### Mac OS
 
-```bash
+```shell script
 mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
@@ -62,7 +63,7 @@ arch-as-code --help
 
 #### Linux
 
-```bash
+```shell script
 mkdir -p ~/arch-as-code && curl -s https://api.github.com/repos/trilogy-group/arch-as-code/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | tr -d \" | xargs curl -L | tar -z --strip-components 1 -x -C ~/arch-as-code
 
 export PATH=$PATH:~/arch-as-code/bin
@@ -91,7 +92,7 @@ Structurizr account
 Then you can then run the following command to initialize your workspace
 (PATH_TO_WORKSPACE refers to workspace directory).
 
-```bash
+```shell script
 mkdir -p ${PATH_TO_WORKSPACE}
 
 cd ${PATH_TO_WORKSPACE}
@@ -104,7 +105,7 @@ arch-as-code init -i ${WORKSPACE_ID} -k ${WORKSPACE_API_KEY} -s ${WORKSPACE_API_
 We can now publish our local workspace to Structurizr using the
 following command:
 
-```bash
+```shell script
 cd ${PATH_TO_WORKSPACE}
 
 arch-as-code publish .
@@ -130,7 +131,7 @@ to manually update `PATH` or `JAVA_HOME`.
 After following instructions, the AaC repository should be set up for you
 as Java 11:
 
-```bash
+```shell script
 $ cd <your root of the AaC project git clone>
 $  java -version
 <output which indicates a build of Java 11>
@@ -152,7 +153,7 @@ See [batect.yml](./batect.yml) to update the Docker image used, and the
 target commands for the command line.
 
 Use `./batect -T` to list available targets.  Currently:
-```bash
+```shell script
 $ ./batect -T
 Available tasks:
 - build: Build (and test) the program
@@ -162,13 +163,26 @@ Batect should share local Gradle downloads with the Docker container.
 #### Code coverage
 
 To view HTML coverage reports, use:
-```
+```shell script
 $ (cd build/reports/jacoco/test/html/; open index.html)
 ```
 The subshell syntax is to avoid changing your current terminal directory.
-The `open` command is MacOS-specific; for Linux, use `alias open=xdg-open`.
+The `open` command is MacOS-specific; for Linux, setup `alias open=xdg-open`,
+then you can use `open`.
 
 ## Build maintenance
 
 Use `./gradlew dependencyUpdates` for a list of out-of-date dependencies and
 plugins, or Gradle itself.
+
+## The demo folder
+
+To create a local demo folder for AaC, run:
+```shell script
+$ ./scripts/create-demo-folder.sh
+$ pushd /tmp/aac/demo-folder
+$ alias aac=$PWD/arch-as-code.sh
+# Proceed using the command-line
+```
+Until we get upstream to add "technology" lines to "product-architect.yml",
+you will need to _manually_ edit before validation passes.
