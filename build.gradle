@@ -27,6 +27,9 @@ repositories {
 }
 
 dependencies {
+    //Spotbugs suppress annotations
+    implementation "com.github.spotbugs:spotbugs:4.1.2"
+    
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-jackson:2.9.0"
@@ -92,6 +95,10 @@ tasks.named("dependencyUpdates").configure {
     rejectVersionIf {
         !isStable(it.candidate.version)
     }
+}
+
+lombok {
+    generateLombokConfig.enabled = false
 }
 
 tasks.withType(JavaCompile) {
