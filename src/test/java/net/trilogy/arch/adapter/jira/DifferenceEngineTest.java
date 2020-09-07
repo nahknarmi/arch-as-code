@@ -1,16 +1,16 @@
 package net.trilogy.arch.adapter.jira;
 
 import lombok.Data;
-import net.trilogy.arch.adapter.jira.DifferenceEngine.Pair;
+import net.trilogy.arch.adapter.jira.DifferenceEngine.Difference;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 public class DifferenceEngineTest {
-    private final static List<Left> ours = List.of(
+    private static final List<Left> ours = List.of(
             new Left("ALICE", 2), // common, unchanged
             new Left("BOB", 3), // added
             new Left("DAVE", 5)); // common, changed
@@ -19,57 +19,37 @@ public class DifferenceEngineTest {
             new Right("CAROL", "4"), // removed
             new Right("DAVE", "6")); // common, changed
 
-    private final DifferenceEngine<String, Left, Right> diff =
-            new TestDifferenceEngine(ours, theirs);
+    private static final DifferenceEngine<String, Left, Right> engine =
+            new DifferenceEngine<>(it -> it.key,
+                    it -> it.key,
+                    (a, b) -> a.key.equals(b.key)
+                            && String.valueOf(a.satelliteData).equals(b.satelliteData));
+    private static final Difference<String, Left, Right> diff = engine.diff(ours, theirs);
 
     @Test
     public void find_additions() {
-        assertEquals(Set.of(ours.get(1)), diff.addedByUs);
+        assertEquals(List.of(ours.get(1)), diff.addedByUs);
     }
 
     @Test
     public void find_removals() {
-        assertEquals(Set.of(theirs.get(1)), diff.removedByUs);
+        assertEquals(List.of(theirs.get(1)), diff.removedByUs);
     }
 
     @Test
     public void find_changes() {
-        assertEquals(Set.of(Pair.of(ours.get(2), theirs.get(2))), diff.changedByUs);
+        assertEquals(List.of(Pair.of(ours.get(2), theirs.get(2))), diff.changedByUs);
     }
 
     @Data
     private static class Left {
-        private final String key;
-        private final int satelliteData;
+        public final String key;
+        public final int satelliteData;
     }
 
     @Data
     private static class Right {
-        private final String key;
-        private final String satelliteData;
-    }
-
-    private static class TestDifferenceEngine extends DifferenceEngine<String, Left, Right> {
-        public TestDifferenceEngine(
-                final List<Left> lefts,
-                final List<Right> rights) {
-            super(lefts, rights);
-        }
-
-        @Override
-        public boolean equivalent(final Left us, final Right them) {
-            return us.key.equals(them.key)
-                    && String.valueOf(us.satelliteData).equals(them.satelliteData);
-        }
-
-        @Override
-        public String keyFromUs(final Left us) {
-            return us.key;
-        }
-
-        @Override
-        public String keyFromThem(final Right them) {
-            return them.key;
-        }
+        public final String key;
+        public final String satelliteData;
     }
 }

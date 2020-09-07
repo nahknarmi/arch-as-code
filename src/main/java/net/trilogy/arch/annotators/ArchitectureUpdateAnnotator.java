@@ -62,9 +62,9 @@ public class ArchitectureUpdateAnnotator {
     public boolean isComponentsEmpty(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         return au.getTddContainersByComponent().stream()
                 .flatMap(tdd -> dataStructure
-                        .getModel()
-                        .findEntityById(tdd.getComponentId() == null ? "" : tdd.getComponentId().getId())
-                        .stream()
+                        .getModel().getComponents().stream().filter(c ->
+                                (tdd.getComponentId() != null && c.getId().equalsIgnoreCase(tdd.getComponentId().getId()))
+                                        || c.getPath().getPath().equalsIgnoreCase(tdd.getComponentPath()))
                 ).findAny()
                 .isEmpty();
     }

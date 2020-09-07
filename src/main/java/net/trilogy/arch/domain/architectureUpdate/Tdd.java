@@ -12,6 +12,8 @@ import lombok.ToString;
 
 import java.util.Optional;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -26,7 +28,7 @@ public class Tdd {
     @JsonIgnore
     private Optional<TddContent> content = Optional.empty();
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Tdd(@JsonProperty("text") String text,
                @JsonProperty("file") String file) {
         this.text = text;

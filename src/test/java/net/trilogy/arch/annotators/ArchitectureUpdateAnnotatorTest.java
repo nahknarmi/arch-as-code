@@ -40,12 +40,25 @@ public class ArchitectureUpdateAnnotatorTest {
     }
 
     @Test
-    public void shouldCheckIfNotEmptyComponentsExist() throws Exception {
+    public void shouldCheckIfNotEmptyComponentsExistWithId() throws Exception {
         ArchitectureDataStructure architecture = getArchitecture();
         ArchitectureUpdate au = ArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(
                         List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), null, false, Map.of()))
+                )
+                .build();
+
+        collector.checkThat(annotator.isComponentsEmpty(architecture, au), equalTo(false));
+    }
+
+    @Test
+    public void shouldCheckIfNotEmptyComponentsExistWithPath() throws Exception {
+        ArchitectureDataStructure architecture = getArchitecture();
+        ArchitectureUpdate au = ArchitectureUpdate.blank()
+                .toBuilder()
+                .tddContainersByComponent(
+                        List.of(new TddContainerByComponent(null, "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller", false, Map.of()))
                 )
                 .build();
 

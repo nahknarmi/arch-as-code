@@ -9,6 +9,8 @@ import lombok.ToString;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @ToString
 @Getter
 @EqualsAndHashCode
@@ -23,7 +25,7 @@ public class FeatureStory {
     private final List<FunctionalRequirement.Id> requirementReferences;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public FeatureStory(
             @JsonProperty("title") String title,
             @JsonProperty("jira") Jira jira,

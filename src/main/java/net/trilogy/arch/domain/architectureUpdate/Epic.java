@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @EqualsAndHashCode
 public class Epic {
@@ -19,7 +21,7 @@ public class Epic {
     private final Jira jira;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Epic(
             @JsonProperty("title") String title,
             @JsonProperty("jira") Jira jira

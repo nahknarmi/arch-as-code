@@ -29,40 +29,39 @@ decisions:
   '[SAMPLE-DECISION-ID]':
     text: '[SAMPLE DECISION TEXT]'
     tdd-references:
-    - '111'
+    - "111"
   '[DECISION-ID-1]':
     text: '[SAMPLE DECISION TEXT]'
     tdd-references:
-      - '112'
+    - "112"
   '[DECISION-ID-2]':
     text: '[SAMPLE DECISION TEXT]'
     tdd-references:
-    - 'no-PR'
+    - no-PR
 tdds-per-component:
-- component-id: '113'
+- component-id: "113"
+  component-path: c4://DevSpaces/DevSpaces API/OAuth2 Controller
   deleted: false
   tdds:
-    '111':
-      file: "111 : Component-113.md"
-      text: Should use file
-    '112':
+    "111":
+      file: '111 : Component-113.md'
+    "112":
       text: |
         Several lines for the tdd text
         Multi line text line 1
         Another Line for tdd with multiline text line 2
         One more line line 3
-
 functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
     text: '[SAMPLE REQUIREMENT TEXT]'
     source: '[SAMPLE REQUIREMENT SOURCE TEXT]'
     tdd-references:
-    - '111'
+    - "111"
   '[SAMPLE-REQUIREMENT-ID-2]':
     text: '[SAMPLE REQUIREMENT TEXT]'
     source: '[SAMPLE REQUIREMENT SOURCE TEXT]'
     tdd-references:
-      - 'no-PR'
+    - no-PR
 capabilities:
   epic:
     title: Please enter epic title from Jira
@@ -75,7 +74,7 @@ capabilities:
       ticket: ""
       link: ""
     tdd-references:
-    - 'no-PR'
+    - no-PR
     functional-requirement-references:
     - '[SAMPLE-REQUIREMENT-ID]'
   - title: '[SAMPLE FEATURE STORY TITLE with No PR]'
@@ -83,15 +82,15 @@ capabilities:
       ticket: ""
       link: ""
     tdd-references:
-      - 'no-PR'
-      - '111'
+    - "111"
+    - "112"
     functional-requirement-references:
-      - '[SAMPLE-REQUIREMENT-ID-2]'
+    - '[SAMPLE-REQUIREMENT-ID-2]'
   - title: '[SAMPLE FEATURE STORY TITLE new one]'
     jira:
       ticket: ""
       link: ""
     tdd-references:
-      - '111'
+    - "111"
     functional-requirement-references:
-      - '[SAMPLE-REQUIREMENT-ID-2]'
+    - '[SAMPLE-REQUIREMENT-ID-2]'

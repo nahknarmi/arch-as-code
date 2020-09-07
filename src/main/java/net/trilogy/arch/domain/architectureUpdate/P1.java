@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Getter
 @EqualsAndHashCode
 public class P1 {
@@ -17,7 +19,7 @@ public class P1 {
     private final String executiveSummary;
 
     @Builder(toBuilder = true)
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public P1(
             @JsonProperty("link") String link,
             @JsonProperty("jira") Jira jira,

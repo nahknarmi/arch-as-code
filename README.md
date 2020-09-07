@@ -24,6 +24,7 @@ and documentation.
 
 * [Getting started](#getting-started)
 * [Building locally](#building-locally)
+* [Build maintenance](#build-maintenance)
 
 ## Getting started
 

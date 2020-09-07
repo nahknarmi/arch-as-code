@@ -1,58 +1,82 @@
 package net.trilogy.arch.adapter.jira;
 
-import lombok.Data;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 /**
- * With restrictions on Java Generics and lack of union types, fall back to
- * throwing exceptions rather than returning result types.  Notice the
- * nuisance of checked exceptions poking its head in.
+ * Find the differences between two data collections where there is a common
+ * key to match them up.  This boils down to: <ol>
+ * <li>Convert each data collection to a map by key</li>
+ * <li>Look for disjoint keys (added items for the "ours" collection; removed
+ * items for the "theirs" collection)</li>
+ * <li>For common keys, use an "equivalence" function to find changed
+ * items</li>
+ * </ol>
+ *
+ * @param <KEY> the common key between data types, eg, "AAC-129"
+ * @param <OURS> our data type, ie, AaC's notion of JIRA stories
+ * @param <THEIRS> their data type, ie, Atlassian's JIRA stories
+ *
+ * @todo Reinventing the wheel compared to other functional languages
+ * @todo Research if one of our 3rd-party libraries provides this
  */
-public abstract class DifferenceEngine<KEY, OURS, THEIRS> {
-    public abstract boolean equivalent(final OURS us, final THEIRS them);
+@RequiredArgsConstructor
+public final class DifferenceEngine<KEY, OURS, THEIRS> {
+    private final Function<OURS, KEY> ourCommonKey;
+    private final Function<THEIRS, KEY> theirCommonKey;
+    private final BiFunction<OURS, THEIRS, Boolean> equivalent;
 
-    public abstract KEY keyFromUs(final OURS us);
-
-    public abstract KEY keyFromThem(final THEIRS them);
-
-    public final Set<OURS> addedByUs;
-    public final Set<THEIRS> removedByUs;
-    public final Set<Pair<OURS, THEIRS>> changedByUs;
-
-    public DifferenceEngine(final Collection<OURS> ours, final Collection<THEIRS> theirs) {
-        final var oursByKey = ours.stream()
-                .collect(toMap(this::keyFromUs, identity()));
-        final var theirsByKey = theirs.stream()
-                .collect(toMap(this::keyFromThem, identity()));
-
-        addedByUs = oursByKey.entrySet().stream()
-                .filter(it -> !theirsByKey.containsKey(it.getKey()))
-                .map(Entry::getValue)
-                .collect(toSet());
-
-        removedByUs = theirsByKey.entrySet().stream()
-                .filter(it -> !oursByKey.containsKey(it.getKey()))
-                .map(Entry::getValue)
-                .collect(toSet());
-
-        changedByUs = oursByKey.entrySet().stream()
-                .filter(it -> theirsByKey.containsKey(it.getKey()))
-                .filter(it -> !equivalent(it.getValue(), theirsByKey.get(it.getKey())))
-                .map(it -> Pair.of(it.getValue(), theirsByKey.get(it.getKey())))
-                .collect(toSet());
+    public Difference<KEY, OURS, THEIRS> diff(
+            final Collection<OURS> ours,
+            final Collection<THEIRS> theirs) {
+        return new Difference<>(ourCommonKey, theirCommonKey, equivalent, ours, theirs);
     }
 
-    @Data(staticConstructor = "of")
-    public static class Pair<T, U> {
-        public final T first;
-        public final U second;
+    public static final class Difference<KEY, OURS, THEIRS> {
+        public final List<OURS> addedByUs;
+        public final List<THEIRS> removedByUs;
+        public final List<Pair<OURS, THEIRS>> changedByUs;
+
+        private Difference(
+                final Function<OURS, KEY> ourCommonKey,
+                final Function<THEIRS, KEY> theirCommonKey,
+                final BiFunction<OURS, THEIRS, Boolean> equivalent,
+                final Collection<OURS> ours,
+                final Collection<THEIRS> theirs) {
+            final var oursByKey = ours.stream()
+                    .collect(toMap(ourCommonKey, identity()));
+            final var theirsByKey = theirs.stream()
+                    .collect(toMap(theirCommonKey, identity()));
+
+            addedByUs = oursByKey.entrySet().stream()
+                    .filter(it -> !theirsByKey.containsKey(it.getKey()))
+                    .map(Entry::getValue)
+                    .collect(toUnmodifiableList());
+
+            removedByUs = theirsByKey.entrySet().stream()
+                    .filter(it -> !oursByKey.containsKey(it.getKey()))
+                    .map(Entry::getValue)
+                    .collect(toUnmodifiableList());
+
+            // Avoid multiple map fetches by assuming theirs contains the key,
+            // and ignoring if not
+            changedByUs = oursByKey.entrySet().stream()
+                    .map(it -> Pair.of(it.getValue(), theirsByKey.get(it.getKey())))
+                    .filter(it -> {
+                        final var them = it.getValue();
+                        return null != them && !equivalent.apply(it.getKey(), them);
+                    })
+                    .collect(toUnmodifiableList());
+        }
     }
 }

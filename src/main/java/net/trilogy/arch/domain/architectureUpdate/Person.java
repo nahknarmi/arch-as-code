@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @EqualsAndHashCode
 public class Person {
     @JsonProperty(value = "name")
@@ -11,7 +13,7 @@ public class Person {
     @JsonProperty(value = "email")
     private final String email;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public Person(
             @JsonProperty("name") String name,
             @JsonProperty("email") String email
