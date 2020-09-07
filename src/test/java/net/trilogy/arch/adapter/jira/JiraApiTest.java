@@ -6,6 +6,7 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Before;
 import org.junit.Rule;
@@ -263,14 +264,14 @@ public class JiraApiTest {
     public void shouldMakeCreateStoryRequestWithCorrectBodyUsingTddContentFiles() throws Exception {
         // GIVEN:
         var jiraTdd1 = new JiraStory.JiraTdd(
-                new Tdd.Id("TDD ID 1"),
+                new TddId("TDD ID 1"),
                 new Tdd("Ignored text", "TDD ID 1 : Component-1.md"),
                 "c4://pathToComponent-1",
                 new TddContent("TDD CONTENT FILE TDD ID 1", "TDD ID 1 : Component-1.md")
         );
 
         var jiraTdd2 = new JiraStory.JiraTdd(
-                new Tdd.Id("TDD ID 2"),
+                new TddId("TDD ID 2"),
                 new Tdd(null, "TDD ID 2 : Component-1.md"),
                 "c4://pathToComponent-2",
                 new TddContent("TDD CONTENT FILE TDD ID 2", "TDD ID 2 : Component-1.md")
@@ -282,7 +283,7 @@ public class JiraApiTest {
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 1",
                         "FUNCTIONAL REQUIREMENT SOURCE 1",
-                        List.of(new Tdd.Id("TDD REFERENCE 1"))
+                        List.of(new TddId("TDD REFERENCE 1"))
                 )
         );
         var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
@@ -290,7 +291,7 @@ public class JiraApiTest {
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 2",
                         "FUNCTIONAL REQUIREMENT SOURCE 2",
-                        List.of(new Tdd.Id("TDD REFERENCE 2"))
+                        List.of(new TddId("TDD REFERENCE 2"))
                 )
         );
 
@@ -351,14 +352,14 @@ public class JiraApiTest {
 
     private List<JiraStory> createSampleJiraStories() {
         var jiraTdd1 = new JiraStory.JiraTdd(
-                new Tdd.Id("TDD ID 1"),
+                new TddId("TDD ID 1"),
                 new Tdd("TDD TEXT 1", null),
                 "COMPONENT ID 1",
                 null
         );
 
         var jiraTdd2 = new JiraStory.JiraTdd(
-                new Tdd.Id("TDD ID 2"),
+                new TddId("TDD ID 2"),
                 new Tdd("TDD TEXT 2", null),
                 "COMPONENT ID 2",
                 null
@@ -369,7 +370,7 @@ public class JiraApiTest {
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 1",
                         "FUNCTIONAL REQUIREMENT SOURCE 1",
-                        List.of(new Tdd.Id("TDD REFERENCE 1"))
+                        List.of(new TddId("TDD REFERENCE 1"))
                 )
         );
         var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
@@ -377,7 +378,7 @@ public class JiraApiTest {
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 2",
                         "FUNCTIONAL REQUIREMENT SOURCE 2",
-                        List.of(new Tdd.Id("TDD REFERENCE 2"))
+                        List.of(new TddId("TDD REFERENCE 2"))
                 )
         );
 

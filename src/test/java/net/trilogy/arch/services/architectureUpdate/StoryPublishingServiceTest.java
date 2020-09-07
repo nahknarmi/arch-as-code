@@ -6,7 +6,7 @@ import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import org.junit.Test;
 
 import java.util.List;
@@ -23,22 +23,22 @@ public class StoryPublishingServiceTest {
         List<FeatureStory> featureStoriesToBeCreated = List.of(
                 new FeatureStory("Story Title",
                         new Jira("", ""),
-                        List.of(new Tdd.Id("TDD 1.0")),
+                        List.of(new TddId("TDD 1.0")),
                         List.of(new FunctionalRequirement.Id("FUNC REQ"))
                 ), new FeatureStory("Story Title",
                         new Jira(null, null),
-                        List.of(new Tdd.Id("TDD 2.0")),
+                        List.of(new TddId("TDD 2.0")),
                         List.of(new FunctionalRequirement.Id("FUNC REQ 2"))
                 ), new FeatureStory("Story Title",
                         null,
-                        List.of(new Tdd.Id("TDD 3.0")),
+                        List.of(new TddId("TDD 3.0")),
                         List.of(new FunctionalRequirement.Id("FUNC REQ 3"))
                 )
         );
         List<FeatureStory> featureStoriesToNotBeCreated = List.of(
                 new FeatureStory("Story Exists - Do Not Create",
                         new Jira("some ticket", "some link"),
-                        List.of(new Tdd.Id("TDD 2.0")),
+                        List.of(new TddId("TDD 2.0")),
                         List.of(new FunctionalRequirement.Id("FUNC REQ"))
                 )
         );

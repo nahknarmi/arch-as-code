@@ -3,6 +3,8 @@ package net.trilogy.arch.annotators;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.c4.C4Component;
@@ -40,7 +42,7 @@ public class ArchitectureUpdateAnnotator {
                 return c;
             }
             Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c4c.getPath().getPath().equals(c.getComponentPath())).findFirst();
-            return c4Component.map(component -> new TddContainerByComponent(new Tdd.ComponentReference(component.getId()), c.getComponentPath(), c.isDeleted(), c.getTdds())).orElse(c);
+            return c4Component.map(component -> new TddContainerByComponent(new TddComponentReference(component.getId()), c.getComponentPath(), c.isDeleted(), c.getTdds())).orElse(c);
         }).collect(toList());
     }
 
@@ -69,7 +71,7 @@ public class ArchitectureUpdateAnnotator {
                 .isEmpty();
     }
 
-    private Tdd addFileNameToTdd(Tdd.ComponentReference id, Map.Entry<Tdd.Id, Tdd> pair, List<TddContent> tddContents) {
+    private Tdd addFileNameToTdd(TddComponentReference id, Map.Entry<TddId, Tdd> pair, List<TddContent> tddContents) {
         String tddId = pair.getKey().toString();
         Tdd tdd = pair.getValue();
         if (id == null) {

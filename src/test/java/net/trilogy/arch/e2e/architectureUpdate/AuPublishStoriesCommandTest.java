@@ -15,6 +15,7 @@ import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -417,13 +418,13 @@ public class AuPublishStoriesCommandTest {
                         "story that should be created",
                         List.of(
                                 new JiraStory.JiraTdd(
-                                        new Tdd.Id("[SAMPLE-TDD-ID]"),
+                                        new TddId("[SAMPLE-TDD-ID]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/Reset Password Controller",
                                         null
                                 ),
                                 new JiraStory.JiraTdd(
-                                        new Tdd.Id("[SAMPLE-TDD-ID-2]"),
+                                        new TddId("[SAMPLE-TDD-ID-2]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/E-mail Component",
                                         null
@@ -435,7 +436,7 @@ public class AuPublishStoriesCommandTest {
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                                List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                                                List.of(new TddId("[SAMPLE-TDD-ID]"))
                                         )
                                 )
                         )
@@ -444,7 +445,7 @@ public class AuPublishStoriesCommandTest {
                         "story that failed to be created",
                         List.of(
                                 new JiraStory.JiraTdd(
-                                        new Tdd.Id("[SAMPLE-TDD-ID]"),
+                                        new TddId("[SAMPLE-TDD-ID]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/Reset Password Controller",
                                         null
@@ -456,7 +457,7 @@ public class AuPublishStoriesCommandTest {
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                                List.of(new Tdd.Id("[SAMPLE-TDD-ID]"))
+                                                List.of(new TddId("[SAMPLE-TDD-ID]"))
                                         )
                                 )
                         )
@@ -473,7 +474,7 @@ public class AuPublishStoriesCommandTest {
                         "story that should be created",
                         List.of(
                                 new JiraStory.JiraTdd(
-                                        new Tdd.Id("TDD 1.0"),
+                                        new TddId("TDD 1.0"),
                                         tdd,
                                         "c4://Internet Banking System/API Application/Sign In Controller",
                                         tddContent
@@ -485,7 +486,7 @@ public class AuPublishStoriesCommandTest {
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                                List.of(new Tdd.Id("TDD 1.0"))
+                                                List.of(new TddId("TDD 1.0"))
                                         )
                                 )
                         )

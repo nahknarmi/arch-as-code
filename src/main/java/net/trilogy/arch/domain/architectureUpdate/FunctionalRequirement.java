@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 
 import java.util.List;
 
@@ -20,20 +21,20 @@ public class FunctionalRequirement {
     @JsonProperty(value = "source")
     private final String source;
     @JsonProperty(value = "tdd-references")
-    private final List<Tdd.Id> tddReferences;
+    private final List<TddId> tddReferences;
 
     @JsonCreator(mode = PROPERTIES)
     public FunctionalRequirement(
             @JsonProperty("text") String text,
             @JsonProperty("source") String source,
-            @JsonProperty("tdd-references") List<Tdd.Id> tddReferences) {
+            @JsonProperty("tdd-references") List<TddId> tddReferences) {
         this.text = text;
         this.source = source;
         this.tddReferences = tddReferences;
     }
 
     public static FunctionalRequirement blank() {
-        return new FunctionalRequirement("[SAMPLE REQUIREMENT TEXT]", "[SAMPLE REQUIREMENT SOURCE TEXT]", List.of(Tdd.Id.blank()));
+        return new FunctionalRequirement("[SAMPLE REQUIREMENT TEXT]", "[SAMPLE REQUIREMENT SOURCE TEXT]", List.of(TddId.blank()));
     }
 
     @EqualsAndHashCode

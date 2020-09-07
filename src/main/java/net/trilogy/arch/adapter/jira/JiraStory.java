@@ -9,6 +9,7 @@ import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
@@ -97,14 +98,14 @@ public class JiraStory {
     @EqualsAndHashCode
     @RequiredArgsConstructor
     public static class JiraTdd {
-        private final Tdd.Id id;
+        private final TddId id;
         private final Tdd tdd;
         @Getter
         private final String componentPath;
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd constructFrom(Tdd.Id id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
+        public static JiraTdd constructFrom(TddId id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
             if (tddContents == null) tddContents = Collections.emptyList();
 
             Optional<TddContent> tddContent = tddContents.stream()

@@ -5,6 +5,8 @@ import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStruct
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
@@ -45,7 +47,7 @@ public class ArchitectureUpdateAnnotatorTest {
         ArchitectureUpdate au = ArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(
-                        List.of(new TddContainerByComponent(new Tdd.ComponentReference("13"), null, false, Map.of()))
+                        List.of(new TddContainerByComponent(new TddComponentReference("13"), null, false, Map.of()))
                 )
                 .build();
 
@@ -69,14 +71,14 @@ public class ArchitectureUpdateAnnotatorTest {
     public void shouldAnnotateComponentPathWhenIdsAreFound() throws Exception {
         // GIVEN
         TddContainerByComponent firstComponent = new TddContainerByComponent(
-                new Tdd.ComponentReference("13"),
+                new TddComponentReference("13"),
                 null, false,
-                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                Map.of(new TddId("TDD 1.0"), new Tdd(null, null))
         );
         TddContainerByComponent secondComponent = new TddContainerByComponent(
-                new Tdd.ComponentReference("14"),
+                new TddComponentReference("14"),
                 null, false,
-                Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+                Map.of(new TddId("TDD 2.0"), new Tdd(null, null))
         );
 
         List<TddContainerByComponent> tddContainers = List.of(
@@ -98,9 +100,9 @@ public class ArchitectureUpdateAnnotatorTest {
         // GIVEN
         List<TddContainerByComponent> tddContainers = List.of(
                 new TddContainerByComponent(
-                        new Tdd.ComponentReference("Non Existing"),
+                        new TddComponentReference("Non Existing"),
                         null, false,
-                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))
                 )
         );
         ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
@@ -119,13 +121,13 @@ public class ArchitectureUpdateAnnotatorTest {
                 null,
                 "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller",
                 false,
-                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                Map.of(new TddId("TDD 1.0"), new Tdd(null, null))
         );
         TddContainerByComponent secondComponent = new TddContainerByComponent(
                 null,
                 "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Reset Password Controller",
                 false,
-                Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+                Map.of(new TddId("TDD 2.0"), new Tdd(null, null))
         );
         List<TddContainerByComponent> tddContainers = List.of(
                 firstComponent,
@@ -150,7 +152,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         null,
                         "Non existing path",
                         false,
-                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))
                 )
         );
         ArchitectureUpdate au = getAuWith(List.of(), tddContainers);
@@ -172,14 +174,14 @@ public class ArchitectureUpdateAnnotatorTest {
         );
         List<TddContainerByComponent> tddContainers = List.of(
                 new TddContainerByComponent(
-                        new Tdd.ComponentReference("100"),
+                        new TddComponentReference("100"),
                         null, false,
-                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null))
+                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))
                 ),
                 new TddContainerByComponent(
-                        new Tdd.ComponentReference("200"),
+                        new TddComponentReference("200"),
                         null, false,
-                        Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, null))
+                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null))
                 )
         );
         ArchitectureUpdate au = getAuWith(tddContents, tddContainers);
@@ -192,14 +194,14 @@ public class ArchitectureUpdateAnnotatorTest {
                 .tddContainersByComponent(
                         List.of(
                                 new TddContainerByComponent(
-                                        new Tdd.ComponentReference("100"),
+                                        new TddComponentReference("100"),
                                         null, false,
-                                        Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt"))
+                                        Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt"))
                                 ),
                                 new TddContainerByComponent(
-                                        new Tdd.ComponentReference("200"),
+                                        new TddComponentReference("200"),
                                         null, false,
-                                        Map.of(new Tdd.Id("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt"))
+                                        Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt"))
                                 )
                         )
                 ).build();
@@ -217,12 +219,12 @@ public class ArchitectureUpdateAnnotatorTest {
                 new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt")
         );
         List<TddContainerByComponent> tddContainers = List.of(new TddContainerByComponent(
-                        new Tdd.ComponentReference("13"),
+                        new TddComponentReference("13"),
                         null, false,
                         Map.of(
-                                new Tdd.Id("TDD 1.0"), new Tdd(null, null),
-                                new Tdd.Id("TDD 1.1"), new Tdd("text", null),
-                                new Tdd.Id("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")
+                                new TddId("TDD 1.0"), new Tdd(null, null),
+                                new TddId("TDD 1.1"), new Tdd("text", null),
+                                new TddId("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")
                         )
                 )
         );
@@ -235,11 +237,11 @@ public class ArchitectureUpdateAnnotatorTest {
         ArchitectureUpdate expectedAu = au.toBuilder()
                 .tddContainersByComponent(
                         List.of(new TddContainerByComponent(
-                                new Tdd.ComponentReference("13"),
+                                new TddComponentReference("13"),
                                 null, false,
-                                Map.of(new Tdd.Id("TDD 1.0"), new Tdd(null, null),
-                                        new Tdd.Id("TDD 1.1"), new Tdd("text", null),
-                                        new Tdd.Id("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")))
+                                Map.of(new TddId("TDD 1.0"), new Tdd(null, null),
+                                        new TddId("TDD 1.1"), new Tdd("text", null),
+                                        new TddId("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")))
                         )
                 ).build();
 

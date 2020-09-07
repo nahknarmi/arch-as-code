@@ -47,20 +47,20 @@ public class Tdd {
     }
 
     @EqualsAndHashCode
-    public static class Id implements EntityReference {
+    public static class TddId implements EntityReference {
         @JsonValue
         private final String id;
 
-        public Id(String id) {
+        public TddId(String id) {
             this.id = id;
         }
 
-        public static Id blank() {
-            return new Id("[SAMPLE-TDD-ID]");
+        public static TddId blank() {
+            return new TddId("[SAMPLE-TDD-ID]");
         }
 
-        public static Id noPr() {
-            return new Id("no-PR");
+        public static TddId noPr() {
+            return new TddId("no-PR");
         }
 
         public String toString() {
@@ -70,13 +70,13 @@ public class Tdd {
 
     @RequiredArgsConstructor
     @EqualsAndHashCode
-    public static class ComponentReference implements EntityReference {
+    public static class TddComponentReference implements EntityReference {
         @JsonValue
         @Getter
         private final String id;
 
-        public static ComponentReference blank() {
-            return new ComponentReference("[SAMPLE-COMPONENT-ID]");
+        public static TddComponentReference blank() {
+            return new TddComponentReference("[SAMPLE-COMPONENT-ID]");
         }
 
         public String toString() {

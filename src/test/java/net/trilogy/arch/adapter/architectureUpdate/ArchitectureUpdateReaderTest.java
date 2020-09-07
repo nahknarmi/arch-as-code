@@ -3,6 +3,7 @@ package net.trilogy.arch.adapter.architectureUpdate;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
@@ -69,7 +70,7 @@ public class ArchitectureUpdateReaderTest {
 
         assertThat(tddContainerByComponent.getComponentId().getId(), equalTo("16"));
         assertThat(tddContainerByComponent.getTdds().entrySet().size(), equalTo(3));
-        Tdd tdd = tddContainerByComponent.getTdds().get(new Tdd.Id("TDD 1.2"));
+        Tdd tdd = tddContainerByComponent.getTdds().get(new TddId("TDD 1.2"));
         assertTrue(tdd.getContent().isPresent());
     }
 }

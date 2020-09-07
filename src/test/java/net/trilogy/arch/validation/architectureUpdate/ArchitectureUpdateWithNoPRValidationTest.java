@@ -5,11 +5,14 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
 import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
@@ -41,8 +44,8 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .decisions(
                         Map.of(
-                                new Decision.Id("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new Tdd.Id("no-PR"))),
-                                new Decision.Id("second Decision"), new Decision("Decision Text", List.of(new Tdd.Id("no-PR")))
+                                new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"))),
+                                new DecisionId("second Decision"), new Decision("Decision Text", List.of(new TddId("no-PR")))
                         )
                 ).build();
 
@@ -56,7 +59,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .decisions(
                         Map.of(
-                                new Decision.Id("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new Tdd.Id("no-PR")))
+                                new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR")))
                         )
                 ).build();
 
@@ -70,13 +73,13 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .decisions(
                         Map.of(
-                                new Decision.Id("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new Tdd.Id("no-PR"), Tdd.Id.blank()))
+                                new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"), TddId.blank()))
                         )
                 )
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
-                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
+                        new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(Tdd.Id.blank(), new Tdd("text", null))
+                        Map.of(TddId.blank(), new Tdd("text", null))
                 )))
                 .build();
 
@@ -95,14 +98,14 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 Epic.blank(),
                                 List.of(
                                         new FeatureStory(
-                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.noPr()),
+                                                "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         ),
-                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(Tdd.Id.noPr()),
+                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.noPr()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         ),
                                         new FeatureStory(
-                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.blank()),
+                                                "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         )
                                 )
@@ -122,11 +125,11 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 Epic.blank(),
                                 List.of(
                                         new FeatureStory(
-                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.noPr()),
+                                                "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         ),
                                         new FeatureStory(
-                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.blank()),
+                                                "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         )
                                 )
@@ -146,18 +149,18 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 Epic.blank(),
                                 List.of(
                                         new FeatureStory(
-                                                "Feat Title 1", Jira.blank(), List.of(Tdd.Id.noPr(), Tdd.Id.blank()),
+                                                "Feat Title 1", Jira.blank(), List.of(TddId.noPr(), TddId.blank()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         ),
-                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(Tdd.Id.blank()),
+                                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
                                                 List.of(FunctionalRequirement.Id.blank())
                                         )
                                 )
                         ))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
-                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
+                        new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(Tdd.Id.blank(), new Tdd("text", null))
+                        Map.of(TddId.blank(), new Tdd("text", null))
                 )))
                 .build();
 
@@ -174,7 +177,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                 .functionalRequirements(
                         Map.of(
                                 FunctionalRequirement.Id.blank(),
-                                new FunctionalRequirement("Text", "Source", List.of(Tdd.Id.noPr()))
+                                new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))
                         )
                 ).build();
 
@@ -189,7 +192,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                 .functionalRequirements(
                         Map.of(
                                 FunctionalRequirement.Id.blank(),
-                                new FunctionalRequirement("Text", "Source", List.of(Tdd.Id.noPr()))
+                                new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))
                         )
                 ).build();
 
@@ -204,12 +207,12 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                 .functionalRequirements(
                         Map.of(
                                 FunctionalRequirement.Id.blank(),
-                                new FunctionalRequirement("Text", "Source", List.of(Tdd.Id.noPr(), Tdd.Id.blank()))
+                                new FunctionalRequirement("Text", "Source", List.of(TddId.noPr(), TddId.blank()))
                         ))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
-                        new Tdd.ComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
+                        new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(Tdd.Id.blank(), new Tdd("text", null))
+                        Map.of(TddId.blank(), new Tdd("text", null))
                 )))
                 .build();
 

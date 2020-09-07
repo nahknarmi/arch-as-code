@@ -8,7 +8,8 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Decision;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class GoogleDocumentReaderTest {
 
         assertThat(
                 result.getDecisions(),
-                Matchers.hasEntry(new Decision.Id(requirementId), new Decision(requirement, List.of(Tdd.Id.blank())))
+                Matchers.hasEntry(new DecisionId(requirementId), new Decision(requirement, List.of(TddId.blank())))
         );
     }
 
@@ -88,8 +89,8 @@ public class GoogleDocumentReaderTest {
         List<String> expected = List.of("P2 IFD 1", "P2 IFD 2", "P2 IFD 3", "P2 ITD 4", "P1 ITD 4.1", "P2 ITD 5", "P1 ITD 5.1");
 
         int count = 0;
-        for (Map.Entry<Decision.Id, Decision> entry : result.getDecisions().entrySet()) {
-            Decision.Id k = entry.getKey();
+        for (Map.Entry<DecisionId, Decision> entry : result.getDecisions().entrySet()) {
+            DecisionId k = entry.getKey();
             assertThat(expected.get(count), equalTo(k.toString()));
             count++;
         }

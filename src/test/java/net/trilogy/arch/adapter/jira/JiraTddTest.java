@@ -1,6 +1,7 @@
 package net.trilogy.arch.adapter.jira;
 
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class JiraTddTest {
     @Test
     public void shouldReturnInlinedTddContent() {
         JiraTdd tdd = new JiraTdd(
-                new Tdd.Id("TDD 1.1"),
+                new TddId("TDD 1.1"),
                 new Tdd("text", null),
                 "c4://path",
                 null
@@ -31,7 +32,7 @@ public class JiraTddTest {
     @Test
     public void shouldReturnFileTddContent() {
         JiraTdd tdd = new JiraTdd(
-                new Tdd.Id("TDD 1.1"),
+                new TddId("TDD 1.1"),
                 new Tdd(null, "TDD 1.1 : Component-10.md"),
                 "c4://path",
                 new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
@@ -44,7 +45,7 @@ public class JiraTddTest {
     @Test
     public void shouldReturnFileTddContentIfTddOmitsFile() {
         JiraTdd tdd = new JiraTdd(
-                new Tdd.Id("TDD 1.1"),
+                new TddId("TDD 1.1"),
                 new Tdd("ignored text", null),
                 "c4://path",
                 new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
@@ -56,7 +57,7 @@ public class JiraTddTest {
     @Test
     public void shouldReturnFileTddContentIfBothPresent() {
         JiraTdd tdd = new JiraTdd(
-                new Tdd.Id("TDD 1.1"),
+                new TddId("TDD 1.1"),
                 new Tdd("ignored text", "TDD 1.1 : Component-10.md"),
                 "c4://path",
                 new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
@@ -69,7 +70,7 @@ public class JiraTddTest {
     public void shouldConstructJiraTddFromAuTddContents() {
         TddContent correctContent = new TddContent("correct content", "TDD 2.0 : Component-10.md");
         JiraTdd tdd = JiraTdd.constructFrom(
-                new Tdd.Id("TDD 2.0"),
+                new TddId("TDD 2.0"),
                 new Tdd("ignored content", "TDD 2.0 : Component-10.md"),
                 "c4://path",
                 List.of(
@@ -93,7 +94,7 @@ public class JiraTddTest {
     public void shouldConstructJiraTddFromAuTddContentsEvenIfFileOmitted() {
         TddContent correctContent = new TddContent("correct content", "TDD 2.0 : Component-10.md");
         JiraTdd tdd = JiraTdd.constructFrom(
-                new Tdd.Id("TDD 2.0"),
+                new TddId("TDD 2.0"),
                 new Tdd("ignored content", null),
                 "10",
                 List.of(
@@ -116,7 +117,7 @@ public class JiraTddTest {
     @Test
     public void shouldConstructJiraTddFromEmptyAuTddContents() {
         JiraTdd tdd = JiraTdd.constructFrom(
-                new Tdd.Id("TDD 2.0"),
+                new TddId("TDD 2.0"),
                 new Tdd("text", null),
                 "10",
                 List.of(),

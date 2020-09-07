@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "milestone-dependencies")
     private final List<MilestoneDependency> milestoneDependencies;
     @JsonProperty(value = "decisions")
-    private final Map<Decision.Id, Decision> decisions;
+    private final Map<DecisionId, Decision> decisions;
     @JsonProperty(value = "tdds-per-component")
     private final List<TddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements")
@@ -69,7 +70,7 @@ public class ArchitectureUpdate {
             @JsonProperty("milestone") String milestone,
             @JsonProperty("authors") List<Person> authors,
             @JsonProperty("PCAs") List<Person> PCAs,
-            @JsonProperty("decisions") Map<Decision.Id, Decision> decisions,
+            @JsonProperty("decisions") Map<DecisionId, Decision> decisions,
             @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
             @JsonProperty("functional-requirements") Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements,
             @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
@@ -100,7 +101,7 @@ public class ArchitectureUpdate {
                 .milestone("[SAMPLE MILESTONE]")
                 .authors(List.of(Person.blank()))
                 .PCAs(List.of(Person.blank()))
-                .decisions(Map.of(Decision.Id.blank(), Decision.blank()))
+                .decisions(Map.of(DecisionId.blank(), Decision.blank()))
                 .tddContainersByComponent(List.of(TddContainerByComponent.blank()))
                 .functionalRequirements(Map.of(FunctionalRequirement.Id.blank(), FunctionalRequirement.blank()))
                 .capabilityContainer(CapabilitiesContainer.blank())

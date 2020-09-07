@@ -5,6 +5,8 @@ import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.diff.Diff;
@@ -84,14 +86,14 @@ public class DiffCommandTest {
         componentLevelDiffs.add(c3);
 
         ArrayList<TddContainerByComponent> componentTdds = new ArrayList<>();
-        HashMap<Tdd.Id, Tdd> c1Tdds = new HashMap<>();
-        c1Tdds.put(new Tdd.Id("123"), new Tdd("123 text", null));
-        c1Tdds.put(new Tdd.Id("456"), new Tdd("456 text", null));
-        componentTdds.add(TddContainerByComponent.builder().componentId(new Tdd.ComponentReference("c1")).tdds(c1Tdds).build());
+        HashMap<TddId, Tdd> c1Tdds = new HashMap<>();
+        c1Tdds.put(new TddId("123"), new Tdd("123 text", null));
+        c1Tdds.put(new TddId("456"), new Tdd("456 text", null));
+        componentTdds.add(TddContainerByComponent.builder().componentId(new TddComponentReference("c1")).tdds(c1Tdds).build());
 
-        HashMap<Tdd.Id, Tdd> c2Tdds = new HashMap<>();
-        c2Tdds.put(new Tdd.Id("789"), new Tdd("789 text", null));
-        componentTdds.add(TddContainerByComponent.builder().componentId(new Tdd.ComponentReference("c2")).tdds(c2Tdds).build());
+        HashMap<TddId, Tdd> c2Tdds = new HashMap<>();
+        c2Tdds.put(new TddId("789"), new Tdd("789 text", null));
+        componentTdds.add(TddContainerByComponent.builder().componentId(new TddComponentReference("c2")).tdds(c2Tdds).build());
 
         diffCommand.connectToTdds(componentLevelDiffs, Optional.of(ArchitectureUpdate.builder().tddContainersByComponent(componentTdds).build()));
 
