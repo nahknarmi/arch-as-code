@@ -8,6 +8,7 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
@@ -137,7 +138,7 @@ public class JiraStory {
     @EqualsAndHashCode
     @RequiredArgsConstructor
     public static class JiraFunctionalRequirement {
-        private final FunctionalRequirement.Id id;
+        private final FunctionalRequirementId id;
         private final FunctionalRequirement functionalRequirement;
 
         public String getId() {

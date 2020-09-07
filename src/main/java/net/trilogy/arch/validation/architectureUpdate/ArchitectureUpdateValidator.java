@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
@@ -34,7 +34,7 @@ public class ArchitectureUpdateValidator {
 
     private final Set<TddId> allTddIdsInStories;
     private final List<TddId> allTddIds;
-    private final Set<FunctionalRequirement.Id> allFunctionalRequirementIds;
+    private final Set<FunctionalRequirementId> allFunctionalRequirementIds;
     private final Set<TddId> allTddIdsInDecisions;
     private final Set<TddId> allTddIdsInFunctionalRequirements;
     private final Set<C4Component> allComponents;
@@ -395,7 +395,7 @@ public class ArchitectureUpdateValidator {
                 .collect(toList());
     }
 
-    private Set<FunctionalRequirement.Id> getAllFunctionalRequirementIds() {
+    private Set<FunctionalRequirementId> getAllFunctionalRequirementIds() {
         return architectureUpdate.getFunctionalRequirements().keySet();
     }
 
@@ -416,7 +416,7 @@ public class ArchitectureUpdateValidator {
                 .collect(toSet());
     }
 
-    private Set<FunctionalRequirement.Id> getAllFunctionalRequirementsReferencedByStories() {
+    private Set<FunctionalRequirementId> getAllFunctionalRequirementsReferencedByStories() {
         return architectureUpdate.getCapabilityContainer()
                 .getFeatureStories().stream()
                 .flatMap(this::getStoryRequirementReferencesStream)
@@ -430,7 +430,7 @@ public class ArchitectureUpdateValidator {
         return story.getTddReferences().stream();
     }
 
-    private java.util.stream.Stream<FunctionalRequirement.Id> getStoryRequirementReferencesStream(FeatureStory story) {
+    private java.util.stream.Stream<FunctionalRequirementId> getStoryRequirementReferencesStream(FeatureStory story) {
         if (story.getRequirementReferences() == null)
             return java.util.stream.Stream.empty();
 

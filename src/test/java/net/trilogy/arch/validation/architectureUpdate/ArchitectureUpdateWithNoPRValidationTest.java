@@ -9,6 +9,7 @@ import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
@@ -99,14 +100,14 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 List.of(
                                         new FeatureStory(
                                                 "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         ),
                                         new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.noPr()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         ),
                                         new FeatureStory(
                                                 "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         )
                                 )
                         )
@@ -126,11 +127,11 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 List.of(
                                         new FeatureStory(
                                                 "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         ),
                                         new FeatureStory(
                                                 "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         )
                                 )
                         )
@@ -150,10 +151,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                                 List.of(
                                         new FeatureStory(
                                                 "Feat Title 1", Jira.blank(), List.of(TddId.noPr(), TddId.blank()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         ),
                                         new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
-                                                List.of(FunctionalRequirement.Id.blank())
+                                                List.of(FunctionalRequirementId.blank())
                                         )
                                 )
                         ))
@@ -176,7 +177,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .functionalRequirements(
                         Map.of(
-                                FunctionalRequirement.Id.blank(),
+                                FunctionalRequirementId.blank(),
                                 new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))
                         )
                 ).build();
@@ -191,7 +192,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .functionalRequirements(
                         Map.of(
-                                FunctionalRequirement.Id.blank(),
+                                FunctionalRequirementId.blank(),
                                 new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))
                         )
                 ).build();
@@ -206,7 +207,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .functionalRequirements(
                         Map.of(
-                                FunctionalRequirement.Id.blank(),
+                                FunctionalRequirementId.blank(),
                                 new FunctionalRequirement("Text", "Source", List.of(TddId.noPr(), TddId.blank()))
                         ))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
@@ -227,7 +228,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
         ArchitectureUpdate invalidAu = ArchitectureUpdate.builderPreFilledWithBlanks()
                 .functionalRequirements(
                         Map.of(
-                                FunctionalRequirement.Id.blank(),
+                                FunctionalRequirementId.blank(),
                                 new FunctionalRequirement("Text", "Source", null)
                         )
                 ).build();

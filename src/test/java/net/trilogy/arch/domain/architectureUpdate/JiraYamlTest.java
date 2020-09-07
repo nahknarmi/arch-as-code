@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class JiraJsonTest {
+public class JiraYamlTest {
     // Do not configure for YAML: round-tripping as JSON is enough. We're not
     // testing the Jackson library on JSON vs YAML serialization
     public static final ObjectMapper mapper = new ObjectMapper();

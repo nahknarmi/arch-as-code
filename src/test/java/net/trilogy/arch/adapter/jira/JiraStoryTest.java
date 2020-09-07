@@ -9,6 +9,7 @@ import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
@@ -57,7 +58,7 @@ public class JiraStoryTest {
                 ),
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
-                                new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                 new FunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
@@ -108,7 +109,7 @@ public class JiraStoryTest {
                 ),
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
-                                new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                 new FunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
@@ -221,7 +222,7 @@ public class JiraStoryTest {
                                                 "story title",
                                                 new Jira("", ""),
                                                 List.of(new TddId("TDD 1"), new TddId("TDD 3")),
-                                                List.of(FunctionalRequirement.Id.blank()))
+                                                List.of(FunctionalRequirementId.blank()))
                                 )
                         )
                 )
@@ -238,7 +239,7 @@ public class JiraStoryTest {
 
     private ArchitectureUpdate getAuWithInvalidRequirement() {
         return getAu().toBuilder().functionalRequirements(
-                Map.of(new FunctionalRequirement.Id("different id than the reference in the story"),
+                Map.of(new FunctionalRequirementId("different id than the reference in the story"),
                         new FunctionalRequirement("any text", "any source", List.of())))
                 .build();
     }

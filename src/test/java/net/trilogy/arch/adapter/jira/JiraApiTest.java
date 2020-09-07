@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
@@ -279,7 +280,7 @@ public class JiraApiTest {
         );
 
         var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 1"),
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 1"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 1",
                         "FUNCTIONAL REQUIREMENT SOURCE 1",
@@ -287,7 +288,7 @@ public class JiraApiTest {
                 )
         );
         var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 2"),
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 2"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 2",
                         "FUNCTIONAL REQUIREMENT SOURCE 2",
@@ -366,7 +367,7 @@ public class JiraApiTest {
         );
 
         var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 1"),
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 1"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 1",
                         "FUNCTIONAL REQUIREMENT SOURCE 1",
@@ -374,7 +375,7 @@ public class JiraApiTest {
                 )
         );
         var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirement.Id("FUNCTIONAL REQUIREMENT ID 2"),
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 2"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 2",
                         "FUNCTIONAL REQUIREMENT SOURCE 2",

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.EntityReference;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
@@ -76,7 +76,7 @@ public class ValidationError {
         );
     }
 
-    public static ValidationError forFunctionalRequirementsMustBeValidReferences(String storyTitle, FunctionalRequirement.Id id) {
+    public static ValidationError forFunctionalRequirementsMustBeValidReferences(String storyTitle, FunctionalRequirementId id) {
         return new ValidationError(
                 ValidationErrorType.INVALID_FUNCTIONAL_REQUIREMENT_REFERENCE_IN_STORY,
                 String.format("Story \"%s\" contains functional requirement reference \"%s\" that does not exist.", storyTitle, id.toString())
@@ -152,7 +152,7 @@ public class ValidationError {
     private static String getEntityTypeString(EntityReference entityId) {
         if (entityId instanceof TddId) {
             return "TDD";
-        } else if (entityId instanceof FunctionalRequirement.Id) {
+        } else if (entityId instanceof FunctionalRequirementId) {
             return "Functional Requirement";
         }
         return "Entity";

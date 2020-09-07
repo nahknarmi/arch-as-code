@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "tdds-per-component")
     private final List<TddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements")
-    private final Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements;
+    private final Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements;
     @JsonProperty(value = "capabilities")
     private final CapabilitiesContainer capabilityContainer;
 
@@ -72,7 +73,7 @@ public class ArchitectureUpdate {
             @JsonProperty("PCAs") List<Person> PCAs,
             @JsonProperty("decisions") Map<DecisionId, Decision> decisions,
             @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
-            @JsonProperty("functional-requirements") Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements,
+            @JsonProperty("functional-requirements") Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements,
             @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
             @JsonProperty("p2") P2 p2,
             @JsonProperty("p1") P1 p1,
@@ -103,7 +104,7 @@ public class ArchitectureUpdate {
                 .PCAs(List.of(Person.blank()))
                 .decisions(Map.of(DecisionId.blank(), Decision.blank()))
                 .tddContainersByComponent(List.of(TddContainerByComponent.blank()))
-                .functionalRequirements(Map.of(FunctionalRequirement.Id.blank(), FunctionalRequirement.blank()))
+                .functionalRequirements(Map.of(FunctionalRequirementId.blank(), FunctionalRequirement.blank()))
                 .capabilityContainer(CapabilitiesContainer.blank())
                 .p2(P2.blank())
                 .p1(P1.blank())

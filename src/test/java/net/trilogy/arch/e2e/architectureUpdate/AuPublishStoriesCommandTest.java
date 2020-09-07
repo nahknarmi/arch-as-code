@@ -13,6 +13,7 @@ import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
@@ -432,7 +433,7 @@ public class AuPublishStoriesCommandTest {
                         ),
                         List.of(
                                 new JiraStory.JiraFunctionalRequirement(
-                                        new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
@@ -453,7 +454,7 @@ public class AuPublishStoriesCommandTest {
                         ),
                         List.of(
                                 new JiraStory.JiraFunctionalRequirement(
-                                        new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
@@ -482,7 +483,7 @@ public class AuPublishStoriesCommandTest {
                         ),
                         List.of(
                                 new JiraStory.JiraFunctionalRequirement(
-                                        new FunctionalRequirement.Id("[SAMPLE-REQUIREMENT-ID]"),
+                                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                         new FunctionalRequirement(
                                                 "[SAMPLE REQUIREMENT TEXT]",
                                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",

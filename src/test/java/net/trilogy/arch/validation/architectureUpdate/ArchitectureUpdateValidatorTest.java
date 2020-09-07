@@ -9,6 +9,7 @@ import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.domain.architectureUpdate.Link;
 import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
@@ -119,7 +120,7 @@ public class ArchitectureUpdateValidatorTest {
     @Test
     public void shouldValidate_FunctionalRequirementsTddsMustBeValidReferences() {
         var invalidAu = builderPreFilledWithBlanks().functionalRequirements(Map.of(
-                new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"),
+                new FunctionalRequirementId("Bad-TDD-Functional-Requirement"),
                 new FunctionalRequirement("Text", "Source", List.of(
                         new TddId("BAD-TDD-ID-1"),
                         new TddId("BAD-TDD-ID-2")
@@ -129,8 +130,8 @@ public class ArchitectureUpdateValidatorTest {
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forTddsMustBeValidReferences(new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"), new TddId("BAD-TDD-ID-1")),
-                forTddsMustBeValidReferences(new FunctionalRequirement.Id("Bad-TDD-Functional-Requirement"), new TddId("BAD-TDD-ID-2")));
+                forTddsMustBeValidReferences(new FunctionalRequirementId("Bad-TDD-Functional-Requirement"), new TddId("BAD-TDD-ID-1")),
+                forTddsMustBeValidReferences(new FunctionalRequirementId("Bad-TDD-Functional-Requirement"), new TddId("BAD-TDD-ID-2")));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
@@ -302,13 +303,13 @@ public class ArchitectureUpdateValidatorTest {
                 List.of(
                         new FeatureStory(
                                 "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                List.of(new FunctionalRequirement.Id("Invalid-Functional-Requirement"))))))
+                                List.of(new FunctionalRequirementId("Invalid-Functional-Requirement"))))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forFunctionalRequirementsMustBeValidReferences("Feat Title 1", new FunctionalRequirement.Id("Invalid-Functional-Requirement")));
+                forFunctionalRequirementsMustBeValidReferences("Feat Title 1", new FunctionalRequirementId("Invalid-Functional-Requirement")));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
@@ -382,17 +383,17 @@ public class ArchitectureUpdateValidatorTest {
     @Test
     public void shouldValidate_FunctionalRequirementsMustHaveStories() {
         var invalidAu = builderPreFilledWithBlanks().functionalRequirements(Map.of(
-                new FunctionalRequirement.Id("Func-req-with-no-story-1"),
+                new FunctionalRequirementId("Func-req-with-no-story-1"),
                 new FunctionalRequirement("Text", "Source", List.of()),
-                new FunctionalRequirement.Id("Func-req-with-no-story-2"),
+                new FunctionalRequirementId("Func-req-with-no-story-2"),
                 new FunctionalRequirement("Text", "Source", List.of())))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forMustHaveStories(new FunctionalRequirement.Id("Func-req-with-no-story-1")),
-                forMustHaveStories(new FunctionalRequirement.Id("Func-req-with-no-story-2")));
+                forMustHaveStories(new FunctionalRequirementId("Func-req-with-no-story-1")),
+                forMustHaveStories(new FunctionalRequirementId("Func-req-with-no-story-2")));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }

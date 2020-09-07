@@ -38,16 +38,16 @@ public class FunctionalRequirement {
     }
 
     @EqualsAndHashCode
-    public static class Id implements EntityReference {
+    public static class FunctionalRequirementId implements EntityReference {
         @JsonValue
         private final String id;
 
-        public Id(String id) {
+        public FunctionalRequirementId(String id) {
             this.id = id;
         }
 
-        public static Id blank() {
-            return new Id("[SAMPLE-REQUIREMENT-ID]");
+        public static FunctionalRequirementId blank() {
+            return new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]");
         }
 
         public String toString() {
