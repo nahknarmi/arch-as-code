@@ -15,8 +15,6 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 import static org.junit.Assert.assertEquals;
 
 public class ArchitectureUpdateYamlTest {
-    // Do not configure for YAML: round-tripping as JSON is enough. We're not
-    // testing the Jackson library on JSON vs YAML serialization
     public static final ObjectMapper mapper = YAML_MAPPER;
 
     @Ignore("TODO: TDD contents get lost on round trip")

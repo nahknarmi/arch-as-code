@@ -49,14 +49,15 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     boolean tddValidation;
     @Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
     boolean capabilityValidation;
-    @Getter
-    @Spec
-    private CommandSpec spec;
     @Parameters(index = "0", description = "Directory name of architecture update to validate")
     private File architectureUpdateDirectory;
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
+
+    @Getter
+    @Spec
+    private CommandSpec spec;
 
     public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;

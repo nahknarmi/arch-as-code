@@ -1,6 +1,7 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
@@ -10,8 +11,8 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 @Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
+@RequiredArgsConstructor
 public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, DisplaysOutputMixin {
     private static final ArchitectureUpdateObjectMapper objectMapper = new ArchitectureUpdateObjectMapper();
     private final GoogleDocsAuthorizedApiFactory googleDocsApiFactory;
@@ -40,13 +42,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
 
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
-
-    public AuNewCommand(GoogleDocsAuthorizedApiFactory googleDocsApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
-        this.googleDocsApiFactory = googleDocsApiFactory;
-        this.filesFacade = filesFacade;
-        this.gitInterface = gitInterface;
-    }
+    private CommandSpec spec;
 
     @Override
     public Integer call() {
