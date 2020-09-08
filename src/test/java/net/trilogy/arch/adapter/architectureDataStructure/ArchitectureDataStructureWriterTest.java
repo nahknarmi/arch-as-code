@@ -10,10 +10,10 @@ import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
@@ -22,6 +22,7 @@ import static java.nio.file.Files.readAllLines;
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_GENERALLY;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.DocumentationSection.Format.ASCIIDOC;
 import static net.trilogy.arch.domain.DocumentationSection.Format.MARKDOWN;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -32,8 +33,8 @@ public class ArchitectureDataStructureWriterTest {
     @Test
     public void shouldWriteHumanReadableDates() throws Exception {
         final var existingYamlFile = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_GENERALLY).getPath());
-        final var dataStructure = new ArchitectureDataStructureObjectMapper().readValue(
-                new FilesFacade().readString(existingYamlFile.toPath()));
+        final var dataStructure = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(existingYamlFile.toPath()), ArchitectureDataStructure.class);
         final var writtenYamlFile = new ArchitectureDataStructureWriter(new FilesFacade()).export(dataStructure);
 
         extractDates(writtenYamlFile).forEach(this::parseDateAsIsoOrThrow);
@@ -59,8 +60,8 @@ public class ArchitectureDataStructureWriterTest {
     @Test
     public void shouldWriteTheSameYamlAsWhatWasRead() throws Exception {
         final var existingYamlFile = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES).getPath());
-        final var dataStructure = new ArchitectureDataStructureObjectMapper().readValue(
-                new FilesFacade().readString(existingYamlFile.toPath()));
+        final var dataStructure = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(existingYamlFile.toPath()), ArchitectureDataStructure.class);
         File writtenYamlFile = new ArchitectureDataStructureWriter(new FilesFacade()).export(dataStructure);
 
         assertYamlContentsEqual(writtenYamlFile, existingYamlFile);
@@ -158,16 +159,18 @@ public class ArchitectureDataStructureWriterTest {
         return s.replaceAll("^\"|\"$", "");
     }
 
-    private void assertYamlContentsEqual(File actual, File expected) throws Exception {
-        final var actualData = new ArchitectureDataStructureObjectMapper().readValue(
-                new FilesFacade().readString(actual.toPath()));
-        final var expectedData = new ArchitectureDataStructureObjectMapper().readValue(
-                new FilesFacade().readString(expected.toPath()));
+    private void assertYamlContentsEqual(File actual, File expected) throws IOException {
+        final var actualData = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(actual.toPath()), ArchitectureDataStructure.class);
+        final var expectedData = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(expected.toPath()), ArchitectureDataStructure.class);
 
         assertThat(actualData, is(equalTo(expectedData)));
     }
 
-    private ArchitectureDataStructure getArchWithDocumentation(List<DocumentationSection> documentationSections, List<DocumentationImage> documentationImages) {
+    private ArchitectureDataStructure getArchWithDocumentation(
+            List<DocumentationSection> documentationSections,
+            List<DocumentationImage> documentationImages) {
         return ArchitectureDataStructure.builder()
                 .name("name")
                 .businessUnit("businessUnit")

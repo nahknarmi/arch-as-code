@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
@@ -37,8 +36,6 @@ import static picocli.CommandLine.Spec;
 @Command(name = "validate", description = "Validate Architecture Update", mixinStandardHelpOptions = true)
 public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFromGitMixin, LoadArchitectureMixin, DisplaysErrorMixin, DisplaysOutputMixin {
     @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
-    @Getter
     private final FilesFacade filesFacade;
     @Getter
     private final GitInterface gitInterface;
@@ -62,7 +59,6 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
         this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 

@@ -1,7 +1,6 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -33,8 +32,6 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     private final JiraApiFactory jiraApiFactory;
     private final ArchitectureUpdateReader architectureUpdateReader;
     @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
-    @Getter
     private final FilesFacade filesFacade;
     @Getter
     private final GitInterface gitInterface;
@@ -60,7 +57,6 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         this.gitInterface = gitInterface;
         this.jiraApiFactory = jiraApiFactory;
         this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
     }
 
     public Integer call() {

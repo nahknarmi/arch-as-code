@@ -2,7 +2,6 @@ package net.trilogy.arch.e2e;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -22,6 +21,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 
 import static net.trilogy.arch.TestHelper.execute;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -196,11 +196,12 @@ public class DiffCommandE2ETest {
     }
 
     private void mockGitInterface() throws IOException, GitAPIException, GitInterface.BranchNotFoundException {
-        final String architectureAsString = new FilesFacade()
+        final var architectureAsString = new FilesFacade()
                 .readString(rootDir.toPath().resolve("product-architecture.yml"))
                 .replaceAll("id: \"16\"", "id: \"116\"");
-        final ArchitectureDataStructure dataStructure = new ArchitectureDataStructureObjectMapper()
-                .readValue(architectureAsString);
+        final var dataStructure = YAML_OBJECT_MAPPER
+                .readValue(architectureAsString, ArchitectureDataStructure.class);
+
         when(mockedGitInterface.load("master",
                 rootDir.toPath().resolve("product-architecture.yml"))).thenReturn(dataStructure);
     }

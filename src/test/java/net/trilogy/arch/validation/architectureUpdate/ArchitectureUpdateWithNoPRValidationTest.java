@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -33,10 +34,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Before
     public void setUp() throws IOException {
-        final String ValidArchAsString = new FilesFacade().readString(new File(
-                getClass().getResource(MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE).getPath()
-        ).toPath());
-        validDataStructure = new ArchitectureDataStructureObjectMapper().readValue(ValidArchAsString);
+        final var ValidArchAsString = new FilesFacade().readString(new File(
+                getClass().getResource(MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE).getPath())
+                .toPath());
+        validDataStructure = YAML_OBJECT_MAPPER.readValue(ValidArchAsString, ArchitectureDataStructure.class);
     }
 
     // Decisions

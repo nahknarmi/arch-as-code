@@ -2,7 +2,6 @@ package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -10,6 +9,7 @@ import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
+import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
@@ -463,10 +463,11 @@ public class AuPublishStoriesCommandTest {
 
     private void mockGitInterface() throws IOException, GitAPIException, GitInterface.BranchNotFoundException {
         when(mockedGitInterface.load("master", rootDir.toPath().resolve("product-architecture.yml"))).thenReturn(
-                new ArchitectureDataStructureObjectMapper().readValue(
+                YAML_OBJECT_MAPPER.readValue(
                         Files.readString(
                                 rootDir.toPath().resolve("product-architecture.yml"))
-                                .replaceAll("34", "DELETED-COMPONENT-ID")));
+                                .replaceAll("34", "DELETED-COMPONENT-ID"),
+                        ArchitectureDataStructure.class));
     }
 }
 

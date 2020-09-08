@@ -1,7 +1,6 @@
 package net.trilogy.arch.commands;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
@@ -27,14 +26,17 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "diff", mixinStandardHelpOptions = true, description = "Display the diff between product architecture in current branch and specified branch.")
-public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin, DisplaysErrorMixin {
+public class DiffCommand
+        implements Callable<Integer>,
+        LoadArchitectureMixin,
+        LoadArchitectureFromGitMixin,
+        DisplaysOutputMixin,
+        DisplaysErrorMixin {
     @Getter
     private final GitInterface gitInterface;
     @Getter
     private final FilesFacade filesFacade;
     private final GraphvizInterface graphvizInterface;
-    @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
 
     private final ArchitectureUpdateReader architectureUpdateReader;
 
@@ -60,7 +62,6 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
         this.graphvizInterface = graphvizInterface;
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
         this.architectureUpdateReader = architectureUpdateReader;
     }
 
@@ -119,10 +120,10 @@ public class DiffCommand implements Callable<Integer>, LoadArchitectureMixin, Lo
     void connectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
         if (architectureUpdate.isPresent()) {
             List<TddContainerByComponent> tddContainersByComponent = architectureUpdate.get().getTddContainersByComponent();
-            componentLevelDiffs.forEach(c -> {
-                String componentId = c.getElement().getId();
+            componentLevelDiffs.forEach(diff -> {
+                String componentId = diff.getElement().getId();
                 Optional<TddContainerByComponent> tddC = tddContainersByComponent.stream().filter(tC -> tC.getComponentId().getId().equalsIgnoreCase(componentId)).findFirst();
-                tddC.ifPresent(tddContainerByComponent -> c.getElement().setRelatedTdds(tddContainerByComponent.getTdds()));
+                tddC.ifPresent(tddContainerByComponent -> diff.getElement().setRelatedTdds(tddContainerByComponent.getTdds()));
             });
         }
     }

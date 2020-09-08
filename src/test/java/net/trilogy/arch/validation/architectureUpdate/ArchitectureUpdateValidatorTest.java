@@ -35,6 +35,7 @@ import java.util.Map;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.builderPreFilledWithBlanks;
 import static net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator.validate;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
@@ -68,15 +69,15 @@ public class ArchitectureUpdateValidatorTest {
 
     @Before
     public void setUp() throws IOException {
-        final String ValidArchAsString = new FilesFacade().readString(new File(
+        final var validArchAsString = new FilesFacade().readString(new File(
                 getClass().getResource(MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE).getPath())
                 .toPath());
-        validDataStructure = new ArchitectureDataStructureObjectMapper().readValue(ValidArchAsString);
+        validDataStructure = YAML_OBJECT_MAPPER.readValue(validArchAsString, ArchitectureDataStructure.class);
 
-        final String missingComponentArchAsString = new FilesFacade().readString(new File(
+        final var missingComponentArchAsString = new FilesFacade().readString(new File(
                 getClass().getResource(MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE).getPath())
                 .toPath());
-        hasMissingComponentDataStructure = new ArchitectureDataStructureObjectMapper().readValue(missingComponentArchAsString);
+        hasMissingComponentDataStructure = YAML_OBJECT_MAPPER.readValue(missingComponentArchAsString, ArchitectureDataStructure.class);
     }
 
     @Test

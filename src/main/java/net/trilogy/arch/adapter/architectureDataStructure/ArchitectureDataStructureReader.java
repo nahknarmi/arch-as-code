@@ -9,11 +9,6 @@ import java.io.IOException;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
-/**
- * This class is being strangle-patterned away. Use {@link
- * net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper
- * }
- */
 @Deprecated
 @RequiredArgsConstructor
 public class ArchitectureDataStructureReader {

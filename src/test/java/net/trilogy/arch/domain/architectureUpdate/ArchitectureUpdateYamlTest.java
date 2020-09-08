@@ -1,8 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
@@ -12,11 +10,10 @@ import org.junit.Test;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.junit.Assert.assertEquals;
 
 public class ArchitectureUpdateYamlTest {
-    public static final ObjectMapper mapper = ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-
     @Ignore("TODO: TDD contents get lost on round trip")
     @Test
     public void round_trips_to_and_from_yaml() throws JsonProcessingException {
@@ -90,7 +87,7 @@ public class ArchitectureUpdateYamlTest {
 
         assertEquals(
                 au,
-                mapper.readValue(mapper.writeValueAsString(au), ArchitectureUpdate.class)
+                YAML_OBJECT_MAPPER.readValue(YAML_OBJECT_MAPPER.writeValueAsString(au), ArchitectureUpdate.class)
         );
     }
 }

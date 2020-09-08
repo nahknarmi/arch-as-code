@@ -1,7 +1,6 @@
 package net.trilogy.arch.adapter.jira;
 
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
@@ -23,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
+import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -183,15 +185,16 @@ public class JiraStoryTest {
     private ArchitectureDataStructure getArchitectureBeforeAu() throws Exception {
         final String archAsString = new FilesFacade().readString(TestHelper.getPath(
                 getClass(),
-                TestHelper.MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
-        return new ArchitectureDataStructureObjectMapper().readValue(archAsString.replaceAll("29", "404"));
+                MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
+        return YAML_OBJECT_MAPPER.readValue(archAsString.replaceAll("29", "404"),
+                ArchitectureDataStructure.class);
     }
 
     private ArchitectureDataStructure getArchitectureAfterAu() throws Exception {
         final String archAsString = new FilesFacade().readString(TestHelper.getPath(
                 getClass(),
-                TestHelper.MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
-        return new ArchitectureDataStructureObjectMapper().readValue(archAsString);
+                MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
+        return YAML_OBJECT_MAPPER.readValue(archAsString, ArchitectureDataStructure.class);
     }
 
     private ArchitectureUpdate getAu() {
@@ -203,29 +206,21 @@ public class JiraStoryTest {
                                 Map.of(
                                         new TddId("TDD 1"), new Tdd("TDD 1 text", null),
                                         new TddId("TDD 2"), new Tdd("TDD 2 text", null),
-                                        new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null)
-                                )
-                        ),
+                                        new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
                         new TddContainerByComponent(
                                 new TddComponentReference("404"),
                                 null, true,
                                 Map.of(
                                         new TddId("TDD 3"), new Tdd("TDD 3 text", null),
-                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null)
-                                )
-                        )
-                ))
+                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null)))))
                 .capabilityContainer(new CapabilitiesContainer(
-                                Epic.blank(),
-                                List.of(
-                                        new FeatureStory(
-                                                "story title",
-                                                new Jira("", ""),
-                                                List.of(new TddId("TDD 1"), new TddId("TDD 3")),
-                                                List.of(FunctionalRequirementId.blank()))
-                                )
-                        )
-                )
+                        Epic.blank(),
+                        singletonList(
+                                new FeatureStory(
+                                        "story title",
+                                        new Jira("", ""),
+                                        List.of(new TddId("TDD 1"), new TddId("TDD 3")),
+                                        List.of(FunctionalRequirementId.blank())))))
                 .build();
     }
 

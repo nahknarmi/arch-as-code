@@ -1,7 +1,6 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter;
 import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
@@ -23,8 +22,6 @@ import java.util.concurrent.Callable;
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
     @Getter
     private final FilesFacade filesFacade;
-    @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     private final ArchitectureUpdateReader architectureUpdateReader;
     @Parameters(index = "0", description = "Directory name of architecture update to annotate")
     private File architectureUpdateDirectory;
@@ -37,7 +34,6 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
 
     public AuAnnotateCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
-        architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
         architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
