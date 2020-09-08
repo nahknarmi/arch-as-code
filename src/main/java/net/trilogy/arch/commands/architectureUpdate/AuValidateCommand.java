@@ -62,6 +62,14 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
+    public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface, CommandSpec spec, File architectureUpdateDirectory, File productArchitectureDirectory, String baseBranch) {
+        this(filesFacade, gitInterface);
+        this.spec = spec;
+        this.architectureUpdateDirectory = architectureUpdateDirectory;
+        this.productArchitectureDirectory = productArchitectureDirectory;
+        this.baseBranch = baseBranch;
+    }
+
     @Override
     public Integer call() {
         logArgs();

@@ -28,6 +28,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
+
     @Getter
     @Spec
     private CommandSpec spec;
@@ -35,6 +36,13 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
     public AuAnnotateCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
         architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+    }
+
+    public AuAnnotateCommand(FilesFacade filesFacade, CommandSpec spec, File architectureUpdateDirectory, File productArchitectureDirectory) {
+        this(filesFacade);
+        this.spec = spec;
+        this.architectureUpdateDirectory = architectureUpdateDirectory;
+        this.productArchitectureDirectory = productArchitectureDirectory;
     }
 
     @Override

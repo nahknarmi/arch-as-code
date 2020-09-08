@@ -64,14 +64,14 @@ functional-requirements:
     - no-PR
 capabilities:
   epic:
-    title: Please enter epic title from Jira
+    title: Use this epic to track Jira integration
     jira:
-      ticket: please-enter-epic-ticket-from-jira
-      link: Please enter epic link from Jira
+      ticket: AU-1
+      link: https://jira.devfactory.com/browse/AU-1
   feature-stories:
   - title: '[SAMPLE FEATURE STORY TITLE]'
     jira:
-      ticket: ""
+      ticket: Sample Ticket Contents with changes.
       link: ""
     tdd-references:
     - no-PR
