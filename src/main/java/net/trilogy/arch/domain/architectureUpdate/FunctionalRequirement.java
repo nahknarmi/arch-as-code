@@ -18,6 +18,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class FunctionalRequirement {
     @JsonProperty(value = "text")
     private final String text;
+    // TODO: What is source?  Is it a URI, free text?
     @JsonProperty(value = "source")
     private final String source;
     @JsonProperty(value = "tdd-references")

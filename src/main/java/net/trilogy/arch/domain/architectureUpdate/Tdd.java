@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class Tdd {
     @JsonProperty(value = "text")
     private final String text;
+    // TODO: Why isn't this a JDK Path object?
     @JsonProperty(value = "file")
     private final String file;
 

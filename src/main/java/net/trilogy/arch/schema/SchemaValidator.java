@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.util.Set;
 
 public class SchemaValidator {
-
     public static final String ARCH_DOC_SCHEMA = "schema/dataStructureSchema.json";
     public static final String ARCH_UPDATE_DOC_SCHEMA = "schema/architectureUpdateSchema.json";
 

@@ -1,7 +1,7 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
-import com.google.common.io.Files;
 import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Exclude;
 import lombok.Getter;
 import lombok.ToString;
 import net.trilogy.arch.facade.FilesFacade;
@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.google.common.io.Files.getFileExtension;
 
 @Getter
 @ToString
@@ -20,8 +22,9 @@ public class TddContent {
     private static final String REGEX = "(.*) : Component-([a-zA-Z\\d]+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
     private final String content;
+    // TODO: Why isn't this a JDK Path object?
     private final String filename;
-    @EqualsAndHashCode.Exclude
+    @Exclude
     private Matcher matcher;
 
     public TddContent(String content, String filename) {
@@ -33,7 +36,7 @@ public class TddContent {
         if (file == null) return false;
         if (file.isDirectory()) return false;
 
-        String fileExtension = Files.getFileExtension(file.getName());
+        String fileExtension = getFileExtension(file.getName());
 
         // Supported content types
         return fileExtension.equals("md") || fileExtension.equals("txt");

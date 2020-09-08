@@ -69,10 +69,14 @@ public class ArchitectureUpdate {
     public ArchitectureUpdate(
             @JsonProperty("name") String name,
             @JsonProperty("milestone") String milestone,
+            // TODO: Smell: Author and PCA persons are identical types
             @JsonProperty("authors") List<Person> authors,
             @JsonProperty("PCAs") List<Person> PCAs,
+            // TODO: Smell: Do decisions not know their ID?
             @JsonProperty("decisions") Map<DecisionId, Decision> decisions,
+            // TODO: Smell: The subtype is overly complex -- could the real type be passed in?
             @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
+            // TODO: Smell: Do func reqs not know their own ID?
             @JsonProperty("functional-requirements") Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements,
             @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
             @JsonProperty("p2") P2 p2,

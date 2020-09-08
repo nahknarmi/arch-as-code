@@ -17,6 +17,7 @@ public class Jira {
     @JsonProperty(value = "ticket")
     @NonNull
     private final String ticket;
+    // TODO: Should this be a JDK URI?
     @JsonProperty(value = "link")
     @NonNull
     private final String link;

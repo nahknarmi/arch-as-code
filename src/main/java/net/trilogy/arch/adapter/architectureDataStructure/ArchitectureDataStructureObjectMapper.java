@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 
 import javax.validation.constraints.NotNull;
@@ -19,17 +18,38 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.GETTER;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.IS_GETTER;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.MINIMIZE_QUOTES;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_LINES;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
 public class ArchitectureDataStructureObjectMapper {
+    public static final ObjectMapper YAML_MAPPER = yamlMapper();
     private final ObjectMapper mapper;
+
+    private static ObjectMapper yamlMapper() {
+        final var mapper = new ObjectMapper(new YAMLFactory()
+                .enable(MINIMIZE_QUOTES)
+                .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                .configure(SPLIT_LINES, false)
+                .disable(WRITE_DOC_START_MARKER));
+        mapper.setVisibility(FIELD, ANY);
+        mapper.setVisibility(GETTER, NONE);
+        mapper.setVisibility(IS_GETTER, NONE);
+        mapper.registerModule(dateSerializer());
+        mapper.registerModule(setSerializer());
+        mapper.setSerializationInclusion(NON_NULL);
+
+        return mapper;
+    }
 
     public ArchitectureDataStructureObjectMapper() {
         this.mapper = new ObjectMapper(
                 new YAMLFactory()
-                        .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-                        .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                        .configure(YAMLGenerator.Feature.SPLIT_LINES, false)
-                        .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+                        .enable(MINIMIZE_QUOTES)
+                        .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                        .configure(SPLIT_LINES, false)
+                        .disable(WRITE_DOC_START_MARKER)
         );
         this.mapper.setVisibility(FIELD, ANY);
         this.mapper.setVisibility(GETTER, NONE);
@@ -52,13 +72,13 @@ public class ArchitectureDataStructureObjectMapper {
         return this.mapper.readValue(architectureAsString, ArchitectureDataStructure.class);
     }
 
-    private SimpleModule dateSerializer() {
+    private static SimpleModule dateSerializer() {
         SimpleModule module = new SimpleModule();
         module.addSerializer(new DateSerializer(Date.class));
         return module;
     }
 
-    private SimpleModule setSerializer() {
+    private static SimpleModule setSerializer() {
         SimpleModule module = new SimpleModule();
         module.addSerializer(new SetSerializer(Set.class));
         return module;
