@@ -26,6 +26,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATE_FILE_NAME;
+
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
     private final JiraApiFactory jiraApiFactory;
@@ -84,11 +87,17 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
                 spec.commandLine().getErr(),
                 jiraApi.get());
 
-        var updatedAu = createStories(au.get(), beforeAuArchitecture.get(), afterAuArchitecture.get(), jiraService);
+        var updatedAu = createStories(
+                au.get(),
+                beforeAuArchitecture.get(),
+                afterAuArchitecture.get(),
+                jiraService);
         if (updatedAu.isEmpty()) return 1;
 
         try {
-            filesFacade.writeString(auPath.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), architectureUpdateObjectMapper.writeValueAsString(updatedAu.get()));
+            filesFacade.writeString(
+                    auPath.resolve(ARCHITECTURE_UPDATE_FILE_NAME),
+                    AU_OBJECT_MAPPER.writeValueAsString(updatedAu.get()));
         } catch (Exception e) {
             printError("Unable to write update to AU.", e);
             return 1;

@@ -22,23 +22,24 @@ public class ArchitectureUpdateWriterTest {
     @Test
     public void shouldWriteAuAndTddContentToAuDirectory() throws Exception {
         // Given
-        Path auDir = Files.createTempDirectory("aac");
-        String tddContentFilename = "TDD 1.0 : Component-100.md";
-        String tddContentFilename2 = "TDD 2.0 : Component-200.md";
-        String content = "## Title\n### Content\nLorem ipsum";
-        ArchitectureUpdate au = ArchitectureUpdate.blank().toBuilder()
+        final var auDir = Files.createTempDirectory("aac");
+        final var tddContentFilename = "TDD 1.0 : Component-100.md";
+        final var tddContentFilename2 = "TDD 2.0 : Component-200.md";
+        final var content = "## Title\n### Content\nLorem ipsum";
+        final var au = ArchitectureUpdate.blank().toBuilder()
                 .tddContents(List.of(
                         new TddContent(content, tddContentFilename),
-                        new TddContent("content", tddContentFilename2)
-                )).build();
+                        new TddContent("content", tddContentFilename2)))
+                .build();
 
         // When
         new ArchitectureUpdateWriter(new FilesFacade()).export(au, auDir);
 
         // Then
-        String tddContent = Files.readString(auDir.resolve(tddContentFilename));
-        String tddContents = Files.readString(auDir.resolve(tddContentFilename2));
-        String auAsString = Files.readString(auDir.resolve("architecture-update.yml"));
+        final var tddContent = Files.readString(auDir.resolve(tddContentFilename));
+        final var tddContents = Files.readString(auDir.resolve(tddContentFilename2));
+        final var auAsString = Files.readString(auDir.resolve("architecture-update.yml"));
+
         collector.checkThat(tddContent, equalTo(content));
         collector.checkThat(tddContents, equalTo("content"));
         collector.checkThat(auAsString, containsString("name: '[SAMPLE NAME]'\n"));
@@ -46,12 +47,12 @@ public class ArchitectureUpdateWriterTest {
 
     @Test
     public void shouldWriteAuWithoutTddContents() throws Exception {
-        Path auDir = Files.createTempDirectory("aac");
-        ArchitectureUpdate au = ArchitectureUpdate.blank();
+        final var auDir = Files.createTempDirectory("aac");
+        final var au = ArchitectureUpdate.blank();
 
         new ArchitectureUpdateWriter(new FilesFacade()).export(au, auDir);
 
-        List<String> files = Files.list(auDir)
+        final var files = Files.list(auDir)
                 .map(path -> path.getFileName().toString())
                 .collect(toList());
 

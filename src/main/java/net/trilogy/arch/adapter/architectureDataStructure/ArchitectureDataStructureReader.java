@@ -1,5 +1,6 @@
 package net.trilogy.arch.adapter.architectureDataStructure;
 
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 
@@ -12,13 +13,9 @@ import java.io.IOException;
  * }
  */
 @Deprecated
+@RequiredArgsConstructor
 public class ArchitectureDataStructureReader {
-
-    final private FilesFacade filesFacade;
-
-    public ArchitectureDataStructureReader(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-    }
+    private final FilesFacade filesFacade;
 
     public ArchitectureDataStructure load(File manifest) throws IOException {
         final String archAsString = filesFacade.readString(manifest.toPath());

@@ -201,12 +201,11 @@ public class AuNewCommandTest {
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(Files.exists(auFile), is(true));
+        new ArchitectureUpdateObjectMapper();
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
                 equalTo(
-                        new ArchitectureUpdateObjectMapper().writeValueAsString(
-                                ArchitectureUpdate.builderPreFilledWithBlanks().name("au-name").build()
-                        )
+                        ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER.writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name("au-name").build())
                 )
         );
     }
@@ -232,12 +231,11 @@ public class AuNewCommandTest {
         // Then
         collector.checkThat(exitCode, is(equalTo(0)));
         collector.checkThat(Files.exists(auFile), is(true));
+        new ArchitectureUpdateObjectMapper();
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
                 equalTo(
-                        new ArchitectureUpdateObjectMapper().writeValueAsString(
-                                ArchitectureUpdate.builderPreFilledWithBlanks().name(auName).build()
-                        )
+                        ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER.writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name(auName).build())
                 )
         );
     }

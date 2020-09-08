@@ -24,10 +24,9 @@ import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
 public class ArchitectureDataStructureObjectMapper {
-    public static final ObjectMapper YAML_MAPPER = yamlMapper();
-    private final ObjectMapper mapper;
+    public static final ObjectMapper ADS_OBJECT_MAPPER = createObjectMapper();
 
-    private static ObjectMapper yamlMapper() {
+    private static ObjectMapper createObjectMapper() {
         final var mapper = new ObjectMapper(new YAMLFactory()
                 .enable(MINIMIZE_QUOTES)
                 .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
@@ -43,43 +42,27 @@ public class ArchitectureDataStructureObjectMapper {
         return mapper;
     }
 
-    public ArchitectureDataStructureObjectMapper() {
-        this.mapper = new ObjectMapper(
-                new YAMLFactory()
-                        .enable(MINIMIZE_QUOTES)
-                        .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                        .configure(SPLIT_LINES, false)
-                        .disable(WRITE_DOC_START_MARKER)
-        );
-        this.mapper.setVisibility(FIELD, ANY);
-        this.mapper.setVisibility(GETTER, NONE);
-        this.mapper.setVisibility(IS_GETTER, NONE);
-        this.mapper.registerModule(dateSerializer());
-        this.mapper.registerModule(setSerializer());
-        this.mapper.setSerializationInclusion(NON_NULL);
-    }
-
     public String writeValueAsString(ArchitectureDataStructure value) throws IOException {
-        return this.mapper.writeValueAsString(value);
+        return ADS_OBJECT_MAPPER.writeValueAsString(value);
     }
 
     public JsonNode readTree(@NotNull InputStream in) throws IOException {
-        return this.mapper.readTree(in);
+        return ADS_OBJECT_MAPPER.readTree(in);
     }
 
     public ArchitectureDataStructure readValue(String architectureAsString) throws IOException {
         // TODO [ENHANCEMENT] [OPTIONAL]: Generate paths if they don't exist
-        return this.mapper.readValue(architectureAsString, ArchitectureDataStructure.class);
+        return ADS_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }
 
     private static SimpleModule dateSerializer() {
-        SimpleModule module = new SimpleModule();
+        final var module = new SimpleModule();
         module.addSerializer(new DateSerializer(Date.class));
         return module;
     }
 
     private static SimpleModule setSerializer() {
-        SimpleModule module = new SimpleModule();
+        final var module = new SimpleModule();
         module.addSerializer(new SetSerializer(Set.class));
         return module;
     }

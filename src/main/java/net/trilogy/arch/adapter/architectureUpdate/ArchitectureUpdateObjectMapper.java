@@ -1,13 +1,7 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-
-import java.io.IOException;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -15,30 +9,28 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.GETTER;
 import static com.fasterxml.jackson.annotation.PropertyAccessor.IS_GETTER;
+import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.MINIMIZE_QUOTES;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_LINES;
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
 public class ArchitectureUpdateObjectMapper {
-    private final ObjectMapper mapper;
+    public static final ObjectMapper AU_OBJECT_MAPPER;
 
-    public ArchitectureUpdateObjectMapper() {
-        this.mapper = new ObjectMapper(
+    static {
+        final var initMapper = new ObjectMapper(
                 new YAMLFactory()
-                        .configure(YAMLGenerator.Feature.SPLIT_LINES, false)
-                        .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-                        .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                        .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-                        .configure(JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true)
-        );
-        this.mapper.setVisibility(FIELD, ANY);
-        this.mapper.setVisibility(GETTER, NONE);
-        this.mapper.setVisibility(IS_GETTER, NONE);
-        this.mapper.setSerializationInclusion(NON_NULL);
-    }
+                        .configure(SPLIT_LINES, false)
+                        .enable(MINIMIZE_QUOTES)
+                        .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                        .disable(WRITE_DOC_START_MARKER)
+                        .configure(STRICT_DUPLICATE_DETECTION, true));
+        initMapper.setVisibility(FIELD, ANY);
+        initMapper.setVisibility(GETTER, NONE);
+        initMapper.setVisibility(IS_GETTER, NONE);
+        initMapper.setSerializationInclusion(NON_NULL);
 
-    public String writeValueAsString(ArchitectureUpdate value) throws IOException {
-        return this.mapper.writeValueAsString(value);
-    }
-
-    public ArchitectureUpdate readValue(String architectureAsString) throws JsonProcessingException {
-        return this.mapper.readValue(architectureAsString, ArchitectureUpdate.class);
+        AU_OBJECT_MAPPER = initMapper;
     }
 }
