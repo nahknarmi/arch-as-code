@@ -25,6 +25,7 @@ import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
 public class ArchitectureDataStructureObjectMapper {
+    /** @todo use Jackson's YAMLMapper which comes out of the box */
     public static final ObjectMapper YAML_OBJECT_MAPPER = createObjectMapper();
 
     /** @todo Does Jackson provide a builder for this? */
@@ -58,12 +59,14 @@ public class ArchitectureDataStructureObjectMapper {
         return YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }
 
+    /** TODO: Modern Jackson should provide UTC serialization out of the box */
     private static SimpleModule dateSerializer() {
         final var module = new SimpleModule();
         module.addSerializer(new DateSerializer(Date.class));
         return module;
     }
 
+    /** TODO: Modern Jackson should provide Set serialization out of the box */
     private static SimpleModule setSerializer() {
         final var module = new SimpleModule();
         module.addSerializer(new SetSerializer(Set.class));
