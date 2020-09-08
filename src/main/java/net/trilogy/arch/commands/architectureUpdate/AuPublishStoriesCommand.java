@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -26,13 +25,12 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATE_FILE_NAME;
 
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
     private final JiraApiFactory jiraApiFactory;
-    private final ArchitectureUpdateObjectMapper architectureUpdateObjectMapper;
     private final ArchitectureUpdateReader architectureUpdateReader;
     @Getter
     private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
@@ -61,7 +59,6 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
         this.jiraApiFactory = jiraApiFactory;
-        this.architectureUpdateObjectMapper = new ArchitectureUpdateObjectMapper();
         this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
         this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
     }
@@ -97,7 +94,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         try {
             filesFacade.writeString(
                     auPath.resolve(ARCHITECTURE_UPDATE_FILE_NAME),
-                    AU_OBJECT_MAPPER.writeValueAsString(updatedAu.get()));
+                    YAML_OBJECT_MAPPER.writeValueAsString(updatedAu.get()));
         } catch (Exception e) {
             printError("Unable to write update to AU.", e);
             return 1;

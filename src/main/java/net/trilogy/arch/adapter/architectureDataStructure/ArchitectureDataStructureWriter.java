@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.ADS_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper.STRUCTURIZR_VIEWS_JSON;
 
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class ArchitectureDataStructureWriter {
     }
 
     public File export(ArchitectureDataStructure dataStructure, File writeFile) throws IOException {
-        filesFacade.writeString(writeFile.toPath(), ADS_OBJECT_MAPPER.writeValueAsString(dataStructure));
+        filesFacade.writeString(writeFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(dataStructure));
 
         final var writePath = Path.of(writeFile.getParent()).resolve("documentation");
         if (!writePath.toFile().exists())

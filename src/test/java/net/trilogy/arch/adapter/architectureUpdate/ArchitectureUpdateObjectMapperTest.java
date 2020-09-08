@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import org.junit.Test;
 
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.blank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class ArchitectureUpdateObjectMapperTest {
     @Test
     public void shouldWriteBlank() throws Exception {
-        final var actual = AU_OBJECT_MAPPER.writeValueAsString(blank());
+        final var actual = YAML_OBJECT_MAPPER.writeValueAsString(blank());
         final var expected = getBlankYamlText();
 
         assertThat(actual.trim(), equalTo(expected.trim()));
@@ -20,14 +20,14 @@ public class ArchitectureUpdateObjectMapperTest {
 
     @Test
     public void shouldReadBlank() throws JsonProcessingException {
-        final var actual = AU_OBJECT_MAPPER.readValue(getBlankYamlText(), ArchitectureUpdate.class);
+        final var actual = YAML_OBJECT_MAPPER.readValue(getBlankYamlText(), ArchitectureUpdate.class);
 
         assertThat(actual, equalTo(blank()));
     }
 
     @Test
     public void shouldWriteBlankYamlWithOverriddenName() throws Exception {
-        final var actual = AU_OBJECT_MAPPER.writeValueAsString(
+        final var actual = YAML_OBJECT_MAPPER.writeValueAsString(
                 ArchitectureUpdate.builderPreFilledWithBlanks()
                         .name("OVERRIDDEN")
                         .build());

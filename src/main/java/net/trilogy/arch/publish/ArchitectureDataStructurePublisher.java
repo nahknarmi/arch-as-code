@@ -10,7 +10,7 @@ import net.trilogy.arch.transformation.TransformerFactory;
 import java.io.File;
 import java.io.IOException;
 
-import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.ADS_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
 public class ArchitectureDataStructurePublisher {
     private final File productArchitectureDirectory;
@@ -58,6 +58,6 @@ public class ArchitectureDataStructurePublisher {
         final var manifestFile = new File(productArchitectureDirectory + File.separator + manifestFileName);
         final var architectureAsString = this.filesFacade.readString(manifestFile.toPath());
 
-        return ADS_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
+        return YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }
 }

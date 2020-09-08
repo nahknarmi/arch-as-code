@@ -17,7 +17,7 @@ import java.util.Optional;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
 @RequiredArgsConstructor
 public class ArchitectureUpdateReader {
@@ -27,7 +27,7 @@ public class ArchitectureUpdateReader {
 
     public ArchitectureUpdate load(Path path) throws IOException {
         final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
-        var au = AU_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
+        var au = YAML_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
 
         // TODO: Mutable object are bug-prone and dangerous and it confuses
         //       that the content path is added twice

@@ -40,7 +40,7 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.execute;
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -279,11 +279,11 @@ public class AuPublishStoriesCommandTest {
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         execute(app, command);
         final var actualAuAsstring = Files.readString(testCloneDirectory.resolve("architecture-update.yml"));
-        final var actualAu = AU_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
+        final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
 
         // THEN:
         final var originalAuAsString = Files.readString(testCloneDirectory.resolve("architecture-update.yml"));
-        final var originalAu = AU_OBJECT_MAPPER.readValue(originalAuAsString, ArchitectureUpdate.class);
+        final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, ArchitectureUpdate.class);
         final var expectedAu = originalAu.addJiraToFeatureStory(
                 originalAu.getCapabilityContainer().getFeatureStories().get(0), new Jira("ABC-123", "link-to-ABC-123"));
 

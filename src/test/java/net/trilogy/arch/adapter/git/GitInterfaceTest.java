@@ -16,7 +16,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.ADS_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
@@ -82,7 +82,7 @@ public class GitInterfaceTest {
     @Test
     public void shouldLoadArchitectureFromBranch() throws Exception {
         final var actual = new GitInterface().load("master", archPath);
-        final var expected = ADS_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
+        final var expected = YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
 
         collector.checkThat(actual, equalTo(expected));
     }
@@ -90,7 +90,7 @@ public class GitInterfaceTest {
     @Test
     public void shouldLoadArchitectureFromCommit() throws Exception {
         final var actual = new GitInterface().load(masterCommitSha, archPath);
-        final var expected = ADS_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
+        final var expected = YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
 
         collector.checkThat(actual, equalTo(expected));
     }
@@ -98,7 +98,7 @@ public class GitInterfaceTest {
     @Test
     public void shouldLoadArchitectureFromTag() throws Exception {
         var actual = new GitInterface().load(masterCommitTagName, archPath);
-        var expected = ADS_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
+        var expected = YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
 
         collector.checkThat(actual, equalTo(expected));
     }
