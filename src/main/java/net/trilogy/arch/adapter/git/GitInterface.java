@@ -86,7 +86,7 @@ public class GitInterface {
     }
 
     private String getContent(Git git, RevCommit commit, String path) throws IOException {
-        try (TreeWalk treeWalk = TreeWalk.forPath(git.getRepository(), path, commit.getTree())) {
+        try (final var treeWalk = TreeWalk.forPath(git.getRepository(), path, commit.getTree())) {
             final var blobId = treeWalk.getObjectId(0);
             try (final var objectReader = git.getRepository().newObjectReader()) {
                 ObjectLoader objectLoader = objectReader.open(blobId);
