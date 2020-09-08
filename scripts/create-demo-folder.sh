@@ -87,10 +87,6 @@ chmod a+rx /tmp/aac/demo-folder/.install/bin/arch-as-code
 
 cd /tmp/aac/demo-folder
 
-run git init
-
-pwd # Tell the user where to find the demo folder
-
 # This file is optional
 [[ -r product-architecture.yml ]] && {
     mv product-architecture.yml product-architecture.yml.bak || {
@@ -112,12 +108,13 @@ cp -r "$dir"/../.arch-as-code .
 # shellcheck disable=SC2016
 ln -fs .install/bin/arch-as-code .
 
+echo "Setting up demo folder as a git repo"
+run git init
+run git add .
+run git commit -m Init
+
 cat <<EOM
-
-
-
-
-Demo folder created. To cd there, run:
-   cd $(pwd)
-Run ./arch-as-code
+Demo folder created in $PWD
+Change to that directory, and use ./arch-as-code
+(Once there, you may find 'alias aac=\$PWD/arch-as-code helpful)
 EOM
