@@ -1,14 +1,11 @@
 package net.trilogy.arch.adapter.architectureDataStructure;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
@@ -25,34 +22,19 @@ import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
 public class ArchitectureDataStructureObjectMapper {
-    /** @todo use Jackson's YAMLMapper which comes out of the box */
-    public static final ObjectMapper YAML_OBJECT_MAPPER = createObjectMapper();
-
-    /** @todo Does Jackson provide a builder for this? */
-    private static ObjectMapper createObjectMapper() {
-        final var mapper = new ObjectMapper(new YAMLFactory()
-                .enable(MINIMIZE_QUOTES)
-                .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                .configure(SPLIT_LINES, false)
-                .disable(WRITE_DOC_START_MARKER)
-                .configure(STRICT_DUPLICATE_DETECTION, true));
-        mapper.setVisibility(FIELD, ANY);
-        mapper.setVisibility(GETTER, NONE);
-        mapper.setVisibility(IS_GETTER, NONE);
-        mapper.registerModule(dateSerializer());
-        mapper.registerModule(setSerializer());
-        mapper.setSerializationInclusion(NON_NULL);
-
-        return mapper;
-    }
-
-    public String writeValueAsString(ArchitectureDataStructure value) throws IOException {
-        return YAML_OBJECT_MAPPER.writeValueAsString(value);
-    }
-
-    public JsonNode readTree(@NotNull InputStream in) throws IOException {
-        return YAML_OBJECT_MAPPER.readTree(in);
-    }
+    public static final ObjectMapper YAML_OBJECT_MAPPER = YAMLMapper.builder()
+            .enable(MINIMIZE_QUOTES)
+            .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+            .configure(SPLIT_LINES, false)
+            .disable(WRITE_DOC_START_MARKER)
+            .configure(STRICT_DUPLICATE_DETECTION, true)
+            .build()
+            .setVisibility(FIELD, ANY)
+            .setVisibility(GETTER, NONE)
+            .setVisibility(IS_GETTER, NONE)
+            .registerModule(dateSerializer())
+            .registerModule(setSerializer())
+            .setSerializationInclusion(NON_NULL);
 
     public ArchitectureDataStructure readValue(String architectureAsString) throws IOException {
         // TODO [ENHANCEMENT] [OPTIONAL]: Generate paths if they don't exist
@@ -61,15 +43,11 @@ public class ArchitectureDataStructureObjectMapper {
 
     /** TODO: Modern Jackson should provide UTC serialization out of the box */
     private static SimpleModule dateSerializer() {
-        final var module = new SimpleModule();
-        module.addSerializer(new DateSerializer(Date.class));
-        return module;
+        return new SimpleModule().addSerializer(new DateSerializer(Date.class));
     }
 
     /** TODO: Modern Jackson should provide Set serialization out of the box */
     private static SimpleModule setSerializer() {
-        final var module = new SimpleModule();
-        module.addSerializer(new SetSerializer(Set.class));
-        return module;
+        return new SimpleModule().addSerializer(new SetSerializer(Set.class));
     }
 }
