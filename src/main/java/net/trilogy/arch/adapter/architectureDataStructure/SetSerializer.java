@@ -9,9 +9,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * @todo Modern Jackson does this out of box.  What is this class for?
- */
+/** @todo Modern Jackson does this out of box.  What is this class for? */
 public class SetSerializer extends StdSerializer<Set<?>> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public SetSerializer(Class<Set> t) {

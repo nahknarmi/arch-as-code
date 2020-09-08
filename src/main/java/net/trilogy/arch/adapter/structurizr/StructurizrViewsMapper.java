@@ -6,6 +6,7 @@ import com.structurizr.model.Container;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.View;
 import com.structurizr.view.ViewSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,16 +15,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class StructurizrViewsMapper {
-
     public static final String STRUCTURIZR_VIEWS_JSON = "structurizrViews.json";
 
     private static final Logger logger = LogManager.getLogger(StructurizrViewsMapper.class);
-    private final File documentRoot;
 
-    public StructurizrViewsMapper(File documentRoot) {
-        this.documentRoot = documentRoot;
-    }
+    private final File documentRoot;
 
     public void loadAndSetViews(Workspace workspace) {
         try {

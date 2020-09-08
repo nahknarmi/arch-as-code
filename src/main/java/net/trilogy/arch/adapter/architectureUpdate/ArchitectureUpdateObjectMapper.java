@@ -15,22 +15,23 @@ import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.MINIMI
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.SPLIT_LINES;
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
+/** @todo Does Jackson provide a builder for this? */
 public class ArchitectureUpdateObjectMapper {
     public static final ObjectMapper AU_OBJECT_MAPPER;
 
     static {
-        final var initMapper = new ObjectMapper(
+        final var mapper = new ObjectMapper(
                 new YAMLFactory()
                         .configure(SPLIT_LINES, false)
                         .enable(MINIMIZE_QUOTES)
                         .enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
                         .disable(WRITE_DOC_START_MARKER)
                         .configure(STRICT_DUPLICATE_DETECTION, true));
-        initMapper.setVisibility(FIELD, ANY);
-        initMapper.setVisibility(GETTER, NONE);
-        initMapper.setVisibility(IS_GETTER, NONE);
-        initMapper.setSerializationInclusion(NON_NULL);
+        mapper.setVisibility(FIELD, ANY);
+        mapper.setVisibility(GETTER, NONE);
+        mapper.setVisibility(IS_GETTER, NONE);
+        mapper.setSerializationInclusion(NON_NULL);
 
-        AU_OBJECT_MAPPER = initMapper;
+        AU_OBJECT_MAPPER = mapper;
     }
 }
