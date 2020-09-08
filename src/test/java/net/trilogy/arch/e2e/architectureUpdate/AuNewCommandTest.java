@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
@@ -30,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 import static net.trilogy.arch.TestHelper.execute;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -201,11 +201,10 @@ public class AuNewCommandTest {
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(Files.exists(auFile), is(true));
-        new ArchitectureUpdateObjectMapper();
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
                 equalTo(
-                        ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER.writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name("au-name").build())
+                        YAML_OBJECT_MAPPER.writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name("au-name").build())
                 )
         );
     }
@@ -226,18 +225,17 @@ public class AuNewCommandTest {
         );
 
         // When
-        Integer exitCode = execute("au", "new", auName, str(rootDir.toPath()));
+        final var exitCode = execute("au", "new", auName, str(rootDir.toPath()));
 
         // Then
         collector.checkThat(exitCode, is(equalTo(0)));
         collector.checkThat(Files.exists(auFile), is(true));
-        new ArchitectureUpdateObjectMapper();
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
-                equalTo(
-                        ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER.writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name(auName).build())
-                )
-        );
+                equalTo(YAML_OBJECT_MAPPER.writeValueAsString(
+                        ArchitectureUpdate.builderPreFilledWithBlanks()
+                                .name(auName)
+                                .build())));
     }
 
     @Test

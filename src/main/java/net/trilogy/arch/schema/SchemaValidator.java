@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
 public class SchemaValidator {
     public static final String ARCH_DOC_SCHEMA = "schema/dataStructureSchema.json";
@@ -23,27 +24,25 @@ public class SchemaValidator {
     }
 
     private Set<ValidationMessage> validate(InputStream manifestInputStream, String schemaResource, String errorMessage) {
-        JsonSchema schema = getJsonSchemaFromClasspath(schemaResource);
-        Set<ValidationMessage> errors;
+        final var schema = getJsonSchemaFromClasspath(schemaResource);
 
         try {
-            JsonNode node = getYamlFromFile(manifestInputStream);
-            errors = schema.validate(node);
+            final var node = getYamlFromFile(manifestInputStream);
+            return schema.validate(node);
         } catch (IOException e) {
             throw new IllegalStateException(errorMessage, e);
         }
-        return errors;
     }
 
     @SuppressWarnings("deprecation")
     private JsonSchema getJsonSchemaFromClasspath(String schemaResource) {
         // TODO: See if Jackson has a non-deprecated means of doing this
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaResource);
+        final var factory = JsonSchemaFactory.getInstance();
+        final var is = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaResource);
         return factory.getSchema(is);
     }
 
     private JsonNode getYamlFromFile(InputStream manifestInputStream) throws IOException {
-        return new ArchitectureDataStructureObjectMapper().readTree(manifestInputStream);
+        return YAML_OBJECT_MAPPER.readTree(manifestInputStream);
     }
 }

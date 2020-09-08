@@ -7,7 +7,7 @@ import net.trilogy.arch.facade.FilesFacade;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
 @RequiredArgsConstructor
 public class ArchitectureUpdateWriter {
@@ -16,7 +16,7 @@ public class ArchitectureUpdateWriter {
     public void export(ArchitectureUpdate au, Path path) throws IOException {
         final var auPath = path.resolve("architecture-update.yml");
 
-        filesFacade.writeString(auPath, AU_OBJECT_MAPPER.writeValueAsString(au));
+        filesFacade.writeString(auPath, YAML_OBJECT_MAPPER.writeValueAsString(au));
 
         writeTddContents(au, path);
     }

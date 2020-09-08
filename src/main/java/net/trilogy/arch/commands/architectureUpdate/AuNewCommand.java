@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
@@ -23,12 +22,11 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper.AU_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
 @Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
 @RequiredArgsConstructor
 public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, DisplaysOutputMixin {
-    private static final ArchitectureUpdateObjectMapper objectMapper = new ArchitectureUpdateObjectMapper();
     private final GoogleDocsAuthorizedApiFactory googleDocsApiFactory;
     private final FilesFacade filesFacade;
     private final GitInterface gitInterface;
@@ -73,7 +71,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
 
     private boolean writeAu(File auFile, ArchitectureUpdate au) {
         try {
-            filesFacade.writeString(auFile.toPath(), AU_OBJECT_MAPPER.writeValueAsString(au));
+            filesFacade.writeString(auFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(au));
             return true;
         } catch (Exception e) {
             printError("Unable to write AU file.", e);

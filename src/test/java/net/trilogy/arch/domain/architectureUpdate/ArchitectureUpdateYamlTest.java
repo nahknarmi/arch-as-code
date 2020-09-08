@@ -15,7 +15,7 @@ import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 
 public class ArchitectureUpdateYamlTest {
-    public static final ObjectMapper mapper = ArchitectureDataStructureObjectMapper.ADS_OBJECT_MAPPER;
+    public static final ObjectMapper mapper = ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 
     @Ignore("TODO: TDD contents get lost on round trip")
     @Test
