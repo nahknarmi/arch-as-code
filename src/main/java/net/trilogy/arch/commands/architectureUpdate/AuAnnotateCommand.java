@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter;
 import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
@@ -17,6 +16,8 @@ import picocli.CommandLine.Spec;
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+
+import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter.exportArchitectureUpdate;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -67,7 +68,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         architectureUpdate = annotator.annotateTddContentFiles(architectureUpdate);
 
         try {
-            new ArchitectureUpdateWriter(filesFacade).exportArchitectureUpdate(architectureUpdate, architectureUpdateDirectory.toPath());
+            exportArchitectureUpdate(architectureUpdate, architectureUpdateDirectory.toPath(), filesFacade);
         } catch (Exception e) {
             printError("Unable to write annotated Architecture Update to yaml file.", e);
             return 2;

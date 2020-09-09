@@ -11,10 +11,13 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter.exportArchitectureUpdate;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ArchitectureUpdateWriterTest {
+    private static final FilesFacade files = new FilesFacade();
+
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
@@ -32,7 +35,7 @@ public class ArchitectureUpdateWriterTest {
                 .build();
 
         // When
-        new ArchitectureUpdateWriter(new FilesFacade()).exportArchitectureUpdate(au, auDir);
+        exportArchitectureUpdate(au, auDir, files);
 
         // Then
         final var tddContent = Files.readString(auDir.resolve(tddContentFilename));
@@ -49,7 +52,7 @@ public class ArchitectureUpdateWriterTest {
         final var auDir = Files.createTempDirectory("aac");
         final var au = ArchitectureUpdate.blank();
 
-        new ArchitectureUpdateWriter(new FilesFacade()).exportArchitectureUpdate(au, auDir);
+        exportArchitectureUpdate(au, auDir, files);
 
         final var files = Files.list(auDir)
                 .map(path -> path.getFileName().toString())
