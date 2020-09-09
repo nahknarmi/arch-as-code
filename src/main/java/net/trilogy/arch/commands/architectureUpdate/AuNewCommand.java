@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
 @RequiredArgsConstructor
@@ -112,7 +113,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
             }
         }
 
-        File auFile = auFolder.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile();
+        File auFile = auFolder.resolve(ARCHITECTURE_UPDATE_YML).toFile();
         if (auFile.isFile()) {
             printError(String.format("AU %s already exists. Try a different name.", auFile.getAbsolutePath()));
             return Optional.empty();

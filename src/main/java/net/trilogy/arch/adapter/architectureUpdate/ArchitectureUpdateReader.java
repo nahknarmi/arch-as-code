@@ -18,11 +18,10 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @RequiredArgsConstructor
 public class ArchitectureUpdateReader {
-    public static final String ARCHITECTURE_UPDATE_YML = "architecture-update.yml";
-
     private final FilesFacade filesFacade;
 
     public ArchitectureUpdate loadArchitectureUpdate(Path path) throws IOException {

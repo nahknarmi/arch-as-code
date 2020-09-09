@@ -35,6 +35,8 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
         "capabilities"
 })
 public class ArchitectureUpdate {
+    public static final String ARCHITECTURE_UPDATE_YML = "architecture-update.yml";
+
     @JsonProperty(value = "name")
     private final String name;
     @JsonProperty(value = "milestone")

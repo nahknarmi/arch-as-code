@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 import static picocli.CommandLine.Parameters;
@@ -102,7 +103,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
 
     private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
-            if (validateAuSchema(auDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile())) {
+            if (validateAuSchema(auDirectory.toPath().resolve(ARCHITECTURE_UPDATE_YML).toFile())) {
                 return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auDirectory.toPath()));
             }
         } catch (final Exception e) {

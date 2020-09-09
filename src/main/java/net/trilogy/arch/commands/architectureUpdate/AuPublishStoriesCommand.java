@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATE_FILE_NAME;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
@@ -91,7 +91,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
         try {
             filesFacade.writeString(
-                    auPath.resolve(ARCHITECTURE_UPDATE_FILE_NAME),
+                    auPath.resolve(ARCHITECTURE_UPDATE_YML),
                     YAML_OBJECT_MAPPER.writeValueAsString(updatedAu.get()));
         } catch (Exception e) {
             printError("Unable to write update to AU.", e);

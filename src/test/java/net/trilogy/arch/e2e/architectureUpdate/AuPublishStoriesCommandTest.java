@@ -43,6 +43,7 @@ import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -104,7 +105,7 @@ public class AuPublishStoriesCommandTest {
         if (!Files.exists(testCloneDirectory))
             Files.createDirectory(testCloneDirectory);
 
-        copy(testDirectory.resolve("architecture-update.yml"), testCloneDirectory.resolve("architecture-update.yml"));
+        copy(testDirectory.resolve(ARCHITECTURE_UPDATE_YML), testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
     }
 
     @After
@@ -112,7 +113,7 @@ public class AuPublishStoriesCommandTest {
         setOut(originalOut);
         setErr(originalErr);
 
-        deleteIfExists(testCloneDirectory.resolve("architecture-update.yml"));
+        deleteIfExists(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         deleteIfExists(testCloneDirectory);
     }
 
@@ -136,7 +137,7 @@ public class AuPublishStoriesCommandTest {
     public void shouldFailGracefullyIfFailToLoadAu() throws Exception {
         // Given
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
-                .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve("architecture-update.yml")));
+                .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
         // When
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
@@ -278,11 +279,11 @@ public class AuPublishStoriesCommandTest {
         // WHEN:
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         execute(app, command);
-        final var actualAuAsstring = Files.readString(testCloneDirectory.resolve("architecture-update.yml"));
+        final var actualAuAsstring = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
 
         // THEN:
-        final var originalAuAsString = Files.readString(testCloneDirectory.resolve("architecture-update.yml"));
+        final var originalAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, ArchitectureUpdate.class);
         final var expectedAu = originalAu.addJiraToFeatureStory(
                 originalAu.getCapabilityContainer().getFeatureStories().get(0), new Jira("ABC-123", "link-to-ABC-123"));

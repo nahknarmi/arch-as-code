@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
@@ -12,8 +11,9 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 
 @UtilityClass
 public class ArchitectureUpdateWriter {
+
     public static void exportArchitectureUpdate(ArchitectureUpdate au, Path path, FilesFacade files) throws IOException {
-        final var auPath = path.resolve("architecture-update.yml");
+        final var auPath = path.resolve(ArchitectureUpdate.ARCHITECTURE_UPDATE_YML);
 
         files.writeString(auPath, YAML_OBJECT_MAPPER.writeValueAsString(au));
 

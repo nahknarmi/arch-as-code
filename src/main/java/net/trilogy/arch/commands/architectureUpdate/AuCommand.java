@@ -8,6 +8,8 @@ import picocli.CommandLine.Spec;
 
 import java.util.concurrent.Callable;
 
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+
 @Command(
         name = "architecture-update",
         aliases = "au",
@@ -16,7 +18,6 @@ import java.util.concurrent.Callable;
 )
 public class AuCommand implements Callable<Integer>, DisplaysOutputMixin {
     public static final String ARCHITECTURE_UPDATES_ROOT_FOLDER = "architecture-updates";
-    public static final String ARCHITECTURE_UPDATE_FILE_NAME = "architecture-update.yml";
 
     @Getter
     @Spec

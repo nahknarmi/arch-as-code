@@ -31,6 +31,7 @@ import java.util.Objects;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -217,7 +218,7 @@ public class AuNewCommandTest {
         String auName = "au-name";
         Path allAusDir = initializeAuDirectory(rootDir.toPath());
         Path currentAuDir = allAusDir.resolve(auName);
-        Path auFile = currentAuDir.resolve("architecture-update.yml");
+        Path auFile = currentAuDir.resolve(ARCHITECTURE_UPDATE_YML);
         collector.checkThat(
                 "AU does not already exist. (Precondition check)",
                 Files.exists(auFile),
@@ -246,7 +247,7 @@ public class AuNewCommandTest {
 
         String auName = "au-name";
         Path allAusDir = initializeAuDirectory(rootDir.toPath());
-        Path auFile = allAusDir.resolve(auName).resolve("architecture-update.yml");
+        Path auFile = allAusDir.resolve(auName).resolve(ARCHITECTURE_UPDATE_YML);
         collector.checkThat(
                 "AU does not already exist. (Precondition check)",
                 Files.exists(auFile),
@@ -270,7 +271,7 @@ public class AuNewCommandTest {
         Path rootDir = getTempRepositoryDirectory();
         String auName = "au-name";
         Path allAusDir = initializeAuDirectory(rootDir);
-        Path auFile = allAusDir.resolve(auName).resolve("architecture-update.yml");
+        Path auFile = allAusDir.resolve(auName).resolve(ARCHITECTURE_UPDATE_YML);
 
         Integer setupStatus = execute("au", "new", auName, str(rootDir));
         Files.writeString(auFile, "EXISTING CONTENTS");
