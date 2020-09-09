@@ -1,14 +1,12 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
 import lombok.Getter;
 import lombok.ToString;
 import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.common.io.Files.getFileExtension;
@@ -19,13 +17,13 @@ import static com.google.common.io.Files.getFileExtension;
 public class TddContent {
     public static final int TDD_MATCHER_GROUP = 1;
     public static final int COMPONENT_ID_MATCHER_GROUP = 2;
+
     private static final String REGEX = "(.*) : Component-([a-zA-Z\\d]+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
+
     private final String content;
     // TODO: Why isn't this a JDK Path object?
     private final String filename;
-    @Exclude
-    private Matcher matcher;
 
     public TddContent(String content, String filename) {
         this.content = content;
@@ -66,19 +64,12 @@ public class TddContent {
     }
 
     public String getTdd() {
-        return matcher().group(TDD_MATCHER_GROUP);
+        final var matcher = pattern.matcher(filename);
+        return matcher.find() ? matcher.group(TDD_MATCHER_GROUP) : null;
     }
 
     public String getComponentId() {
-        return matcher().group(COMPONENT_ID_MATCHER_GROUP);
-    }
-
-    private Matcher matcher() {
-        if (matcher == null) {
-            matcher = pattern.matcher(filename);
-            matcher.find();
-        }
-
-        return this.matcher;
+        final var matcher = pattern.matcher(filename);
+        return matcher.find() ? matcher.group(COMPONENT_ID_MATCHER_GROUP) : null;
     }
 }
