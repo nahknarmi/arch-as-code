@@ -14,7 +14,7 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 public class ArchitectureDataStructureReader {
     private final FilesFacade filesFacade;
 
-    public ArchitectureDataStructure load(File manifest) throws IOException {
+    public ArchitectureDataStructure loadArchitectureDataStructure(File manifest) throws IOException {
         final String architectureAsString = filesFacade.readString(manifest.toPath());
         return YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }

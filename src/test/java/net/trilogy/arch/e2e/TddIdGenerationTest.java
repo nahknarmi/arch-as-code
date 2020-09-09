@@ -77,7 +77,7 @@ public class TddIdGenerationTest {
     private ArchitectureDataStructure getDataStructure() throws IOException {
         File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "product-architecture.yml");
-        return new ArchitectureDataStructureReader(new FilesFacade()).load(manifestFile);
+        return new ArchitectureDataStructureReader(new FilesFacade()).loadArchitectureDataStructure(manifestFile);
     }
 
     private Workspace getWorkspace(ArchitectureDataStructure dataStructure) {

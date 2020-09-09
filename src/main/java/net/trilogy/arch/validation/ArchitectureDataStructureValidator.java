@@ -35,7 +35,7 @@ public class ArchitectureDataStructureValidator {
         List<String> schemaValidationMessages = this.schemaValidator.validateArchitectureDocument(new FileInputStream(manifestFile)).stream().map(ValidationMessage::getMessage).collect(toList());
 
         if (schemaValidationMessages.isEmpty()) {
-            ArchitectureDataStructure dataStructure = dataStructureReader.load(manifestFile);
+            ArchitectureDataStructure dataStructure = dataStructureReader.loadArchitectureDataStructure(manifestFile);
             return this.dataStructureDataStructureValidators.stream().flatMap(v -> v.validate(dataStructure).stream()).collect(toList());
         } else {
             return schemaValidationMessages;

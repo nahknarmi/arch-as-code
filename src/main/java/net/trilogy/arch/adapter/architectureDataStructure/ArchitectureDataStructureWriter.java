@@ -18,13 +18,13 @@ import static net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper.STRUCT
 public class ArchitectureDataStructureWriter {
     private final FilesFacade filesFacade;
 
-    public File export(ArchitectureDataStructure dataStructure) throws IOException {
+    public File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure) throws IOException {
         final var tempFile = filesFacade.createTempFile("arch-as-code", ".yml");
 
-        return export(dataStructure, tempFile);
+        return exportArchitectureDataStructure(dataStructure, tempFile);
     }
 
-    public File export(ArchitectureDataStructure dataStructure, File writeFile) throws IOException {
+    public File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, File writeFile) throws IOException {
         filesFacade.writeString(writeFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(dataStructure));
 
         final var writePath = Path.of(writeFile.getParent()).resolve("documentation");

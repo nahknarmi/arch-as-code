@@ -64,7 +64,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
 
     private void write(ArchitectureDataStructure data, String toFilePath) throws IOException {
         File manifestFile = new File(toFilePath);
-        new ArchitectureDataStructureWriter(filesFacade).export(data, manifestFile);
+        new ArchitectureDataStructureWriter(filesFacade).exportArchitectureDataStructure(data, manifestFile);
     }
 
     private ArchitectureDataStructure createSampleDataStructure() {
