@@ -40,7 +40,7 @@ public class DiffCommandTest {
         GraphvizInterface graphvizInterface = mock(GraphvizInterface.class);
 
         ArchitectureUpdateReader architectureUpdateReader = mock(ArchitectureUpdateReader.class);
-        when(architectureUpdateReader.load(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
+        when(architectureUpdateReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
 
         DiffCommand diffCommand = new DiffCommand(filesFacade, gitInterface, graphvizInterface, architectureUpdateReader);
         DiffCommand diffCommandSpy = spy(diffCommand);
@@ -58,7 +58,7 @@ public class DiffCommandTest {
         GraphvizInterface graphvizInterface = mock(GraphvizInterface.class);
 
         ArchitectureUpdateReader architectureUpdateReader = mock(ArchitectureUpdateReader.class);
-        when(architectureUpdateReader.load(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
+        when(architectureUpdateReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
 
         DiffCommand diffCommand = new DiffCommand(filesFacade, gitInterface, graphvizInterface, architectureUpdateReader);
 

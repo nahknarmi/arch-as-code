@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -33,7 +32,7 @@ public class ArchitectureUpdateWriterTest {
                 .build();
 
         // When
-        new ArchitectureUpdateWriter(new FilesFacade()).export(au, auDir);
+        new ArchitectureUpdateWriter(new FilesFacade()).exportArchitectureUpdate(au, auDir);
 
         // Then
         final var tddContent = Files.readString(auDir.resolve(tddContentFilename));
@@ -50,7 +49,7 @@ public class ArchitectureUpdateWriterTest {
         final var auDir = Files.createTempDirectory("aac");
         final var au = ArchitectureUpdate.blank();
 
-        new ArchitectureUpdateWriter(new FilesFacade()).export(au, auDir);
+        new ArchitectureUpdateWriter(new FilesFacade()).exportArchitectureUpdate(au, auDir);
 
         final var files = Files.list(auDir)
                 .map(path -> path.getFileName().toString())

@@ -131,7 +131,7 @@ public class DiffCommand
     Optional<ArchitectureUpdate> loadArchitectureUpdate() {
         if (getArchitectureUpdateDirectory() != null) {
             try {
-                return Optional.of(architectureUpdateReader.load(getArchitectureUpdateDirectory().toPath()));
+                return Optional.of(architectureUpdateReader.loadArchitectureUpdate(getArchitectureUpdateDirectory().toPath()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

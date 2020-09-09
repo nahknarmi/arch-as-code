@@ -25,7 +25,7 @@ public class ArchitectureUpdateReader {
 
     private final FilesFacade filesFacade;
 
-    public ArchitectureUpdate load(Path path) throws IOException {
+    public ArchitectureUpdate loadArchitectureUpdate(Path path) throws IOException {
         final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
         var au = YAML_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
 

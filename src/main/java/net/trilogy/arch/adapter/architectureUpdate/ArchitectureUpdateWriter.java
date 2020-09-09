@@ -13,7 +13,7 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 public class ArchitectureUpdateWriter {
     private final FilesFacade filesFacade;
 
-    public void export(ArchitectureUpdate au, Path path) throws IOException {
+    public void exportArchitectureUpdate(ArchitectureUpdate au, Path path) throws IOException {
         final var auPath = path.resolve("architecture-update.yml");
 
         filesFacade.writeString(auPath, YAML_OBJECT_MAPPER.writeValueAsString(au));

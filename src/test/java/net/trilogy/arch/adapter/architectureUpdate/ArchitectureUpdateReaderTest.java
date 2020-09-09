@@ -33,7 +33,7 @@ public class ArchitectureUpdateReaderTest {
 
     @Test
     public void shouldReadProductArchitectureAndMarkdownFiles() throws Exception {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).load(auDir);
+        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
         collector.checkThat(architectureUpdate.getName(), equalTo("test"));
         collector.checkThat(architectureUpdate.getTddContents().get(0), equalTo(new TddContent("" +
@@ -48,7 +48,7 @@ public class ArchitectureUpdateReaderTest {
 
     @Test
     public void shouldOnlyLoadProperlyNamedTddContentFiles() throws Exception {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).load(auDir);
+        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
         final var names = architectureUpdate.getTddContents().stream()
                 .map(TddContent::getFilename)
                 .collect(toList());
@@ -61,7 +61,7 @@ public class ArchitectureUpdateReaderTest {
 
     @Test
     public void shouldAssignTddContentToTddWithMatchingIds() throws Exception {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).load(auDir);
+        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
         assertThat(architectureUpdate.getTddContainersByComponent().size(), equalTo(1));
         final var tddContainerByComponent = architectureUpdate.getTddContainersByComponent().get(0);

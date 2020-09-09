@@ -129,7 +129,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<ArchitectureUpdate> loadAu(Path auPath) {
         try {
-            return Optional.of(architectureUpdateReader.load(auPath));
+            return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auPath));
         } catch (Exception e) {
             printError("Unable to load architecture update.", e);
             return Optional.empty();

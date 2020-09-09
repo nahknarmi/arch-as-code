@@ -67,7 +67,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         architectureUpdate = annotator.annotateTddContentFiles(architectureUpdate);
 
         try {
-            new ArchitectureUpdateWriter(filesFacade).export(architectureUpdate, architectureUpdateDirectory.toPath());
+            new ArchitectureUpdateWriter(filesFacade).exportArchitectureUpdate(architectureUpdate, architectureUpdateDirectory.toPath());
         } catch (Exception e) {
             printError("Unable to write annotated Architecture Update to yaml file.", e);
             return 2;
@@ -80,7 +80,7 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
 
     private Optional<ArchitectureUpdate> loadAu(File architectureUpdateDirectory) {
         try {
-            ArchitectureUpdate au = architectureUpdateReader.load(architectureUpdateDirectory.toPath());
+            ArchitectureUpdate au = architectureUpdateReader.loadArchitectureUpdate(architectureUpdateDirectory.toPath());
             return Optional.of(au);
         } catch (Exception e) {
             printError("Unable to load Architecture Update.", e);

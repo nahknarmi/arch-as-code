@@ -103,7 +103,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
             if (validateAuSchema(auDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile())) {
-                return Optional.of(architectureUpdateReader.load(auDirectory.toPath()));
+                return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auDirectory.toPath()));
             }
         } catch (final Exception e) {
             printError("Unable to load architecture update file", e);
