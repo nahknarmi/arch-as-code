@@ -109,9 +109,11 @@ cp -r "$dir"/../.arch-as-code .
 ln -fs .install/bin/arch-as-code .
 
 echo "Setting up demo folder as a git repo"
-run git init
-run git add .
-run git commit -m Init
+if [[ ! -d .git ]]; then
+    run git init
+    run git add .
+    run git commit -m Init
+fi
 
 cat <<EOM
 Demo folder created in $PWD
