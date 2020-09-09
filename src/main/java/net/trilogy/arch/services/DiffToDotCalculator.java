@@ -11,10 +11,11 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 public class DiffToDotCalculator {
-
     public static final int MAX_TOOLTIP_TEXT_SIZE = 50;
 
     public static String toDot(String title, Collection<Diff> diffs, @Nullable Diff parentEntityDiff, String linkPrefix) {
@@ -58,8 +59,8 @@ public class DiffToDotCalculator {
                         "];");
 
         dot.add(1, "");
-
         dot.add(0, "}");
+
         return dot.toString();
     }
 
@@ -71,7 +72,7 @@ public class DiffToDotCalculator {
     }
 
     static String getDotTddAsTable(Diffable entity) {
-        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" + Arrays.stream(entity.getRelatedTddsText()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + Arrays.stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(Collectors.joining()) + "</TABLE></TD></TR>").collect(Collectors.joining()) + "</TABLE>>";
+        return "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" + stream(entity.getRelatedTddsText()).map(tdd -> "<TR><TD><TABLE CELLBORDER=\"0\" CELLSPACING=\"0\">" + stream(tdd.split("\\n")).map(s -> "<TR><TD align=\"text\">" + s + "<br align=\"left\" /></TD></TR>").collect(joining()) + "</TABLE></TD></TR>").collect(joining()) + "</TABLE>>";
     }
 
     @VisibleForTesting
@@ -118,7 +119,7 @@ public class DiffToDotCalculator {
                     ", fontcolor=" + getDotColor(diff) +
                     ", shape=plaintext" +
                     ", URL=\"" + getUrl(diff, linkPrefix) + "\"" +
-                    getTooltip(diff) +
+                    getRelatedTddsTooltip(diff) +
                     "];";
         }
         final var relationship = (DiffableRelationship) diff.getElement();
@@ -128,27 +129,28 @@ public class DiffToDotCalculator {
                 "[label=\"" + relationship.getName() +
                 "\", color=" + getDotColor(diff) +
                 ", fontcolor=" + getDotColor(diff) +
-                ", tooltip=\"" + getTooltip(relationship, allDiffs) + "\"" +
-                ", labeltooltip=\"" + getTooltip(relationship, allDiffs) + "\"" +
+                ", tooltip=\"" + getRelationshipTooltip(relationship, allDiffs) + "\"" +
+                ", labeltooltip=\"" + getRelationshipTooltip(relationship, allDiffs) + "\"" +
                 "];";
     }
 
-    private static String getTooltip(Diff diff) {
+    private static String getRelatedTddsTooltip(Diff diff) {
         if (diff.getElement().hasRelatedTdds()) {
-            return " ,tooltip=\"" + Arrays.stream(diff.getElement().getRelatedTddsText()).map(DiffToDotCalculator::truncateLongText).collect(Collectors.joining("\n")) + "\"";
+            return " ,tooltip=\"" + stream(diff.getElement().getRelatedTddsText())
+                    .map(DiffToDotCalculator::truncateLongText)
+                    .collect(joining("\n")) + "\"";
         }
         return "";
     }
 
     private static String truncateLongText(String text) {
-        if (text.length() < MAX_TOOLTIP_TEXT_SIZE) {
-            return text;
-        }
-        return text.substring(0, MAX_TOOLTIP_TEXT_SIZE) + "...";
+        return text.length() < MAX_TOOLTIP_TEXT_SIZE
+                ? text
+                : text.substring(0, MAX_TOOLTIP_TEXT_SIZE) + "...";
     }
 
     @VisibleForTesting
-    static String getTooltip(DiffableRelationship rel, Collection<Diff> allDiffs) {
+    static String getRelationshipTooltip(DiffableRelationship rel, Collection<Diff> allDiffs) {
         String source = allDiffs.stream()
                 .filter(it -> it.getElement().getId().equals(rel.getSourceId()))
                 .findAny()

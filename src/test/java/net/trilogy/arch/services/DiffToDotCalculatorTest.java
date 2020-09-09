@@ -268,7 +268,7 @@ public class DiffToDotCalculatorTest {
         var rel = new DiffableRelationship("1", createRelationship("r", "2"));
         var relDiff = new Diff(rel, null);
 
-        String tooltip = DiffToDotCalculator.getTooltip(rel, Set.of(p1Diff, p2Diff, relDiff));
+        String tooltip = DiffToDotCalculator.getRelationshipTooltip(rel, Set.of(p1Diff, p2Diff, relDiff));
 
         assertThat(tooltip, equalTo("person-1 -> person-2"));
     }
