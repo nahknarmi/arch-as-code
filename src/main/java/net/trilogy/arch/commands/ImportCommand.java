@@ -2,7 +2,6 @@ package net.trilogy.arch.commands;
 
 import com.structurizr.view.ViewSet;
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter;
 import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
@@ -16,6 +15,9 @@ import picocli.CommandLine.Spec;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.writeViews;
 
 @Command(name = "import", mixinStandardHelpOptions = true, description = "Imports existing structurizr workspace, overwriting the existing product architecture.")
 public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -37,14 +39,13 @@ public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, Di
         logArgs();
 
         try {
-            ArchitectureDataStructure dataStructure = new WorkspaceReader().load(this.exportedWorkspacePath);
-            File writeFile = this.productArchitectureDirectory.toPath().resolve(ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME).toFile();
-            ArchitectureDataStructureWriter architectureDataStructureWriter = new ArchitectureDataStructureWriter(filesFacade);
-            File exportedFile = architectureDataStructureWriter.exportArchitectureDataStructure(dataStructure, writeFile);
+            final var dataStructure = new WorkspaceReader().load(this.exportedWorkspacePath);
+            final var writeFile = this.productArchitectureDirectory.toPath().resolve(ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME).toFile();
+            final var exportedFile = exportArchitectureDataStructure(dataStructure, writeFile, filesFacade);
             print(String.format("Architecture data structure written to - %s", exportedFile.getAbsolutePath()));
 
-            ViewSet workspaceViews = new WorkspaceReader().loadViews(this.exportedWorkspacePath);
-            Path viewsPath = architectureDataStructureWriter.writeViews(workspaceViews, productArchitectureDirectory.toPath());
+            final var workspaceViews = new WorkspaceReader().loadViews(this.exportedWorkspacePath);
+            final var viewsPath = writeViews(workspaceViews, productArchitectureDirectory.toPath(), filesFacade);
             print(String.format("Views were written to - %s", viewsPath));
         } catch (Exception e) {
             printError("Failed to import", e);

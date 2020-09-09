@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -16,11 +16,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
 import static net.trilogy.arch.adapter.structurizr.Credentials.createCredentials;
 
 @Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
+@RequiredArgsConstructor
 public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
     private final FilesFacade filesFacade;
+
     @Option(names = {"-i", "--workspace-id"}, description = "Structurizr workspace id", required = true)
     private String workspaceId;
     @Option(names = {"-k", "--workspace-api-key"}, description = "Structurizr workspace api key", required = true)
@@ -32,10 +35,6 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
     @Getter
     @Spec
     private CommandLine.Model.CommandSpec spec;
-
-    public InitializeCommand(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-    }
 
     @Override
     public Integer call() {
@@ -64,7 +63,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
 
     private void write(ArchitectureDataStructure data, String toFilePath) throws IOException {
         File manifestFile = new File(toFilePath);
-        new ArchitectureDataStructureWriter(filesFacade).exportArchitectureDataStructure(data, manifestFile);
+        exportArchitectureDataStructure(data, manifestFile, filesFacade);
     }
 
     private ArchitectureDataStructure createSampleDataStructure() {

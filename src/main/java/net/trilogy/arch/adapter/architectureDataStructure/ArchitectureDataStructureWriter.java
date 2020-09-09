@@ -2,7 +2,7 @@ package net.trilogy.arch.adapter.architectureDataStructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.structurizr.view.ViewSet;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.Base64Converter;
@@ -14,49 +14,47 @@ import java.nio.file.Path;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper.STRUCTURIZR_VIEWS_JSON;
 
-@RequiredArgsConstructor
+@UtilityClass
 public class ArchitectureDataStructureWriter {
-    private final FilesFacade filesFacade;
+    public static File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, FilesFacade files) throws IOException {
+        final var tempFile = files.createTempFile("arch-as-code", ".yml");
 
-    public File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure) throws IOException {
-        final var tempFile = filesFacade.createTempFile("arch-as-code", ".yml");
-
-        return exportArchitectureDataStructure(dataStructure, tempFile);
+        return exportArchitectureDataStructure(dataStructure, tempFile, files);
     }
 
-    public File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, File writeFile) throws IOException {
-        filesFacade.writeString(writeFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(dataStructure));
+    public static File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, File writeFile, FilesFacade files) throws IOException {
+        files.writeString(writeFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(dataStructure));
 
         final var writePath = Path.of(writeFile.getParent()).resolve("documentation");
         if (!writePath.toFile().exists())
-            filesFacade.createDirectory(writePath);
+            files.createDirectory(writePath);
 
-        writeDocumentation(dataStructure, writePath);
-        writeDocumentationImages(filesFacade, dataStructure, writePath);
+        writeDocumentation(dataStructure, writePath, files);
+        writeDocumentationImages(dataStructure, writePath, files);
 
         return writeFile;
     }
 
-    public Path writeViews(ViewSet structurizrViews, Path parentPath) throws IOException {
+    public static Path writeViews(ViewSet structurizrViews, Path parentPath, FilesFacade files) throws IOException {
         final var viewsWritePath = parentPath.resolve(STRUCTURIZR_VIEWS_JSON);
         if (structurizrViews != null) {
             ObjectMapper mapper = new ObjectMapper();
-            filesFacade.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));
+            files.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));
         }
 
         return viewsWritePath;
     }
 
-    private void writeDocumentation(ArchitectureDataStructure dataStructure, Path documentation) throws IOException {
+    private static void writeDocumentation(ArchitectureDataStructure dataStructure, Path documentation, FilesFacade files) throws IOException {
         for (final var doc : dataStructure.getDocumentation()) {
             final var docFile = documentation.resolve(doc.getFileName()).toFile();
-            filesFacade.writeString(docFile.toPath(), doc.getContent());
+            files.writeString(docFile.toPath(), doc.getContent());
         }
     }
 
-    private void writeDocumentationImages(FilesFacade filesFacade, ArchitectureDataStructure dataStructure, Path writePath) throws IOException {
+    private static void writeDocumentationImages(ArchitectureDataStructure dataStructure, Path writePath, FilesFacade files) throws IOException {
         for (final var image : dataStructure.getDocumentationImages()) {
-            Base64Converter.toFile(filesFacade, image.getContent(), writePath.resolve(image.getName()));
+            Base64Converter.toFile(files, image.getContent(), writePath.resolve(image.getName()));
         }
     }
 }
