@@ -312,7 +312,7 @@ public class AuNewCommandTest {
 
         var mockedFilesFacade = mock(FilesFacade.class);
 
-        when(mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockedFilesFacade.writeString(any(), any()))
                 .thenThrow(new IOException("No disk space!"));
 
         Application app = Application.builder()

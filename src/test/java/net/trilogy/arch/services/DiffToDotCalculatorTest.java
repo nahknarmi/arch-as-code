@@ -39,7 +39,7 @@ public class DiffToDotCalculatorTest {
     @Test
     public void shouldGenerateEmptyGraphWithParent() {
         var parentSystem = new Diff(
-                new DiffableEntity(ArchitectureDataStructureHelper.createSystem("parent-system")),
+                new DiffableEntity(createSystem("parent-system")),
                 null
         );
         var actual = DiffToDotCalculator.toDot("title", Set.of(), parentSystem, "");
@@ -99,7 +99,7 @@ public class DiffToDotCalculatorTest {
                 diffOfRelationship
         );
         var parentSystem = new Diff(
-                new DiffableEntity(ArchitectureDataStructureHelper.createSystem("parent-system")),
+                new DiffableEntity(createSystem("parent-system")),
                 Set.of(diffOwnedByParent.getElement(), diffOfRelationship.getElement(), descendentDiffToNotDisplay.getElement()),
                 null,
                 null

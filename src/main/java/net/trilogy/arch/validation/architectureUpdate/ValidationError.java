@@ -29,84 +29,84 @@ public class ValidationError {
 
     public static ValidationError forDecisionsMustHaveTdds(DecisionId entityId) {
         return new ValidationError(
-                ValidationErrorType.DECISION_MISSING_TDD,
+                DECISION_MISSING_TDD,
                 String.format("Decision \"%s\" must have at least one TDD reference.", entityId.toString())
         );
     }
 
     public static ValidationError forTddsMustBeValidReferences(EntityReference entityId, TddId tddId) {
         return new ValidationError(
-                ValidationErrorType.INVALID_TDD_REFERENCE_IN_DECISION_OR_REQUIREMENT,
+                INVALID_TDD_REFERENCE_IN_DECISION_OR_REQUIREMENT,
                 String.format("%s \"%s\" contains TDD reference \"%s\" that does not exist.", getEntityTypeString(entityId), entityId.toString(), tddId.toString())
         );
     }
 
     public static ValidationError forMustHaveStories(EntityReference entityId) {
         return new ValidationError(
-                ValidationErrorType.MISSING_CAPABILITY,
+                MISSING_CAPABILITY,
                 String.format("%s \"%s\" needs to be referenced in a story.", getEntityTypeString(entityId), entityId.toString())
         );
     }
 
     public static ValidationError forTddsMustHaveDecisionsOrRequirements(TddId tddId) {
         return new ValidationError(
-                ValidationErrorType.TDD_WITHOUT_CAUSE,
+                TDD_WITHOUT_CAUSE,
                 String.format("TDD \"%s\" needs to be referenced by a decision or functional requirement.", tddId.toString())
         );
     }
 
     public static ValidationError forStoriesTddsMustBeValidReferences(TddId id, String storyTitle) {
         return new ValidationError(
-                ValidationErrorType.INVALID_TDD_REFERENCE_IN_STORY,
+                INVALID_TDD_REFERENCE_IN_STORY,
                 String.format("Story \"%s\" contains TDD reference \"%s\" that does not exist.", storyTitle, id.toString())
         );
     }
 
     public static ValidationError forTddsComponentsMustBeValidReferences(TddComponentReference componentReference) {
         return new ValidationError(
-                ValidationErrorType.INVALID_COMPONENT_REFERENCE,
+                INVALID_COMPONENT_REFERENCE,
                 String.format("Component id \"%s\" does not exist.", componentReference)
         );
     }
 
     public static ValidationError forDeletedTddsComponentsMustBeValidReferences(TddComponentReference componentReference) {
         return new ValidationError(
-                ValidationErrorType.INVALID_DELETED_COMPONENT_REFERENCE,
+                INVALID_DELETED_COMPONENT_REFERENCE,
                 String.format("Deleted component id \"%s\" is invalid.", componentReference.toString())
         );
     }
 
     public static ValidationError forFunctionalRequirementsMustBeValidReferences(String storyTitle, FunctionalRequirementId id) {
         return new ValidationError(
-                ValidationErrorType.INVALID_FUNCTIONAL_REQUIREMENT_REFERENCE_IN_STORY,
+                INVALID_FUNCTIONAL_REQUIREMENT_REFERENCE_IN_STORY,
                 String.format("Story \"%s\" contains functional requirement reference \"%s\" that does not exist.", storyTitle, id.toString())
         );
     }
 
     public static ValidationError forStoriesMustHaveTdds(String storyTitle) {
         return new ValidationError(
-                ValidationErrorType.STORY_MISSING_TDD,
+                STORY_MISSING_TDD,
                 String.format("Story \"%s\" must have at least one TDD reference.", storyTitle)
         );
     }
 
     public static ValidationError forStoriesMustHaveFunctionalRequirements(String storyTitle) {
         return new ValidationError(
-                ValidationErrorType.MISSING_FUNCTIONAL_REQUIREMENTS,
+                MISSING_FUNCTIONAL_REQUIREMENTS,
                 String.format("Story \"%s\" must have at least one functional requirement reference.", storyTitle)
         );
     }
 
     public static ValidationError forDuplicatedTdd(TddId id) {
         return new ValidationError(
-                ValidationErrorType.DUPLICATE_TDD_ID,
+                DUPLICATE_TDD_ID,
                 String.format("TDD \"%s\" is duplicated.", id.toString())
         );
     }
 
     public static ValidationError forDuplicatedComponent(TddComponentReference componentReference) {
         return new ValidationError(
-                ValidationErrorType.DUPLICATE_COMPONENT_ID,
+                DUPLICATE_COMPONENT_ID,
                 String.format("Component id \"%s\" is duplicated.", componentReference.toString())
         );
     }
@@ -117,21 +117,21 @@ public class ValidationError {
 
     public static ValidationError forAmbiguousTddContentReference(TddComponentReference componentReference, TddId id) {
         return new ValidationError(
-                ValidationErrorType.AMBIGUOUS_TDD_CONTENT_REFERENCE,
+                AMBIGUOUS_TDD_CONTENT_REFERENCE,
                 String.format("Component id \"%s\" has TDD \"%s\" with both text and file fields present.", componentReference.toString(), id.toString())
         );
     }
 
     public static ValidationError forOverriddenByTddContentFile(TddComponentReference componentReference, TddId id, String fileName) {
         return new ValidationError(
-                ValidationErrorType.OVERRIDDEN_BY_TDD_CONTENT_FILE,
+                OVERRIDDEN_BY_TDD_CONTENT_FILE,
                 String.format("TDD content file \"%s\" matching Component id \"%s\" and TDD \"%s\" will override existing TDD text.", fileName, componentReference.toString(), id.toString())
         );
     }
 
     public static ValidationError forMultipleTddContentFilesForTdd(TddComponentReference componentReference, TddId id, List<TddContent> tddContents) {
         return new ValidationError(
-                ValidationErrorType.MULTIPLE_TDD_CONTENT_FILES_REFERENCE_TDD,
+                MULTIPLE_TDD_CONTENT_FILES_REFERENCE_TDD,
                 String.format(
                         "Component id \"%s\" with TDD \"%s\" has the following TDD content files associated with it:\n%s",
                         componentReference.toString(),

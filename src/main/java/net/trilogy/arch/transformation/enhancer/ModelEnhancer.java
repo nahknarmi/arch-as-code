@@ -163,7 +163,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             String destinationId = destination.getId();
             C4Type type = destination.getType();
 
-            if (type.equals(C4Type.PERSON)) {
+            if (type.equals(PERSON)) {
                 Person personDestination = modelMediator.person(destinationId);
                 idGenerator.setNext(r.getId());
                 person.interactsWith(personDestination, r.getDescription(), r.getTechnology());

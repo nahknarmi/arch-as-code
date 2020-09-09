@@ -7,12 +7,12 @@ import java.util.Set;
 
 @EqualsAndHashCode
 public class Diff {
-    final private Diffable before;
-    final private Diffable after;
-    final private Set<? extends Diffable> descendantsBefore;
-    final private Set<? extends Diffable> descendantsAfter;
+    private final Diffable before;
+    private final Diffable after;
+    private final Set<? extends Diffable> descendantsBefore;
+    private final Set<? extends Diffable> descendantsAfter;
     @Getter
-    final private Status status;
+    private final Status status;
 
     public Diff(Diffable before, Diffable after) {
         this.before = before;

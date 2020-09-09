@@ -217,7 +217,7 @@ public class JiraApiTest {
     public void shouldParseJiraResponseOfCreateStories() throws Exception {
         final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
-        when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
+        when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         var actual = jiraApi.createStories(List.of(new JiraStory("", List.of(), List.of())), "", "", "", "".toCharArray());
@@ -242,7 +242,7 @@ public class JiraApiTest {
         List<JiraStory> sampleJiraStories = createSampleJiraStories();
         final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
-        when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
+        when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         // WHEN:
@@ -250,7 +250,7 @@ public class JiraApiTest {
 
         // THEN:
         var captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(mockHttpClient).send(captor.capture(), ArgumentMatchers.any());
+        verify(mockHttpClient).send(captor.capture(), any());
 
         String expectedBody = loadResource(getClass(), JSON_JIRA_CREATE_STORIES_REQUEST_EXPECTED_BODY);
         String actualBody = HttpRequestParserForTests.getBody(captor.getValue());
@@ -303,7 +303,7 @@ public class JiraApiTest {
 
         final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
-        when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
+        when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         // WHEN:
@@ -311,7 +311,7 @@ public class JiraApiTest {
 
         // THEN:
         var captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(mockHttpClient).send(captor.capture(), ArgumentMatchers.any());
+        verify(mockHttpClient).send(captor.capture(), any());
 
         String expectedBody = loadResource(getClass(), JSON_JIRA_CREATE_STORIES_WITH_TDD_CONTENT_REQUEST_EXPECTED_BODY);
         String actualBody = HttpRequestParserForTests.getBody(captor.getValue());
@@ -327,7 +327,7 @@ public class JiraApiTest {
         // GIVEN:
         final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
-        when(mockedResponse.body()).thenReturn(TestHelper.loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
+        when(mockedResponse.body()).thenReturn(loadResource(getClass(), JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY));
         when(mockHttpClient.send(any(), any())).thenReturn(mockedResponse);
 
         // WHEN:
@@ -335,7 +335,7 @@ public class JiraApiTest {
 
         // THEN:
         var captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(mockHttpClient).send(captor.capture(), ArgumentMatchers.any());
+        verify(mockHttpClient).send(captor.capture(), any());
         final HttpRequest requestMade = captor.getValue();
 
         collector.checkThat(requestMade.method(), equalTo("POST"));

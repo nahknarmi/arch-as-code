@@ -83,7 +83,7 @@ public class WorkspaceReader {
                 .getDeploymentNodes()
                 .stream()
                 .map(DeploymentNodeTransformer::toC4)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Set<C4Component> components(Model model, C4Model c4Model) {

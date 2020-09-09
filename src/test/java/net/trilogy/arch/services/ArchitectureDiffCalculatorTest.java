@@ -192,12 +192,12 @@ public class ArchitectureDiffCalculatorTest {
         var system1 = createSystem("1");
         var container1 = createContainer("2", "1");
         var component1 = createComponent("3", "2");
-        component1.setRelationships(Set.of(ArchitectureDataStructureHelper.createRelationship("r", "100")));
+        component1.setRelationships(Set.of(createRelationship("r", "100")));
 
         var system2 = createSystem("1");
         var container2 = createContainer("2", "1");
         var component2 = createComponent("3", "2");
-        component2.setRelationships(Set.of(ArchitectureDataStructureHelper.createRelationship("r", "999")));
+        component2.setRelationships(Set.of(createRelationship("r", "999")));
 
         var first = getArch(arch, Set.of(), Set.of(system1), Set.of(container1), Set.of(component1), Set.of());
         var second = getArch(arch, Set.of(), Set.of(system2), Set.of(container2), Set.of(component2), Set.of());
