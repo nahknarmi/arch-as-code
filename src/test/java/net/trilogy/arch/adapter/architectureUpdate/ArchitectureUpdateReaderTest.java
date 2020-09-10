@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import static java.util.stream.Collectors.toList;
@@ -34,17 +35,7 @@ public class ArchitectureUpdateReaderTest {
 
     @Test
     public void shouldReadProductArchitectureAndMarkdownFiles() throws Exception {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
-        collector.checkThat(architectureUpdate.getName(), equalTo("test"));
-        collector.checkThat(first(architectureUpdate.getTddContents()), equalTo(new TddContent("" +
-                "## TDD 1.2\n" +
-                "### Content\n" +
-                "**Lorem ipsum** dolor sit amet:\n" +
-                "* consectetur adipiscing elit\n" +
-                "* sed do eiusmod tempor *incididunt ut labore* et dolore magna aliqua\n" +
-                "* et ligula ullamcorper malesuada proin libero nunc consequat\n",
-                "TDD 1.2 : Component-16.md")));
     }
 
     @Test
@@ -71,5 +62,20 @@ public class ArchitectureUpdateReaderTest {
         assertThat(tddContainerByComponent.getTdds().entrySet().size(), equalTo(3));
         final var tdd = tddContainerByComponent.getTdds().get(new TddId("TDD 1.2"));
         assertTrue(tdd.getContent().isPresent());
+    }
+
+    @Test
+    public void tdds_include_file_contents() throws IOException {
+        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
+
+        collector.checkThat(architectureUpdate.getName(), equalTo("test"));
+        collector.checkThat(first(architectureUpdate.getTddContents()), equalTo(new TddContent("" +
+                "## TDD 1.2\n" +
+                "### Content\n" +
+                "**Lorem ipsum** dolor sit amet:\n" +
+                "* consectetur adipiscing elit\n" +
+                "* sed do eiusmod tempor *incididunt ut labore* et dolore magna aliqua\n" +
+                "* et ligula ullamcorper malesuada proin libero nunc consequat\n",
+                "TDD 1.2 : Component-16.md")));
     }
 }

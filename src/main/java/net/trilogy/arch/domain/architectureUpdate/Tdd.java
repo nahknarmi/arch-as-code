@@ -41,6 +41,7 @@ public class Tdd {
     }
 
     public String getDetails() {
+        // TODO: Strong smell -- lazy use of TDD content
         if (content.isPresent()) {
             return content.get().getContent();
         }
