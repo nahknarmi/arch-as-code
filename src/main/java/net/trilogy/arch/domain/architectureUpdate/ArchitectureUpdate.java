@@ -85,8 +85,7 @@ public class ArchitectureUpdate {
             @JsonProperty("p1") P1 p1,
             @JsonProperty("useful-links") List<Link> usefulLinks,
             @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies,
-            @JsonProperty("tddContents") List<TddContent> tddContents
-    ) {
+            @JsonProperty("tddContents") List<TddContent> tddContents) {
         this.name = name;
         this.milestone = milestone;
         this.authors = authors;
@@ -123,8 +122,8 @@ public class ArchitectureUpdate {
     }
 
     public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {
-        return this.toBuilder().capabilityContainer(
-                this.getCapabilityContainer().toBuilder()
+        return toBuilder().capabilityContainer(
+                getCapabilityContainer().toBuilder()
                         .featureStories(
                                 getCapabilityContainer().getFeatureStories().stream()
                                         .map(story -> {
