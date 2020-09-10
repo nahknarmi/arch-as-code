@@ -2,7 +2,6 @@ package net.trilogy.arch.adapter.jira;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
@@ -14,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,6 +30,7 @@ import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_WITH_TDD_CONT
 import static net.trilogy.arch.TestHelper.JSON_JIRA_GET_EPIC;
 import static net.trilogy.arch.TestHelper.JSON_STRUCTURIZR_BIG_BANK;
 import static net.trilogy.arch.TestHelper.loadResource;
+import static net.trilogy.arch.Util.first;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -405,7 +404,7 @@ public class JiraApiTest {
                 HttpRequestParserForTests<ByteBuffer> httpRequestParserForTests = new HttpRequestParserForTests<>();
                 bodyPublisherOfRequestMade.subscribe(httpRequestParserForTests);
                 final List<ByteBuffer> bodyItems = httpRequestParserForTests.getBodyItems();
-                final byte[] array = bodyItems.get(0).array();
+                final byte[] array = first(bodyItems).array();
                 return new String(array);
             } catch (Throwable e) {
                 throw new RuntimeException("Unable to parse body", e);

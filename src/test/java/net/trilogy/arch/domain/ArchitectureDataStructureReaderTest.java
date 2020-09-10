@@ -30,6 +30,7 @@ import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_CONTAINERS
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_PEOPLE;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_SYSTEMS;
+import static net.trilogy.arch.Util.first;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,7 +53,7 @@ public class ArchitectureDataStructureReaderTest {
 
         assertThat(data.getDecisions().size(), is(equalTo(2)));
 
-        var firstDecision = data.getDecisions().get(0);
+        var firstDecision = first(data.getDecisions());
         assertThat(firstDecision.getTitle(), is(equalTo("Docker as the containerization technology platform")));
         assertThat(decisionDate(firstDecision), is(equalTo(LocalDate.of(2018, 11, 29))));
 

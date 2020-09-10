@@ -20,6 +20,7 @@ import java.util.Map;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_ANNOTATOR;
+import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -95,7 +96,7 @@ public class ArchitectureUpdateAnnotatorTest {
         au = annotator.annotateC4Paths(getArchitecture(), au);
 
         // Then
-        assertThat(au.getTddContainersByComponent().get(0).getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller"));
+        assertThat(first(au.getTddContainersByComponent()).getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller"));
         assertThat(au.getTddContainersByComponent().get(1).getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Reset Password Controller"));
     }
 
@@ -113,7 +114,7 @@ public class ArchitectureUpdateAnnotatorTest {
         au = annotator.annotateC4Paths(getArchitecture(), au);
 
         // Then
-        assertThat(au.getTddContainersByComponent().get(0).getComponentPath(), equalTo(null));
+        assertThat(first(au.getTddContainersByComponent()).getComponentPath(), equalTo(null));
     }
 
     @Test
@@ -139,7 +140,7 @@ public class ArchitectureUpdateAnnotatorTest {
         au = annotator.annotateC4Paths(getArchitecture(), au);
 
         // Then
-        assertThat(au.getTddContainersByComponent().get(0).getComponentId().getId(), equalTo("13"));
+        assertThat(first(au.getTddContainersByComponent()).getComponentId().getId(), equalTo("13"));
         assertThat(au.getTddContainersByComponent().get(1).getComponentId().getId(), equalTo("14"));
     }
 
@@ -158,7 +159,7 @@ public class ArchitectureUpdateAnnotatorTest {
         au = annotator.annotateC4Paths(getArchitecture(), au);
 
         // Then
-        assertThat(au.getTddContainersByComponent().get(0).getComponentId(), equalTo(null));
+        assertThat(first(au.getTddContainersByComponent()).getComponentId(), equalTo(null));
     }
 
     @Test

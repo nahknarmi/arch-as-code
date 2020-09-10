@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.c4.C4Location.INTERNAL;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -166,13 +167,12 @@ public class ArchitectureDataStructureTransformerTest {
         Workspace workspace = transformer.toWorkSpace(dataStructure);
 
         ArrayList<Decision> decisions = new ArrayList<>(workspace.getDocumentation().getDecisions());
-        DecisionStatus result = decisions.get(0).getStatus();
+        DecisionStatus result = first(decisions).getStatus();
 
         assertThat(result, equalTo(decisionStatus));
     }
 
-    private C4Model buildModel() {
-
+    private static C4Model buildModel() {
         return new C4Model(
                 ImmutableSet.of(
                         C4Person.builder()

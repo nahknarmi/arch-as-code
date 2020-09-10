@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import static net.trilogy.arch.ArchitectureDataStructureHelper.addSystemWithContainer;
 import static net.trilogy.arch.ArchitectureDataStructureHelper.createSystemWithRelationshipsTo;
 import static net.trilogy.arch.ArchitectureDataStructureHelper.softwareSystem;
+import static net.trilogy.arch.Util.first;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -85,6 +86,6 @@ public class RelationsValidatorTest {
 
         assertThat(validationList, hasSize(1));
 
-        assertThat(validationList.get(0), equalTo("Relation id sys2->1 doesn't have required technology."));
+        assertThat(first(validationList), equalTo("Relation id sys2->1 doesn't have required technology."));
     }
 }

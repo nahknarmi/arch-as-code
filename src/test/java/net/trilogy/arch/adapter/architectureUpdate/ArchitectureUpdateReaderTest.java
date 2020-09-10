@@ -13,6 +13,7 @@ import java.nio.file.Path;
 
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE;
+import static net.trilogy.arch.Util.first;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -36,7 +37,7 @@ public class ArchitectureUpdateReaderTest {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
         collector.checkThat(architectureUpdate.getName(), equalTo("test"));
-        collector.checkThat(architectureUpdate.getTddContents().get(0), equalTo(new TddContent("" +
+        collector.checkThat(first(architectureUpdate.getTddContents()), equalTo(new TddContent("" +
                 "## TDD 1.2\n" +
                 "### Content\n" +
                 "**Lorem ipsum** dolor sit amet:\n" +
@@ -56,7 +57,7 @@ public class ArchitectureUpdateReaderTest {
         collector.checkThat(names.size(), equalTo(1));
 
         final var strayFileInAuDirectory = "notProperlyNamedTddContentFile.txt";
-        collector.checkThat(names.get(0), not(containsString(strayFileInAuDirectory)));
+        collector.checkThat(first(names), not(containsString(strayFileInAuDirectory)));
     }
 
     @Test
@@ -64,7 +65,7 @@ public class ArchitectureUpdateReaderTest {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
         assertThat(architectureUpdate.getTddContainersByComponent().size(), equalTo(1));
-        final var tddContainerByComponent = architectureUpdate.getTddContainersByComponent().get(0);
+        final var tddContainerByComponent = first(architectureUpdate.getTddContainersByComponent());
 
         assertThat(tddContainerByComponent.getComponentId().getId(), equalTo("16"));
         assertThat(tddContainerByComponent.getTdds().entrySet().size(), equalTo(3));

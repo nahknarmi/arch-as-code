@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION;
+import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -36,7 +37,7 @@ public class JiraStoryTest {
         var au = getAu();
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
         final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
@@ -87,7 +88,7 @@ public class JiraStoryTest {
         ));
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
         final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
@@ -128,7 +129,7 @@ public class JiraStoryTest {
     public void shouldThrowIfInvalidRequirement() throws Exception {
         // GIVEN
         var au = getAuWithInvalidRequirement();
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
         new JiraStory(au, getArchitectureBeforeAu(), getArchitectureAfterAu(), featureStory);
@@ -144,7 +145,7 @@ public class JiraStoryTest {
 
         architectureAfterAu.getModel().getComponents().forEach(c -> c.setPath((String) null));
 
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
         new JiraStory(au, getArchitectureBeforeAu(), architectureAfterAu, featureStory);
@@ -158,7 +159,7 @@ public class JiraStoryTest {
         // GIVEN
         var au = getAuWithInvalidComponent();
 
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
         new JiraStory(au, getArchitectureBeforeAu(), getArchitectureAfterAu(), featureStory);
@@ -172,7 +173,7 @@ public class JiraStoryTest {
         // GIVEN
         var au = getAu();
 
-        var featureStory = au.getCapabilityContainer().getFeatureStories().get(0);
+        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
         featureStory = featureStory.toBuilder().tddReferences(List.of(new TddId("Invalid TDD ID"))).build();
 
         // WHEN
@@ -197,7 +198,7 @@ public class JiraStoryTest {
         return YAML_OBJECT_MAPPER.readValue(archAsString, ArchitectureDataStructure.class);
     }
 
-    private ArchitectureUpdate getAu() {
+    private static ArchitectureUpdate getAu() {
         return ArchitectureUpdate.builderPreFilledWithBlanks()
                 .tddContainersByComponent(List.of(
                         new TddContainerByComponent(
@@ -224,22 +225,22 @@ public class JiraStoryTest {
                 .build();
     }
 
-    private ArchitectureUpdate getAuWithTddContent(List<TddContent> tddContents) {
+    private static ArchitectureUpdate getAuWithTddContent(List<TddContent> tddContents) {
         return getAu().toBuilder().tddContents(tddContents).build();
     }
 
-    private ArchitectureUpdate getAuWithInvalidComponent() {
+    private static ArchitectureUpdate getAuWithInvalidComponent() {
         return changeAllTddsToBeUnderComponent("1231231323123", getAu());
     }
 
-    private ArchitectureUpdate getAuWithInvalidRequirement() {
+    private static ArchitectureUpdate getAuWithInvalidRequirement() {
         return getAu().toBuilder().functionalRequirements(
                 Map.of(new FunctionalRequirementId("different id than the reference in the story"),
                         new FunctionalRequirement("any text", "any source", List.of())))
                 .build();
     }
 
-    private ArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, ArchitectureUpdate au) {
+    private static ArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, ArchitectureUpdate au) {
         var oldTdds = new HashMap<TddId, Tdd>();
         for (var container : au.getTddContainersByComponent()) {
             oldTdds.putAll(container.getTdds());

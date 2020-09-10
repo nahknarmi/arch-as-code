@@ -40,6 +40,7 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.execute;
+import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
@@ -286,7 +287,7 @@ public class AuPublishStoriesCommandTest {
         final var originalAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, ArchitectureUpdate.class);
         final var expectedAu = originalAu.addJiraToFeatureStory(
-                originalAu.getCapabilityContainer().getFeatureStories().get(0), new Jira("ABC-123", "link-to-ABC-123"));
+                first(originalAu.getCapabilityContainer().getFeatureStories()), new Jira("ABC-123", "link-to-ABC-123"));
 
         collector.checkThat(actualAu, equalTo(expectedAu));
     }
@@ -406,7 +407,7 @@ public class AuPublishStoriesCommandTest {
         collector.checkThat(status, not(equalTo(0)));
     }
 
-    private List<JiraStory> getExpectedJiraStoriesToCreate() {
+    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
         return List.of(
                 new JiraStory(
                         "story that should be created",
@@ -442,7 +443,7 @@ public class AuPublishStoriesCommandTest {
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
     }
 
-    private List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
         final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md");
         final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
         tdd.setContent(Optional.of(tddContent));
