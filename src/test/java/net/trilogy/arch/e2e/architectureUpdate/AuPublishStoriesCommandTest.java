@@ -32,7 +32,6 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import static java.lang.System.setErr;
 import static java.lang.System.setOut;
@@ -73,6 +72,62 @@ public class AuPublishStoriesCommandTest {
     private Application app;
     private FilesFacade spiedFilesFacade;
     private GitInterface mockedGitInterface;
+
+    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
+        return List.of(
+                new JiraStory(
+                        "story that should be created",
+                        List.of(
+                                new JiraStory.JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                                        null),
+                                new JiraStory.JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID-2]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/E-mail Component",
+                                        null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
+                new JiraStory(
+                        "story that failed to be created",
+                        singletonList(new JiraStory.JiraTdd(
+                                new TddId("[SAMPLE-TDD-ID]"),
+                                new Tdd("[SAMPLE TDD TEXT]", null),
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+    }
+
+    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md");
+        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
+        tdd.setContent(tddContent);
+
+        return singletonList(new JiraStory(
+                "story that should be created",
+                singletonList(new JiraStory.JiraTdd(
+                        new TddId("TDD 1.0"),
+                        tdd,
+                        "c4://Internet Banking System/API Application/Sign In Controller",
+                        tddContent)),
+                singletonList(new JiraFunctionalRequirement(
+                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                        new FunctionalRequirement(
+                                "[SAMPLE REQUIREMENT TEXT]",
+                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                singletonList(new TddId("TDD 1.0")))))));
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -405,62 +460,6 @@ public class AuPublishStoriesCommandTest {
                 err.toString(),
                 equalTo("Unable to write update to AU.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
-    }
-
-    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
-        return List.of(
-                new JiraStory(
-                        "story that should be created",
-                        List.of(
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/Reset Password Controller",
-                                        null),
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID-2]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/E-mail Component",
-                                        null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
-                new JiraStory(
-                        "story that failed to be created",
-                        singletonList(new JiraStory.JiraTdd(
-                                new TddId("[SAMPLE-TDD-ID]"),
-                                new Tdd("[SAMPLE TDD TEXT]", null),
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
-    }
-
-    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
-        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md");
-        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
-        tdd.setContent(Optional.of(tddContent));
-
-        return singletonList(new JiraStory(
-                "story that should be created",
-                singletonList(new JiraStory.JiraTdd(
-                        new TddId("TDD 1.0"),
-                        tdd,
-                        "c4://Internet Banking System/API Application/Sign In Controller",
-                        tddContent)),
-                singletonList(new JiraFunctionalRequirement(
-                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                        new FunctionalRequirement(
-                                "[SAMPLE REQUIREMENT TEXT]",
-                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                singletonList(new TddId("TDD 1.0")))))));
     }
 
     private void mockGitInterface() throws IOException, GitAPIException, GitInterface.BranchNotFoundException {

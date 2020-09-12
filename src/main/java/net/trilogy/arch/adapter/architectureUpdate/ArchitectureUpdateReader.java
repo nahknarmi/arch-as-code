@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
@@ -35,19 +34,20 @@ public class ArchitectureUpdateReader {
         return assignTddContents(au, getTddContent(path));
     }
 
-    private ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
+    private static ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
         au.getTddContainersByComponent().forEach(componentTdds -> componentTdds.getTdds().forEach((tddId, tdd) -> {
-            Optional<TddContent> tddContent = contentByMatchingIds(tddContents, componentTdds, tddId);
+            final var tddContent = contentByMatchingIds(tddContents, componentTdds, tddId);
             tdd.setContent(tddContent);
         }));
         return au;
     }
 
-    private Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
+    private static TddContent contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
         return tddContents.stream()
                 .filter(content -> content.getTdd().equals(tddId.toString()))
                 .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
-                .findFirst();
+                .findFirst()
+                .orElse(null);
     }
 
     private List<TddContent> getTddContent(Path path) {

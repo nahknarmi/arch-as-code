@@ -32,12 +32,12 @@ public class JiraStory {
                      ArchitectureDataStructure beforeAuArchitecture,
                      ArchitectureDataStructure afterAuArchitecture,
                      FeatureStory featureStory) throws InvalidStoryException {
-        this.title = featureStory.getTitle();
-        this.tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
-        this.functionalRequirements = getFunctionalRequirements(au, featureStory);
+        title = featureStory.getTitle();
+        tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+        functionalRequirements = getFunctionalRequirements(au, featureStory);
     }
 
-    private List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
+    private static List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
         final var requirements = new ArrayList<JiraFunctionalRequirement>();
         for (var reqId : featureStory.getRequirementReferences()) {
             if (!au.getFunctionalRequirements().containsKey(reqId))
@@ -47,7 +47,7 @@ public class JiraStory {
         return requirements;
     }
 
-    private List<JiraTdd> getTdds(
+    private static List<JiraTdd> getTdds(
             ArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
             FeatureStory featureStory
@@ -75,9 +75,9 @@ public class JiraStory {
         return tdds;
     }
 
-    private Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
-                                              ArchitectureDataStructure afterAuArchitecture,
-                                              TddContainerByComponent tddContainerByComponent) {
+    private static Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
+                                                     ArchitectureDataStructure afterAuArchitecture,
+                                                     TddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
             if (tddContainerByComponent.isDeleted())

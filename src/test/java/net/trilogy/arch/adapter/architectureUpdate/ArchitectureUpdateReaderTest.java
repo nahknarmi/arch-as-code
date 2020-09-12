@@ -12,7 +12,6 @@ import org.junit.rules.ErrorCollector;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE;
@@ -22,7 +21,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ArchitectureUpdateReaderTest {
     @Rule
@@ -59,7 +57,7 @@ public class ArchitectureUpdateReaderTest {
         assertThat(tddContainerByComponent.getComponentId().getId(), equalTo("16"));
         assertThat(tddContainerByComponent.getTdds().entrySet().size(), equalTo(3));
         final var tdd = tddContainerByComponent.getTdds().get(new TddId("TDD 1.2"));
-        assertTrue(tdd.getContent().isPresent());
+        assertNotNull(tdd.getContent());
     }
 
     @Test
@@ -83,9 +81,9 @@ public class ArchitectureUpdateReaderTest {
 
         final Tdd tdd = first(architectureUpdate.getTddContainersByComponent()).getTdds().get(new TddId("TDD 1.2"));
         assertNotNull(tdd);
-        final Optional<TddContent> expectedContents = tdd.getContent();
-        assertTrue(expectedContents.isPresent());
-        collector.checkThat(expectedContents.get(), equalTo(new TddContent("" +
+        final TddContent expectedContents = tdd.getContent();
+        assertNotNull(expectedContents);
+        collector.checkThat(expectedContents, equalTo(new TddContent("" +
                 "## TDD 1.2\n" +
                 "### Content\n" +
                 "**Lorem ipsum** dolor sit amet:\n" +
