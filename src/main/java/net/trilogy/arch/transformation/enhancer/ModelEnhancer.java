@@ -27,12 +27,81 @@ import java.util.function.Function;
 import static java.util.Optional.ofNullable;
 import static net.trilogy.arch.domain.c4.C4Action.DELIVERS;
 import static net.trilogy.arch.domain.c4.C4Action.INTERACTS_WITH;
-import static net.trilogy.arch.domain.c4.C4Model.NONE;
+import static net.trilogy.arch.domain.c4.C4Model.EMPTY;
 import static net.trilogy.arch.domain.c4.C4Type.PERSON;
 
 public class ModelEnhancer implements WorkspaceEnhancer {
     private final FunctionalIdGenerator idGenerator = new FunctionalIdGenerator();
 
+    private static void addPeople(C4Model dataStructureModel, ModelMediator modelMediator) {
+        ofNullable(dataStructureModel)
+                .orElse(EMPTY)
+                .getPeople()
+                .forEach(modelMediator::addPerson);
+    }
+
+    private static void addSystems(C4Model dataStructureModel, ModelMediator modelMediator) {
+        ofNullable(dataStructureModel)
+                .orElse(EMPTY)
+                .getSystems()
+                .forEach(modelMediator::addSoftwareSystem);
+    }
+
+    private static void addContainers(C4Model dataStructureModel, ModelMediator modelMediator) {
+        dataStructureModel.getContainers().forEach(cont -> {
+            C4SoftwareSystem sys = getSoftwareSystem(dataStructureModel, cont);
+            modelMediator.addContainer(sys, cont);
+        });
+    }
+
+    private static void addComponents(C4Model dataStructureModel, ModelMediator modelMediator) {
+        dataStructureModel.getComponents().forEach(comp -> {
+            C4Container cont = getContainer(dataStructureModel, comp);
+            modelMediator.addComponent(cont, comp);
+        });
+    }
+
+    private static void addDeploymentNodes(C4Model dataStructureModel, ModelMediator modelMediator) {
+        dataStructureModel.getDeploymentNodes().forEach(dNode -> modelMediator.addDeploymentNode(dataStructureModel, dNode));
+    }
+
+    private static C4Container getContainer(C4Model dataStructureModel, C4Component comp) {
+        Entity result;
+        if (comp.getContainerId() != null) {
+            String id = comp.getContainerId();
+            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
+        } else if (comp.getContainerAlias() != null) {
+            result = dataStructureModel.findEntityByAlias(comp.getContainerAlias());
+        } else {
+            throw new IllegalStateException("Container containerId and containerAlias are both missing: " + comp);
+        }
+
+        if (result instanceof C4Container) {
+            return (C4Container) result;
+        } else {
+            throw new IllegalStateException("Container containerId/systemAlias is not referencing system: " + comp);
+        }
+    }
+
+    private static C4SoftwareSystem getSoftwareSystem(C4Model dataStructureModel, C4Container cont) {
+        Entity result;
+        if (cont.getSystemId() != null) {
+            String id = cont.getSystemId();
+            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
+        } else if (cont.getSystemAlias() != null) {
+            result = dataStructureModel.findEntityByAlias(cont.getSystemAlias());
+        } else {
+            throw new IllegalStateException("Container systemId and systemAlias are both missing: " + cont);
+        }
+
+        if (result instanceof C4SoftwareSystem) {
+            return (C4SoftwareSystem) result;
+        } else {
+            throw new IllegalStateException("Container systemId/systemAlias is not referencing system: " + cont);
+        }
+    }
+
+    @Override
     public void enhance(Workspace workspace, ArchitectureDataStructure dataStructure) {
         Model workspaceModel = workspace.getModel();
         C4Model dataStructureModel = dataStructure.getModel();
@@ -46,38 +115,6 @@ public class ModelEnhancer implements WorkspaceEnhancer {
         addComponents(dataStructureModel, modelMediator);
         addRelationships(dataStructureModel, modelMediator);
         addDeploymentNodes(dataStructureModel, modelMediator);
-    }
-
-    private void addPeople(C4Model dataStructureModel, ModelMediator modelMediator) {
-        ofNullable(dataStructureModel)
-                .orElse(NONE)
-                .getPeople()
-                .forEach(modelMediator::addPerson);
-    }
-
-    private void addSystems(C4Model dataStructureModel, ModelMediator modelMediator) {
-        ofNullable(dataStructureModel)
-                .orElse(NONE)
-                .getSystems()
-                .forEach(modelMediator::addSoftwareSystem);
-    }
-
-    private void addContainers(C4Model dataStructureModel, ModelMediator modelMediator) {
-        dataStructureModel.getContainers().forEach(cont -> {
-            C4SoftwareSystem sys = getSoftwareSystem(dataStructureModel, cont);
-            modelMediator.addContainer(sys, cont);
-        });
-    }
-
-    private void addComponents(C4Model dataStructureModel, ModelMediator modelMediator) {
-        dataStructureModel.getComponents().forEach(comp -> {
-            C4Container cont = getContainer(dataStructureModel, comp);
-            modelMediator.addComponent(cont, comp);
-        });
-    }
-
-    private void addDeploymentNodes(C4Model dataStructureModel, ModelMediator modelMediator) {
-        dataStructureModel.getDeploymentNodes().forEach(dNode -> modelMediator.addDeploymentNode(dataStructureModel, dNode));
     }
 
     private void addRelationships(C4Model dataStructureModel, ModelMediator modelMediator) {
@@ -170,42 +207,6 @@ public class ModelEnhancer implements WorkspaceEnhancer {
             } else {
                 throw new IllegalStateException("Action INTERACTS_WITH supported only with type person, not: " + type);
             }
-        }
-    }
-
-    private C4Container getContainer(C4Model dataStructureModel, C4Component comp) {
-        Entity result;
-        if (comp.getContainerId() != null) {
-            String id = comp.getContainerId();
-            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
-        } else if (comp.getContainerAlias() != null) {
-            result = dataStructureModel.findEntityByAlias(comp.getContainerAlias());
-        } else {
-            throw new IllegalStateException("Container containerId and containerAlias are both missing: " + comp);
-        }
-
-        if (result instanceof C4Container) {
-            return (C4Container) result;
-        } else {
-            throw new IllegalStateException("Container containerId/systemAlias is not referencing system: " + comp);
-        }
-    }
-
-    private C4SoftwareSystem getSoftwareSystem(C4Model dataStructureModel, C4Container cont) {
-        Entity result;
-        if (cont.getSystemId() != null) {
-            String id = cont.getSystemId();
-            result = dataStructureModel.findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
-        } else if (cont.getSystemAlias() != null) {
-            result = dataStructureModel.findEntityByAlias(cont.getSystemAlias());
-        } else {
-            throw new IllegalStateException("Container systemId and systemAlias are both missing: " + cont);
-        }
-
-        if (result instanceof C4SoftwareSystem) {
-            return (C4SoftwareSystem) result;
-        } else {
-            throw new IllegalStateException("Container systemId/systemAlias is not referencing system: " + cont);
         }
     }
 }

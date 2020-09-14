@@ -38,7 +38,7 @@ public class ArchitectureDataStructure {
     private List<DocumentationImage> documentationImages = ImmutableList.of();
     @NonNull
     @Builder.Default
-    private C4Model model = C4Model.NONE;
+    private C4Model model = C4Model.EMPTY;
 
     public Set<Entity> getAllWithTag(C4Tag tag) {
         return model.findWithTag(tag);
