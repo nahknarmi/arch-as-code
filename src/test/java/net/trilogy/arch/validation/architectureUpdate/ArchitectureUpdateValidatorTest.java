@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
@@ -45,7 +44,6 @@ import static net.trilogy.arch.validation.architectureUpdate.ValidationError.for
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedComponent;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedTdd;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forFunctionalRequirementsMustBeValidReferences;
-import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMultipleTddContentFilesForTdd;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMustHaveStories;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNotAvailableLink;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forOverriddenByTddContentFile;
@@ -501,13 +499,13 @@ public class ArchitectureUpdateValidatorTest {
         String noErrorFilename = "TDD 2.1 : Component-10.md";
 
         Tdd tdd1_1 = new Tdd("overridden-text", null);
-        tdd1_1.setContent(Optional.of(new TddContent("contents", errorFilename1)));
+        tdd1_1.setContent(new TddContent("contents", errorFilename1));
         Tdd tdd1_2 = new Tdd("", null);
-        tdd1_2.setContent(Optional.of(new TddContent("contents", errorFilename2)));
+        tdd1_2.setContent(new TddContent("contents", errorFilename2));
         Tdd tdd2_1 = new Tdd(null, noErrorFilename);
-        tdd2_1.setContent(Optional.of(new TddContent("contents", noErrorFilename)));
+        tdd2_1.setContent(new TddContent("contents", noErrorFilename));
 
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
                         new TddComponentReference("10"),
                         null, false,

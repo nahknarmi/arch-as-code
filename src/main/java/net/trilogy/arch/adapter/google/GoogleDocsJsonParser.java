@@ -12,7 +12,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static net.trilogy.arch.Util.first;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 class GoogleDocsJsonParser {
     private static final String MILESTONE_ROW_HEADER = "Milestone";
     private static final String P1_JIRA_TICKET_ROW_HEADER = "P1 Jira Ticket";
@@ -22,15 +21,15 @@ class GoogleDocsJsonParser {
     private static final String P1_REQUIREMENTS_START_WITH = "P1";
 
     private final JsonNode json;
-    private Optional<Table> metaDataTable;
-    private Optional<JsonNode> content;
+    private Table metaDataTable;
+    private JsonNode content;
     private List<Table> rootLevelTables;
 
     GoogleDocsJsonParser(JsonNode json) {
         this.json = json;
-        this.metaDataTable = Optional.empty();
-        this.content = Optional.empty();
-        this.rootLevelTables = null;
+        metaDataTable = null;
+        content = null;
+        rootLevelTables = null;
     }
 
     private static String getCombinedText(List<TextRun> runs) {
@@ -72,18 +71,18 @@ class GoogleDocsJsonParser {
     }
 
     private Optional<JsonNode> getContent() {
-        if (this.content.isPresent()) return content;
+        if (null != content) return Optional.of(content);
 
-        if (!this.json.hasNonNull("body")) return Optional.empty();
-        if (!this.json.get("body").hasNonNull("content"))
+        if (!json.hasNonNull("body")) return Optional.empty();
+        if (!json.get("body").hasNonNull("content"))
             return Optional.empty();
 
-        this.content = Optional.of(this.json.get("body").get("content"));
-        return this.content;
+        content = json.get("body").get("content");
+        return Optional.of(content);
     }
 
     private Optional<Table> getMetaDataTable() {
-        if (metaDataTable.isPresent()) return metaDataTable;
+        if (null != metaDataTable) return Optional.of(metaDataTable);
 
         for (Table table : getAllRootLevelTables()) {
             for (JsonNode row : table.getRows()) {
@@ -92,8 +91,8 @@ class GoogleDocsJsonParser {
                 var firstCell = first(row.get("tableCells"));
                 String text = getCombinedText(getTextRuns(firstCell));
                 if (text.equalsIgnoreCase(MILESTONE_ROW_HEADER)) {
-                    this.metaDataTable = Optional.of(table);
-                    return this.metaDataTable;
+                    metaDataTable = table;
+                    return Optional.of(metaDataTable);
                 }
             }
         }
@@ -156,7 +155,7 @@ class GoogleDocsJsonParser {
     }
 
     private List<Table> getAllRootLevelTables() {
-        if (this.rootLevelTables != null) return this.rootLevelTables;
+        if (rootLevelTables != null) return rootLevelTables;
 
         List<Table> tablesFound = new ArrayList<>();
 
@@ -171,8 +170,8 @@ class GoogleDocsJsonParser {
             tablesFound.add(new Table(tableNode));
         }
 
-        this.rootLevelTables = tablesFound;
-        return this.rootLevelTables;
+        rootLevelTables = tablesFound;
+        return rootLevelTables;
     }
 
     public Optional<String> getExecutiveSummary() {

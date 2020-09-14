@@ -12,25 +12,25 @@ public class FunctionalIdGenerator implements IdGenerator {
     private Function<Relationship, String> defaultFunctionForRelationships;
 
     public FunctionalIdGenerator() {
-        this.nextValue = null;
-        this.defaultFunctionForRelationships = null;
+        nextValue = null;
+        defaultFunctionForRelationships = null;
     }
 
     public void setNext(String id) {
-        this.nextValue = id;
+        nextValue = id;
     }
 
     private Optional<String> consumeNextValue() {
-        var temp = this.nextValue;
-        this.nextValue = null;
+        var temp = nextValue;
+        nextValue = null;
         return Optional.ofNullable(temp);
     }
 
     private Optional<String> useDefaultFunctionForRelationships(Relationship r) {
-        if (this.defaultFunctionForRelationships == null) {
+        if (defaultFunctionForRelationships == null) {
             return Optional.empty();
         }
-        return Optional.of(this.defaultFunctionForRelationships.apply(r));
+        return Optional.of(defaultFunctionForRelationships.apply(r));
     }
 
     @Override
@@ -50,11 +50,11 @@ public class FunctionalIdGenerator implements IdGenerator {
     }
 
     public void setDefaultForRelationships(Function<Relationship, String> func) {
-        this.defaultFunctionForRelationships = func;
+        defaultFunctionForRelationships = func;
     }
 
     public void clearDefaultForRelationships() {
-        this.defaultFunctionForRelationships = null;
+        defaultFunctionForRelationships = null;
     }
 
     public static class NoNextIdSetException extends RuntimeException {

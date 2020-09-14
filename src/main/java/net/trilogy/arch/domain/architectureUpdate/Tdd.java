@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
@@ -27,7 +27,7 @@ public class Tdd {
     @Getter
     @Setter
     @JsonIgnore
-    private Optional<TddContent> content = Optional.empty();
+    private TddContent content = null;
 
     @JsonCreator(mode = PROPERTIES)
     public Tdd(@JsonProperty("text") String text,
@@ -41,11 +41,7 @@ public class Tdd {
     }
 
     public String getDetails() {
-        // TODO: Strong smell -- lazy use of TDD content
-        if (content.isPresent()) {
-            return content.get().getContent();
-        }
-        return text;
+        return null == content ? text : content.getContent();
     }
 
     @EqualsAndHashCode
@@ -66,7 +62,7 @@ public class Tdd {
         }
 
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 
@@ -82,7 +78,7 @@ public class Tdd {
         }
 
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 }

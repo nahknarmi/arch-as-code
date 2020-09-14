@@ -12,12 +12,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
@@ -32,24 +30,20 @@ public class ArchitectureUpdateReader {
         return assignTddContents(au, getTddContent(path));
     }
 
-    private ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
+    private static ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
         au.getTddContainersByComponent().forEach(componentTdds -> componentTdds.getTdds().forEach((tddId, tdd) -> {
-            Optional<TddContent> tddContent = contentByMatchingIds(tddContents, componentTdds, tddId);
+            final var tddContent = contentByMatchingIds(tddContents, componentTdds, tddId);
             tdd.setContent(tddContent);
         }));
         return au;
     }
 
-    Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
-        List<TddContent> found = tddContents.stream()
+    static TddContent contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
+        return tddContents.stream()
                 .filter(content -> content.getTdd().equals(tddId.toString()))
                 .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
-                .collect(toUnmodifiableList());
-        switch(found.size()) {
-            case 0: return Optional.empty();
-            case 1: return Optional.of(found.get(0));
-            default: throw new IllegalArgumentException("TODO: Rethink use of exception here");
-        }
+                .findFirst()
+                .orElse(null);
     }
 
     private List<TddContent> getTddContent(Path path) {

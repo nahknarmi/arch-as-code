@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
+
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -31,12 +33,12 @@ public class JiraStory {
                      ArchitectureDataStructure beforeAuArchitecture,
                      ArchitectureDataStructure afterAuArchitecture,
                      FeatureStory featureStory) throws InvalidStoryException {
-        this.title = featureStory.getTitle();
-        this.tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
-        this.functionalRequirements = getFunctionalRequirements(au, featureStory);
+        title = featureStory.getTitle();
+        tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+        functionalRequirements = getFunctionalRequirements(au, featureStory);
     }
 
-    private List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
+    private static List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
         final var requirements = new ArrayList<JiraFunctionalRequirement>();
         for (var reqId : featureStory.getRequirementReferences()) {
             if (!au.getFunctionalRequirements().containsKey(reqId))
@@ -46,7 +48,7 @@ public class JiraStory {
         return requirements;
     }
 
-    private List<JiraTdd> getTdds(
+    private static List<JiraTdd> getTdds(
             ArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
             FeatureStory featureStory
@@ -58,14 +60,12 @@ public class JiraStory {
                     .stream()
                     .filter(container -> container.getTdds().containsKey(tddId))
                     .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
-                    .map(container ->
-                            JiraTdd.constructFrom(
-                                    tddId,
-                                    container.getTdds().get(tddId),
-                                    getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                                    container.getTdds().get(tddId).getContent()
-                            )
-                    ).findAny()
+                    .map(container -> jiraTddFrom(
+                            tddId,
+                            container.getTdds().get(tddId),
+                            getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                            container.getTdds().get(tddId).getContent()))
+                    .findAny()
                     .orElseThrow(InvalidStoryException::new);
             tdds.add(tdd);
         }
@@ -73,9 +73,9 @@ public class JiraStory {
         return tdds;
     }
 
-    private Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
-                                              ArchitectureDataStructure afterAuArchitecture,
-                                              TddContainerByComponent tddContainerByComponent) {
+    private static Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
+                                                     ArchitectureDataStructure afterAuArchitecture,
+                                                     TddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
             if (tddContainerByComponent.isDeleted())
@@ -104,8 +104,8 @@ public class JiraStory {
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd constructFrom(TddId id, Tdd tdd, String component, Optional<TddContent> tddContent) {
-            return new JiraTdd(id, tdd, component, tddContent.orElse(null));
+        public static JiraTdd jiraTddFrom(TddId id, Tdd tdd, String component, TddContent tddContent) {
+            return new JiraTdd(id, tdd, component, tddContent);
         }
 
         public String getId() {

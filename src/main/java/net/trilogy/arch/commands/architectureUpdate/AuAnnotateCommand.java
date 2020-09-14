@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter.exportArchitectureUpdate;
+import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateC4Paths;
+import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateTddContentFiles;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -50,22 +52,19 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
     public Integer call() {
         logArgs();
 
-        ArchitectureUpdateAnnotator annotator = new ArchitectureUpdateAnnotator();
-
         var au = loadAu(architectureUpdateDirectory);
         if (au.isEmpty()) return 2;
 
         final var architecture = loadArchitectureOrPrintError("Unable to load Architecture product-architecture.yml.");
         if (architecture.isEmpty()) return 2;
 
-        if (annotator.isComponentsEmpty(architecture.get(), au.get())) {
+        if (ArchitectureUpdateAnnotator.isComponentsEmpty(architecture.get(), au.get())) {
             printError("No valid components to annotate.");
             return 1;
         }
 
-        ArchitectureUpdate architectureUpdate = annotator.annotateC4Paths(architecture.get(), au.get());
-
-        architectureUpdate = annotator.annotateTddContentFiles(architectureUpdate);
+        var architectureUpdate = annotateC4Paths(architecture.get(), au.get());
+        architectureUpdate = annotateTddContentFiles(architectureUpdate);
 
         try {
             exportArchitectureUpdate(architectureUpdate, architectureUpdateDirectory.toPath(), filesFacade);

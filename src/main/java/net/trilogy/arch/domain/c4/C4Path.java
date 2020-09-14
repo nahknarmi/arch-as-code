@@ -51,7 +51,7 @@ public class C4Path {
 
     C4Path(String path) {
         this.path = path;
-        this.matcher = matcher();
+        matcher = matcher();
     }
 
     public static C4Path path(String path) {
@@ -77,12 +77,12 @@ public class C4Path {
     }
 
     private Matcher matcher() {
-        if (this.matcher == null) {
-            this.matcher = pattern.matcher(this.path);
+        if (matcher == null) {
+            matcher = pattern.matcher(path);
             boolean found = matcher.find();
-            checkArgument(found, String.format("Path does not match expected pattern. (%s)", this.path));
+            checkArgument(found, String.format("Path does not match expected pattern. (%s)", path));
         }
-        return this.matcher;
+        return matcher;
     }
 
     public String name() {
@@ -97,30 +97,30 @@ public class C4Path {
                 break;
 
             case CONTAINER:
-                result = containerName().get();
+                result = containerName().orElse(null);
                 break;
 
             case COMPONENT:
-                result = componentName().get();
+                result = componentName().orElse(null);
                 break;
         }
         return result;
     }
 
     public C4Type type() {
-        if (this.personName() != null) {
+        if (personName() != null) {
             return PERSON;
         }
 
-        if (this.componentName().isPresent()) {
+        if (componentName().isPresent()) {
             return COMPONENT;
         }
 
-        if (this.containerName().isPresent()) {
+        if (containerName().isPresent()) {
             return CONTAINER;
         }
 
-        if (this.systemName() != null) {
+        if (systemName() != null) {
             return SYSTEM;
         }
 
@@ -128,7 +128,7 @@ public class C4Path {
     }
 
     public String personName() {
-        if (this.path.startsWith(PERSON_PREFIX)) {
+        if (path.startsWith(PERSON_PREFIX)) {
             return matcher().group(SYSTEM_OR_PERSON_GROUP_NUMBER).replaceAll("\\\\/", "/");
         }
 
@@ -136,7 +136,7 @@ public class C4Path {
     }
 
     public String systemName() {
-        if (this.path.startsWith(ENTITY_PREFIX)) {
+        if (path.startsWith(ENTITY_PREFIX)) {
             return matcher().group(SYSTEM_OR_PERSON_GROUP_NUMBER).replaceAll("\\\\/", "/");
         }
 
@@ -144,7 +144,7 @@ public class C4Path {
     }
 
     public Optional<String> containerName() {
-        if (this.path.startsWith(ENTITY_PREFIX)) {
+        if (path.startsWith(ENTITY_PREFIX)) {
             return ofNullable(matcher().group(CONTAINER_GROUP_NUMBER)).map(name -> name.replaceAll("\\\\/", "/"));
         }
 
@@ -152,7 +152,7 @@ public class C4Path {
     }
 
     public Optional<String> componentName() {
-        if (this.path.startsWith(ENTITY_PREFIX)) {
+        if (path.startsWith(ENTITY_PREFIX)) {
             return ofNullable(matcher().group(COMPONENT_GROUP_NUMBER)).map(name -> name.replaceAll("\\\\/", "/"));
         }
 
@@ -161,14 +161,14 @@ public class C4Path {
 
     public C4Path containerPath() {
         if (containerName().isEmpty()) {
-            throw new IllegalStateException("Container path does not exist on this path - " + this.getPath());
+            throw new IllegalStateException("Container path does not exist on this path - " + getPath());
         }
         return new C4Path(systemPath().getPath() + "/" + containerName().get().replaceAll("/", "\\\\/"));
     }
 
     public C4Path componentPath() {
         if (componentName().isEmpty()) {
-            throw new IllegalStateException("Component path does not exist on this path - " + this.getPath());
+            throw new IllegalStateException("Component path does not exist on this path - " + getPath());
         }
         return new C4Path(containerPath().getPath() + "/" + componentName().get().replaceAll("/", "\\\\/"));
     }

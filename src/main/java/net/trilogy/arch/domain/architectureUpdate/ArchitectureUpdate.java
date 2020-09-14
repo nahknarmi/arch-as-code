@@ -12,8 +12,7 @@ import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.Function
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 import static java.util.stream.Collectors.toList;
@@ -96,15 +95,6 @@ public class ArchitectureUpdate {
         this.milestoneDependencies = milestoneDependencies;
     }
 
-    public List<TddContent> listTddContents() {
-        return getTddContainersByComponent().stream()
-                .flatMap(it -> it.getTdds().values().stream())
-                .map(Tdd::getContent)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(toList());
-    }
-
     public static ArchitectureUpdateBuilder builderPreFilledWithBlanks() {
         return ArchitectureUpdate.builder()
                 .name("[SAMPLE NAME]")
@@ -125,6 +115,14 @@ public class ArchitectureUpdate {
         return builderPreFilledWithBlanks().build();
     }
 
+    public List<TddContent> listTddContents() {
+        return getTddContainersByComponent().stream()
+                .flatMap(it -> it.getTdds().values().stream())
+                .map(Tdd::getContent)
+                .filter(Objects::isNull)
+                .collect(toList());
+    }
+
     public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {
         return toBuilder().capabilityContainer(
                 getCapabilityContainer().toBuilder()
@@ -136,7 +134,7 @@ public class ArchitectureUpdate {
                                             }
                                             return story;
                                         })
-                                        .collect(Collectors.toList()))
+                                        .collect(toList()))
                         .build())
                 .build();
     }

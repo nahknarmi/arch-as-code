@@ -16,7 +16,26 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class ArchitectureUpdateAnnotator {
-    public ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
+    private static List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
+        return withUpdatedIds.stream().map(c -> {
+            Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c.getComponentId() != null && c4c.getId().equals(c.getComponentId().getId())).findFirst();
+            return c4Component.map(component -> new TddContainerByComponent(c.getComponentId(), component.getPath().getPath(), c.isDeleted(), c.getTdds())).orElse(c);
+        }).collect(toList());
+    }
+
+    private static Tdd tddWithFileName(TddComponentReference id, Tdd tdd) {
+        if (id == null) return tdd;
+        final var tddContent = tdd.getContent();
+        if (null == tddContent) {
+            return tdd;
+        }
+
+        Tdd tddWithFileName = new Tdd(tdd.getText(), tddContent.getFilename());
+        tddWithFileName.setContent(tddContent);
+        return tddWithFileName;
+    }
+
+    public static ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         Set<C4Component> c4Components = dataStructure.getModel().getComponents();
         List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
 
@@ -27,14 +46,7 @@ public class ArchitectureUpdateAnnotator {
         return au.toBuilder().tddContainersByComponent(withUpdatedPath).build();
     }
 
-    private List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
-        return withUpdatedIds.stream().map(c -> {
-            Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c.getComponentId() != null && c4c.getId().equals(c.getComponentId().getId())).findFirst();
-            return c4Component.map(component -> new TddContainerByComponent(c.getComponentId(), component.getPath().getPath(), c.isDeleted(), c.getTdds())).orElse(c);
-        }).collect(toList());
-    }
-
-    private List<TddContainerByComponent> updateIdBasedOnPath(Set<C4Component> c4Components, List<TddContainerByComponent> tddContainersByComponent) {
+    private static List<TddContainerByComponent> updateIdBasedOnPath(Set<C4Component> c4Components, List<TddContainerByComponent> tddContainersByComponent) {
         return tddContainersByComponent.stream().map(c -> {
             if (c.getComponentId() != null) {
                 return c;
@@ -44,7 +56,7 @@ public class ArchitectureUpdateAnnotator {
         }).collect(toList());
     }
 
-    public ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
+    public static ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
         var tddContainers = au.getTddContainersByComponent().stream()
                 .map(c -> new TddContainerByComponent(
                                 c.getComponentId(),
@@ -59,7 +71,7 @@ public class ArchitectureUpdateAnnotator {
         return au.toBuilder().tddContainersByComponent(tddContainers).build();
     }
 
-    public boolean isComponentsEmpty(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
+    public static boolean isComponentsEmpty(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         return au.getTddContainersByComponent().stream()
                 .flatMap(tdd -> dataStructure
                         .getModel().getComponents().stream().filter(c ->
@@ -67,15 +79,5 @@ public class ArchitectureUpdateAnnotator {
                                         || c.getPath().getPath().equalsIgnoreCase(tdd.getComponentPath()))
                 ).findAny()
                 .isEmpty();
-    }
-
-    private static Tdd tddWithFileName(TddComponentReference id, Tdd tdd) {
-        if (id == null || tdd.getContent().isEmpty()) {
-            return tdd;
-        }
-
-        Tdd tddWithFileName = new Tdd(tdd.getText(), tdd.getContent().get().getFilename());
-        tddWithFileName.setContent(tdd.getContent());
-        return tddWithFileName;
     }
 }
