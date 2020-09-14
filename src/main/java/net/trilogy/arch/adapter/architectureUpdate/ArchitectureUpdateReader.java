@@ -17,6 +17,7 @@ import java.util.Optional;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
@@ -27,10 +28,6 @@ public class ArchitectureUpdateReader {
     public ArchitectureUpdate loadArchitectureUpdate(Path path) throws IOException {
         final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
         var au = YAML_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
-
-        // TODO: Mutable object are bug-prone and dangerous and it confuses
-        //       that the content path is added twice
-        au = au.toBuilder().tddContents(getTddContent(path)).build();
 
         return assignTddContents(au, getTddContent(path));
     }
@@ -43,11 +40,16 @@ public class ArchitectureUpdateReader {
         return au;
     }
 
-    private Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
-        return tddContents.stream()
+    Optional<TddContent> contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
+        List<TddContent> found = tddContents.stream()
                 .filter(content -> content.getTdd().equals(tddId.toString()))
                 .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
-                .findFirst();
+                .collect(toUnmodifiableList());
+        switch(found.size()) {
+            case 0: return Optional.empty();
+            case 1: return Optional.of(found.get(0));
+            default: throw new IllegalArgumentException("TODO: Rethink use of exception here");
+        }
     }
 
     private List<TddContent> getTddContent(Path path) {

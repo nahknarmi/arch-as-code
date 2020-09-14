@@ -15,7 +15,6 @@ import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,8 +63,7 @@ public class JiraStory {
                                     tddId,
                                     container.getTdds().get(tddId),
                                     getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                                    au.getTddContents(),
-                                    container.getComponentId().getId()
+                                    container.getTdds().get(tddId).getContent()
                             )
                     ).findAny()
                     .orElseThrow(InvalidStoryException::new);
@@ -106,14 +104,7 @@ public class JiraStory {
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd constructFrom(TddId id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
-            if (tddContents == null) tddContents = Collections.emptyList();
-
-            Optional<TddContent> tddContent = tddContents.stream()
-                    .filter(content -> content.getTdd().equals(id.toString()))
-                    .filter(content -> content.getComponentId().equals(componentId))
-                    .findFirst();
-
+        public static JiraTdd constructFrom(TddId id, Tdd tdd, String component, Optional<TddContent> tddContent) {
             return new JiraTdd(id, tdd, component, tddContent.orElse(null));
         }
 

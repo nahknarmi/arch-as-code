@@ -90,7 +90,7 @@ public class ArchitectureUpdateAnnotatorTest {
         final var tddContainers = List.of(
                 firstComponent,
                 secondComponent);
-        var au = getAuWith(List.of(), tddContainers);
+        var au = getAuWith(tddContainers);
 
         //When
         au = annotator.annotateC4Paths(getArchitecture(), au);
@@ -108,7 +108,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         new TddComponentReference("Non Existing"),
                         null, false,
                         Map.of(new TddId("TDD 1.0"), new Tdd(null, null))));
-        var au = getAuWith(List.of(), tddContainers);
+        var au = getAuWith(tddContainers);
 
         //When
         au = annotator.annotateC4Paths(getArchitecture(), au);
@@ -134,7 +134,7 @@ public class ArchitectureUpdateAnnotatorTest {
                 firstComponent,
                 secondComponent);
 
-        var au = getAuWith(List.of(), tddContainers);
+        var au = getAuWith(tddContainers);
 
         //When
         au = annotator.annotateC4Paths(getArchitecture(), au);
@@ -153,7 +153,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         "Non existing path",
                         false,
                         Map.of(new TddId("TDD 1.0"), new Tdd(null, null))));
-        var au = getAuWith(List.of(), tddContainers);
+        var au = getAuWith(tddContainers);
 
         //When
         au = annotator.annotateC4Paths(getArchitecture(), au);
@@ -178,7 +178,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         new TddComponentReference("200"),
                         null, false,
                         Map.of(new TddId("TDD 2.0"), new Tdd(null, null))));
-        final var au = getAuWith(tddContents, tddContainers);
+        final var au = getAuWith(tddContainers);
 
         // WHEN
         final var annotatedAu = annotator.annotateTddContentFiles(au);
@@ -207,6 +207,7 @@ public class ArchitectureUpdateAnnotatorTest {
                 new TddContent("content", "Unrelated 1.0 : Component-13.txt"),
                 new TddContent("content", "TDD 1.0 : Component-Unrelated.txt"),
                 new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt"));
+
         final var tddContainers = singletonList(new TddContainerByComponent(
                 new TddComponentReference("13"),
                 null, false,
@@ -214,7 +215,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         new TddId("TDD 1.0"), new Tdd(null, null),
                         new TddId("TDD 1.1"), new Tdd("text", null),
                         new TddId("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt"))));
-        final var au = getAuWith(tddContents, tddContainers);
+        final var au = getAuWith(tddContainers);
 
         // WHEN
         final var annotatedAu = annotator.annotateTddContentFiles(au);
@@ -233,10 +234,9 @@ public class ArchitectureUpdateAnnotatorTest {
         collector.checkThat(annotatedAu, equalTo(expectedAu));
     }
 
-    private ArchitectureUpdate getAuWith(List<TddContent> tddContents, List<TddContainerByComponent> tddContainersByComponent) {
+    private ArchitectureUpdate getAuWith(List<TddContainerByComponent> tddContainersByComponent) {
         return ArchitectureUpdate.blank()
                 .toBuilder()
-                .tddContents(tddContents)
                 .tddContainersByComponent(tddContainersByComponent)
                 .build();
     }

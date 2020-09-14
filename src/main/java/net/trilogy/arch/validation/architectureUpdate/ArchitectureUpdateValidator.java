@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static io.vavr.collection.Stream.concat;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -71,7 +72,7 @@ public class ArchitectureUpdateValidator {
     }
 
     private ValidationResult run() {
-        return new ValidationResult(io.vavr.collection.Stream.concat(
+        return new ValidationResult(concat(
                 getErrors_DecisionsMustHaveTdds(),
                 getErrors_DecisionsTddsMustBeValidReferences(),
                 getErrors_FunctionalRequirementsTddsMustBeValidReferences(),
@@ -319,8 +320,8 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_TddContentsFileExists() {
-        List<TddContent> tddContents = architectureUpdate.getTddContents();
-        if (tddContents == null || tddContents.isEmpty()) return Set.of();
+        final var tddContents = architectureUpdate.listTddContents();
+        if (tddContents.isEmpty()) return Set.of();
 
         var tddGroupings = tddContents.stream()
                 .collect(groupingBy(TddContent::getTdd));
@@ -367,22 +368,22 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_TddsMustHaveOnlyOneTddContentFile() {
-        List<TddContent> tddContentFiles = architectureUpdate.getTddContents();
-        if (tddContentFiles == null || tddContentFiles.isEmpty())
-            return Set.of();
+        final var tddContents = architectureUpdate.listTddContents();
+        if (tddContents.isEmpty()) return Set.of();
 
-        return tddContentFiles.stream()
+        return tddContents.stream()
                 .collect(groupingBy((tc) -> Pair.of(tc.getTdd(), tc.getComponentId())))
                 .entrySet().stream()
                 .filter(es -> es.getValue().size() > 1)
                 .map(es -> {
                     var pair = es.getKey();
-                    List<TddContent> tddContents = es.getValue();
                     String tddId = pair.getLeft();
                     String componentId = pair.getRight();
+                    List<TddContent> localTddContents = es.getValue();
 
-                    return ValidationError.forMultipleTddContentFilesForTdd(new TddComponentReference(componentId), new TddId(tddId), tddContents);
-                }).collect(toSet());
+                    return ValidationError.forMultipleTddContentFilesForTdd(new TddComponentReference(componentId), new TddId(tddId), localTddContents);
+                })
+                .collect(toSet());
     }
 
     private List<TddId> getAllTddIds() {

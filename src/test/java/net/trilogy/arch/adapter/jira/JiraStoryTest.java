@@ -81,11 +81,8 @@ public class JiraStoryTest {
         TddContent notUsedTddContent = new TddContent("content-file-2", "TDD 2 : Component-10.md");
         TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt"); // Component deleted in AU
 
-        var au = getAuWithTddContent(List.of(
-                tddContent1,
-                notUsedTddContent,
-                tddContent3
-        ));
+        var au = getAu().toBuilder().build();
+
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
@@ -223,10 +220,6 @@ public class JiraStoryTest {
                                         List.of(new TddId("TDD 1"), new TddId("TDD 3")),
                                         List.of(FunctionalRequirementId.blank())))))
                 .build();
-    }
-
-    private static ArchitectureUpdate getAuWithTddContent(List<TddContent> tddContents) {
-        return getAu().toBuilder().tddContents(tddContents).build();
     }
 
     private static ArchitectureUpdate getAuWithInvalidComponent() {

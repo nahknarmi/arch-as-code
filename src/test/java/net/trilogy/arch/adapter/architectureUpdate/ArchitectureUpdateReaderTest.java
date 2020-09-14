@@ -3,6 +3,7 @@ package net.trilogy.arch.adapter.architectureUpdate;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
@@ -12,15 +13,19 @@ import org.junit.rules.ErrorCollector;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE;
 import static net.trilogy.arch.Util.first;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.builderPreFilledWithBlanks;
+import static net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator.validate;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMultipleTddContentFilesForTdd;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -63,21 +68,6 @@ public class ArchitectureUpdateReaderTest {
     }
 
     @Test
-    public void tdds_include_file_contents() throws IOException {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
-
-        collector.checkThat(architectureUpdate.getName(), equalTo("test"));
-        collector.checkThat(first(architectureUpdate.getTddContents()), equalTo(new TddContent("" +
-                "## TDD 1.2\n" +
-                "### Content\n" +
-                "**Lorem ipsum** dolor sit amet:\n" +
-                "* consectetur adipiscing elit\n" +
-                "* sed do eiusmod tempor *incididunt ut labore* et dolore magna aliqua\n" +
-                "* et ligula ullamcorper malesuada proin libero nunc consequat\n",
-                "TDD 1.2 : Component-16.md")));
-    }
-
-    @Test
     public void tdd_include_file_contents() throws IOException {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
@@ -94,4 +84,25 @@ public class ArchitectureUpdateReaderTest {
                 "* et ligula ullamcorper malesuada proin libero nunc consequat\n",
                 "TDD 1.2 : Component-16.md")));
     }
+
+    @Test
+    public void shouldValidate_getErrors_TddsMustHaveOnlyOneTddContentFile() {
+        var tddContents = List.of(
+                new TddContent("contents", "TDD 1.1 : Component-10.md"),
+                new TddContent("contents", "TDD 1.1 : Component-10.txt"));
+        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(new TddContainerByComponent(
+                new Tdd.TddComponentReference("10"),
+                null, false,
+                Map.of(new TddId("TDD 1.1"), new Tdd(null, null)))))
+                .tddContents(tddContents)
+                .build();
+
+        var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors =
+                singletonList(forMultipleTddContentFilesForTdd(new Tdd.TddComponentReference("10"), new TddId("TDD 1.1"), tddContents));
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
+    }
+
 }

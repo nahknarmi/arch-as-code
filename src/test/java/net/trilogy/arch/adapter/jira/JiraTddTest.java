@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import java.util.List;
+import java.util.Optional;
 
 import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import static org.hamcrest.Matchers.equalTo;
@@ -68,19 +68,13 @@ public class JiraTddTest {
 
     @Test
     public void shouldConstructJiraTddFromAuTddContents() {
-        TddContent correctContent = new TddContent("correct content", "TDD 2.0 : Component-10.md");
+        final var correctContent = Optional.of(new TddContent("correct content", "TDD 2.0 : Component-10.md"));
         JiraTdd tdd = JiraTdd.constructFrom(
                 new TddId("TDD 2.0"),
                 new Tdd("ignored content", "TDD 2.0 : Component-10.md"),
                 "c4://path",
-                List.of(
-                        new TddContent("wrong content", "TDD 1.0 : Component-10.md"),
-                        new TddContent("wrong content", "TDD 1.0 : Component-11.md"),
-                        correctContent,
-                        new TddContent("wrong content", "TDD 3.0 : Component-10.md"),
-                        new TddContent("wrong content", "TDD 3.0 : Component-11.md")
-                ),
-                "10"
+                        correctContent
+
         );
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));
@@ -92,20 +86,12 @@ public class JiraTddTest {
 
     @Test
     public void shouldConstructJiraTddFromAuTddContentsEvenIfFileOmitted() {
-        TddContent correctContent = new TddContent("correct content", "TDD 2.0 : Component-10.md");
+        final var correctContent =  Optional.of(new TddContent("correct content", "TDD 2.0 : Component-10.md"));
         JiraTdd tdd = JiraTdd.constructFrom(
                 new TddId("TDD 2.0"),
                 new Tdd("ignored content", null),
                 "10",
-                List.of(
-                        new TddContent("wrong content", "TDD 1.0 : Component-10.md"),
-                        new TddContent("wrong content", "TDD 1.0 : Component-11.md"),
-                        correctContent,
-                        new TddContent("wrong content", "TDD 3.0 : Component-10.md"),
-                        new TddContent("wrong content", "TDD 3.0 : Component-11.md")
-                ),
-                "10"
-        );
+                correctContent);
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));
         collector.checkThat(tdd.getComponentPath(), equalTo("10"));
@@ -120,8 +106,7 @@ public class JiraTddTest {
                 new TddId("TDD 2.0"),
                 new Tdd("text", null),
                 "10",
-                List.of(),
-                "10"
+                Optional.empty()
         );
 
         collector.checkThat(tdd.getId(), equalTo("TDD 2.0"));

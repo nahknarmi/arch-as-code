@@ -4,9 +4,7 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.c4.C4Component;
 
 import java.util.List;
@@ -54,7 +52,7 @@ public class ArchitectureUpdateAnnotator {
                                 c.isDeleted(),
                                 c.getTdds().entrySet().stream().collect(toMap(
                                         Map.Entry::getKey,
-                                        (tdd) -> addFileNameToTdd(c.getComponentId(), tdd, au.getTddContents())))
+                                        (tdd) -> tddWithFileName(c.getComponentId(), tdd.getValue())))
                         )
                 ).collect(toList());
 
@@ -71,17 +69,13 @@ public class ArchitectureUpdateAnnotator {
                 .isEmpty();
     }
 
-    private Tdd addFileNameToTdd(TddComponentReference id, Map.Entry<TddId, Tdd> pair, List<TddContent> tddContents) {
-        String tddId = pair.getKey().toString();
-        Tdd tdd = pair.getValue();
-        if (id == null) {
+    private static Tdd tddWithFileName(TddComponentReference id, Tdd tdd) {
+        if (id == null || tdd.getContent().isEmpty()) {
             return tdd;
         }
-        Optional<TddContent> found = tddContents.stream()
-                .filter(tc -> tc.getComponentId().equals(id.getId()))
-                .filter(tc -> tc.getTdd().equals(tddId))
-                .findFirst();
 
-        return found.map(tddContent -> new Tdd(tdd.getText(), tddContent.getFilename())).orElse(tdd);
+        Tdd tddWithFileName = new Tdd(tdd.getText(), tdd.getContent().get().getFilename());
+        tddWithFileName.setContent(tdd.getContent());
+        return tddWithFileName;
     }
 }
