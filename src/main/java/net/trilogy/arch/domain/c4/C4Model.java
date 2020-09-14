@@ -52,7 +52,7 @@ public class C4Model {
                 Set.of());
     }
 
-    private static <T extends HasRelation & HasTag & HasIdentity> boolean noEntityWithIdExists(T entity, Set<T> set) {
+    private static <T extends HasIdentity> boolean noEntityWithIdExists(T entity, Set<T> set) {
         return set.stream()
                 .noneMatch(e -> e.getId().equals(entity.getId()));
     }
