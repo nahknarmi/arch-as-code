@@ -1,6 +1,5 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
@@ -45,7 +44,6 @@ import static net.trilogy.arch.validation.architectureUpdate.ValidationError.for
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedComponent;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedTdd;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forFunctionalRequirementsMustBeValidReferences;
-import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMultipleTddContentFilesForTdd;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forMustHaveStories;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNotAvailableLink;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forOverriddenByTddContentFile;
@@ -495,51 +493,45 @@ public class ArchitectureUpdateValidatorTest {
     }
 
     @Test
-    public void shouldValidate_TddContentsFileExists() {
-        String errorFilename1 = "TDD 1.1 : Component-10.md";
-        String errorFilename2 = "TDD 1.2 : Component-10.md";
-        String noErrorFilename = "TDD 2.1 : Component-10.md";
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+    public void shouldValidate_TddWithTextContentsAndFileExists() {
+        String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
+
+        Tdd tdd1_1 = new Tdd("overridden-text", null, new TddContent("contents", errorFilename1));
+
+        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
-                        new TddComponentReference("10"),
+                        new TddComponentReference("16"),
                         null, false,
                         Map.of(
-                                new TddId("TDD 1.1"), new Tdd("overridden-text", null),
-                                new TddId("TDD 1.2"), new Tdd("", null),
-                                new TddId("TDD 2.1"), new Tdd(null, noErrorFilename)))))
-                .tddContents(List.of(
-                        new TddContent("contents", errorFilename1),
-                        new TddContent("contents", errorFilename2),
-                        new TddContent("contents", noErrorFilename),
-                        new TddContent("contents", "UNRELATED-DECISION : Component-0.md")))
+                                new TddId("[SAMPLE-TDD-ID]"), tdd1_1))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 1.1"), errorFilename1),
-                forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 1.2"), errorFilename2));
+                forOverriddenByTddContentFile(new TddComponentReference("16"), new TddId("[SAMPLE-TDD-ID]"), errorFilename1));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
-        collector.checkThat(actualErrors, not(hasItem(forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 2.1"), noErrorFilename))));
     }
 
     @Test
-    public void shouldValidate_getErrors_TddsMustHaveOnlyOneTddContentFile() {
-        var tddContents = List.of(
-                new TddContent("contents", "TDD 1.1 : Component-10.md"),
-                new TddContent("contents", "TDD 1.1 : Component-10.txt"));
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(new TddContainerByComponent(
-                        new TddComponentReference("10"),
+    public void shouldValidate_TddWithEmptyTextContentsAndFileExists() {
+        String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
+
+        Tdd tdd1_1 = new Tdd("", null, new TddContent("contents", errorFilename1));
+
+        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+                new TddContainerByComponent(
+                        new TddComponentReference("16"),
                         null, false,
-                        Map.of(new TddId("TDD 1.1"), new Tdd(null, null)))))
-                .tddContents(tddContents)
+                        Map.of(
+                                new TddId("[SAMPLE-TDD-ID]"), tdd1_1))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
-        var expectedErrors =
-                singletonList(forMultipleTddContentFilesForTdd(new TddComponentReference("10"), new TddId("TDD 1.1"), tddContents));
+        var expectedErrors = List.of(
+                forOverriddenByTddContentFile(new TddComponentReference("16"), new TddId("[SAMPLE-TDD-ID]"), errorFilename1));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }

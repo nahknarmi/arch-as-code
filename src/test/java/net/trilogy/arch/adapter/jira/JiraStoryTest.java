@@ -35,6 +35,7 @@ public class JiraStoryTest {
     public void ShouldConstructJiraStory() throws Exception {
         // GIVEN:
         var au = getAu();
+
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
@@ -43,71 +44,33 @@ public class JiraStoryTest {
         final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
 
         // THEN:
+        TddId tddId1 = new TddId("TDD 1");
+        Tdd tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
+        TddId tddId2 = new TddId("TDD 2");
+        Tdd tdd2 = au.getTddContainersByComponent().get(0).getTdds().get(tddId2);
+        TddId tddId3 = new TddId("TDD 3");
+        Tdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
+
         final JiraStory expected = new JiraStory(
                 "story title",
                 List.of(
                         new JiraStory.JiraTdd(
-                                new TddId("TDD 1"),
-                                new Tdd("TDD 1 text", null),
+                                tddId1,
+                                tdd1,
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                tdd1.getContent()
+                        ),
+                        new JiraStory.JiraTdd(
+                                tddId2,
+                                tdd2,
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
                                 null
                         ),
                         new JiraStory.JiraTdd(
-                                new TddId("TDD 3"),
-                                new Tdd("TDD 3 text", null),
-                                "c4://Internet Banking System/API Application/Sign In Controller", // deleted component id: 29
-                                null
-                        )
-                ),
-                List.of(
-                        new JiraStory.JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        List.of(new TddId("[SAMPLE-TDD-ID]"))
-                                )
-                        )
-                )
-        );
-
-        assertThat(actual, equalTo(expected));
-    }
-
-    @Test
-    public void ShouldConstructJiraStoryWithTddContent() throws Exception {
-        // GIVEN:
-        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
-        TddContent notUsedTddContent = new TddContent("content-file-2", "TDD 2 : Component-10.md");
-        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt"); // Component deleted in AU
-
-        var au = getAuWithTddContent(List.of(
-                tddContent1,
-                notUsedTddContent,
-                tddContent3
-        ));
-        var afterAuArchitecture = getArchitectureAfterAu();
-        var beforeAuArchitecture = getArchitectureBeforeAu();
-        var featureStory = first(au.getCapabilityContainer().getFeatureStories());
-
-        // WHEN:
-        final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
-
-        // THEN:
-        final JiraStory expected = new JiraStory(
-                "story title",
-                List.of(
-                        new JiraStory.JiraTdd(
-                                new TddId("TDD 1"),
-                                new Tdd("TDD 1 text", null),
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                tddContent1
-                        ),
-                        new JiraStory.JiraTdd(
-                                new TddId("TDD 3"),
-                                new Tdd("TDD 3 text", null),
+                                tddId3,
+                                tdd3,
                                 "c4://Internet Banking System/API Application/Sign In Controller",
-                                tddContent3
+                                tdd3.getContent()
                         )
                 ),
                 List.of(
@@ -199,34 +162,33 @@ public class JiraStoryTest {
     }
 
     private static ArchitectureUpdate getAu() {
+        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
+        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
+
         return ArchitectureUpdate.builderPreFilledWithBlanks()
                 .tddContainersByComponent(List.of(
                         new TddContainerByComponent(
                                 new TddComponentReference("31"),
                                 null, false,
                                 Map.of(
-                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null),
-                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null),
+                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null, tddContent1),
+                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null, null),
                                         new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
                         new TddContainerByComponent(
                                 new TddComponentReference("404"),
                                 null, true,
                                 Map.of(
-                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null),
-                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null)))))
+                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null, tddContent3),
+                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null, null)))))
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.blank(),
                         singletonList(
                                 new FeatureStory(
                                         "story title",
                                         new Jira("", ""),
-                                        List.of(new TddId("TDD 1"), new TddId("TDD 3")),
+                                        List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
                                         List.of(FunctionalRequirementId.blank())))))
                 .build();
-    }
-
-    private static ArchitectureUpdate getAuWithTddContent(List<TddContent> tddContents) {
-        return getAu().toBuilder().tddContents(tddContents).build();
     }
 
     private static ArchitectureUpdate getAuWithInvalidComponent() {

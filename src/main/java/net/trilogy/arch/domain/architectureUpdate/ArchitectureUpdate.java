@@ -1,7 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
@@ -13,9 +12,10 @@ import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.Function
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+import static java.util.stream.Collectors.toList;
 
 @Getter
 @ToString
@@ -62,10 +62,6 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "capabilities")
     private final CapabilitiesContainer capabilityContainer;
 
-    //TODO remove tddContents per https://tw-trilogy.atlassian.net/browse/AAC-160
-    @JsonIgnore
-    private final List<TddContent> tddContents;
-
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
     public ArchitectureUpdate(
@@ -84,8 +80,7 @@ public class ArchitectureUpdate {
             @JsonProperty("p2") P2 p2,
             @JsonProperty("p1") P1 p1,
             @JsonProperty("useful-links") List<Link> usefulLinks,
-            @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies,
-            @JsonProperty("tddContents") List<TddContent> tddContents) {
+            @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies) {
         this.name = name;
         this.milestone = milestone;
         this.authors = authors;
@@ -98,7 +93,6 @@ public class ArchitectureUpdate {
         this.p1 = p1;
         this.usefulLinks = usefulLinks;
         this.milestoneDependencies = milestoneDependencies;
-        this.tddContents = tddContents;
     }
 
     public static ArchitectureUpdateBuilder builderPreFilledWithBlanks() {
@@ -121,6 +115,14 @@ public class ArchitectureUpdate {
         return builderPreFilledWithBlanks().build();
     }
 
+    public List<TddContent> listTddContents() {
+        return getTddContainersByComponent().stream()
+                .flatMap(it -> it.getTdds().values().stream())
+                .map(Tdd::getContent)
+                .filter(Objects::isNull)
+                .collect(toList());
+    }
+
     public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {
         return toBuilder().capabilityContainer(
                 getCapabilityContainer().toBuilder()
@@ -132,7 +134,7 @@ public class ArchitectureUpdate {
                                             }
                                             return story;
                                         })
-                                        .collect(Collectors.toList()))
+                                        .collect(toList()))
                         .build())
                 .build();
     }

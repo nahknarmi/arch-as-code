@@ -15,9 +15,10 @@ import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 
 @Getter
 @ToString
@@ -59,15 +60,12 @@ public class JiraStory {
                     .stream()
                     .filter(container -> container.getTdds().containsKey(tddId))
                     .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
-                    .map(container ->
-                            JiraTdd.constructFrom(
-                                    tddId,
-                                    container.getTdds().get(tddId),
-                                    getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                                    au.getTddContents(),
-                                    container.getComponentId().getId()
-                            )
-                    ).findAny()
+                    .map(container -> jiraTddFrom(
+                            tddId,
+                            container.getTdds().get(tddId),
+                            getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                            container.getTdds().get(tddId).getContent()))
+                    .findAny()
                     .orElseThrow(InvalidStoryException::new);
             tdds.add(tdd);
         }
@@ -106,15 +104,8 @@ public class JiraStory {
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd constructFrom(TddId id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
-            if (tddContents == null) tddContents = Collections.emptyList();
-
-            Optional<TddContent> tddContent = tddContents.stream()
-                    .filter(content -> content.getTdd().equals(id.toString()))
-                    .filter(content -> content.getComponentId().equals(componentId))
-                    .findFirst();
-
-            return new JiraTdd(id, tdd, component, tddContent.orElse(null));
+        public static JiraTdd jiraTddFrom(TddId id, Tdd tdd, String component, TddContent tddContent) {
+            return new JiraTdd(id, tdd, component, tddContent);
         }
 
         public String getId() {

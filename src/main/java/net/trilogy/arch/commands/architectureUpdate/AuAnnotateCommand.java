@@ -2,6 +2,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
+import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
@@ -19,7 +20,6 @@ import java.util.concurrent.Callable;
 import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter.exportArchitectureUpdate;
 import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateC4Paths;
 import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateTddContentFiles;
-import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.isComponentsEmpty;
 
 @Command(name = "annotate", description = "Annotates the architecture update with comments detailing the full paths of all components referenced by ID. Makes the AU easier to read.", mixinStandardHelpOptions = true)
 public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -51,13 +51,14 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
     @Override
     public Integer call() {
         logArgs();
+
         var au = loadAu(architectureUpdateDirectory);
         if (au.isEmpty()) return 2;
 
         final var architecture = loadArchitectureOrPrintError("Unable to load Architecture product-architecture.yml.");
         if (architecture.isEmpty()) return 2;
 
-        if (isComponentsEmpty(architecture.get(), au.get())) {
+        if (ArchitectureUpdateAnnotator.isComponentsEmpty(architecture.get(), au.get())) {
             printError("No valid components to annotate.");
             return 1;
         }

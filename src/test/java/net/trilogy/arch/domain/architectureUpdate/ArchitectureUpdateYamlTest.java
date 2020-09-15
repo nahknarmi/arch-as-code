@@ -80,10 +80,8 @@ public class ArchitectureUpdateYamlTest {
                         singletonList(new Link(
                                 "some MILESTONE DEPENDENCY description",
                                 "some MILESTONE DEPENDENCY link"
-                        )))),
-                singletonList(new TddContent(
-                        "some TDD content",
-                        "some TDD filename")));
+                        ))))
+        );
 
         assertEquals(
                 au,

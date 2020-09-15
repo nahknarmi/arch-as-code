@@ -1,7 +1,6 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
@@ -35,19 +34,6 @@ public class ArchitectureUpdateReaderTest {
     }
 
     @Test
-    public void shouldOnlyLoadProperlyNamedTddContentFiles() throws Exception {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
-        final var names = architectureUpdate.getTddContents().stream()
-                .map(TddContent::getFilename)
-                .collect(toList());
-
-        collector.checkThat(names.size(), equalTo(1));
-
-        final var strayFileInAuDirectory = "notProperlyNamedTddContentFile.txt";
-        collector.checkThat(first(names), not(containsString(strayFileInAuDirectory)));
-    }
-
-    @Test
     public void shouldAssignTddContentToTddWithMatchingIds() throws Exception {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
@@ -61,27 +47,12 @@ public class ArchitectureUpdateReaderTest {
     }
 
     @Test
-    public void tdds_include_file_contents() throws IOException {
-        final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
-
-        collector.checkThat(architectureUpdate.getName(), equalTo("test"));
-        collector.checkThat(first(architectureUpdate.getTddContents()), equalTo(new TddContent("" +
-                "## TDD 1.2\n" +
-                "### Content\n" +
-                "**Lorem ipsum** dolor sit amet:\n" +
-                "* consectetur adipiscing elit\n" +
-                "* sed do eiusmod tempor *incididunt ut labore* et dolore magna aliqua\n" +
-                "* et ligula ullamcorper malesuada proin libero nunc consequat\n",
-                "TDD 1.2 : Component-16.md")));
-    }
-
-    @Test
     public void tdd_include_file_contents() throws IOException {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 
-        final Tdd tdd = first(architectureUpdate.getTddContainersByComponent()).getTdds().get(new TddId("TDD 1.2"));
+        final var tdd = first(architectureUpdate.getTddContainersByComponent()).getTdds().get(new TddId("TDD 1.2"));
         assertNotNull(tdd);
-        final TddContent expectedContents = tdd.getContent();
+        final var expectedContents = tdd.getContent();
         assertNotNull(expectedContents);
         collector.checkThat(expectedContents, equalTo(new TddContent("" +
                 "## TDD 1.2\n" +

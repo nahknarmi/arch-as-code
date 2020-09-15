@@ -7,10 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-
-import javax.annotation.Nullable;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
@@ -25,7 +22,6 @@ public class Tdd {
     private final String file;
 
     @Getter
-    @Setter
     @JsonIgnore
     private TddContent content = null;
 
@@ -34,6 +30,14 @@ public class Tdd {
                @JsonProperty("file") String file) {
         this.text = text;
         this.file = file;
+    }
+
+    public Tdd(String text,
+               String file,
+               TddContent tddContent) {
+        this.text = text;
+        this.file = file;
+        this.content = tddContent;
     }
 
     public static Tdd blank() {
