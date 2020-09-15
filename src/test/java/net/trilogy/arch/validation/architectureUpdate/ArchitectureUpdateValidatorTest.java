@@ -496,7 +496,7 @@ public class ArchitectureUpdateValidatorTest {
     public void shouldValidate_TddWithTextContentsAndFileExists() {
         String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
 
-        Tdd tdd1_1 = new Tdd("overridden-text", null, new TddContent("contents", errorFilename1));
+        Tdd tdd1_1 = new Tdd("overridden-text", null).withContent(new TddContent("contents", errorFilename1));
 
         final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
@@ -518,7 +518,7 @@ public class ArchitectureUpdateValidatorTest {
     public void shouldValidate_TddWithEmptyTextContentsAndFileExists() {
         String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
 
-        Tdd tdd1_1 = new Tdd("", null, new TddContent("contents", errorFilename1));
+        Tdd tdd1_1 = new Tdd("", null).withContent(new TddContent("contents", errorFilename1));
 
         final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(

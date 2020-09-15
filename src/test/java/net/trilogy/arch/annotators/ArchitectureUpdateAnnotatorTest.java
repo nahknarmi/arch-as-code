@@ -172,11 +172,11 @@ public class ArchitectureUpdateAnnotatorTest {
                 new TddContainerByComponent(
                         new TddComponentReference("100"),
                         null, false,
-                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null, content1_0))),
+                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null).withContent(content1_0))),
                 new TddContainerByComponent(
                         new TddComponentReference("200"),
                         null, false,
-                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null, content2_0))));
+                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null).withContent(content2_0))));
         final var au = getAuWith(tddContainers);
 
         // WHEN
@@ -188,11 +188,11 @@ public class ArchitectureUpdateAnnotatorTest {
                         new TddContainerByComponent(
                                 new TddComponentReference("100"),
                                 null, false,
-                                Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt", content1_0))),
+                                Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt").withContent(content1_0))),
                         new TddContainerByComponent(
                                 new TddComponentReference("200"),
                                 null, false,
-                                Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt", content2_0)))))
+                                Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt").withContent(content2_0)))))
                 .build();
 
         collector.checkThat(annotatedAu, equalTo(expectedAu));

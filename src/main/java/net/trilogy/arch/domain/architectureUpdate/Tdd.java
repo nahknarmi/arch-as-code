@@ -23,21 +23,24 @@ public class Tdd {
 
     @Getter
     @JsonIgnore
-    private TddContent content = null;
+    private final TddContent content;
 
     @JsonCreator(mode = PROPERTIES)
     public Tdd(@JsonProperty("text") String text,
                @JsonProperty("file") String file) {
-        this.text = text;
-        this.file = file;
+        this(text, file, null);
     }
 
-    public Tdd(String text,
+    private Tdd(String text,
                String file,
                TddContent tddContent) {
         this.text = text;
         this.file = file;
         this.content = tddContent;
+    }
+
+    public Tdd withContent(final TddContent tddContent) {
+        return new Tdd(text, tddContent == null ? null : tddContent.getFilename(), tddContent);
     }
 
     public static Tdd blank() {

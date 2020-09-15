@@ -171,15 +171,15 @@ public class JiraStoryTest {
                                 new TddComponentReference("31"),
                                 null, false,
                                 Map.of(
-                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null, tddContent1),
-                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null, null),
+                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null).withContent(tddContent1),
+                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null).withContent(null),
                                         new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
                         new TddContainerByComponent(
                                 new TddComponentReference("404"),
                                 null, true,
                                 Map.of(
-                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null, tddContent3),
-                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null, null)))))
+                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null).withContent(tddContent3),
+                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null).withContent(null)))))
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.blank(),
                         singletonList(

@@ -111,7 +111,7 @@ public class AuPublishStoriesCommandTest {
 
     private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
         final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
-        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md", tddContent);
+        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
         return singletonList(new JiraStory(
                 "story that should be created",

@@ -33,7 +33,7 @@ public class ArchitectureUpdateAnnotator {
             return tdd;
         }
 
-        return new Tdd(tdd.getText(), tddContent.getFilename(), tddContent);
+        return tdd.withContent(tddContent);
     }
 
     public static ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
