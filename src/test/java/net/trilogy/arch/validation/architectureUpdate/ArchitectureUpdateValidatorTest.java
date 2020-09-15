@@ -493,35 +493,46 @@ public class ArchitectureUpdateValidatorTest {
     }
 
     @Test
-    public void shouldValidate_TddContentsFileExists() {
-        String errorFilename1 = "TDD 1.1 : Component-10.md";
-        String errorFilename2 = "TDD 1.2 : Component-10.md";
-        String noErrorFilename = "TDD 2.1 : Component-10.md";
+    public void shouldValidate_TddWithTextContentsAndFileExists() {
+        String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
 
-        Tdd tdd1_1 = new Tdd("overridden-text", null);
-        tdd1_1.setContent(new TddContent("contents", errorFilename1));
-        Tdd tdd1_2 = new Tdd("", null);
-        tdd1_2.setContent(new TddContent("contents", errorFilename2));
-        Tdd tdd2_1 = new Tdd(null, noErrorFilename);
-        tdd2_1.setContent(new TddContent("contents", noErrorFilename));
+        Tdd tdd1_1 = new Tdd("overridden-text", null, new TddContent("contents", errorFilename1));
 
         final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
-                        new TddComponentReference("10"),
+                        new TddComponentReference("16"),
                         null, false,
                         Map.of(
-                                new TddId("TDD 1.1"), tdd1_1,
-                                new TddId("TDD 1.2"), tdd1_2,
-                                new TddId("TDD 2.1"), tdd2_1))))
+                                new TddId("[SAMPLE-TDD-ID]"), tdd1_1))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
 
         var expectedErrors = List.of(
-                forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 1.1"), errorFilename1),
-                forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 1.2"), errorFilename2));
+                forOverriddenByTddContentFile(new TddComponentReference("16"), new TddId("[SAMPLE-TDD-ID]"), errorFilename1));
 
         expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
-        collector.checkThat(actualErrors, not(hasItem(forOverriddenByTddContentFile(new TddComponentReference("10"), new TddId("TDD 2.1"), noErrorFilename))));
+    }
+
+    @Test
+    public void shouldValidate_TddWithEmptyTextContentsAndFileExists() {
+        String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
+
+        Tdd tdd1_1 = new Tdd("", null, new TddContent("contents", errorFilename1));
+
+        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+                new TddContainerByComponent(
+                        new TddComponentReference("16"),
+                        null, false,
+                        Map.of(
+                                new TddId("[SAMPLE-TDD-ID]"), tdd1_1))))
+                .build();
+
+        var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
+
+        var expectedErrors = List.of(
+                forOverriddenByTddContentFile(new TddComponentReference("16"), new TddId("[SAMPLE-TDD-ID]"), errorFilename1));
+
+        expectedErrors.forEach(e -> collector.checkThat(actualErrors, hasItem(e)));
     }
 }

@@ -34,19 +34,6 @@ public class ArchitectureUpdateReaderTest {
     }
 
     @Test
-    public void shouldOnlyLoadProperlyNamedTddContentFiles() throws Exception {
-        final var au = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
-        final var names = au.listTddContents().stream()
-                .map(TddContent::getFilename)
-                .collect(toList());
-
-        collector.checkThat(names.size(), equalTo(1));
-
-        final var strayFileInAuDirectory = "notProperlyNamedTddContentFile.txt";
-        collector.checkThat(first(names), not(containsString(strayFileInAuDirectory)));
-    }
-
-    @Test
     public void shouldAssignTddContentToTddWithMatchingIds() throws Exception {
         final var architectureUpdate = new ArchitectureUpdateReader(new FilesFacade()).loadArchitectureUpdate(auDir);
 

@@ -8,7 +8,6 @@ import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -30,18 +29,11 @@ public class ArchitectureUpdateAnnotatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-    private ArchitectureUpdateAnnotator annotator;
-
     private static ArchitectureUpdate getAuWith(List<TddContainerByComponent> tddContainersByComponent) {
         return ArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(tddContainersByComponent)
                 .build();
-    }
-
-    @Before
-    public void setUp() {
-        annotator = new ArchitectureUpdateAnnotator();
     }
 
     @Test
@@ -173,19 +165,18 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldAnnotateAuWithTddContentFile() {
         // GIVEN
-        final var tddContents = List.of(
-                new TddContent("content", "TDD 1.0 : Component-100.txt"),
-                new TddContent("content", "TDD 2.0 : Component-200.txt"),
-                new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt"));
+        final TddContent content1_0 = new TddContent("content", "TDD 1.0 : Component-100.txt");
+        final TddContent content2_0 = new TddContent("content", "TDD 2.0 : Component-200.txt");
+
         final var tddContainers = List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("100"),
                         null, false,
-                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))),
+                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null, content1_0))),
                 new TddContainerByComponent(
                         new TddComponentReference("200"),
                         null, false,
-                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null))));
+                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null, content2_0))));
         final var au = getAuWith(tddContainers);
 
         // WHEN
@@ -197,24 +188,19 @@ public class ArchitectureUpdateAnnotatorTest {
                         new TddContainerByComponent(
                                 new TddComponentReference("100"),
                                 null, false,
-                                Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt"))),
+                                Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt", content1_0))),
                         new TddContainerByComponent(
                                 new TddComponentReference("200"),
                                 null, false,
-                                Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt")))))
+                                Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt", content2_0)))))
                 .build();
 
         collector.checkThat(annotatedAu, equalTo(expectedAu));
     }
 
     @Test
-    public void shouldDoNothingWhenNoMatch() {
+    public void shouldDoNothingWhenTddsHaveNoContent() {
         // GIVEN
-        final var tddContents = List.of(
-                new TddContent("content", "MatchedTDD 1.0 : Component-13.txt"),
-                new TddContent("content", "Unrelated 1.0 : Component-13.txt"),
-                new TddContent("content", "TDD 1.0 : Component-Unrelated.txt"),
-                new TddContent("content", "Unrelated 2.0 : Component-Unrelated.txt"));
 
         final var tddContainers = singletonList(new TddContainerByComponent(
                 new TddComponentReference("13"),

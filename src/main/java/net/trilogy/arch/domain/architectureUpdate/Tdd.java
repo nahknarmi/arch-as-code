@@ -36,6 +36,14 @@ public class Tdd {
         this.file = file;
     }
 
+    public Tdd(String text,
+               String file,
+               TddContent tddContent) {
+        this.text = text;
+        this.file = file;
+        this.content = tddContent;
+    }
+
     public static Tdd blank() {
         return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
     }
