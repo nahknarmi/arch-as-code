@@ -5,8 +5,8 @@ import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.facade.FilesFacade;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.writeViews;
+import static net.trilogy.arch.adapter.structurizr.WorkspaceReader.loadWorkspace;
 
 @Command(name = "import", mixinStandardHelpOptions = true, description = "Imports existing structurizr workspace, overwriting the existing product architecture.")
 public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
@@ -25,7 +26,7 @@ public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, Di
     private File productArchitectureDirectory;
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
+    private CommandSpec spec;
 
     public ImportCommand(FilesFacade filesFacade) {
         this.filesFacade = filesFacade;
@@ -36,12 +37,12 @@ public class ImportCommand implements Callable<Integer>, DisplaysOutputMixin, Di
         logArgs();
 
         try {
-            final var dataStructure = new WorkspaceReader().load(exportedWorkspacePath);
+            final var dataStructure = loadWorkspace(exportedWorkspacePath);
             final var writeFile = productArchitectureDirectory.toPath().resolve(ParentCommand.PRODUCT_ARCHITECTURE_FILE_NAME).toFile();
             final var exportedFile = exportArchitectureDataStructure(dataStructure, writeFile, filesFacade);
             print(String.format("Architecture data structure written to - %s", exportedFile.getAbsolutePath()));
 
-            final var workspaceViews = new WorkspaceReader().loadViews(exportedWorkspacePath);
+            final var workspaceViews = WorkspaceReader.loadViews(exportedWorkspacePath);
             final var viewsPath = writeViews(workspaceViews, productArchitectureDirectory.toPath(), filesFacade);
             print(String.format("Views were written to - %s", viewsPath));
         } catch (Exception e) {

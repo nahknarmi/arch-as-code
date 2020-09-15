@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import org.mockito.ArgumentMatchers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,6 +55,25 @@ public class AuNewCommandTest {
     private GitInterface gitInterfaceSpy;
     private Application app;
     private File rootDir;
+
+    private static Path initializeAuDirectory(Path rootDir) throws Exception {
+        execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
+        return rootDir.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER);
+    }
+
+    private static String str(Path tempDirPath) {
+        return tempDirPath.toAbsolutePath().toString();
+    }
+
+    private static Path getTempRepositoryDirectory() throws Exception {
+        var repoDir = Files.createTempDirectory("aac");
+        var rootDir = Files.createDirectory(repoDir.resolve("root"));
+        var git = Git.init().setDirectory(repoDir.toFile()).call();
+        git.add().addFilepattern(".").call();
+        git.commit().setMessage("First!").call();
+        git.checkout().setCreateBranch(true).setName("au-name").call();
+        return rootDir;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -330,24 +348,5 @@ public class AuNewCommandTest {
         String rawFileContents = Files.readString(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(TestHelper.ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-1.json")).getPath()));
         JsonNode jsonFileContents = new ObjectMapper().readValue(rawFileContents, JsonNode.class);
         when(googleDocsApiMock.fetch("url")).thenReturn(new GoogleDocsApiInterface.Response(jsonFileContents, null));
-    }
-
-    private Path initializeAuDirectory(Path rootDir) throws Exception {
-        execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-        return rootDir.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER);
-    }
-
-    private String str(Path tempDirPath) {
-        return tempDirPath.toAbsolutePath().toString();
-    }
-
-    private Path getTempRepositoryDirectory() throws Exception {
-        var repoDir = Files.createTempDirectory("aac");
-        var rootDir = Files.createDirectory(repoDir.resolve("root"));
-        var git = Git.init().setDirectory(repoDir.toFile()).call();
-        git.add().addFilepattern(".").call();
-        git.commit().setMessage("First!").call();
-        git.checkout().setCreateBranch(true).setName("au-name").call();
-        return rootDir;
     }
 }

@@ -12,13 +12,10 @@ import org.junit.rules.ErrorCollector;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_DIRECTORY_STRUCTURE;
 import static net.trilogy.arch.Util.first;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 
 public class ArchitectureUpdateReaderTest {

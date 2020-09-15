@@ -2,7 +2,6 @@ package net.trilogy.arch.adapter.architectureDataStructure;
 
 import lombok.SneakyThrows;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
 import net.trilogy.arch.domain.DocumentationSection;
@@ -20,11 +19,13 @@ import java.util.TimeZone;
 
 import static java.nio.file.Files.readAllLines;
 import static java.util.stream.Collectors.toList;
+import static net.trilogy.arch.TestHelper.JSON_STRUCTURIZR_BIG_BANK;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_GENERALLY;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_MODEL_DEPLOYMENT_NODES;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_SERIALIZATION;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
+import static net.trilogy.arch.adapter.structurizr.WorkspaceReader.loadWorkspace;
 import static net.trilogy.arch.domain.DocumentationSection.Format.ASCIIDOC;
 import static net.trilogy.arch.domain.DocumentationSection.Format.MARKDOWN;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,6 +35,47 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ArchitectureDataStructureWriterTest {
     private static final FilesFacade filesFacade = new FilesFacade();
 
+    @SneakyThrows
+    public static void parseDateAsIsoOrThrow(String str) {
+        final var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        df.parse(str);
+    }
+
+    private static String trimQuotes(String s) {
+        return s.replaceAll("^\"|\"$", "");
+    }
+
+    private static void assertYamlContentsEqual(File actual, File expected) throws IOException {
+        final var actualData = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(actual.toPath()), ArchitectureDataStructure.class);
+        final var expectedData = YAML_OBJECT_MAPPER.readValue(
+                new FilesFacade().readString(expected.toPath()), ArchitectureDataStructure.class);
+
+        assertThat(actualData, is(equalTo(expectedData)));
+    }
+
+    private static ArchitectureDataStructure getArchWithDocumentation(
+            List<DocumentationSection> documentationSections,
+            List<DocumentationImage> documentationImages) {
+        return ArchitectureDataStructure.builder()
+                .name("name")
+                .businessUnit("businessUnit")
+                .description("description")
+                .documentation(documentationSections)
+                .documentationImages(documentationImages)
+                .build();
+    }
+
+    private static List<String> extractDates(File writtenYamlFile) throws Exception {
+        return readAllLines(writtenYamlFile.toPath()).stream()
+                .filter(it -> it.contains("date"))
+                .map(String::trim)
+                .map(it -> it.replace("date: ", ""))
+                .map(ArchitectureDataStructureWriterTest::trimQuotes)
+                .collect(toList());
+    }
+
     @Test
     public void shouldWriteHumanReadableDates() throws Exception {
         final var existingYamlFile = new File(getClass().getResource(MANIFEST_PATH_TO_TEST_GENERALLY).getPath());
@@ -41,7 +83,7 @@ public class ArchitectureDataStructureWriterTest {
                 new FilesFacade().readString(existingYamlFile.toPath()), ArchitectureDataStructure.class);
         final var writtenYamlFile = exportArchitectureDataStructure(dataStructure, filesFacade);
 
-        extractDates(writtenYamlFile).forEach(this::parseDateAsIsoOrThrow);
+        extractDates(writtenYamlFile).forEach(ArchitectureDataStructureWriterTest::parseDateAsIsoOrThrow);
     }
 
     @Test
@@ -49,8 +91,8 @@ public class ArchitectureDataStructureWriterTest {
         // Given
         final var rootDir = Files.createTempDirectory("aacDir");
         final var tempFile = File.createTempFile("aac", "test", rootDir.toFile());
-        final var workspaceJson = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK).getFile());
-        final var arch = new WorkspaceReader().load(workspaceJson);
+        final var workspaceJson = new File(getClass().getResource(JSON_STRUCTURIZR_BIG_BANK).getFile());
+        final var arch = loadWorkspace(workspaceJson);
 
         // When
         final var exportedYaml = exportArchitectureDataStructure(arch, tempFile, filesFacade);
@@ -140,46 +182,5 @@ public class ArchitectureDataStructureWriterTest {
         final var expected = Files.readAllBytes(Path.of(getClass().getResource(TestHelper.IMAGE_THOUGHTWORKS_FILE).getPath()));
 
         assertThat(actual, equalTo(expected));
-    }
-
-    @SneakyThrows
-    public void parseDateAsIsoOrThrow(String str) {
-        final var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        df.parse(str);
-    }
-
-    private List<String> extractDates(File writtenYamlFile) throws Exception {
-        return readAllLines(writtenYamlFile.toPath()).stream()
-                .filter(it -> it.contains("date"))
-                .map(String::trim)
-                .map(it -> it.replace("date: ", ""))
-                .map(this::trimQuotes)
-                .collect(toList());
-    }
-
-    private String trimQuotes(String s) {
-        return s.replaceAll("^\"|\"$", "");
-    }
-
-    private void assertYamlContentsEqual(File actual, File expected) throws IOException {
-        final var actualData = YAML_OBJECT_MAPPER.readValue(
-                new FilesFacade().readString(actual.toPath()), ArchitectureDataStructure.class);
-        final var expectedData = YAML_OBJECT_MAPPER.readValue(
-                new FilesFacade().readString(expected.toPath()), ArchitectureDataStructure.class);
-
-        assertThat(actualData, is(equalTo(expectedData)));
-    }
-
-    private ArchitectureDataStructure getArchWithDocumentation(
-            List<DocumentationSection> documentationSections,
-            List<DocumentationImage> documentationImages) {
-        return ArchitectureDataStructure.builder()
-                .name("name")
-                .businessUnit("businessUnit")
-                .description("description")
-                .documentation(documentationSections)
-                .documentationImages(documentationImages)
-                .build();
     }
 }

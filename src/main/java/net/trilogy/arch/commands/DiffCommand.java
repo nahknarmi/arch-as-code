@@ -65,6 +65,17 @@ public class DiffCommand
         this.architectureUpdateReader = architectureUpdateReader;
     }
 
+    static void diffConnectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
+        if (architectureUpdate.isPresent()) {
+            List<TddContainerByComponent> tddContainersByComponent = architectureUpdate.get().getTddContainersByComponent();
+            componentLevelDiffs.forEach(diff -> {
+                String componentId = diff.getElement().getId();
+                Optional<TddContainerByComponent> tddC = tddContainersByComponent.stream().filter(tC -> tC.getComponentId().getId().equalsIgnoreCase(componentId)).findFirst();
+                tddC.ifPresent(tddContainerByComponent -> diff.getElement().setRelatedTdds(tddContainerByComponent.getTdds()));
+            });
+        }
+    }
+
     @Override
     public Integer call() {
         logArgs();
@@ -98,7 +109,7 @@ public class DiffCommand
                 if (!success) return 1;
                 String containerId = container.getElement().getId();
                 Set<Diff> componentLevelDiffs = diffSet.getComponentLevelDiffs(containerId);
-                connectToTdds(componentLevelDiffs, architectureUpdate);
+                diffConnectToTdds(componentLevelDiffs, architectureUpdate);
                 if (componentLevelDiffs.size() == 0) continue;
                 success = render(componentLevelDiffs, container, outputDir.resolve("assets/" + containerId + ".svg"), "");
                 for (var component : componentLevelDiffs) {
@@ -115,17 +126,6 @@ public class DiffCommand
         print("SVG files created in " + outputDir.toAbsolutePath().toString());
 
         return 0;
-    }
-
-    void connectToTdds(Set<Diff> componentLevelDiffs, Optional<ArchitectureUpdate> architectureUpdate) {
-        if (architectureUpdate.isPresent()) {
-            List<TddContainerByComponent> tddContainersByComponent = architectureUpdate.get().getTddContainersByComponent();
-            componentLevelDiffs.forEach(diff -> {
-                String componentId = diff.getElement().getId();
-                Optional<TddContainerByComponent> tddC = tddContainersByComponent.stream().filter(tC -> tC.getComponentId().getId().equalsIgnoreCase(componentId)).findFirst();
-                tddC.ifPresent(tddContainerByComponent -> diff.getElement().setRelatedTdds(tddContainerByComponent.getTdds()));
-            });
-        }
     }
 
     Optional<ArchitectureUpdate> loadArchitectureUpdate() {

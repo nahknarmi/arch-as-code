@@ -1,6 +1,5 @@
 package net.trilogy.arch.services;
 
-import net.trilogy.arch.ArchitectureDataStructureHelper;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.c4.C4Component;
@@ -23,6 +22,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class DiffToDotCalculatorTest {
+
+    private static void appendln(StringBuilder builder, String line) {
+        builder.append(line).append("\n");
+    }
 
     @Test
     public void shouldGenerateEmptyGraph() {
@@ -349,9 +352,5 @@ public class DiffToDotCalculatorTest {
                 "}");
 
         assertThat(actual.trim(), equalTo(expected));
-    }
-
-    private void appendln(StringBuilder builder, String line) {
-        builder.append(line).append("\n");
     }
 }

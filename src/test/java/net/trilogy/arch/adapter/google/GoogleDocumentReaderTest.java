@@ -35,16 +35,18 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GoogleDocumentReaderTest {
-
     private final GoogleDocsApiInterface mockedApiInterface = mock(GoogleDocsApiInterface.class);
     private final GoogleDocumentReader reader = new GoogleDocumentReader(mockedApiInterface);
+
+    private static JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {
+        return new ObjectMapper().readValue(content, JsonNode.class);
+    }
 
     @Test
     public void shouldReturnEmptyAu() throws Exception {
         var apiResponse = new GoogleDocsApiInterface.Response(
                 getJsonNodeFrom("{}"),
-                new Document()
-        );
+                new Document());
 
         mockApiToReturnAGivenB(apiResponse, "url");
 
@@ -173,17 +175,14 @@ public class GoogleDocumentReaderTest {
     @SuppressWarnings("SameParameterValue")
     private void mockApiWith(String fileWhoseContentsWillBeReturned, String whenCalledWithUrl) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        final Path path = Paths.get(
-                Objects.requireNonNull(
-                        classLoader.getResource(fileWhoseContentsWillBeReturned)
-                ).getPath()
-        );
+        final Path path = Paths.get(Objects.requireNonNull(
+                classLoader.getResource(fileWhoseContentsWillBeReturned))
+                .getPath());
         final JsonNode sampleSpec = getJsonNodeFrom(Files.readString(path));
 
         mockApiToReturnAGivenB(
                 new GoogleDocsApiInterface.Response(sampleSpec, null),
-                whenCalledWithUrl
-        );
+                whenCalledWithUrl);
     }
 
     // TODO [TEST UTIL]: Remove when no longer needed
@@ -221,6 +220,7 @@ public class GoogleDocumentReaderTest {
         new ObjectMapper().writeValue(tempFile5.toFile(), response5.asJson());
 
         String resourcePath = " src/test/resources/";
+
         assertThat(
                 "********* STATUS *********" +
                         "\n\nReading doc: " + url1 +
@@ -241,12 +241,7 @@ public class GoogleDocumentReaderTest {
                         " && mv " + tempFile5.toAbsolutePath() + resourcePath + ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-5.json" +
                         "\n\nNow failing test on purpose :)" +
                         "\n\n********* STATUS *********\n\n",
-                true, is(false)
-        );
-    }
-
-    private JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {
-        return new ObjectMapper().readValue(content, JsonNode.class);
+                true, is(false));
     }
 
     private void mockApiToReturnAGivenB(GoogleDocsApiInterface.Response a, String b) throws IOException {

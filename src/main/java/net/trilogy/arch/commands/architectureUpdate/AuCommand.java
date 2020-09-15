@@ -8,8 +8,6 @@ import picocli.CommandLine.Spec;
 
 import java.util.concurrent.Callable;
 
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
-
 @Command(
         name = "architecture-update",
         aliases = "au",

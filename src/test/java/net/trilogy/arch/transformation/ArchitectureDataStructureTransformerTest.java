@@ -9,7 +9,6 @@ import com.structurizr.model.Component;
 import com.structurizr.model.Container;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.C4Model;
@@ -29,6 +28,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.structurizr.WorkspaceReader.loadWorkspace;
 import static net.trilogy.arch.domain.c4.C4Location.INTERNAL;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -40,11 +40,37 @@ public class ArchitectureDataStructureTransformerTest {
     private static final String PRODUCT_NAME = "TestSpaces";
     private static final String PRODUCT_DESCRIPTION = "TestSpaces is a tool!";
 
+    private static C4Model buildModel() {
+        return new C4Model(
+                ImmutableSet.of(
+                        C4Person.builder()
+                                .id("1")
+                                .alias("@person")
+                                .name("person")
+                                .description("Foo")
+                                .relationships(emptyList()).tags(emptySet()).build()
+                ),
+                ImmutableSet.of(
+                        C4SoftwareSystem.builder()
+                                .id("2")
+                                .alias("c4://sys")
+                                .name("sys")
+                                .description("sys")
+                                .location(INTERNAL)
+                                .tags(emptySet())
+                                .relationships(emptyList()).build()
+                ),
+                emptySet(),
+                emptySet(),
+                emptySet()
+        );
+    }
+
     @Test
     public void shouldHandleMultipleRelationshipsWithSameSourceAndDestination() throws Exception {
         ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File structurizrJson = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_MULTIPLE_RELATIONSHIPS).getPath());
-        ArchitectureDataStructure ourYaml = new WorkspaceReader().load(structurizrJson);
+        ArchitectureDataStructure ourYaml = loadWorkspace(structurizrJson);
 
         Workspace exportedJson = transformer.toWorkSpace(ourYaml);
 
@@ -62,7 +88,7 @@ public class ArchitectureDataStructureTransformerTest {
         // given
         ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File jsonFromStructurizr = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_TRICKY_DEPLOYMENT_NODE_SCOPES).getPath());
-        ArchitectureDataStructure ourDataStructure = new WorkspaceReader().load(jsonFromStructurizr);
+        ArchitectureDataStructure ourDataStructure = loadWorkspace(jsonFromStructurizr);
 
         // when
         Workspace workspace = transformer.toWorkSpace(ourDataStructure);
@@ -170,31 +196,5 @@ public class ArchitectureDataStructureTransformerTest {
         DecisionStatus result = first(decisions).getStatus();
 
         assertThat(result, equalTo(decisionStatus));
-    }
-
-    private static C4Model buildModel() {
-        return new C4Model(
-                ImmutableSet.of(
-                        C4Person.builder()
-                                .id("1")
-                                .alias("@person")
-                                .name("person")
-                                .description("Foo")
-                                .relationships(emptyList()).tags(emptySet()).build()
-                ),
-                ImmutableSet.of(
-                        C4SoftwareSystem.builder()
-                                .id("2")
-                                .alias("c4://sys")
-                                .name("sys")
-                                .description("sys")
-                                .location(INTERNAL)
-                                .tags(emptySet())
-                                .relationships(emptyList()).build()
-                ),
-                emptySet(),
-                emptySet(),
-                emptySet()
-        );
     }
 }

@@ -24,7 +24,7 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertEquals(workspace.getDocumentation().getDecisions().size(), 0);
+        assertEquals(0, workspace.getDocumentation().getDecisions().size());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertEquals(workspace.getDocumentation().getDecisions().size(), 1);
+        assertEquals(1, workspace.getDocumentation().getDecisions().size());
     }
 
     @Test
@@ -52,6 +52,6 @@ public class DecisionEnhancerTest {
 
         new DecisionEnhancer().enhance(workspace, dataStructure);
 
-        assertEquals(workspace.getDocumentation().getDecisions().size(), 2);
+        assertEquals(2, workspace.getDocumentation().getDecisions().size());
     }
 }

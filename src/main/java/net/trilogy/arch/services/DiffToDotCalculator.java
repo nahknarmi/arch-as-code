@@ -8,7 +8,6 @@ import net.trilogy.arch.domain.diff.DiffableEntity;
 import net.trilogy.arch.domain.diff.DiffableRelationship;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -167,6 +166,7 @@ public class DiffToDotCalculator {
     private static class Dot {
         private final StringBuilder builder = new StringBuilder();
 
+        @Override
         public String toString() {
             return builder.toString();
         }

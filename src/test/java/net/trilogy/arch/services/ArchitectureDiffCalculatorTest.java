@@ -1,6 +1,5 @@
 package net.trilogy.arch.services;
 
-import net.trilogy.arch.ArchitectureDataStructureHelper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.c4.C4Action;
 import net.trilogy.arch.domain.c4.C4Component;
@@ -37,6 +36,24 @@ import static org.hamcrest.Matchers.hasItem;
 public class ArchitectureDiffCalculatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
+
+    private static ArchitectureDataStructure getArchWithPeople(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch, Set<C4Person> people) {
+        return arch.model(
+                new C4Model(people, Set.of(), Set.of(), Set.of(), Set.of()
+                )
+        ).build();
+    }
+
+    private static ArchitectureDataStructure getArch(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch,
+                                                     Set<C4Person> people,
+                                                     Set<C4SoftwareSystem> systems,
+                                                     Set<C4Container> containers,
+                                                     Set<C4Component> components,
+                                                     Set<C4DeploymentNode> deploymentNodes) {
+        return arch.model(
+                new C4Model(people, systems, containers, components, deploymentNodes)
+        ).build();
+    }
 
     @Test
     public void shouldDiffEmptyArchitectures() {
@@ -217,23 +234,5 @@ public class ArchitectureDiffCalculatorTest {
                 actual.getStatus(),
                 equalTo(Status.NO_UPDATE_BUT_CHILDREN_UPDATED)
         );
-    }
-
-    private ArchitectureDataStructure getArchWithPeople(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch, Set<C4Person> people) {
-        return arch.model(
-                new C4Model(people, Set.of(), Set.of(), Set.of(), Set.of()
-                )
-        ).build();
-    }
-
-    private ArchitectureDataStructure getArch(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch,
-                                              Set<C4Person> people,
-                                              Set<C4SoftwareSystem> systems,
-                                              Set<C4Container> containers,
-                                              Set<C4Component> components,
-                                              Set<C4DeploymentNode> deploymentNodes) {
-        return arch.model(
-                new C4Model(people, systems, containers, components, deploymentNodes)
-        ).build();
     }
 }

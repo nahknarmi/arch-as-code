@@ -21,12 +21,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JiraApiFactoryTest {
+    private static final String expectedBaseUri = "BASE-URI/";
+    private static final String expectedGetStoryEndpoint = "GET-STORY-ENDPOINT/";
+    private static final String expectedBulkCreateEndpoint = "BULK-CREATE-ENDPOINT/";
+    private static final String expectedLinkPrefix = "LINK-PREFIX/";
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-    private final String expectedBaseUri = "BASE-URI/";
-    private final String expectedGetStoryEndpoint = "GET-STORY-ENDPOINT/";
-    private final String expectedBulkCreateEndpoint = "BULK-CREATE-ENDPOINT/";
-    private final String expectedLinkPrefix = "LINK-PREFIX/";
     private FilesFacade mockedFiles;
     private Path rootDir;
 

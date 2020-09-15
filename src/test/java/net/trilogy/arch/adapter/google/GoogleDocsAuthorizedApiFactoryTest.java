@@ -38,11 +38,10 @@ import static org.mockito.ArgumentMatchers.same;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class GoogleDocsAuthorizedApiFactoryTest {
+    private static final String CLIENT_ID = "client-id";
+    private static final String CLIENT_SECRET = "client-secret";
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-
-    private final String CLIENT_ID = "client-id";
-    private final String CLIENT_SECRET = "client-secret";
     private final List<String> SCOPES = List.of(DocsScopes.DOCUMENTS_READONLY);
     private final NetHttpTransport httpTransport = new NetHttpTransport();
     private final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();

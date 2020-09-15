@@ -38,7 +38,9 @@ import java.util.stream.Collectors;
 import static java.time.ZoneOffset.UTC;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static java.util.stream.Collectors.toList;
+import static net.trilogy.arch.TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO;
 import static net.trilogy.arch.Util.first;
+import static net.trilogy.arch.adapter.structurizr.WorkspaceReader.loadWorkspace;
 import static net.trilogy.arch.domain.c4.C4Action.USES;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -59,15 +61,15 @@ public class WorkspaceReaderTest {
     @Test
     public void shouldHaveValidDescription() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_EMPTY);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
 
         collector.checkThat(dataStructure.getDescription(), equalTo(""));
     }
 
     @Test
     public void shouldReadComponent() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO);
-        ArchitectureDataStructure data = new WorkspaceReader().load(new File(resource.getPath()));
+        URL resource = getClass().getResource(JSON_STRUCTURIZR_THINK3_SOCOCO);
+        ArchitectureDataStructure data = loadWorkspace(new File(resource.getPath()));
 
         C4Component component = (C4Component) data.getModel().findEntityById("220").orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + "220"));
 
@@ -93,8 +95,8 @@ public class WorkspaceReaderTest {
 
     @Test
     public void shouldReadCorrectNumberOfElements() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        URL resource = getClass().getResource(JSON_STRUCTURIZR_THINK3_SOCOCO);
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
 
         collector.checkThat(dataStructure.getName(), is(equalTo("Sococo Import")));
         collector.checkThat(dataStructure.getBusinessUnit(), is(equalTo("Think3")));
@@ -111,7 +113,7 @@ public class WorkspaceReaderTest {
     @Test
     public void shouldReadDeploymentNodes() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
 
         collector.checkThat(dataStructure.getModel().getDeploymentNodes().size(), is(equalTo(4)));
         collector.checkThat(dataStructure.getModel().getDeploymentNodesRecursively().size(), is(equalTo(18)));
@@ -148,10 +150,10 @@ public class WorkspaceReaderTest {
 
     @Test
     public void shouldReadDecisions() throws Exception {
-        URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_THINK3_SOCOCO);
+        URL resource = getClass().getResource(JSON_STRUCTURIZR_THINK3_SOCOCO);
         String id = "4";
 
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
         List<ImportantTechnicalDecision> decisions = dataStructure.getDecisions();
 
         collector.checkThat(decisions.size(), is(equalTo(4)));
@@ -171,7 +173,7 @@ public class WorkspaceReaderTest {
     @Test
     public void shouldReadDocumentation() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
 
         final int size = dataStructure.getDocumentation().size();
         final Set<String> titles = dataStructure.getDocumentation().stream()
@@ -184,7 +186,7 @@ public class WorkspaceReaderTest {
     @Test
     public void shouldReadDocumentationImages() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_EMBEDDED_IMAGE);
-        ArchitectureDataStructure dataStructure = new WorkspaceReader().load(new File(resource.getPath()));
+        ArchitectureDataStructure dataStructure = loadWorkspace(new File(resource.getPath()));
 
         @NonNull List<DocumentationImage> documentationImages = dataStructure.getDocumentationImages();
 
@@ -198,7 +200,7 @@ public class WorkspaceReaderTest {
     @Test
     public void shouldLoadViews() throws Exception {
         URL resource = getClass().getResource(TestHelper.JSON_STRUCTURIZR_BIG_BANK);
-        ViewSet views = new WorkspaceReader().loadViews(new File(resource.getPath()));
+        ViewSet views = WorkspaceReader.loadViews(new File(resource.getPath()));
 
         assertThat(views, notNullValue());
         Collection<SystemContextView> systemViews = views.getSystemContextViews();

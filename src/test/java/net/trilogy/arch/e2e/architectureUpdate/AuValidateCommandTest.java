@@ -1,7 +1,5 @@
 package net.trilogy.arch.e2e.architectureUpdate;
 
-import net.trilogy.arch.TestHelper;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
@@ -12,7 +10,6 @@ import org.junit.rules.ErrorCollector;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static java.lang.System.setErr;

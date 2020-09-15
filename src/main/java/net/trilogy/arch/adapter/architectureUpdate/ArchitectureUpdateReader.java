@@ -11,10 +11,8 @@ import net.trilogy.arch.facade.FilesFacade;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.util.Arrays.stream;
@@ -28,21 +26,16 @@ import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCH
 public class ArchitectureUpdateReader {
     private final FilesFacade filesFacade;
 
-    public ArchitectureUpdate loadArchitectureUpdate(Path path) throws IOException {
-        final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
-        var au = YAML_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
-
-        return assignTddContents(au, getTddContent(path));
-    }
-
     private static ArchitectureUpdate assignTddContents(ArchitectureUpdate au, List<TddContent> tddContents) {
-        final var allComponentTdds = au.getTddContainersByComponent().stream().map(componentTdds -> {
-            final var tdds = componentTdds.getTdds().entrySet().stream().map(es -> {
-                final var tddContent = contentByMatchingIds(tddContents, componentTdds, es.getKey());
-                return new SimpleEntry<TddId, Tdd>(es.getKey(), new Tdd(es.getValue().getText(), es.getValue().getFile(), tddContent));
-            }).collect(toMap(item -> item.getKey(), item -> item.getValue()));
-            return componentTdds.toBuilder().tdds(tdds).build();
-        }).collect(toList());
+        final var allComponentTdds = au.getTddContainersByComponent().stream()
+                .map(componentTdds -> {
+                    final var tdds = componentTdds.getTdds().entrySet().stream().map(es -> {
+                        final var tddContent = contentByMatchingIds(tddContents, componentTdds, es.getKey());
+                        return new SimpleEntry<>(es.getKey(), new Tdd(es.getValue().getText(), es.getValue().getFile(), tddContent));
+                    }).collect(toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+                    return componentTdds.toBuilder().tdds(tdds).build();
+                })
+                .collect(toList());
 
         return au.toBuilder().tddContainersByComponent(allComponentTdds).build();
     }
@@ -53,6 +46,13 @@ public class ArchitectureUpdateReader {
                 .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public ArchitectureUpdate loadArchitectureUpdate(Path path) throws IOException {
+        final var auAsString = filesFacade.readString(path.resolve(ARCHITECTURE_UPDATE_YML));
+        var au = YAML_OBJECT_MAPPER.readValue(auAsString, ArchitectureUpdate.class);
+
+        return assignTddContents(au, getTddContent(path));
     }
 
     private List<TddContent> getTddContent(Path path) {

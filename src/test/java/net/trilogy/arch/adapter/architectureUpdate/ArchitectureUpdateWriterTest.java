@@ -1,7 +1,6 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,7 +13,6 @@ import static java.nio.file.Files.createTempDirectory;
 import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateWriter.exportArchitectureUpdate;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ArchitectureUpdateWriterTest {

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static net.trilogy.arch.commands.DiffCommand.diffConnectToTdds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItemInArray;
@@ -95,7 +96,7 @@ public class DiffCommandTest {
         c2Tdds.put(new TddId("789"), new Tdd("789 text", null));
         componentTdds.add(TddContainerByComponent.builder().componentId(new TddComponentReference("c2")).tdds(c2Tdds).build());
 
-        diffCommand.connectToTdds(componentLevelDiffs, Optional.of(ArchitectureUpdate.builder().tddContainersByComponent(componentTdds).build()));
+        diffConnectToTdds(componentLevelDiffs, Optional.of(ArchitectureUpdate.builder().tddContainersByComponent(componentTdds).build()));
 
         assertTrue(c1.getElement().hasRelatedTdds());
         assertThat(c1.getElement().getRelatedTddsText(), hasItemInArray("123 - 123 text"));
