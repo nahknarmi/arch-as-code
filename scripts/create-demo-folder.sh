@@ -23,6 +23,22 @@ Options:
 EOH
 }
 
+function maybe-create-init-au-yaml() {
+    # ASSUMES running from within the create demo folder, not the repo dir
+    for br in $(git for-each-ref --shell --format='%(refname:short)'); do
+        case $br in
+        test) return ;; # If there's already a branch, don't change it
+        esac
+    done
+
+    run git checkout -b test
+    mkdir -p architecture-update/test
+    cp "$repo_dir/documentation/products/arch-as-code/architecture-updates/show-tdd-in-diff/architecture-update.yml" architecture-update/test
+    git add .
+    git commit -m 'Set up demonstration AU'
+    run git checkout master
+}
+
 # shellcheck disable=SC1090
 . "${0%/*}/colors.sh"
 export TTY=false
@@ -57,12 +73,9 @@ while getopts :h-: opt; do
 done
 shift $((OPTIND - 1))
 
-# find and go to repo root dir
-# TODO: Ask git directly: `git rev-parse --show-toplevel`
-d="$(dirname "${BASH_SOURCE[0]}")"
-dir="$(cd "$(dirname "$d")" && pwd)/$(basename "$d")"
-cd "$dir"
-cd ..
+# ASSUMES script is run from somewhere within the project repo
+repo_dir="$(git rev-parse --show-toplevel)"
+cd "$repo_dir"
 
 rm -rf /tmp/aac/demo-folder/.arch-as-code
 rm -rf /tmp/aac/demo-folder/.install
@@ -100,23 +113,27 @@ run .install/bin/arch-as-code au init -c c -p p -s s .
 # Optionally restore the backup, if exists
 [[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml
 
-# copy .arch-as-code from repo root
-rm -rf .arch-as-code
-cp -r "$dir"/../.arch-as-code .
+# Create initial AaC settings files if none already present
+if [[ -d ~/.arch-as-code ]]; then # Home dir first
+    cp -r ~/.arch-as-code .
+else # Project repo files as a fallback
+    cp -r "$repo_dir"/.arch-as-code .
+fi
 
-# add executable to folder
 # shellcheck disable=SC2016
 ln -fs .install/bin/arch-as-code .
 
-echo "Setting up demo folder as a git repo"
 if [[ ! -d .git ]]; then
     run git init
     run git add .
     run git commit -m Init
 fi
 
+maybe-create-init-au-yaml
+
 cat <<EOM
-Demo folder created in $PWD
-Change to that directory, and use ./arch-as-code
-(Once there, you may find 'alias aac=\$PWD/arch-as-code helpful)
+Demo folder created in $PWD.
+Change to that directory, and use ./arch-as-code or "aac" alias.
+(Once there, you may find 'alias aac=\$PWD/arch-as-code' helpful)
+This is setup as a Git repo (or there was already one present).
 EOM
