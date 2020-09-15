@@ -30,8 +30,7 @@ public class ArchitectureUpdateAnnotator {
             return tdd;
         }
 
-        Tdd tddWithFileName = new Tdd(tdd.getText(), tddContent.getFilename());
-        tddWithFileName.setContent(tddContent);
+        Tdd tddWithFileName = new Tdd(tdd.getText(), tddContent.getFilename(), tddContent);
         return tddWithFileName;
     }
 
