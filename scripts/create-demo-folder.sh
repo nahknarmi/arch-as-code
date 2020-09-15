@@ -13,8 +13,7 @@ function print-usage() {
 function print-help() {
     cat <<EOH
 This script will:
- - run ./gradlew clean
- - run ./gradlew distZip
+ - run ./gradlew build (not clean)
  - create a demo folder where it's easy to execute the binary
  - that folder will be as if 'init' and 'au init' had already been run
 
@@ -25,7 +24,7 @@ EOH
 
 function maybe-create-init-au-yaml() {
     # ASSUMES running from within the create demo folder, not the repo dir
-    for br in $(git for-each-ref --shell --format='%(refname:short)'); do
+    for br in $(git for-each-ref --format='%(refname:short)'); do
         case $br in
         test) return ;; # If there's already a branch, don't change it
         esac
@@ -77,17 +76,18 @@ shift $((OPTIND - 1))
 repo_dir="$(git rev-parse --show-toplevel)"
 cd "$repo_dir"
 
+echo "Working..."
+
 rm -rf /tmp/aac/demo-folder/.arch-as-code
 rm -rf /tmp/aac/demo-folder/.install
 mkdir -p /tmp/aac/demo-folder/.install
 
-run ./gradlew clean # Start clean
-
 cp ./scripts/demo-git-ignore /tmp/aac/demo-folder/.gitignore
 cp ./.java-version /tmp/aac/demo-folder
 
-run ./gradlew bootJar
 mkdir -p /tmp/aac/demo-folder/.install/bin
+
+run ./gradlew bootJar
 cp ./build/libs/arch-as-code-*.jar /tmp/aac/demo-folder/.install/bin
 
 cat <<EOS >/tmp/aac/demo-folder/.install/bin/arch-as-code
@@ -110,7 +110,7 @@ cd /tmp/aac/demo-folder
 run .install/bin/arch-as-code init -i i -k i -s s .
 run .install/bin/arch-as-code au init -c c -p p -s s .
 
-# Optionally restore the backup, if exists
+# TODO: Do not destroy the existing file
 [[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml
 
 # Create initial AaC settings files if none already present
@@ -132,8 +132,12 @@ fi
 maybe-create-init-au-yaml
 
 cat <<EOM
-Demo folder created in $PWD.
+Demo folder created in '$PWD'.
 Change to that directory, and use ./arch-as-code or "aac" alias.
 (Once there, you may find 'alias aac=\$PWD/arch-as-code' helpful)
 This is setup as a Git repo (or there was already one present).
+If there were already a '$PWD' directory, we overwrite the AaC parts.
+If there were already a 'test' branch for architecture updates, we left it be.
+If there were already a '.arch-as-code/' directory, we left it be, else we
+copied one from 1) your home directory, or 2) project defaults.
 EOM
