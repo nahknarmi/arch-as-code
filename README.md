@@ -26,6 +26,7 @@ and documentation.
 * [Building locally](#building-locally)
 * [Build maintenance](#build-maintenance)
 * [The demo folder](#the-demo-folder)
+* [TODOs](#todo)
 
 ## Getting started
 
@@ -186,3 +187,7 @@ $ alias aac=$PWD/arch-as-code.sh
 ```
 Until we get upstream to add "technology" lines to "product-architect.yml",
 you will need to _manually_ edit before validation passes.
+
+## TODO
+
+* Migrate to JUnit 5
