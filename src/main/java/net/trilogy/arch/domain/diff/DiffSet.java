@@ -26,13 +26,22 @@ public class DiffSet {
 
     public DiffSet(Collection<Diff> diffs) {
         this.diffs = new LinkedHashSet<>(diffs);
-        this.relationships = this.diffs.stream()
+        relationships = this.diffs.stream()
                 .filter(diff -> C4Type.RELATIONSHIP.equals(diff.getElement().getType()))
                 .collect(Collectors.toList());
     }
 
+    @SafeVarargs
+    private static <T> Set<T> merge(Collection<T>... itemCollections) {
+        final var merged = new HashSet<T>();
+        for (final Collection<T> items : itemCollections) {
+            merged.addAll(items);
+        }
+        return merged;
+    }
+
     public Set<Diff> getSystemLevelDiffs() {
-        var systemsAndPeople = this.diffs.stream()
+        var systemsAndPeople = diffs.stream()
                 .filter(diff -> Set.of(C4Type.SYSTEM, C4Type.PERSON).contains(diff.getElement().getType()))
                 .collect(Collectors.toList());
 
@@ -43,7 +52,7 @@ public class DiffSet {
     }
 
     public Set<Diff> getContainerLevelDiffs(String systemId) {
-        var containers = this.diffs.stream()
+        var containers = diffs.stream()
                 .filter(diff -> diff.getElement().getType().equals(C4Type.CONTAINER))
                 .filter(diff -> ((C4Container) ((DiffableEntity) diff.getElement()).getEntity()).getSystemId().equals(systemId))
                 .collect(toSet());
@@ -57,7 +66,7 @@ public class DiffSet {
     }
 
     public Set<Diff> getComponentLevelDiffs(String containerId) {
-        var containers = this.diffs.stream()
+        var containers = diffs.stream()
                 .filter(diff -> diff.getElement().getType().equals(C4Type.COMPONENT))
                 .filter(diff -> ((C4Component) ((DiffableEntity) diff.getElement()).getEntity()).getContainerId().equals(containerId))
                 .collect(toSet());
@@ -68,17 +77,8 @@ public class DiffSet {
         return merge(containers, relationships, otherRelatedEntities);
     }
 
-    @SafeVarargs
-    private <T> Set<T> merge(Collection<T>... itemCollections) {
-        final var merged = new HashSet<T>();
-        for (final Collection<T> items : itemCollections) {
-            merged.addAll(items);
-        }
-        return merged;
-    }
-
     private List<Diff> findById(String id) {
-        return this.diffs.stream()
+        return diffs.stream()
                 .filter(it -> it.getElement().getId().equals(id))
                 .collect(Collectors.toList());
     }

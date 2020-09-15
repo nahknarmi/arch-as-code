@@ -51,8 +51,9 @@ public class FunctionalRequirement {
             return new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]");
         }
 
+        @Override
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 }

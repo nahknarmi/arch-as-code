@@ -51,16 +51,17 @@ public class C4Component extends Entity implements HasTechnology, HasUrl {
     }
 
     public String name() {
-        return ofNullable(this.name).orElse(path.componentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
+        return ofNullable(name).orElse(path.componentName().orElseThrow(() -> new IllegalStateException("Component name could not be derived.")));
     }
 
+    @Override
     public C4Type getType() {
         return C4Type.COMPONENT;
     }
 
     @Override
     public C4Component shallowCopy() {
-        return this.toBuilder().build();
+        return toBuilder().build();
     }
 
     public static class C4ComponentBuilder {

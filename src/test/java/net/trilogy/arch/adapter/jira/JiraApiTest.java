@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 
+import static java.lang.String.join;
 import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_REQUEST_EXPECTED_BODY;
 import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_RESPONSE_EXPECTED_BODY;
 import static net.trilogy.arch.TestHelper.JSON_JIRA_CREATE_STORIES_WITH_TDD_CONTENT_REQUEST_EXPECTED_BODY;
@@ -55,6 +56,37 @@ public class JiraApiTest {
         return (HttpResponse<Object>) mock(HttpResponse.class);
     }
 
+    private static List<JiraStory> createSampleJiraStories() {
+        var jiraTdd1 = new JiraStory.JiraTdd(
+                new TddId("TDD ID 1"),
+                new Tdd("TDD TEXT 1", null),
+                "COMPONENT ID 1",
+                null);
+
+        var jiraTdd2 = new JiraStory.JiraTdd(
+                new TddId("TDD ID 2"),
+                new Tdd("TDD TEXT 2", null),
+                "COMPONENT ID 2",
+                null);
+
+        var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 1"),
+                new FunctionalRequirement(
+                        "FUNCTIONAL REQUIREMENT TEXT 1",
+                        "FUNCTIONAL REQUIREMENT SOURCE 1",
+                        List.of(new TddId("TDD REFERENCE 1"))));
+        var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
+                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 2"),
+                new FunctionalRequirement(
+                        "FUNCTIONAL REQUIREMENT TEXT 2",
+                        "FUNCTIONAL REQUIREMENT SOURCE 2",
+                        List.of(new TddId("TDD REFERENCE 2"))));
+
+        return List.of(
+                new JiraStory("STORY TITLE 1", List.of(jiraTdd1), List.of()),
+                new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2)));
+    }
+
     @Before
     public void setUp() {
         mockHttpClient = mock(HttpClient.class);
@@ -80,23 +112,19 @@ public class JiraApiTest {
 
         collector.checkThat(
                 requestMade.method(),
-                equalTo("GET")
-        );
+                equalTo("GET"));
 
         collector.checkThat(
-                String.join(", ", requestMade.headers().allValues("Authorization")),
-                containsString("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
-        );
+                join(", ", requestMade.headers().allValues("Authorization")),
+                containsString("Basic dXNlcm5hbWU6cGFzc3dvcmQ="));
 
         collector.checkThat(
-                String.join(", ", requestMade.headers().allValues("Content-Type")),
-                containsString("application/json")
-        );
+                join(", ", requestMade.headers().allValues("Content-Type")),
+                containsString("application/json"));
 
         collector.checkThat(
                 requestMade.uri().toString(),
-                equalTo("http://base-uri/get-story-endpoint/" + jiraToQuery.getTicket())
-        );
+                equalTo("http://base-uri/get-story-endpoint/" + jiraToQuery.getTicket()));
     }
 
     @Test
@@ -228,10 +256,8 @@ public class JiraApiTest {
                         "error-message-1\n" +
                                 "error-message-2\n" +
                                 "error-title-1: inner-error-message-1\n" +
-                                "error-title-2: inner-error-message-2\n"
-                ),
-                JiraCreateStoryStatus.succeeded("ABC-123", "http://base-uri/browse/ABC-123")
-        );
+                                "error-title-2: inner-error-message-2\n"),
+                JiraCreateStoryStatus.succeeded("ABC-123", "http://base-uri/browse/ABC-123"));
         collector.checkThat(actual, equalTo(expected));
     }
 
@@ -267,38 +293,30 @@ public class JiraApiTest {
                 new TddId("TDD ID 1"),
                 new Tdd("Ignored text", "TDD ID 1 : Component-1.md"),
                 "c4://pathToComponent-1",
-                new TddContent("TDD CONTENT FILE TDD ID 1", "TDD ID 1 : Component-1.md")
-        );
+                new TddContent("TDD CONTENT FILE TDD ID 1", "TDD ID 1 : Component-1.md"));
 
         var jiraTdd2 = new JiraStory.JiraTdd(
                 new TddId("TDD ID 2"),
                 new Tdd(null, "TDD ID 2 : Component-1.md"),
                 "c4://pathToComponent-2",
-                new TddContent("TDD CONTENT FILE TDD ID 2", "TDD ID 2 : Component-1.md")
-
-        );
+                new TddContent("TDD CONTENT FILE TDD ID 2", "TDD ID 2 : Component-1.md"));
 
         var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
                 new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 1"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 1",
                         "FUNCTIONAL REQUIREMENT SOURCE 1",
-                        List.of(new TddId("TDD REFERENCE 1"))
-                )
-        );
+                        List.of(new TddId("TDD REFERENCE 1"))));
         var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
                 new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 2"),
                 new FunctionalRequirement(
                         "FUNCTIONAL REQUIREMENT TEXT 2",
                         "FUNCTIONAL REQUIREMENT SOURCE 2",
-                        List.of(new TddId("TDD REFERENCE 2"))
-                )
-        );
+                        List.of(new TddId("TDD REFERENCE 2"))));
 
-        List<JiraStory> sampleJiraStories = List.of(
+        final var sampleJiraStories = List.of(
                 new JiraStory("STORY TITLE 1", List.of(jiraTdd1), List.of()),
-                new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2))
-        );
+                new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2)));
 
         final var mockedResponse = mockedGenericHttpResponse();
         when(mockedResponse.statusCode()).thenReturn(201);
@@ -340,52 +358,12 @@ public class JiraApiTest {
         collector.checkThat(requestMade.method(), equalTo("POST"));
 
         collector.checkThat(
-                String.join(", ", requestMade.headers().allValues("Authorization")),
-                containsString("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
-        );
+                join(", ", requestMade.headers().allValues("Authorization")),
+                containsString("Basic dXNlcm5hbWU6cGFzc3dvcmQ="));
 
         collector.checkThat(
                 requestMade.headers().allValues("Content-Type"),
-                contains("application/json")
-        );
-    }
-
-    private List<JiraStory> createSampleJiraStories() {
-        var jiraTdd1 = new JiraStory.JiraTdd(
-                new TddId("TDD ID 1"),
-                new Tdd("TDD TEXT 1", null),
-                "COMPONENT ID 1",
-                null
-        );
-
-        var jiraTdd2 = new JiraStory.JiraTdd(
-                new TddId("TDD ID 2"),
-                new Tdd("TDD TEXT 2", null),
-                "COMPONENT ID 2",
-                null
-        );
-
-        var jiraFunctionalRequirement1 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 1"),
-                new FunctionalRequirement(
-                        "FUNCTIONAL REQUIREMENT TEXT 1",
-                        "FUNCTIONAL REQUIREMENT SOURCE 1",
-                        List.of(new TddId("TDD REFERENCE 1"))
-                )
-        );
-        var jiraFunctionalRequirement2 = new JiraStory.JiraFunctionalRequirement(
-                new FunctionalRequirementId("FUNCTIONAL REQUIREMENT ID 2"),
-                new FunctionalRequirement(
-                        "FUNCTIONAL REQUIREMENT TEXT 2",
-                        "FUNCTIONAL REQUIREMENT SOURCE 2",
-                        List.of(new TddId("TDD REFERENCE 2"))
-                )
-        );
-
-        return List.of(
-                new JiraStory("STORY TITLE 1", List.of(jiraTdd1), List.of()),
-                new JiraStory("STORY TITLE 2", List.of(jiraTdd1, jiraTdd2), List.of(jiraFunctionalRequirement1, jiraFunctionalRequirement2))
-        );
+                contains("application/json"));
     }
 
     /**
@@ -413,7 +391,7 @@ public class JiraApiTest {
 
         private List<T> getBodyItems() {
             try {
-                this.latch.await();
+                latch.await();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -428,17 +406,17 @@ public class JiraApiTest {
 
         @Override
         public void onNext(T item) {
-            this.bodyItems.add(item);
+            bodyItems.add(item);
         }
 
         @Override
         public void onError(Throwable throwable) {
-            this.latch.countDown();
+            latch.countDown();
         }
 
         @Override
         public void onComplete() {
-            this.latch.countDown();
+            latch.countDown();
         }
     }
 }

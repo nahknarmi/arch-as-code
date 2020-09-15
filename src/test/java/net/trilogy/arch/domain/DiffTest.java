@@ -155,8 +155,8 @@ public class DiffTest {
 
         public Thing(String id) {
             this.id = id;
-            this.name = "name";
-            this.type = C4Type.PERSON;
+            name = "name";
+            type = C4Type.PERSON;
         }
     }
 }

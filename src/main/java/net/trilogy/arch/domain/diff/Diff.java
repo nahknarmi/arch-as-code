@@ -17,9 +17,9 @@ public class Diff {
     public Diff(Diffable before, Diffable after) {
         this.before = before;
         this.after = after;
-        this.descendantsAfter = Set.of();
-        this.descendantsBefore = Set.of();
-        this.status = calculateStatus();
+        descendantsAfter = Set.of();
+        descendantsBefore = Set.of();
+        status = calculateStatus();
     }
 
     public Diff(Diffable before, Set<? extends Diffable> descendantsBefore, Diffable after, Set<? extends Diffable> descendantsAfter) {
@@ -27,9 +27,10 @@ public class Diff {
         this.after = after;
         this.descendantsBefore = descendantsBefore;
         this.descendantsAfter = descendantsAfter;
-        this.status = calculateStatus();
+        status = calculateStatus();
     }
 
+    @Override
     public String toString() {
         String marker;
         if (status.equals(Status.UPDATED)) marker = "*";

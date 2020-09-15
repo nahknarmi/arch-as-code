@@ -58,9 +58,10 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
         this.jiraApiFactory = jiraApiFactory;
-        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+        architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
+    @Override
     public Integer call() {
         logArgs();
         final Path auPath = architectureUpdateDirectory.toPath();

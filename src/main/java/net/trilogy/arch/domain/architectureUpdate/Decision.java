@@ -49,8 +49,9 @@ public class Decision {
             return new DecisionId("[SAMPLE-DECISION-ID]");
         }
 
+        @Override
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 }

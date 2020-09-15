@@ -49,13 +49,14 @@ public class C4Container extends Entity implements HasTechnology, HasUrl {
                         -> new IllegalStateException("Container name couldn't be extracted from " + path)));
     }
 
+    @Override
     public C4Type getType() {
         return C4Type.CONTAINER;
     }
 
     @Override
     public C4Container shallowCopy() {
-        return this.toBuilder().build();
+        return toBuilder().build();
     }
 
     public static class C4ContainerBuilder {

@@ -37,7 +37,7 @@ public class ModelMediator {
 
     public ModelMediator(Model model) {
         this.model = model;
-        this.idGenerator = new FunctionalIdGenerator();
+        idGenerator = new FunctionalIdGenerator();
     }
 
     private static String str(List<String> lst) {

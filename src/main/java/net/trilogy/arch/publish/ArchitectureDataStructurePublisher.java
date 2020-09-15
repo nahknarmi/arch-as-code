@@ -25,8 +25,8 @@ public class ArchitectureDataStructurePublisher {
         this.filesFacade = filesFacade;
         this.productArchitectureDirectory = productArchitectureDirectory;
         this.manifestFileName = manifestFileName;
-        this.dataStructureTransformer = TransformerFactory.create(productArchitectureDirectory);
-        this.structurizrAdapter = new StructurizrAdapter();
+        dataStructureTransformer = TransformerFactory.create(productArchitectureDirectory);
+        structurizrAdapter = new StructurizrAdapter();
     }
 
     public ArchitectureDataStructurePublisher(StructurizrAdapter structurizrAdapter,
@@ -36,7 +36,7 @@ public class ArchitectureDataStructurePublisher {
         this.filesFacade = filesFacade;
         this.productArchitectureDirectory = productArchitectureDirectory;
         this.manifestFileName = manifestFileName;
-        this.dataStructureTransformer = TransformerFactory.create(productArchitectureDirectory);
+        dataStructureTransformer = TransformerFactory.create(productArchitectureDirectory);
         this.structurizrAdapter = structurizrAdapter;
     }
 
@@ -56,7 +56,7 @@ public class ArchitectureDataStructurePublisher {
 
     public ArchitectureDataStructure loadProductArchitecture(File productArchitectureDirectory, String manifestFileName) throws IOException {
         final var manifestFile = new File(productArchitectureDirectory + File.separator + manifestFileName);
-        final var architectureAsString = this.filesFacade.readString(manifestFile.toPath());
+        final var architectureAsString = filesFacade.readString(manifestFile.toPath());
 
         return YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }

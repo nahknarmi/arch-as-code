@@ -43,6 +43,10 @@ public class AuAnnotateCommandTest {
     Path changedAuWithoutComponentsDirectoryPath;
     Path changedAuWithTddContentsDirectoryPath;
 
+    private static String toString(Path path) {
+        return path.toAbsolutePath().toString();
+    }
+
     @Before
     public void setUp() throws Exception {
         rootPath = TestHelper.getPath(getClass(), TestHelper.ROOT_PATH_TO_TEST_AU_ANNOTATE);
@@ -195,15 +199,15 @@ public class AuAnnotateCommandTest {
     @Test
     public void shouldIgnoreInvalidComponentsAmongstValid() throws Exception {
         // GIVEN
-        Path writeDestination = this.changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML);
-        String writeSource = Files.readString(this.changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML))
+        Path writeDestination = changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML);
+        String writeSource = Files.readString(changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML))
                 .replace("component-id: \"34\"", "component-id: \"404\"");
         Files.writeString(writeDestination, writeSource);
 
         // WHEN
-        int status = TestHelper.execute("au", "annotate", toString(this.changedAuWithComponentsDirectoryPath), toString(rootPath));
+        int status = TestHelper.execute("au", "annotate", toString(changedAuWithComponentsDirectoryPath), toString(rootPath));
 
-        var actual = Files.readString(this.changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML));
+        var actual = Files.readString(changedAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML));
 
         // THEN
         var expected = Files.readString(originalAuWithComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML))
@@ -268,9 +272,5 @@ public class AuAnnotateCommandTest {
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(err.toString(), equalTo("Unable to write annotated Architecture Update to yaml file.\nError: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
-    }
-
-    private String toString(Path path) {
-        return path.toAbsolutePath().toString();
     }
 }

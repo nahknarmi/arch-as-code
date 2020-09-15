@@ -24,7 +24,7 @@ public class StoryPublishingService {
     public StoryPublishingService(final PrintWriter out, final PrintWriter err, final JiraApi jiraApi) {
         this.out = out;
         this.err = err;
-        this.api = jiraApi;
+        api = jiraApi;
     }
 
     public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
@@ -81,7 +81,7 @@ public class StoryPublishingService {
         out.println("Checking epic...\n");
 
         final var epicJiraTicket = au.getCapabilityContainer().getEpic().getJira();
-        final var informationAboutTheEpic = this.api.getStory(epicJiraTicket, username, password);
+        final var informationAboutTheEpic = api.getStory(epicJiraTicket, username, password);
 
         out.println("Attempting to create stories...\n");
 
@@ -91,7 +91,7 @@ public class StoryPublishingService {
         }
 
         // create stories
-        var createStoriesResults = this.api.createStories(
+        var createStoriesResults = api.createStories(
                 jiraStories,
                 epicJiraTicket.getTicket(),
                 informationAboutTheEpic.getProjectId(),

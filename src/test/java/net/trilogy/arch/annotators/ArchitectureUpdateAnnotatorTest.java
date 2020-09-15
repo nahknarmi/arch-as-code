@@ -8,7 +8,6 @@ import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -22,6 +21,8 @@ import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_ANNOTATOR;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateC4Paths;
+import static net.trilogy.arch.annotators.ArchitectureUpdateAnnotator.annotateTddContentFiles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -29,11 +30,12 @@ public class ArchitectureUpdateAnnotatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-    private ArchitectureUpdateAnnotator annotator;
-
-    @Before
-    public void setUp() {
-        annotator = new ArchitectureUpdateAnnotator();
+    private static ArchitectureUpdate getAuWith(List<TddContent> tddContents, List<TddContainerByComponent> tddContainersByComponent) {
+        return ArchitectureUpdate.blank()
+                .toBuilder()
+                .tddContents(tddContents)
+                .tddContainersByComponent(tddContainersByComponent)
+                .build();
     }
 
     @Test
@@ -41,7 +43,7 @@ public class ArchitectureUpdateAnnotatorTest {
         final var architecture = getArchitecture();
         final var au = ArchitectureUpdate.blank();
 
-        collector.checkThat(annotator.isComponentsEmpty(architecture, au), equalTo(true));
+        collector.checkThat(ArchitectureUpdateAnnotator.isComponentsEmpty(architecture, au), equalTo(true));
     }
 
     @Test
@@ -56,7 +58,7 @@ public class ArchitectureUpdateAnnotatorTest {
                         emptyMap())))
                 .build();
 
-        collector.checkThat(annotator.isComponentsEmpty(architecture, au), equalTo(false));
+        collector.checkThat(ArchitectureUpdateAnnotator.isComponentsEmpty(architecture, au), equalTo(false));
     }
 
     @Test
@@ -72,7 +74,7 @@ public class ArchitectureUpdateAnnotatorTest {
                                 emptyMap())))
                 .build();
 
-        collector.checkThat(annotator.isComponentsEmpty(architecture, au), equalTo(false));
+        collector.checkThat(ArchitectureUpdateAnnotator.isComponentsEmpty(architecture, au), equalTo(false));
     }
 
     @Test
@@ -93,7 +95,7 @@ public class ArchitectureUpdateAnnotatorTest {
         var au = getAuWith(List.of(), tddContainers);
 
         //When
-        au = annotator.annotateC4Paths(getArchitecture(), au);
+        au = annotateC4Paths(getArchitecture(), au);
 
         // Then
         assertThat(first(au.getTddContainersByComponent()).getComponentPath(), equalTo("c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller"));
@@ -111,7 +113,7 @@ public class ArchitectureUpdateAnnotatorTest {
         var au = getAuWith(List.of(), tddContainers);
 
         //When
-        au = annotator.annotateC4Paths(getArchitecture(), au);
+        au = annotateC4Paths(getArchitecture(), au);
 
         // Then
         assertThat(first(au.getTddContainersByComponent()).getComponentPath(), equalTo(null));
@@ -137,7 +139,7 @@ public class ArchitectureUpdateAnnotatorTest {
         var au = getAuWith(List.of(), tddContainers);
 
         //When
-        au = annotator.annotateC4Paths(getArchitecture(), au);
+        au = annotateC4Paths(getArchitecture(), au);
 
         // Then
         assertThat(first(au.getTddContainersByComponent()).getComponentId().getId(), equalTo("13"));
@@ -156,7 +158,7 @@ public class ArchitectureUpdateAnnotatorTest {
         var au = getAuWith(List.of(), tddContainers);
 
         //When
-        au = annotator.annotateC4Paths(getArchitecture(), au);
+        au = annotateC4Paths(getArchitecture(), au);
 
         // Then
         assertThat(first(au.getTddContainersByComponent()).getComponentId(), equalTo(null));
@@ -181,7 +183,7 @@ public class ArchitectureUpdateAnnotatorTest {
         final var au = getAuWith(tddContents, tddContainers);
 
         // WHEN
-        final var annotatedAu = annotator.annotateTddContentFiles(au);
+        final var annotatedAu = annotateTddContentFiles(au);
 
         // THEN
         final var expectedAu = au.toBuilder()
@@ -217,7 +219,7 @@ public class ArchitectureUpdateAnnotatorTest {
         final var au = getAuWith(tddContents, tddContainers);
 
         // WHEN
-        final var annotatedAu = annotator.annotateTddContentFiles(au);
+        final var annotatedAu = annotateTddContentFiles(au);
 
         // THEN
         final var expectedAu = au.toBuilder()
@@ -231,14 +233,6 @@ public class ArchitectureUpdateAnnotatorTest {
                 .build();
 
         collector.checkThat(annotatedAu, equalTo(expectedAu));
-    }
-
-    private ArchitectureUpdate getAuWith(List<TddContent> tddContents, List<TddContainerByComponent> tddContainersByComponent) {
-        return ArchitectureUpdate.blank()
-                .toBuilder()
-                .tddContents(tddContents)
-                .tddContainersByComponent(tddContainersByComponent)
-                .build();
     }
 
     private ArchitectureDataStructure getArchitecture() throws Exception {

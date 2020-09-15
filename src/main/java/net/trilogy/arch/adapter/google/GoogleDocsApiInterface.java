@@ -16,7 +16,7 @@ public class GoogleDocsApiInterface {
     private final Docs api;
 
     public GoogleDocsApiInterface(Docs rawGoogleDocsApi) {
-        this.api = rawGoogleDocsApi;
+        api = rawGoogleDocsApi;
     }
 
     private static String getDocumentId(String documentUrl) {
@@ -56,11 +56,11 @@ public class GoogleDocsApiInterface {
         }
 
         public JsonNode asJson() {
-            return this.json;
+            return json;
         }
 
         public Document asDocument() {
-            return this.document;
+            return document;
         }
     }
 

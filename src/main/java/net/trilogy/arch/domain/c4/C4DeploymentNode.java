@@ -43,19 +43,20 @@ public class C4DeploymentNode extends Entity {
     }
 
     public void addChild(C4DeploymentNode node) {
-        this.children.add(node);
+        children.add(node);
     }
 
     public void addContainerInstance(C4ContainerInstance containerInstance) {
-        this.containerInstances.add(containerInstance);
+        containerInstances.add(containerInstance);
     }
 
+    @Override
     public C4Type getType() {
         return C4Type.DEPLOYMENT_NODE;
     }
 
     @Override
     public C4DeploymentNode shallowCopy() {
-        return this.toBuilder().build();
+        return toBuilder().build();
     }
 }

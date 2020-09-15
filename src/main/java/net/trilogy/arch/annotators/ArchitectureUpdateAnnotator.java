@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class ArchitectureUpdateAnnotator {
-    public ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
+    public static ArchitectureUpdate annotateC4Paths(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         Set<C4Component> c4Components = dataStructure.getModel().getComponents();
         List<TddContainerByComponent> tddContainersByComponent = au.getTddContainersByComponent();
 
@@ -29,14 +29,14 @@ public class ArchitectureUpdateAnnotator {
         return au.toBuilder().tddContainersByComponent(withUpdatedPath).build();
     }
 
-    private List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
+    private static List<TddContainerByComponent> updatePathBasedOnId(Set<C4Component> c4Components, List<TddContainerByComponent> withUpdatedIds) {
         return withUpdatedIds.stream().map(c -> {
             Optional<C4Component> c4Component = c4Components.stream().filter(c4c -> c.getComponentId() != null && c4c.getId().equals(c.getComponentId().getId())).findFirst();
             return c4Component.map(component -> new TddContainerByComponent(c.getComponentId(), component.getPath().getPath(), c.isDeleted(), c.getTdds())).orElse(c);
         }).collect(toList());
     }
 
-    private List<TddContainerByComponent> updateIdBasedOnPath(Set<C4Component> c4Components, List<TddContainerByComponent> tddContainersByComponent) {
+    private static List<TddContainerByComponent> updateIdBasedOnPath(Set<C4Component> c4Components, List<TddContainerByComponent> tddContainersByComponent) {
         return tddContainersByComponent.stream().map(c -> {
             if (c.getComponentId() != null) {
                 return c;
@@ -46,8 +46,8 @@ public class ArchitectureUpdateAnnotator {
         }).collect(toList());
     }
 
-    public ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
-        var tddContainers = au.getTddContainersByComponent().stream()
+    public static ArchitectureUpdate annotateTddContentFiles(ArchitectureUpdate au) {
+        final var tddContainers = au.getTddContainersByComponent().stream()
                 .map(c -> new TddContainerByComponent(
                                 c.getComponentId(),
                                 c.getComponentPath(),
@@ -61,7 +61,7 @@ public class ArchitectureUpdateAnnotator {
         return au.toBuilder().tddContainersByComponent(tddContainers).build();
     }
 
-    public boolean isComponentsEmpty(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
+    public static boolean isComponentsEmpty(ArchitectureDataStructure dataStructure, ArchitectureUpdate au) {
         return au.getTddContainersByComponent().stream()
                 .flatMap(tdd -> dataStructure
                         .getModel().getComponents().stream().filter(c ->
@@ -71,7 +71,7 @@ public class ArchitectureUpdateAnnotator {
                 .isEmpty();
     }
 
-    private Tdd addFileNameToTdd(TddComponentReference id, Map.Entry<TddId, Tdd> pair, List<TddContent> tddContents) {
+    private static Tdd addFileNameToTdd(TddComponentReference id, Map.Entry<TddId, Tdd> pair, List<TddContent> tddContents) {
         String tddId = pair.getKey().toString();
         Tdd tdd = pair.getValue();
         if (id == null) {

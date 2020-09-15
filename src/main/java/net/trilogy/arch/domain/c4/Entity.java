@@ -42,7 +42,7 @@ public abstract class Entity implements HasRelation, HasTag, HasIdentity, Compar
 
     @Override
     public int compareTo(Entity other) {
-        return this.getId().compareTo(other.getId());
+        return getId().compareTo(other.getId());
     }
 
     public void setPath(String path) {

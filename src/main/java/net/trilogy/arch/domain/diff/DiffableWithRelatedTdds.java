@@ -15,7 +15,7 @@ public abstract class DiffableWithRelatedTdds {
     }
 
     public void setRelatedTdds(Map<TddId, Tdd> relatedTo) {
-        this.relatedTdds = relatedTo;
+        relatedTdds = relatedTo;
     }
 
     public boolean hasRelatedTdds() {

@@ -28,7 +28,7 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
     private CommandLine.Model.CommandSpec spec;
 
     public PublishCommand() {
-        this.structurizrAdapter = new StructurizrAdapter();
+        structurizrAdapter = new StructurizrAdapter();
     }
 
     public PublishCommand(StructurizrAdapter structurizrAdapter) {

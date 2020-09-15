@@ -20,9 +20,9 @@ public class JiraApiFactory {
         String getStoryEndpoint = objectMapper.readTree(rawContents).get("get_story_endpoint").textValue();
         String bulkCreateEndpoint = objectMapper.readTree(rawContents).get("bulk_create_endpoint").textValue();
         String linkPrefix = objectMapper.readTree(rawContents).get("link_prefix").textValue();
-        this.client = createClient();
+        client = createClient();
 
-        return new JiraApi(this.client, baseUri, getStoryEndpoint, bulkCreateEndpoint, linkPrefix);
+        return new JiraApi(client, baseUri, getStoryEndpoint, bulkCreateEndpoint, linkPrefix);
     }
 
     @VisibleForTesting

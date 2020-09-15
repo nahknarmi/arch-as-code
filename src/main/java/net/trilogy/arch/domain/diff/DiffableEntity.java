@@ -42,12 +42,12 @@ public class DiffableEntity extends DiffableWithRelatedTdds implements Diffable 
 
     @Override
     public C4Type getType() {
-        return this.getEntity().getType();
+        return getEntity().getType();
     }
 
     @Override
     public int hashCode() {
-        var dup = this.entity.shallowCopy();
+        var dup = entity.shallowCopy();
         dup.setRelationships(Set.of());
         return dup.hashCode();
     }
