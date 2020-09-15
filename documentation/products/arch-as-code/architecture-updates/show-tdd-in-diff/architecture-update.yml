@@ -71,25 +71,25 @@ capabilities:
   feature-stories:
   - title: '[SAMPLE FEATURE STORY TITLE]'
     jira:
-      ticket: Sample Ticket Contents with changes.
-      link: ""
+      ticket: AU-70
+      link: http://jira.devfactory.com/browse/AU-70
     tdd-references:
     - no-PR
     functional-requirement-references:
     - '[SAMPLE-REQUIREMENT-ID]'
-  - title: '[SAMPLE FEATURE STORY TITLE with No PR]'
+  - title: SAMPLE FEATURE STORY TITLE with No PR
     jira:
-      ticket: ""
-      link: ""
+      ticket: AU-71
+      link: http://jira.devfactory.com/browse/AU-71
     tdd-references:
     - "111"
     - "112"
     functional-requirement-references:
     - '[SAMPLE-REQUIREMENT-ID-2]'
-  - title: '[SAMPLE FEATURE STORY TITLE new one]'
+  - title: SAMPLE FEATURE STORY TITLE new one
     jira:
-      ticket: ""
-      link: ""
+      ticket: AU-72
+      link: http://jira.devfactory.com/browse/AU-72
     tdd-references:
     - "111"
     functional-requirement-references:

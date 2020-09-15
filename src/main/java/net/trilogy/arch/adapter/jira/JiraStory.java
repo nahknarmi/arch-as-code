@@ -58,13 +58,13 @@ public class JiraStory {
         for (var tddId : featureStory.getTddReferences()) {
             var tdd = au.getTddContainersByComponent()
                     .stream()
-                    .filter(container -> container.getTdds().containsKey(tddId))
+                    .filter(container -> container.getTdds().containsKey(tddId) || TddId.noPr().equals(tddId))
                     .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
                     .map(container -> jiraTddFrom(
                             tddId,
                             container.getTdds().get(tddId),
                             getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                            container.getTdds().get(tddId).getContent()))
+                            TddId.noPr().equals(tddId) ? null : container.getTdds().get(tddId).getContent()))
                     .findAny()
                     .orElseThrow(InvalidStoryException::new);
             tdds.add(tdd);
@@ -113,6 +113,9 @@ public class JiraStory {
         }
 
         public String getText() {
+            if (TddId.noPr().equals(id)) {
+                return TddId.noPr().toString();
+            }
             if (hasTddContent()) {
                 return tddContent.getContent();
             } else {

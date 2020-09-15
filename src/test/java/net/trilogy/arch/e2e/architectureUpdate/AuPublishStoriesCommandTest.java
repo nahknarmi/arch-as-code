@@ -31,12 +31,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.setErr;
 import static java.lang.System.setOut;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
@@ -113,13 +115,25 @@ public class AuPublishStoriesCommandTest {
         final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
         final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
-        return singletonList(new JiraStory(
+        return asList(new JiraStory(
                 "story that should be created",
                 singletonList(new JiraStory.JiraTdd(
                         new TddId("TDD 1.0"),
                         tdd,
                         "c4://Internet Banking System/API Application/Sign In Controller",
                         tddContent)),
+                singletonList(new JiraFunctionalRequirement(
+                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                        new FunctionalRequirement(
+                                "[SAMPLE REQUIREMENT TEXT]",
+                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                singletonList(new TddId("TDD 1.0")))))),
+                new JiraStory("story that should be created for no pr",
+                singletonList(new JiraStory.JiraTdd(
+                        TddId.noPr(),
+                        null,
+                        "c4://Internet Banking System/API Application/Sign In Controller",
+                        null)),
                 singletonList(new JiraFunctionalRequirement(
                         new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                         new FunctionalRequirement(
