@@ -2,7 +2,6 @@ package net.trilogy.arch.commands;
 
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
@@ -37,12 +36,11 @@ public class DiffCommandTest {
     public void shouldLoadArchitectureUpdateWhenFound() throws Exception {
         final var mockFiles = mock(FilesFacade.class);
         final var mockGit = mock(GitInterface.class);
-        final var mockGraphviz = mock(GraphvizInterface.class);
 
         final var mockAuReader = mock(ArchitectureUpdateReader.class);
         when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
 
-        final var diffCommand = new DiffCommand(mockFiles, mockGit, mockGraphviz, mockAuReader);
+        final var diffCommand = new DiffCommand(mockFiles, mockGit, mockAuReader);
         final var diffCommandSpy = spy(diffCommand);
         //noinspection ResultOfMethodCallIgnored
         doReturn(new File("")).when(diffCommandSpy).getArchitectureUpdateDirectory();
@@ -56,12 +54,11 @@ public class DiffCommandTest {
     public void shouldSkipLoadingArchitectureUpdateAUParameterIsNotSet() throws Exception {
         final var mockFiles = mock(FilesFacade.class);
         final var mockGit = mock(GitInterface.class);
-        final var mockGraphviz = mock(GraphvizInterface.class);
 
         final var mockAuReader = mock(ArchitectureUpdateReader.class);
         when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
 
-        final var diffCommand = new DiffCommand(mockFiles, mockGit, mockGraphviz, mockAuReader);
+        final var diffCommand = new DiffCommand(mockFiles, mockGit, mockAuReader);
 
         final var architectureUpdate = diffCommand.loadArchitectureUpdate();
 

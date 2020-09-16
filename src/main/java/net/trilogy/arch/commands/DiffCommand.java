@@ -39,7 +39,6 @@ public class DiffCommand
     private final GitInterface gitInterface;
     @Getter
     private final FilesFacade filesFacade;
-    private final GraphvizInterface graphvizInterface;
 
     private final ArchitectureUpdateReader architectureUpdateReader;
 
@@ -61,10 +60,9 @@ public class DiffCommand
     @Option(names = {"-o", "--output-directory"}, description = "New directory in which svg files will be created.", required = true)
     private File outputDirectory;
 
-    public DiffCommand(FilesFacade filesFacade, GitInterface gitInterface, GraphvizInterface graphvizInterface, ArchitectureUpdateReader architectureUpdateReader) {
+    public DiffCommand(FilesFacade filesFacade, GitInterface gitInterface, ArchitectureUpdateReader architectureUpdateReader) {
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
-        this.graphvizInterface = graphvizInterface;
         this.architectureUpdateReader = architectureUpdateReader;
     }
 
@@ -162,7 +160,7 @@ public class DiffCommand
         final var name = outputFile.getFileName().toString().replaceAll(".svg", ".gv");
 
         try {
-            graphvizInterface.render(dotGraph, outputFile);
+            GraphvizInterface.render(dotGraph, outputFile);
             filesFacade.writeString(outputFile.getParent().resolve(name), dotGraph);
             return true;
         } catch (Exception e) {

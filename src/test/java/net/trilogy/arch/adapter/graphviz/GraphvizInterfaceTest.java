@@ -14,7 +14,7 @@ public class GraphvizInterfaceTest {
         var dir = Files.createTempDirectory("aac");
         String dot = "digraph G { a -> b; }";
 
-        new GraphvizInterface().render(dot, dir.resolve("file.svg"));
+        GraphvizInterface.render(dot, dir.resolve("file.svg"));
 
         assertThat(dir.resolve("file.svg").toFile().exists(), is(true));
 

@@ -5,7 +5,6 @@ import lombok.Generated;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
-import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
 import net.trilogy.arch.commands.DiffCommand;
@@ -44,8 +43,6 @@ public class Application {
     private final FilesFacade filesFacade = new FilesFacade();
     @Builder.Default
     private final GitInterface gitInterface = new GitInterface();
-    @Builder.Default
-    private final GraphvizInterface graphvizInterface = new GraphvizInterface();
 
     public static void main(String[] args) {
         final var app = Application.builder().build();
@@ -66,16 +63,14 @@ public class Application {
                 .addSubcommand(new PublishCommand(structurizrAdapter))
                 .addSubcommand(new ImportCommand(filesFacade))
                 .addSubcommand(new ListComponentsCommand(filesFacade))
-                .addSubcommand(new DiffCommand(filesFacade, gitInterface, graphvizInterface, new ArchitectureUpdateReader(filesFacade)))
-                .addSubcommand(
-                        new CommandLine(new AuCommand())
-                                .addSubcommand(new AuInitializeCommand(filesFacade))
-                                .addSubcommand(new AuNewCommand(googleDocsAuthorizedApiFactory, filesFacade, gitInterface))
-                                .addSubcommand(new AuValidateCommand(filesFacade, gitInterface))
-                                .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
-                                .addSubcommand(new AuAnnotateCommand(filesFacade))
-                                .addSubcommand(new AuFinalizeAndPublishCommand(jiraApiFactory, filesFacade, gitInterface))
-                );
+                .addSubcommand(new DiffCommand(filesFacade, gitInterface, new ArchitectureUpdateReader(filesFacade)))
+                .addSubcommand(new CommandLine(new AuCommand())
+                        .addSubcommand(new AuInitializeCommand(filesFacade))
+                        .addSubcommand(new AuNewCommand(googleDocsAuthorizedApiFactory, filesFacade, gitInterface))
+                        .addSubcommand(new AuValidateCommand(filesFacade, gitInterface))
+                        .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
+                        .addSubcommand(new AuAnnotateCommand(filesFacade))
+                        .addSubcommand(new AuFinalizeAndPublishCommand(jiraApiFactory, filesFacade, gitInterface)));
     }
 
     public int execute(String[] args) {

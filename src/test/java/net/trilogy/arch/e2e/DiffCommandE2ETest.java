@@ -26,9 +26,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public class DiffCommandE2ETest {
@@ -171,28 +170,29 @@ public class DiffCommandE2ETest {
         collector.checkThat(Files.list(outputPath.resolve("assets")).filter(it -> it.getFileName().toString().contains(".svg")).count(), equalTo(2L));
     }
 
+    @SuppressWarnings("try")
     @Test
     public void shouldHandleIfGraphvizFails() throws Exception {
         // GIVEN
         mockGitInterface();
 
-        final var mockedGraphvizInterface = mock(GraphvizInterface.class);
-        doThrow(new RuntimeException("BOOM!")).when(mockedGraphvizInterface).render(any(), any());
-
-        var app = Application.builder()
+        final var app = Application.builder()
                 .gitInterface(mockedGitInterface)
-                .graphvizInterface(mockedGraphvizInterface)
                 .build();
 
-        // WHEN
-        final var outputPath = outputDirParent.toPath().resolve("ourOutputDir").toAbsolutePath();
-        final Integer status = execute(app,
-                "diff -b master " + rootDir.getAbsolutePath() + " -o " + outputPath.toString());
+        try (final var ignored = mockStatic(GraphvizInterface.class, invocation -> {
+            throw new RuntimeException("BOOM!");
+        })) {
+            // WHEN
+            final var outputPath = outputDirParent.toPath().resolve("ourOutputDir").toAbsolutePath();
+            final Integer status = execute(app,
+                    "diff -b master " + rootDir.getAbsolutePath() + " -o " + outputPath.toString());
 
-        // THEN
-        collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Unable to render SVG"));
-        collector.checkThat(out.toString(), equalTo(""));
+            // THEN
+            collector.checkThat(status, not(equalTo(0)));
+            collector.checkThat(err.toString(), containsString("Unable to render SVG"));
+            collector.checkThat(out.toString(), equalTo(""));
+        }
     }
 
     private void mockGitInterface() throws IOException, GitAPIException, GitInterface.BranchNotFoundException {
