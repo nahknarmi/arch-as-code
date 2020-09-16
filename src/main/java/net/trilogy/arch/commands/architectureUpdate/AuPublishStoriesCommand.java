@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
@@ -102,10 +103,11 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> createStories(ArchitectureUpdate au,
-                                                       ArchitectureDataStructure beforeAuArchitecture,
-                                                       ArchitectureDataStructure afterAuArchitecture,
-                                                       StoryPublishingService jiraService) {
+    private Optional<ArchitectureUpdate> createStories(
+            ArchitectureUpdate au,
+            ArchitectureDataStructure beforeAuArchitecture,
+            ArchitectureDataStructure afterAuArchitecture,
+            StoryPublishingService jiraService) {
         try {
             return Optional.of(jiraService.createStories(au, beforeAuArchitecture, afterAuArchitecture, username, password));
         } catch (JiraApi.JiraApiException e) {
@@ -114,6 +116,10 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
             printError("ERROR: No stories to create.");
         } catch (InvalidStoryException e) {
             printError("ERROR: Some stories are invalid. Please run 'au validate' command.");
+        } catch (InterruptedException e) {
+            printError("ERROR: You interrupted.");
+        } catch (ExecutionException e) {
+            printError("ERROR: JIRA failed: " + e.getCause());
         }
 
         return Optional.empty();

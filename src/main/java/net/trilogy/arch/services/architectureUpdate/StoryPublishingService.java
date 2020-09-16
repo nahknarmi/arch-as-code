@@ -1,6 +1,8 @@
 package net.trilogy.arch.services.architectureUpdate;
 
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.adapter.jira.JiraApi;
+import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraCreateStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -11,21 +13,16 @@ import net.trilogy.arch.domain.architectureUpdate.Jira;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
+@RequiredArgsConstructor
 public class StoryPublishingService {
-
-    private final JiraApi api;
     private final PrintWriter out;
     private final PrintWriter err;
-
-    public StoryPublishingService(final PrintWriter out, final PrintWriter err, final JiraApi jiraApi) {
-        this.out = out;
-        this.err = err;
-        api = jiraApi;
-    }
+    private final JiraApi api;
 
     public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
         return au.getCapabilityContainer()
@@ -69,8 +66,8 @@ public class StoryPublishingService {
             final ArchitectureDataStructure beforeAuArchitecture,
             final ArchitectureDataStructure afterAuArchitecture,
             String username,
-            char[] password
-    ) throws JiraApi.JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException {
+            char[] password)
+            throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException, ExecutionException, InterruptedException {
         printStoriesNotToBeSent(au);
 
         final var stories = getFeatureStoriesToCreate(au);

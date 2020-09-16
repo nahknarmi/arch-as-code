@@ -22,7 +22,7 @@ public class JiraApiFactory {
         String linkPrefix = objectMapper.readTree(rawContents).get("link_prefix").textValue();
         client = createClient();
 
-        return new JiraApi(client, baseUri, getStoryEndpoint, bulkCreateEndpoint, linkPrefix);
+        return new JiraApi(baseUri, getStoryEndpoint, bulkCreateEndpoint, linkPrefix);
     }
 
     @VisibleForTesting
