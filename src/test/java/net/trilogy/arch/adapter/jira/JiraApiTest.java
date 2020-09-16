@@ -384,7 +384,7 @@ public class JiraApiTest {
                 final List<ByteBuffer> bodyItems = httpRequestParserForTests.getBodyItems();
                 final byte[] array = first(bodyItems).array();
                 return new String(array);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Unable to parse body", e);
             }
         }
@@ -412,6 +412,11 @@ public class JiraApiTest {
         @Override
         public void onError(Throwable throwable) {
             latch.countDown();
+            throwable.printStackTrace();
+            // Do not swallow things like "out of memory" or "bad class"
+            if (throwable instanceof Error) {
+                throw (Error) throwable;
+            }
         }
 
         @Override

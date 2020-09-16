@@ -161,7 +161,7 @@ public class JiraApi {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 401) {
+            if (401 == response.statusCode()) {
                 throw JiraApiException.builder()
                         .message("Failed to log into Jira. Please check your credentials.")
                         .response(response)
@@ -171,7 +171,7 @@ public class JiraApi {
             return parseCreateStoriesResponse(response.body());
         } catch (JiraApiException e) {
             throw e;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw JiraApiException.builder()
                     .cause(e)
                     .response(response)
@@ -229,7 +229,7 @@ public class JiraApi {
             return new JiraQueryResult(response);
         } catch (JiraApiException e) {
             throw e;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw JiraApiException.builder()
                     .cause(e)
                     .response(response)
