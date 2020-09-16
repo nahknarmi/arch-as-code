@@ -9,6 +9,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ArchitectureUpdateTest {
 
+    private static ArchitectureUpdate getAuWithStories(List<FeatureStory> stories) {
+        return ArchitectureUpdate.prefilledWithBlanks()
+                .capabilityContainer(
+                        CapabilitiesContainer.blank().toBuilder().featureStories(stories).build())
+                .build();
+    }
+
     @Test
     public void shouldAddJiraToFeatureStory() {
         // GIVEN:
@@ -35,12 +42,5 @@ public class ArchitectureUpdateTest {
         );
 
         assertThat(actual, equalTo(expected));
-    }
-
-    private ArchitectureUpdate getAuWithStories(List<FeatureStory> stories) {
-        return ArchitectureUpdate.builderPreFilledWithBlanks()
-                .capabilityContainer(
-                        CapabilitiesContainer.blank().toBuilder().featureStories(stories).build())
-                .build();
     }
 }

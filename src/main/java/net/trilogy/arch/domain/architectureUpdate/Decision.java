@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 
 import java.util.List;
 
@@ -18,40 +19,39 @@ public class Decision {
     @JsonProperty(value = "text")
     private final String text;
     @JsonProperty(value = "tdd-references")
-    private final List<Tdd.Id> tddReferences;
+    private final List<TddId> tddReferences;
 
     @JsonCreator(mode = PROPERTIES)
     public Decision(
             @JsonProperty("text") String text,
-            @JsonProperty("tdd-references") List<Tdd.Id> tddReferences
+            @JsonProperty("tdd-references") List<TddId> tddReferences
     ) {
         this.text = text;
         this.tddReferences = tddReferences;
     }
 
     public static Decision blank() {
-        return new Decision("[SAMPLE DECISION TEXT]", List.of(Tdd.Id.blank()));
+        return new Decision("[SAMPLE DECISION TEXT]", List.of(TddId.blank()));
     }
 
     @EqualsAndHashCode
-    public static class Id implements EntityReference {
+    public static class DecisionId implements EntityReference {
         @JsonValue
         @JsonProperty(value = "id")
         private final String id;
 
         @JsonCreator(mode = PROPERTIES)
-        public Id(
-                @JsonProperty("id") String id
-        ) {
+        public DecisionId(@JsonProperty("id") String id) {
             this.id = id;
         }
 
-        public static Id blank() {
-            return new Id("[SAMPLE-DECISION-ID]");
+        public static DecisionId blank() {
+            return new DecisionId("[SAMPLE-DECISION-ID]");
         }
 
+        @Override
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 }

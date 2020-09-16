@@ -54,12 +54,19 @@ capabilities:
       link: "[SAMPLE JIRA TICKET LINK]"
 
   feature-stories:  # NOTE: assertions are against this section
-
     - title: "story that should be created"
       jira:
         ticket: ""
         link: ""
       tdd-references:
         - "TDD 1.0"
+      functional-requirement-references:
+        - "[SAMPLE-REQUIREMENT-ID]"
+    - title: "story that should be created for no pr"
+      jira:
+        ticket: ""
+        link: ""
+      tdd-references:
+        - "no-PR"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"

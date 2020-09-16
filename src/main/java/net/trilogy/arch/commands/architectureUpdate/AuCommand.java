@@ -16,7 +16,6 @@ import java.util.concurrent.Callable;
 )
 public class AuCommand implements Callable<Integer>, DisplaysOutputMixin {
     public static final String ARCHITECTURE_UPDATES_ROOT_FOLDER = "architecture-updates";
-    public static final String ARCHITECTURE_UPDATE_FILE_NAME = "architecture-update.yml";
 
     @Getter
     @Spec

@@ -2,7 +2,6 @@ package net.trilogy.arch.domain.c4;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,27 +19,28 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
+import static lombok.AccessLevel.PROTECTED;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class C4Model {
-    public static final C4Model NONE = new C4Model();
+    public static final C4Model EMPTY = new C4Model();
 
     @NonNull
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(PROTECTED)
     private Set<C4Person> people = new TreeSet<>();
     @NonNull
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(PROTECTED)
     private Set<C4SoftwareSystem> systems = new TreeSet<>();
     @NonNull
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(PROTECTED)
     private Set<C4Container> containers = new TreeSet<>();
     @NonNull
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(PROTECTED)
     private Set<C4Component> components = new TreeSet<>();
     @NonNull
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(PROTECTED)
     private Set<C4DeploymentNode> deploymentNodes = new TreeSet<>();
 
     public static C4Model empty() {
@@ -49,8 +49,21 @@ public class C4Model {
                 Set.of(),
                 Set.of(),
                 Set.of(),
-                Set.of()
-        );
+                Set.of());
+    }
+
+    private static <T extends HasIdentity> boolean noEntityWithIdExists(T entity, Set<T> set) {
+        return set.stream()
+                .noneMatch(e -> e.getId().equals(entity.getId()));
+    }
+
+    private static void addChildNodes(Set<C4DeploymentNode> set, C4DeploymentNode deploymentNode) {
+        if (deploymentNode.getChildren() != null) {
+            deploymentNode.getChildren().forEach(c -> {
+                set.add(c);
+                addChildNodes(set, c);
+            });
+        }
     }
 
     public C4Model addPerson(C4Person person) {
@@ -105,26 +118,19 @@ public class C4Model {
         return allNodes;
     }
 
-    private void addChildNodes(Set<C4DeploymentNode> set, C4DeploymentNode deploymentNode) {
-        if (deploymentNode.getChildren() != null) {
-            deploymentNode.getChildren().forEach(c -> {
-                set.add(c);
-                addChildNodes(set, c);
-            });
-        }
-    }
-
     // [TODO] [TESTING] Testing gap
     public Set<Entity> allEntities() {
         return Stream.of(getSystems(), getPeople(), getComponents(), getContainers(), getDeploymentNodesRecursively())
-                .flatMap(Collection::stream).collect(toSet());
+                .flatMap(Collection::stream)
+                .collect(toSet());
     }
 
     // [TODO] [TESTING] Testing gap
     public Set<Tuple2<Entity, C4Relationship>> allRelationships() {
         return allEntities().stream()
                 .flatMap(entity -> entity.getRelationships().stream()
-                        .map(r -> Tuple.of(entity, r))).collect(toSet());
+                        .map(r -> Tuple.of(entity, r)))
+                .collect(toSet());
     }
 
     public C4Person findPersonByName(String name) {
@@ -146,10 +152,10 @@ public class C4Model {
     }
 
     public Entity findEntityByReference(C4Reference reference) {
-        if (reference.getId() != null) {
+        if (null != reference.getId()) {
             String id = reference.getId();
             return findEntityById(id).orElseThrow(() -> new IllegalStateException("Could not find entity with id: " + id));
-        } else if (reference.getAlias() != null) {
+        } else if (null != reference.getAlias()) {
             return findEntityByAlias(reference.getAlias());
         } else {
             throw new IllegalStateException("Reference is missing both id and alias: " + reference);
@@ -168,13 +174,7 @@ public class C4Model {
         checkNotNull(alias);
         return allEntities()
                 .stream()
-                .filter(e -> {
-                    if (e.getAlias() != null) {
-                        return e.getAlias().equals(alias);
-                    } else {
-                        return false;
-                    }
-                })
+                .filter(e -> null != e.getAlias() && e.getAlias().equals(alias))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find entity with alias: " + alias));
     }
@@ -206,7 +206,7 @@ public class C4Model {
 
     public C4Relationship findRelationshipByAlias(String alias) {
         checkNotNull(alias);
-        Tuple2<Entity, C4Relationship> foundTuple = allRelationships()
+        final var foundTuple = allRelationships()
                 .stream()
                 .filter(t -> t._2().getAlias().equals(alias))
                 .findFirst()
@@ -223,27 +223,25 @@ public class C4Model {
                 .collect(toSet());
     }
 
-    private <T extends HasRelation & HasTag & HasIdentity> boolean noEntityWithIdExists(T entity, Set<T> set) {
-        return set.stream().noneMatch(e -> e.getId().equals(entity.getId()));
-    }
-
     private boolean systemPathExists(C4Path path) {
-        return getSystems().stream().map(Entity::getPath).anyMatch(p -> p.equals(path.systemPath()));
+        return getSystems().stream()
+                .map(Entity::getPath)
+                .anyMatch(p -> p.equals(path.systemPath()));
     }
 
     private boolean containerPathExists(C4Path path) {
-        return getContainers().stream().map(Entity::getPath).anyMatch(p -> p.equals(path.containerPath()));
+        return getContainers().stream()
+                .map(Entity::getPath)
+                .anyMatch(p -> p.equals(path.containerPath()));
     }
 
     private boolean personWithNameExists(C4Person person) {
-        return getPeople().stream().anyMatch(p -> p.getName().equals(person.getName()));
+        return getPeople().stream()
+                .anyMatch(p -> p.getName().equals(person.getName()));
     }
 
     private boolean systemWithNameExists(C4SoftwareSystem system) {
-        return getSystems().stream().anyMatch(s -> s.getName().equals(system.getName()));
-    }
-
-    private boolean deploymentNodeWithNameExists(C4DeploymentNode deploymentNode) {
-        return getDeploymentNodes().stream().anyMatch(d -> d.getName().equals(deploymentNode.getName()));
+        return getSystems().stream()
+                .anyMatch(s -> s.getName().equals(system.getName()));
     }
 }

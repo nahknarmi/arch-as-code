@@ -26,6 +26,7 @@ and documentation.
 * [Building locally](#building-locally)
 * [Build maintenance](#build-maintenance)
 * [The demo folder](#the-demo-folder)
+* [TODOs](#todo)
 
 ## Getting started
 
@@ -36,13 +37,26 @@ following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide
 that describes how to set up a new account and get a **free** workspace.
 
-### 2. Use Java 11 locally
+### 2. Save credentials files to your home directory
+
+```shell script
+$ cd  # Take you home from where you are
+$ mkdir .arch-as-code/{google,jira,structurizer}
+```
+
+Save each credential file type to it's related directory name.  Then:
+
+```shell script
+$ chmod -R go= .arch-as-code  # Credentials should be readable only by you
+```
+
+### 3. Use Java 11 locally
 
 The build currently assumes Java 11.  Several tools exist to manage multiple
 JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
 [section on jEnv](#jenv).
 
-### 3. Install arch-as-code CLI
+### 4. Install arch-as-code CLI
 
 Arch as code requires Java 11 or greater to be installed.
 
@@ -182,7 +196,20 @@ To create a local demo folder for AaC, run:
 $ ./scripts/create-demo-folder.sh
 $ pushd /tmp/aac/demo-folder
 $ alias aac=$PWD/arch-as-code.sh
-# Proceed using the command-line
+# Proceed using the command-line as `aac ...`
 ```
 Until we get upstream to add "technology" lines to "product-architect.yml",
 you will need to _manually_ edit before validation passes.
+
+### Credentials
+
+When prompted for Jira credentials, such as publishing stories, use your
+Trilogy email with no `@` suffix, and your Jira password.  An example:
+`brian.oxley` rather than `brian.oxley@trilogy.com`.
+
+## TODO
+
+* Instructions for obtaining various credential files
+* Migrate to JUnit 5
+* Use of modern assertions such as
+  [AssertJ](https://github.com/joel-costigliola/assertj-core), et al

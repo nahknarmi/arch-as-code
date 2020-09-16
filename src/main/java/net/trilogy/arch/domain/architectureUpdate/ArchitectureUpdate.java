@@ -1,19 +1,20 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+import static java.util.stream.Collectors.toList;
 
 @Getter
 @ToString
@@ -33,6 +34,8 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
         "capabilities"
 })
 public class ArchitectureUpdate {
+    public static final String ARCHITECTURE_UPDATE_YML = "architecture-update.yml";
+
     @JsonProperty(value = "name")
     private final String name;
     @JsonProperty(value = "milestone")
@@ -50,35 +53,33 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "milestone-dependencies")
     private final List<MilestoneDependency> milestoneDependencies;
     @JsonProperty(value = "decisions")
-    private final Map<Decision.Id, Decision> decisions;
+    private final Map<DecisionId, Decision> decisions;
     @JsonProperty(value = "tdds-per-component")
     private final List<TddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements")
-    private final Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements;
+    private final Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements;
     @JsonProperty(value = "capabilities")
     private final CapabilitiesContainer capabilityContainer;
-
-    //TODO remove tddContents per https://tw-trilogy.atlassian.net/browse/AAC-160
-    @JsonIgnore
-    private final List<TddContent> tddContents;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
     public ArchitectureUpdate(
             @JsonProperty("name") String name,
             @JsonProperty("milestone") String milestone,
+            // TODO: Smell: Author and PCA persons are identical types
             @JsonProperty("authors") List<Person> authors,
             @JsonProperty("PCAs") List<Person> PCAs,
-            @JsonProperty("decisions") Map<Decision.Id, Decision> decisions,
+            // TODO: Smell: Do decisions not know their ID?
+            @JsonProperty("decisions") Map<DecisionId, Decision> decisions,
+            // TODO: Smell: The subtype is overly complex -- could the real type be passed in?
             @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
-            @JsonProperty("functional-requirements") Map<FunctionalRequirement.Id, FunctionalRequirement> functionalRequirements,
+            // TODO: Smell: Do func reqs not know their own ID?
+            @JsonProperty("functional-requirements") Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements,
             @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
             @JsonProperty("p2") P2 p2,
             @JsonProperty("p1") P1 p1,
             @JsonProperty("useful-links") List<Link> usefulLinks,
-            @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies,
-            @JsonProperty("tddContents") List<TddContent> tddContents
-    ) {
+            @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies) {
         this.name = name;
         this.milestone = milestone;
         this.authors = authors;
@@ -91,18 +92,18 @@ public class ArchitectureUpdate {
         this.p1 = p1;
         this.usefulLinks = usefulLinks;
         this.milestoneDependencies = milestoneDependencies;
-        this.tddContents = tddContents;
     }
 
-    public static ArchitectureUpdateBuilder builderPreFilledWithBlanks() {
+    /** @todo How does this differ from {@link #blank()}? */
+    public static ArchitectureUpdateBuilder prefilledWithBlanks() {
         return ArchitectureUpdate.builder()
                 .name("[SAMPLE NAME]")
                 .milestone("[SAMPLE MILESTONE]")
                 .authors(List.of(Person.blank()))
                 .PCAs(List.of(Person.blank()))
-                .decisions(Map.of(Decision.Id.blank(), Decision.blank()))
+                .decisions(Map.of(DecisionId.blank(), Decision.blank()))
                 .tddContainersByComponent(List.of(TddContainerByComponent.blank()))
-                .functionalRequirements(Map.of(FunctionalRequirement.Id.blank(), FunctionalRequirement.blank()))
+                .functionalRequirements(Map.of(FunctionalRequirementId.blank(), FunctionalRequirement.blank()))
                 .capabilityContainer(CapabilitiesContainer.blank())
                 .p2(P2.blank())
                 .p1(P1.blank())
@@ -111,12 +112,12 @@ public class ArchitectureUpdate {
     }
 
     public static ArchitectureUpdate blank() {
-        return builderPreFilledWithBlanks().build();
+        return prefilledWithBlanks().build();
     }
 
     public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {
-        return this.toBuilder().capabilityContainer(
-                this.getCapabilityContainer().toBuilder()
+        return toBuilder().capabilityContainer(
+                getCapabilityContainer().toBuilder()
                         .featureStories(
                                 getCapabilityContainer().getFeatureStories().stream()
                                         .map(story -> {
@@ -125,7 +126,7 @@ public class ArchitectureUpdate {
                                             }
                                             return story;
                                         })
-                                        .collect(Collectors.toList()))
+                                        .collect(toList()))
                         .build())
                 .build();
     }

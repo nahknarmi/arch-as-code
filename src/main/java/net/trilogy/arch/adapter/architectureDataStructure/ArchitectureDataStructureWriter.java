@@ -2,9 +2,8 @@ package net.trilogy.arch.adapter.architectureDataStructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.structurizr.view.ViewSet;
+import lombok.experimental.UtilityClass;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.DocumentationImage;
-import net.trilogy.arch.domain.DocumentationSection;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.Base64Converter;
 
@@ -12,54 +11,50 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper.STRUCTURIZR_VIEWS_JSON;
 
+@UtilityClass
 public class ArchitectureDataStructureWriter {
-    private final FilesFacade filesFacade;
+    public static File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, FilesFacade files) throws IOException {
+        final var tempFile = files.createTempFile("arch-as-code", ".yml");
 
-    public ArchitectureDataStructureWriter(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
+        return exportArchitectureDataStructure(dataStructure, tempFile, files);
     }
 
-    public File export(ArchitectureDataStructure dataStructure) throws IOException {
-        File tempFile = filesFacade.createTempFile("arch-as-code", ".yml");
+    public static File exportArchitectureDataStructure(ArchitectureDataStructure dataStructure, File writeFile, FilesFacade files) throws IOException {
+        files.writeString(writeFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(dataStructure));
 
-        return export(dataStructure, tempFile);
-    }
-
-    public File export(ArchitectureDataStructure dataStructure, File writeFile) throws IOException {
-        ArchitectureDataStructureObjectMapper mapper = new ArchitectureDataStructureObjectMapper();
-        filesFacade.writeString(writeFile.toPath(), mapper.writeValueAsString(dataStructure));
-
-        final Path writePath = Path.of(writeFile.getParent()).resolve("documentation");
+        final var writePath = Path.of(writeFile.getParent()).resolve("documentation");
         if (!writePath.toFile().exists())
-            filesFacade.createDirectory(writePath);
+            files.createDirectory(writePath);
 
-        writeDocumentation(dataStructure, writePath);
-        writeDocumentationImages(filesFacade, dataStructure, writePath);
+        writeDocumentation(dataStructure, writePath, files);
+        writeDocumentationImages(dataStructure, writePath, files);
 
         return writeFile;
     }
 
-    public Path writeViews(ViewSet structurizrViews, Path parentPath) throws IOException {
-        final Path viewsWritePath = parentPath.resolve(STRUCTURIZR_VIEWS_JSON);
+    public static Path writeViews(ViewSet structurizrViews, Path parentPath, FilesFacade files) throws IOException {
+        final var viewsWritePath = parentPath.resolve(STRUCTURIZR_VIEWS_JSON);
         if (structurizrViews != null) {
             ObjectMapper mapper = new ObjectMapper();
-            filesFacade.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));
+            files.writeString(viewsWritePath, mapper.writeValueAsString(structurizrViews));
         }
+
         return viewsWritePath;
     }
 
-    private void writeDocumentation(ArchitectureDataStructure dataStructure, Path documentation) throws IOException {
-        for (DocumentationSection doc : dataStructure.getDocumentation()) {
-            final File docFile = documentation.resolve(doc.getFileName()).toFile();
-            filesFacade.writeString(docFile.toPath(), doc.getContent());
+    private static void writeDocumentation(ArchitectureDataStructure dataStructure, Path documentation, FilesFacade files) throws IOException {
+        for (final var doc : dataStructure.getDocumentation()) {
+            final var docFile = documentation.resolve(doc.getFileName()).toFile();
+            files.writeString(docFile.toPath(), doc.getContent());
         }
     }
 
-    private void writeDocumentationImages(FilesFacade filesFacade, ArchitectureDataStructure dataStructure, Path writePath) throws IOException {
-        for (DocumentationImage image : dataStructure.getDocumentationImages()) {
-            Base64Converter.toFile(filesFacade, image.getContent(), writePath.resolve(image.getName()));
+    private static void writeDocumentationImages(ArchitectureDataStructure dataStructure, Path writePath, FilesFacade files) throws IOException {
+        for (final var image : dataStructure.getDocumentationImages()) {
+            Base64Converter.toFile(files, image.getContent(), writePath.resolve(image.getName()));
         }
     }
 }

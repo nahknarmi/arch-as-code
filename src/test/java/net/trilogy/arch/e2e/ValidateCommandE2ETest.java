@@ -27,10 +27,10 @@ public class ValidateCommandE2ETest {
     }
 
     @Test
-    public void validate() throws Exception {
-        File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
+    public void validate() {
+        final var documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
 
-        Integer statusCode = execute("validate " + documentationRoot.getAbsolutePath());
+        final var statusCode = execute("validate " + documentationRoot.getAbsolutePath());
 
         assertThat(statusCode, equalTo(0));
     }

@@ -69,7 +69,7 @@ public class ListComponentsCommandE2ETest {
     public void shouldOutputComponentsListFilteredBySearchString() throws Exception {
         initFileForTest("allValidSchema.yml");
 
-        int status = TestHelper.execute("list-components", "-s password", rootDir.getAbsolutePath());
+        int status = execute("list-components", "-s password", rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), equalTo(

@@ -1,6 +1,7 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class ValidationErrorTest {
                 new TddContent("content", "TDD 1.0 : Component-1.txt")
         );
 
-        ValidationError error = forMultipleTddContentFilesForTdd(new Tdd.ComponentReference("1"), new Tdd.Id("TDD 1.0"), tddContents);
+        ValidationError error = forMultipleTddContentFilesForTdd(new TddComponentReference("1"), new TddId("TDD 1.0"), tddContents);
 
         assertThat(error.getDescription(),
                 equalTo(

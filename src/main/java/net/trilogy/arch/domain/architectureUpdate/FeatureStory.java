@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 
 import java.util.List;
 
@@ -20,17 +22,17 @@ public class FeatureStory {
     @JsonProperty(value = "jira")
     private final Jira jira;
     @JsonProperty(value = "tdd-references")
-    private final List<Tdd.Id> tddReferences;
+    private final List<TddId> tddReferences;
     @JsonProperty(value = "functional-requirement-references")
-    private final List<FunctionalRequirement.Id> requirementReferences;
+    private final List<FunctionalRequirementId> requirementReferences;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
     public FeatureStory(
             @JsonProperty("title") String title,
             @JsonProperty("jira") Jira jira,
-            @JsonProperty("tdd-references") List<Tdd.Id> tddReferences,
-            @JsonProperty("functional-requirement-references") List<FunctionalRequirement.Id> requirementReferences
+            @JsonProperty("tdd-references") List<TddId> tddReferences,
+            @JsonProperty("functional-requirement-references") List<FunctionalRequirementId> requirementReferences
     ) {
         this.title = title;
         this.jira = jira;
@@ -42,8 +44,8 @@ public class FeatureStory {
         return new FeatureStory(
                 "[SAMPLE FEATURE STORY TITLE]",
                 new Jira("", ""),
-                List.of(Tdd.Id.blank()),
-                List.of(FunctionalRequirement.Id.blank())
+                List.of(TddId.blank()),
+                List.of(FunctionalRequirementId.blank())
         );
     }
 }

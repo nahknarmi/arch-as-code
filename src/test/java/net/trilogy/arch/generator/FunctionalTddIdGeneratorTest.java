@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class FunctionalIdGeneratorTest {
+public class FunctionalTddIdGeneratorTest {
     @Test
     public void shouldReturnIDFromAnonymousFunctionForElements() {
         final FunctionalIdGenerator generator = new FunctionalIdGenerator();

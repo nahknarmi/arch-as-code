@@ -12,6 +12,8 @@ import org.junit.rules.ErrorCollector;
 
 import java.util.Optional;
 
+import static net.trilogy.arch.domain.c4.C4Path.buildPath;
+import static net.trilogy.arch.domain.c4.C4Path.path;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -28,9 +30,8 @@ public class C4PathTest {
 
     @Test
     public void shouldBuildPathForSystem() {
-        SoftwareSystem element = buildSoftwareSystem("system");
-
-        C4Path path = C4Path.buildPath(element);
+        final var element = buildSoftwareSystem("system");
+        final var path = buildPath(element);
 
         collector.checkThat(path.type(), equalTo(C4Type.SYSTEM));
         collector.checkThat(path.name(), equalTo("system"));
@@ -39,9 +40,8 @@ public class C4PathTest {
 
     @Test
     public void shouldBuildPathForPerson() {
-        Person element = buildPerson("person");
-
-        C4Path path = C4Path.buildPath(element);
+        final var element = buildPerson("person");
+        final var path = buildPath(element);
 
         collector.checkThat(path.type(), equalTo(C4Type.PERSON));
         collector.checkThat(path.name(), equalTo("person"));
@@ -50,9 +50,8 @@ public class C4PathTest {
 
     @Test
     public void shouldBuildPathForContainer() {
-        Container container = buildContainer("container");
-
-        C4Path path = C4Path.buildPath(container);
+        final var container = buildContainer("container");
+        final var path = buildPath(container);
 
         collector.checkThat(path.type(), equalTo(C4Type.CONTAINER));
         collector.checkThat(path.name(), equalTo("container"));
@@ -61,9 +60,8 @@ public class C4PathTest {
 
     @Test
     public void shouldBuildPathForComponent() {
-        Component component = buildComponent("component");
-
-        C4Path path = C4Path.buildPath(component);
+        final var component = buildComponent("component");
+        final var path = buildPath(component);
 
         collector.checkThat(path.type(), equalTo(C4Type.COMPONENT));
         collector.checkThat(path.name(), equalTo("component"));
@@ -71,16 +69,13 @@ public class C4PathTest {
     }
 
     @Test
-    public void shouldBuildPathforEntitiesWithSlash() {
-        C4Path personPath = C4Path.buildPath(buildPerson("person/1"));
-
-        SoftwareSystem system = buildSoftwareSystem("system/1");
-        C4Path systemPath = C4Path.buildPath(system);
-
-        Container container = buildContainer("container/2/system/1", system);
-        C4Path containerPath = C4Path.buildPath(container);
-
-        C4Path componentPath = C4Path.buildPath(buildComponent("component/3/container/2/system/1", container));
+    public void shouldBuildPathForEntitiesWithSlash() {
+        final var personPath = buildPath(buildPerson("person/1"));
+        final var system = buildSoftwareSystem("system/1");
+        final var systemPath = buildPath(system);
+        final var container = buildContainer("container/2/system/1", system);
+        final var containerPath = buildPath(container);
+        final var componentPath = buildPath(buildComponent("component/3/container/2/system/1", container));
 
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person/1"));
@@ -100,11 +95,11 @@ public class C4PathTest {
     }
 
     @Test
-    public void shouldBuildPathforEntitiesWithDot() {
-        C4Path personPath = C4Path.buildPath(buildPerson("person.1"));
-        C4Path systemPath = C4Path.buildPath(buildSoftwareSystem("system.1"));
-        C4Path containerPath = C4Path.buildPath(buildContainer("container.1"));
-        C4Path componentPath = C4Path.buildPath(buildComponent("component.1"));
+    public void shouldBuildPathForEntitiesWithDot() {
+        final var personPath = buildPath(buildPerson("person.1"));
+        final var systemPath = buildPath(buildSoftwareSystem("system.1"));
+        final var containerPath = buildPath(buildContainer("container.1"));
+        final var componentPath = buildPath(buildComponent("component.1"));
 
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person.1"));
@@ -124,11 +119,11 @@ public class C4PathTest {
     }
 
     @Test
-    public void shouldBuildPathforEntitiesWithSpaces() {
-        C4Path personPath = C4Path.buildPath(buildPerson("person 1"));
-        C4Path systemPath = C4Path.buildPath(buildSoftwareSystem("system 1"));
-        C4Path containerPath = C4Path.buildPath(buildContainer("container 1"));
-        C4Path componentPath = C4Path.buildPath(buildComponent("component 1"));
+    public void shouldBuildPathForEntitiesWithSpaces() {
+        final var personPath = buildPath(buildPerson("person 1"));
+        final var systemPath = buildPath(buildSoftwareSystem("system 1"));
+        final var containerPath = buildPath(buildContainer("container 1"));
+        final var componentPath = buildPath(buildComponent("component 1"));
 
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
         collector.checkThat(personPath.name(), equalTo("person 1"));
@@ -149,7 +144,7 @@ public class C4PathTest {
 
     @Test
     public void shouldParsePathForPerson() {
-        C4Path path = C4Path.path("@person");
+        final var path = path("@person");
 
         collector.checkThat(path.name(), equalTo("person"));
         collector.checkThat(path.personName(), equalTo("person"));
@@ -159,7 +154,7 @@ public class C4PathTest {
 
     @Test
     public void shouldParsePathForSystem() {
-        C4Path path = C4Path.path("c4://System");
+        final var path = path("c4://System");
 
         collector.checkThat(path.name(), equalTo("System"));
         collector.checkThat(path.systemName(), equalTo("System"));
@@ -169,7 +164,7 @@ public class C4PathTest {
 
     @Test
     public void shouldParsePathForContainer() {
-        C4Path path = C4Path.path("c4://DevSpaces/DevSpaces API");
+        final var path = path("c4://DevSpaces/DevSpaces API");
 
         collector.checkThat(path.name(), equalTo("DevSpaces API"));
         collector.checkThat(path.systemName(), equalTo("DevSpaces"));
@@ -180,7 +175,7 @@ public class C4PathTest {
 
     @Test
     public void shouldParsePathForComponent() {
-        C4Path path = C4Path.path("c4://DevSpaces/DevSpaces API/Sign-In Component");
+        final var path = path("c4://DevSpaces/DevSpaces API/Sign-In Component");
 
         collector.checkThat(path.name(), equalTo("Sign-In Component"));
         collector.checkThat(path.systemName(), equalTo("DevSpaces"));
@@ -192,10 +187,10 @@ public class C4PathTest {
 
     @Test
     public void shouldParseEntitiesWithSlashInPath() {
-        C4Path personPath = C4Path.path("@person\\/1");
-        C4Path systemPath = C4Path.path("c4://system\\/1");
-        C4Path containerPath = C4Path.path("c4://system\\/1/container\\/2\\/system\\/1");
-        C4Path componentPath = C4Path.path("c4://system\\/1/container\\/2\\/system\\/1/component\\/3\\/container\\/2\\/system\\/1");
+        final var personPath = path("@person\\/1");
+        final var systemPath = path("c4://system\\/1");
+        final var containerPath = path("c4://system\\/1/container\\/2\\/system\\/1");
+        final var componentPath = path("c4://system\\/1/container\\/2\\/system\\/1/component\\/3\\/container\\/2\\/system\\/1");
 
         collector.checkThat(personPath.name(), equalTo("person/1"));
         collector.checkThat(personPath.type(), equalTo(C4Type.PERSON));
@@ -215,93 +210,101 @@ public class C4PathTest {
     }
 
     @Test
-    public void shouldBeAbleToExtractSubPathsInsystemPath() {
-        C4Path path = C4Path.path("c4://sys1");
+    public void shouldBeAbleToExtractSubPathsInSystemPath() {
+        final var path = path("c4://sys1");
+
         collector.checkThat(path.systemPath(), equalTo(path));
     }
 
     @Test
-    public void shouldBeAbleToExtractSubPathsInpersonPath() {
-        C4Path path = C4Path.path("@person");
+    public void shouldBeAbleToExtractSubPathsInPersonPath() {
+        final var path = path("@person");
+
         collector.checkThat(path.personPath(), equalTo(path));
     }
 
     @Test
     public void shouldBeAbleToExtractSubPathsInContainerPath() {
-        C4Path path = C4Path.path("c4://system\\/1/container\\/2\\/system\\/1");
+        final var path = path("c4://system\\/1/container\\/2\\/system\\/1");
 
-        collector.checkThat(path.systemPath(), equalTo(C4Path.path("c4://system\\/1")));
+        collector.checkThat(path.systemPath(), equalTo(path("c4://system\\/1")));
         collector.checkThat(path.containerPath(), equalTo(path));
     }
 
     @Test
     public void shouldBeAbleToExtractSubPathsInComponentPath() {
-        C4Path path = C4Path.path("c4://system\\/1/container\\/2\\/system\\/1/component\\/3\\/container\\/2\\/system\\/1");
-        collector.checkThat(path.systemPath(), equalTo(C4Path.path("c4://system\\/1")));
-        collector.checkThat(path.containerPath(), equalTo(C4Path.path("c4://system\\/1/container\\/2\\/system\\/1")));
+        final var path = path("c4://system\\/1/container\\/2\\/system\\/1/component\\/3\\/container\\/2\\/system\\/1");
+
+        collector.checkThat(path.systemPath(), equalTo(path("c4://system\\/1")));
+        collector.checkThat(path.containerPath(), equalTo(path("c4://system\\/1/container\\/2\\/system\\/1")));
         collector.checkThat(path.componentPath(), equalTo(path));
     }
 
     @Test
     public void shouldBuildPathFromValidPaths() {
-        collector.checkThat(C4Path.path("@Person"), notNullValue());
-        collector.checkThat(C4Path.path("c4://system1"), notNullValue());
-        collector.checkThat(C4Path.path("c4://system1/container1"), notNullValue());
-        collector.checkThat(C4Path.path("c4://system1/container1/component1"), notNullValue());
+        collector.checkThat(path("@Person"), notNullValue());
+        collector.checkThat(path("c4://system1"), notNullValue());
+        collector.checkThat(path("c4://system1/container1"), notNullValue());
+        collector.checkThat(path("c4://system1/container1/component1"), notNullValue());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailToBuildPathIfPrefixIsInvalid() {
-        collector.checkThat(C4Path.path("{@Person"), notNullValue());
+        collector.checkThat(path("{@Person"), notNullValue());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void missingPersonThrowsException() {
-        C4Path.path("@");
+        path("@");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void buildingPersonPathWithOnlySlashThrowsException() {
-        C4Path path = C4Path.path("@\\/");
+        path("@\\/");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void buildingSystemPathWithOnlySlashThrowsException() {
-        C4Path path = C4Path.path("c4://\\/");
+        path("c4://\\/");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void missingSystemThrowsException() {
-        C4Path.path("c4://");
+        path("c4://");
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessingSystemPathOnNonSystemThrowsException() {
-        C4Path path = C4Path.path("@person");
+        final var path = path("@person");
+
         path.systemPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessingContainerPathOnNonContainerThrowsException() {
-        C4Path path = C4Path.path("@person");
+        final var path = path("@person");
+
         path.containerPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessingComponentPathOnNonComponentThrowsException() {
-        C4Path path = C4Path.path("@person");
+        final var path = path("@person");
+
         path.componentPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessingPersonPathOnNonPersonThrowsException() {
-        C4Path path = C4Path.path("c4://sys1");
+        final var path = path("c4://sys1");
+
         path.personPath();
     }
 
     @Test(expected = IllegalStateException.class)
     public void accessingComponentPathOnPathWithNoComponentThrowsException() {
-        C4Path path = C4Path.path("c4://sys1/container1");
+        final var path = path("c4://sys1/container1");
+
         path.componentPath();
     }
 
@@ -320,7 +323,6 @@ public class C4PathTest {
     }
 
     private Container buildContainer(String containerName, SoftwareSystem softwareSystem) {
-
         if (softwareSystem == null) {
             softwareSystem = workspace.getModel().getSoftwareSystemWithName("system");
 
@@ -329,7 +331,7 @@ public class C4PathTest {
             }
         }
 
-        return softwareSystem.addContainer(containerName, "bar", "bazz");
+        return softwareSystem.addContainer(containerName, "bar", "baz");
     }
 
     private SoftwareSystem buildSoftwareSystem(String systemName) {

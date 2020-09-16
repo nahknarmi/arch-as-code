@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import net.trilogy.arch.services.Base64Converter;
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class JiraApi {
     private final HttpClient client;
@@ -34,6 +36,100 @@ public class JiraApi {
         this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
     }
 
+    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, int sizeOfArray, Object itemToInsert) {
+        for (int j = 0; j < sizeOfArray; ++j) {
+            if (arrayToInsertInto[j] == null) {
+                arrayToInsertInto[j] = itemToInsert;
+                break;
+            }
+        }
+    }
+
+    private static String extractErrorFromJiraCreateStoryResult(JSONObject jiraErrorObj) {
+        final var errorMessages = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONArray("errorMessages")
+                .toList()
+                .stream()
+                .map(it -> it + "\n")
+                .collect(joining());
+
+        final var mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONObject("errors");
+
+        final var mappedErrorMessages = mappedErrorsAsJson.keySet()
+                .stream()
+                .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
+                .collect(joining());
+
+        return errorMessages + mappedErrorMessages;
+    }
+
+    private static String buildTddRow(JiraStory.JiraTdd tdd) {
+        if (tdd.hasTddContent()) {
+            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
+        } else {
+            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
+        }
+    }
+
+    private static String makeFunctionalRequirementRow(JiraStory.JiraFunctionalRequirement funcReq) {
+        return ""
+                + "| " + funcReq.getId() + " | "
+                + funcReq.getSource()
+                + " | {noformat}" + funcReq.getText() + "{noformat} |\n"
+                + "";
+    }
+
+    private static String getEncodeAuth(String username, char[] password) {
+        final var s = username + ":" + String.valueOf(password);
+
+        return Base64Converter.toString(s);
+    }
+
+    private static String makeDescription(JiraStory story) {
+        return "" +
+                makeFunctionalRequirementTable(story) +
+                makeTddTablesByComponent(story);
+    }
+
+    private static String makeTddTablesByComponent(JiraStory story) {
+        final var compMap = story.getTdds()
+                .stream()
+                .collect(Collectors.groupingBy(JiraStory.JiraTdd::getComponentPath));
+
+        return "h3. Technical Design:\n" +
+                compMap.entrySet().stream()
+                        .map(it ->
+                                "h4. Component: " + it.getKey() + "\n||TDD||Description||\n" +
+                                        it.getValue().stream()
+                                                .map(JiraApi::buildTddRow)
+                                                .collect(joining()))
+                        .collect(joining());
+    }
+
+    private static String makeFunctionalRequirementTable(JiraStory story) {
+        return "h3. Implements functionality:\n" +
+                "||Id||Source||Description||\n" +
+                story.getFunctionalRequirements().stream()
+                        .map(JiraApi::makeFunctionalRequirementRow)
+                        .collect(joining());
+    }
+
+    private static String generateBodyForCreateStories(String epicKey, List<JiraStory> jiraStories, String projectId) {
+        return new JSONObject(
+                Map.of("issueUpdates", new JSONArray(
+                        jiraStories.stream()
+                                .map(story -> new JSONObject(Map.of(
+                                        "fields", Map.of(
+                                                "customfield_10002", epicKey,
+                                                "project", Map.of("id", projectId),
+                                                "summary", story.getTitle(),
+                                                "issuetype", Map.of("name", "Feature Story"),
+                                                "description", makeDescription(story)))))
+                                .collect(toList()))))
+                .toString();
+    }
+
     public List<JiraCreateStoryStatus> createStories(List<JiraStory> jiraStories, String epicKey, String projectId, String username, char[] password) throws JiraApiException {
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(generateBodyForCreateStories(epicKey, jiraStories, projectId)))
@@ -44,7 +140,7 @@ public class JiraApi {
 
         HttpResponse<String> response = null;
         try {
-            response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 401) {
                 throw JiraApiException.builder()
@@ -66,64 +162,37 @@ public class JiraApi {
     }
 
     private List<JiraCreateStoryStatus> parseCreateStoriesResponse(String response) {
-        final JSONArray successfulItems = new JSONObject(response).getJSONArray("issues");
-        final JSONArray failedItems = new JSONObject(response).getJSONArray("errors");
+        final var successfulItems = new JSONObject(response).getJSONArray("issues");
+        final var failedItems = new JSONObject(response).getJSONArray("errors");
+        final var totalElements = successfulItems.length() + failedItems.length();
 
-        final int totalElements = successfulItems.length() + failedItems.length();
-
-        JiraCreateStoryStatus[] result = new JiraCreateStoryStatus[totalElements];
+        final var result = new JiraCreateStoryStatus[totalElements];
 
         for (int i = 0; i < failedItems.length(); ++i) {
-            int indexOfFailedItem = failedItems.getJSONObject(i).getInt("failedElementNumber");
-            String error = extractErrorFromJiraCreateStoryResult(failedItems.getJSONObject(i));
+            final var indexOfFailedItem = failedItems.getJSONObject(i).getInt("failedElementNumber");
+            final var error = extractErrorFromJiraCreateStoryResult(failedItems.getJSONObject(i));
+
             result[indexOfFailedItem] = JiraCreateStoryStatus.failed(error);
         }
 
         for (int i = 0; i < successfulItems.length(); ++i) {
-            String key = successfulItems.getJSONObject(i).getString("key");
-            JiraCreateStoryStatus item = JiraCreateStoryStatus.succeeded(key, this.baseUri + this.linkPrefix + key);
+            final var key = successfulItems.getJSONObject(i).getString("key");
+            final var item = JiraCreateStoryStatus.succeeded(key, baseUri + linkPrefix + key);
+
             insertInNextAvailableSpot(result, totalElements, item);
         }
 
         return List.of(result);
     }
 
-    private void insertInNextAvailableSpot(Object[] arrayToInsertInto, int sizeOfArray, Object itemToInsert) {
-        for (int j = 0; j < sizeOfArray; ++j) {
-            if (arrayToInsertInto[j] == null) {
-                arrayToInsertInto[j] = itemToInsert;
-                break;
-            }
-        }
-    }
-
-    private String extractErrorFromJiraCreateStoryResult(JSONObject jiraErrorObj) {
-        final String errorMessages = jiraErrorObj.getJSONObject("elementErrors")
-                .getJSONArray("errorMessages")
-                .toList()
-                .stream()
-                .map(it -> it + "\n")
-                .collect(joining());
-
-        JSONObject mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
-                .getJSONObject("errors");
-
-        String mappedErrorMessages = mappedErrorsAsJson.keySet()
-                .stream()
-                .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
-                .collect(joining());
-
-        return errorMessages + mappedErrorMessages;
-    }
-
     public JiraQueryResult getStory(Jira jira, String username, char[] password) throws JiraApiException {
-        String encodedAuth = getEncodeAuth(username, password);
-        final String ticket = jira.getTicket();
-        final HttpRequest request = createGetStoryRequest(encodedAuth, ticket);
+        final var encodedAuth = getEncodeAuth(username, password);
+        final var ticket = jira.getTicket();
+        final var request = createGetStoryRequest(encodedAuth, ticket);
 
         HttpResponse<String> response = null;
         try {
-            response = this.client.send(request, HttpResponse.BodyHandlers.ofString());
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 401) {
                 throw JiraApiException.builder()
@@ -148,71 +217,6 @@ public class JiraApi {
                     .message("Unknown error occurred")
                     .build();
         }
-    }
-
-    private String generateBodyForCreateStories(String epicKey, List<JiraStory> jiraStories, String projectId) {
-        return new JSONObject(
-                Map.of("issueUpdates", new JSONArray(
-                        jiraStories.stream().map(story -> new JSONObject(Map.of(
-                                "fields", Map.of(
-                                        "customfield_10002", epicKey,
-                                        "project", Map.of("id", projectId),
-                                        "summary", story.getTitle(),
-                                        "issuetype", Map.of("name", "Feature Story"),
-                                        "description", makeDescription(story)
-                                )))).collect(Collectors.toList())
-                ))
-        ).toString();
-    }
-
-    private String makeDescription(JiraStory story) {
-        return "" +
-                makeFunctionalRequirementTable(story) +
-                makeTddTablesByComponent(story);
-    }
-
-    private String makeTddTablesByComponent(JiraStory story) {
-        Map<String, List<JiraStory.JiraTdd>> compMap = story.getTdds()
-                .stream()
-                .collect(Collectors.groupingBy(JiraStory.JiraTdd::getComponentPath));
-
-        return "h3. Technical Design:\n" + compMap.entrySet().stream()
-                .map(entry ->
-                        "h4. Component: " + entry.getKey() + "\n||TDD||Description||\n" +
-                                entry.getValue().stream()
-                                        .map(this::buildTddRow)
-                                        .collect(joining()))
-                .collect(joining()) + "";
-    }
-
-    private String buildTddRow(JiraStory.JiraTdd tdd) {
-        if (tdd.hasTddContent()) {
-            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
-        } else {
-            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
-        }
-    }
-
-    private String makeFunctionalRequirementTable(JiraStory story) {
-        return "h3. Implements functionality:\n" +
-                "||Id||Source||Description||\n" +
-                story.getFunctionalRequirements()
-                        .stream()
-                        .map(this::makeFunctionalRequiremntRow)
-                        .collect(joining());
-    }
-
-    private String makeFunctionalRequiremntRow(JiraStory.JiraFunctionalRequirement funcReq) {
-        return ""
-                + "| " + funcReq.getId() + " | "
-                + funcReq.getSource()
-                + " | {noformat}" + funcReq.getText() + "{noformat} |\n"
-                + "";
-    }
-
-    private String getEncodeAuth(String username, char[] password) {
-        final String s = username + ":" + String.valueOf(password);
-        return Base64Converter.toString(s);
     }
 
     private HttpRequest createGetStoryRequest(String encodedAuth, String ticket) {
@@ -250,18 +254,13 @@ public class JiraApi {
         return linkPrefix;
     }
 
+    @Builder
     @Getter
+    @RequiredArgsConstructor
     public static class JiraApiException extends Exception {
         @NonNull
         private final String message;
         private final Throwable cause;
         private final HttpResponse<?> response;
-
-        @Builder
-        private JiraApiException(@NonNull String message, Throwable cause, HttpResponse<?> response) {
-            this.message = message;
-            this.cause = cause;
-            this.response = response;
-        }
     }
 }

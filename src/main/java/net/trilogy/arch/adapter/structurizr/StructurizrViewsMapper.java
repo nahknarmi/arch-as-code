@@ -6,6 +6,7 @@ import com.structurizr.model.Container;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.View;
 import com.structurizr.view.ViewSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,34 +15,46 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class StructurizrViewsMapper {
-
     public static final String STRUCTURIZR_VIEWS_JSON = "structurizrViews.json";
 
     private static final Logger logger = LogManager.getLogger(StructurizrViewsMapper.class);
+
     private final File documentRoot;
 
-    public StructurizrViewsMapper(File documentRoot) {
-        this.documentRoot = documentRoot;
-    }
-
-    public void loadAndSetViews(Workspace workspace) {
+    private static void setOnModel(Object model, Object objectToSet, String methodName) {
         try {
-            ViewSet viewSet = loadStructurizrViews();
-            addViewsWithReferencedObjects(workspace, viewSet);
-        } catch (IOException e) {
-            logger.error("Failed to load views", e);
-            throw new RuntimeException("Failed to load Structurizr views", e);
+            Method setViews = findSetter(model.getClass(), objectToSet, methodName);
+            setViews.setAccessible(true);
+            setViews.invoke(model, objectToSet);
+        } catch (Exception e) {
+            logger.error("Failed to set object:" + objectToSet + " using:" + methodName + " on model:" + model, e);
         }
     }
 
-    private ViewSet loadStructurizrViews() throws IOException {
-        File manifestFile = new File(documentRoot.getCanonicalPath() + File.separator + STRUCTURIZR_VIEWS_JSON);
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(manifestFile, ViewSet.class);
+    private static Method findSetter(Class<?> model, Object objectToSet, String methodName) {
+        try {
+            return model.getDeclaredMethod(methodName, objectToSet.getClass());
+        } catch (NoSuchMethodException e) {
+            return findSetter(model.getSuperclass(), objectToSet, methodName);
+        }
     }
 
-    private void addViewsWithReferencedObjects(Workspace workspace, ViewSet viewSet) {
+    private static void setSoftwareSystem(Workspace workspace, View view) {
+        if (view.getSoftwareSystem() == null && view.getSoftwareSystemId() != null) {
+            SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithId(view.getSoftwareSystemId());
+            setOnModel(view, softwareSystem);
+        }
+    }
+
+    private static void setOnModel(Object model, Object objectToSet) {
+        if (objectToSet != null) {
+            setOnModel(model, objectToSet, "set" + objectToSet.getClass().getSimpleName());
+        }
+    }
+
+    private static void addViewsWithReferencedObjects(Workspace workspace, ViewSet viewSet) {
         viewSet.getSystemLandscapeViews().forEach(lv -> setSoftwareSystem(workspace, lv));
 
         viewSet.getSystemContextViews().forEach(sv -> setSoftwareSystem(workspace, sv));
@@ -72,34 +85,19 @@ public class StructurizrViewsMapper {
         setOnModel(workspace, viewSet, "setViews");
     }
 
-    private void setSoftwareSystem(Workspace workspace, View view) {
-        if (view.getSoftwareSystem() == null && view.getSoftwareSystemId() != null) {
-            SoftwareSystem softwareSystem = workspace.getModel().getSoftwareSystemWithId(view.getSoftwareSystemId());
-            setOnModel(view, softwareSystem);
-        }
-    }
-
-    private void setOnModel(Object model, Object objectToSet) {
-        if (objectToSet != null) {
-            this.setOnModel(model, objectToSet, "set" + objectToSet.getClass().getSimpleName());
-        }
-    }
-
-    private void setOnModel(Object model, Object objectToSet, String methodName) {
+    public void loadAndSetViews(Workspace workspace) {
         try {
-            Method setViews = findSetter(model.getClass(), objectToSet, methodName);
-            setViews.setAccessible(true);
-            setViews.invoke(model, objectToSet);
-        } catch (Exception e) {
-            logger.error("Failed to set object:" + objectToSet + " using:" + methodName + " on model:" + model, e);
+            ViewSet viewSet = loadStructurizrViews();
+            addViewsWithReferencedObjects(workspace, viewSet);
+        } catch (IOException e) {
+            logger.error("Failed to load views", e);
+            throw new RuntimeException("Failed to load Structurizr views", e);
         }
     }
 
-    private Method findSetter(Class<?> model, Object objectToSet, String methodName) {
-        try {
-            return model.getDeclaredMethod(methodName, objectToSet.getClass());
-        } catch (NoSuchMethodException e) {
-            return findSetter(model.getSuperclass(), objectToSet, methodName);
-        }
+    private ViewSet loadStructurizrViews() throws IOException {
+        File manifestFile = new File(documentRoot.getCanonicalPath() + File.separator + STRUCTURIZR_VIEWS_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(manifestFile, ViewSet.class);
     }
 }

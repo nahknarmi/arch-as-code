@@ -34,13 +34,14 @@ public class C4SoftwareSystem extends Entity implements HasLocation {
         this.location = Optional.ofNullable(location).orElse(UNSPECIFIED);
     }
 
+    @Override
     public C4Type getType() {
         return C4Type.SYSTEM;
     }
 
     @Override
     public C4SoftwareSystem shallowCopy() {
-        return this.toBuilder().build();
+        return toBuilder().build();
     }
 
     public static class C4SoftwareSystemBuilder {

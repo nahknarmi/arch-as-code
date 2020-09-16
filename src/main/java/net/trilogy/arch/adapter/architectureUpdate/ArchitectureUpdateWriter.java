@@ -1,32 +1,20 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
+import lombok.experimental.UtilityClass;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+
+@UtilityClass
 public class ArchitectureUpdateWriter {
-    private final FilesFacade filesFacade;
+    public static void exportArchitectureUpdate(ArchitectureUpdate au, Path path, FilesFacade files) throws IOException {
+        final var auPath = path.resolve(ARCHITECTURE_UPDATE_YML);
 
-    public ArchitectureUpdateWriter(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-    }
-
-    public void export(ArchitectureUpdate au, Path path) throws IOException {
-        ArchitectureUpdateObjectMapper mapper = new ArchitectureUpdateObjectMapper();
-        Path auPath = path.resolve("architecture-update.yml");
-        filesFacade.writeString(auPath, mapper.writeValueAsString(au));
-
-        writeTddContents(au, path);
-    }
-
-    private void writeTddContents(ArchitectureUpdate au, Path path) throws IOException {
-        if (au.getTddContents() != null && !au.getTddContents().isEmpty()) {
-            for (TddContent tdd : au.getTddContents()) {
-                filesFacade.writeString(path.resolve(tdd.getFilename()), tdd.getContent());
-            }
-        }
+        files.writeString(auPath, YAML_OBJECT_MAPPER.writeValueAsString(au));
     }
 }

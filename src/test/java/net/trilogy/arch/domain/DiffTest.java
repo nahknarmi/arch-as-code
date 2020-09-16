@@ -3,7 +3,9 @@ package net.trilogy.arch.domain;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.c4.C4Type;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.Diffable;
@@ -132,8 +134,8 @@ public class DiffTest {
         final var children = Set.of(new Thing("B"));
         final var diff = new Diff(thing, children, null, null);
 
-        HashMap<Tdd.Id, Tdd> relatedTo = new HashMap<>();
-        relatedTo.put(new Tdd.Id("1"), Tdd.blank());
+        HashMap<TddId, Tdd> relatedTo = new HashMap<>();
+        relatedTo.put(new TddId("1"), Tdd.blank());
         diff.getElement().setRelatedTdds(relatedTo);
 
         assertTrue(diff.getElement().hasRelatedTdds());
@@ -141,6 +143,7 @@ public class DiffTest {
     }
 
     @EqualsAndHashCode(callSuper = false)
+    @ToString
     private static class Thing extends DiffableWithRelatedTdds implements Diffable {
         @Getter
         private final String id;
@@ -154,8 +157,8 @@ public class DiffTest {
 
         public Thing(String id) {
             this.id = id;
-            this.name = "name";
-            this.type = C4Type.PERSON;
+            name = "name";
+            type = C4Type.PERSON;
         }
     }
 }

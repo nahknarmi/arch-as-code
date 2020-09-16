@@ -1,8 +1,6 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -26,19 +24,21 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
     private final JiraApiFactory jiraApiFactory;
-    private final ArchitectureUpdateObjectMapper architectureUpdateObjectMapper;
     private final ArchitectureUpdateReader architectureUpdateReader;
-    @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     @Getter
     private final FilesFacade filesFacade;
     @Getter
     private final GitInterface gitInterface;
+    @Getter
     @Option(names = {"-b", "--branch-of-base-architecture"}, description = "Name of git branch from which this AU was branched. Used to get names of components. Usually 'master'. Also can be a commit or tag.", required = true)
     String baseBranch;
+    @Getter
     @Parameters(index = "0", description = "Directory name of architecture update to validate")
     private File architectureUpdateDirectory;
     @Getter
@@ -58,11 +58,10 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
         this.jiraApiFactory = jiraApiFactory;
-        this.architectureUpdateObjectMapper = new ArchitectureUpdateObjectMapper();
-        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
+        architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
+    @Override
     public Integer call() {
         logArgs();
         final Path auPath = architectureUpdateDirectory.toPath();
@@ -84,11 +83,17 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
                 spec.commandLine().getErr(),
                 jiraApi.get());
 
-        var updatedAu = createStories(au.get(), beforeAuArchitecture.get(), afterAuArchitecture.get(), jiraService);
+        var updatedAu = createStories(
+                au.get(),
+                beforeAuArchitecture.get(),
+                afterAuArchitecture.get(),
+                jiraService);
         if (updatedAu.isEmpty()) return 1;
 
         try {
-            filesFacade.writeString(auPath.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME), architectureUpdateObjectMapper.writeValueAsString(updatedAu.get()));
+            filesFacade.writeString(
+                    auPath.resolve(ARCHITECTURE_UPDATE_YML),
+                    YAML_OBJECT_MAPPER.writeValueAsString(updatedAu.get()));
         } catch (Exception e) {
             printError("Unable to write update to AU.", e);
             return 1;
@@ -125,7 +130,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<ArchitectureUpdate> loadAu(Path auPath) {
         try {
-            return Optional.of(architectureUpdateReader.load(auPath));
+            return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auPath));
         } catch (Exception e) {
             printError("Unable to load architecture update.", e);
             return Optional.empty();

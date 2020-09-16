@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateObjectMapper;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
@@ -10,8 +10,8 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
@@ -22,9 +22,12 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+
 @Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
+@RequiredArgsConstructor
 public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, DisplaysOutputMixin {
-    private static final ArchitectureUpdateObjectMapper objectMapper = new ArchitectureUpdateObjectMapper();
     private final GoogleDocsAuthorizedApiFactory googleDocsApiFactory;
     private final FilesFacade filesFacade;
     private final GitInterface gitInterface;
@@ -40,13 +43,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
 
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
-
-    public AuNewCommand(GoogleDocsAuthorizedApiFactory googleDocsApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
-        this.googleDocsApiFactory = googleDocsApiFactory;
-        this.filesFacade = filesFacade;
-        this.gitInterface = gitInterface;
-    }
+    private CommandSpec spec;
 
     @Override
     public Integer call() {
@@ -69,13 +66,13 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         if (p1GoogleDocUrl != null) {
             return loadFromP1();
         } else {
-            return Optional.of(ArchitectureUpdate.builderPreFilledWithBlanks().name(name).build());
+            return Optional.of(ArchitectureUpdate.prefilledWithBlanks().name(name).build());
         }
     }
 
     private boolean writeAu(File auFile, ArchitectureUpdate au) {
         try {
-            filesFacade.writeString(auFile.toPath(), objectMapper.writeValueAsString(au));
+            filesFacade.writeString(auFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(au));
             return true;
         } catch (Exception e) {
             printError("Unable to write AU file.", e);
@@ -116,7 +113,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
             }
         }
 
-        File auFile = auFolder.resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile();
+        File auFile = auFolder.resolve(ARCHITECTURE_UPDATE_YML).toFile();
         if (auFile.isFile()) {
             printError(String.format("AU %s already exists. Try a different name.", auFile.getAbsolutePath()));
             return Optional.empty();

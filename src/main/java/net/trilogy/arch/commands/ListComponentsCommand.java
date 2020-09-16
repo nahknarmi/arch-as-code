@@ -1,7 +1,7 @@
 package net.trilogy.arch.commands;
 
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 
 @CommandLine.Command(name = "list-components", mixinStandardHelpOptions = true, description = "Outputs a CSV formatted list of components and their IDs, which are present in the architecture.")
+@RequiredArgsConstructor
 public class ListComponentsCommand implements Callable<Integer>, LoadArchitectureMixin, DisplaysOutputMixin {
     @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
-    @Getter
     private final FilesFacade filesFacade;
+
     @Option(names = {"-s", "--search"}, description = "Search string to be part of name or description to find matching components.")
     private String searchString;
     @Getter
@@ -34,11 +34,6 @@ public class ListComponentsCommand implements Callable<Integer>, LoadArchitectur
     @Getter
     @Parameters(index = "0", description = "Directory containing the product architecture")
     private File productArchitectureDirectory;
-
-    public ListComponentsCommand(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
-    }
 
     @Override
     public Integer call() {

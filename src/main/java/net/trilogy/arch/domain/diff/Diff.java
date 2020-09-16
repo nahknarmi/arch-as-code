@@ -7,19 +7,19 @@ import java.util.Set;
 
 @EqualsAndHashCode
 public class Diff {
-    final private Diffable before;
-    final private Diffable after;
-    final private Set<? extends Diffable> descendantsBefore;
-    final private Set<? extends Diffable> descendantsAfter;
+    private final Diffable before;
+    private final Diffable after;
+    private final Set<? extends Diffable> descendantsBefore;
+    private final Set<? extends Diffable> descendantsAfter;
     @Getter
-    final private Status status;
+    private final Status status;
 
     public Diff(Diffable before, Diffable after) {
         this.before = before;
         this.after = after;
-        this.descendantsAfter = Set.of();
-        this.descendantsBefore = Set.of();
-        this.status = calculateStatus();
+        descendantsAfter = Set.of();
+        descendantsBefore = Set.of();
+        status = calculateStatus();
     }
 
     public Diff(Diffable before, Set<? extends Diffable> descendantsBefore, Diffable after, Set<? extends Diffable> descendantsAfter) {
@@ -27,9 +27,10 @@ public class Diff {
         this.after = after;
         this.descendantsBefore = descendantsBefore;
         this.descendantsAfter = descendantsAfter;
-        this.status = calculateStatus();
+        status = calculateStatus();
     }
 
+    @Override
     public String toString() {
         String marker;
         if (status.equals(Status.UPDATED)) marker = "*";

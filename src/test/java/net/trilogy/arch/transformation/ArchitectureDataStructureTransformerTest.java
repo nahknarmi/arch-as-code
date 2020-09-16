@@ -7,11 +7,8 @@ import com.structurizr.documentation.Decision;
 import com.structurizr.documentation.DecisionStatus;
 import com.structurizr.model.Component;
 import com.structurizr.model.Container;
-import com.structurizr.model.Model;
 import com.structurizr.view.ViewSet;
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
-import net.trilogy.arch.adapter.structurizr.WorkspaceReader;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.ImportantTechnicalDecision;
 import net.trilogy.arch.domain.c4.C4Model;
@@ -29,6 +26,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
+import static net.trilogy.arch.Util.first;
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.structurizr.WorkspaceReader.loadWorkspace;
 import static net.trilogy.arch.domain.c4.C4Location.INTERNAL;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -40,11 +40,37 @@ public class ArchitectureDataStructureTransformerTest {
     private static final String PRODUCT_NAME = "TestSpaces";
     private static final String PRODUCT_DESCRIPTION = "TestSpaces is a tool!";
 
+    private static C4Model buildModel() {
+        return new C4Model(
+                ImmutableSet.of(
+                        C4Person.builder()
+                                .id("1")
+                                .alias("@person")
+                                .name("person")
+                                .description("Foo")
+                                .relationships(emptyList()).tags(emptySet()).build()
+                ),
+                ImmutableSet.of(
+                        C4SoftwareSystem.builder()
+                                .id("2")
+                                .alias("c4://sys")
+                                .name("sys")
+                                .description("sys")
+                                .location(INTERNAL)
+                                .tags(emptySet())
+                                .relationships(emptyList()).build()
+                ),
+                emptySet(),
+                emptySet(),
+                emptySet()
+        );
+    }
+
     @Test
     public void shouldHandleMultipleRelationshipsWithSameSourceAndDestination() throws Exception {
         ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File structurizrJson = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_MULTIPLE_RELATIONSHIPS).getPath());
-        ArchitectureDataStructure ourYaml = new WorkspaceReader().load(structurizrJson);
+        ArchitectureDataStructure ourYaml = loadWorkspace(structurizrJson);
 
         Workspace exportedJson = transformer.toWorkSpace(ourYaml);
 
@@ -62,7 +88,7 @@ public class ArchitectureDataStructureTransformerTest {
         // given
         ArchitectureDataStructureTransformer transformer = getTransformer(TestHelper.ROOT_PATH_TO_TEST_BIG_BANK);
         File jsonFromStructurizr = new File(getClass().getResource(TestHelper.JSON_STRUCTURIZR_TRICKY_DEPLOYMENT_NODE_SCOPES).getPath());
-        ArchitectureDataStructure ourDataStructure = new WorkspaceReader().load(jsonFromStructurizr);
+        ArchitectureDataStructure ourDataStructure = loadWorkspace(jsonFromStructurizr);
 
         // when
         Workspace workspace = transformer.toWorkSpace(ourDataStructure);
@@ -78,31 +104,30 @@ public class ArchitectureDataStructureTransformerTest {
 
     @Test
     public void should_transform_architecture_yaml_to_structurizr_workspace() throws Exception {
-        File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
-        File manifestFile = new File(getClass().getResource(TestHelper.MANIFEST_PATH_TO_TEST_GENERALLY).getPath());
+        final var documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
+        final var manifestFile = new File(getClass().getResource(TestHelper.MANIFEST_PATH_TO_TEST_GENERALLY).getPath());
 
-        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureObjectMapper()
-                .readValue(new FilesFacade().readString(manifestFile.toPath()));
+        final var dataStructure = YAML_OBJECT_MAPPER
+                .readValue(new FilesFacade().readString(manifestFile.toPath()), ArchitectureDataStructure.class);
 
-        ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
-        Workspace workspace = transformer.toWorkSpace(dataStructure);
+        final var transformer = TransformerFactory.create(documentationRoot);
+        final var workspace = transformer.toWorkSpace(dataStructure);
 
         assertNotNull(workspace);
         assertThat(workspace.getName(), equalTo(PRODUCT_NAME));
         assertThat(workspace.getDescription(), equalTo(PRODUCT_DESCRIPTION));
         assertThat(workspace.getDocumentation().getSections().size(), equalTo(4));
-        Model model = workspace.getModel();
+        final var model = workspace.getModel();
         assertThat(model.getPeople().size(), equalTo(4));
         assertThat(model.getSoftwareSystems().size(), equalTo(5));
-        Container container = (Container) model.getElement("12"); // "c4://DevSpaces/DevSpaces Web Application"
+        final var container = (Container) model.getElement("12"); // "c4://DevSpaces/DevSpaces Web Application"
         assertThat(container, notNullValue());
         assertThat(container.getUrl(), equalTo("https://devspaces.io"));
-        Component component = (Component) model.getElement("38"); // "c4://DevSpaces/DevSpaces API/Sign In Controller"
+        final var component = (Component) model.getElement("38"); // "c4://DevSpaces/DevSpaces API/Sign In Controller"
         assertThat(component, notNullValue());
         assertThat(component.getUrl(), equalTo("https://devspaces.io/sign-in"));
         assertThat(component.getProperties().get("Source Code Mappings"), equalTo(
-                "[\"src/bin/bash\",\"src/bin/zsh\"]"
-        ));
+                "[\"src/bin/bash\",\"src/bin/zsh\"]"));
     }
 
     @Test
@@ -168,35 +193,8 @@ public class ArchitectureDataStructureTransformerTest {
         Workspace workspace = transformer.toWorkSpace(dataStructure);
 
         ArrayList<Decision> decisions = new ArrayList<>(workspace.getDocumentation().getDecisions());
-        DecisionStatus result = decisions.get(0).getStatus();
+        DecisionStatus result = first(decisions).getStatus();
 
         assertThat(result, equalTo(decisionStatus));
-    }
-
-    private C4Model buildModel() {
-
-        return new C4Model(
-                ImmutableSet.of(
-                        C4Person.builder()
-                                .id("1")
-                                .alias("@person")
-                                .name("person")
-                                .description("Foo")
-                                .relationships(emptyList()).tags(emptySet()).build()
-                ),
-                ImmutableSet.of(
-                        C4SoftwareSystem.builder()
-                                .id("2")
-                                .alias("c4://sys")
-                                .name("sys")
-                                .description("sys")
-                                .location(INTERNAL)
-                                .tags(emptySet())
-                                .relationships(emptyList()).build()
-                ),
-                emptySet(),
-                emptySet(),
-                emptySet()
-        );
     }
 }

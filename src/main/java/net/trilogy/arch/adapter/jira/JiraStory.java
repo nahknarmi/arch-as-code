@@ -8,14 +8,17 @@ import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 
 @Getter
 @ToString
@@ -30,12 +33,12 @@ public class JiraStory {
                      ArchitectureDataStructure beforeAuArchitecture,
                      ArchitectureDataStructure afterAuArchitecture,
                      FeatureStory featureStory) throws InvalidStoryException {
-        this.title = featureStory.getTitle();
-        this.tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
-        this.functionalRequirements = getFunctionalRequirements(au, featureStory);
+        title = featureStory.getTitle();
+        tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+        functionalRequirements = getFunctionalRequirements(au, featureStory);
     }
 
-    private List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
+    private static List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
         final var requirements = new ArrayList<JiraFunctionalRequirement>();
         for (var reqId : featureStory.getRequirementReferences()) {
             if (!au.getFunctionalRequirements().containsKey(reqId))
@@ -45,27 +48,22 @@ public class JiraStory {
         return requirements;
     }
 
-    private List<JiraTdd> getTdds(
+    private static List<JiraTdd> getTdds(
             ArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
-            FeatureStory featureStory
-    ) throws InvalidStoryException {
-
-        List<JiraTdd> tdds = new ArrayList<>();
+            FeatureStory featureStory) throws InvalidStoryException {
+        final var tdds = new ArrayList<JiraTdd>();
         for (var tddId : featureStory.getTddReferences()) {
             var tdd = au.getTddContainersByComponent()
                     .stream()
-                    .filter(container -> container.getTdds().containsKey(tddId))
+                    .filter(container -> container.getTdds().containsKey(tddId) || TddId.noPr().equals(tddId))
                     .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
-                    .map(container ->
-                            JiraTdd.constructFrom(
-                                    tddId,
-                                    container.getTdds().get(tddId),
-                                    getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
-                                    au.getTddContents(),
-                                    container.getComponentId().getId()
-                            )
-                    ).findAny()
+                    .map(container -> jiraTddFrom(
+                            tddId,
+                            container.getTdds().get(tddId),
+                            getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                            TddId.noPr().equals(tddId) ? null : container.getTdds().get(tddId).getContent()))
+                    .findAny()
                     .orElseThrow(InvalidStoryException::new);
             tdds.add(tdd);
         }
@@ -73,9 +71,9 @@ public class JiraStory {
         return tdds;
     }
 
-    private Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
-                                              ArchitectureDataStructure afterAuArchitecture,
-                                              TddContainerByComponent tddContainerByComponent) {
+    private static Optional<String> getComponentPath(ArchitectureDataStructure beforeAuArchitecture,
+                                                     ArchitectureDataStructure afterAuArchitecture,
+                                                     TddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
             if (tddContainerByComponent.isDeleted())
@@ -97,22 +95,15 @@ public class JiraStory {
     @EqualsAndHashCode
     @RequiredArgsConstructor
     public static class JiraTdd {
-        private final Tdd.Id id;
+        private final TddId id;
         private final Tdd tdd;
         @Getter
         private final String componentPath;
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd constructFrom(Tdd.Id id, Tdd tdd, String component, List<TddContent> tddContents, String componentId) {
-            if (tddContents == null) tddContents = Collections.emptyList();
-
-            Optional<TddContent> tddContent = tddContents.stream()
-                    .filter(content -> content.getTdd().equals(id.toString()))
-                    .filter(content -> content.getComponentId().equals(componentId))
-                    .findFirst();
-
-            return new JiraTdd(id, tdd, component, tddContent.orElse(null));
+        public static JiraTdd jiraTddFrom(TddId id, Tdd tdd, String component, TddContent tddContent) {
+            return new JiraTdd(id, tdd, component, tddContent);
         }
 
         public String getId() {
@@ -120,6 +111,9 @@ public class JiraStory {
         }
 
         public String getText() {
+            if (TddId.noPr().equals(id)) {
+                return TddId.noPr().toString();
+            }
             if (hasTddContent()) {
                 return tddContent.getContent();
             } else {
@@ -136,7 +130,7 @@ public class JiraStory {
     @EqualsAndHashCode
     @RequiredArgsConstructor
     public static class JiraFunctionalRequirement {
-        private final FunctionalRequirement.Id id;
+        private final FunctionalRequirementId id;
         private final FunctionalRequirement functionalRequirement;
 
         public String getId() {

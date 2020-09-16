@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 public class StoryPublishingService {
 
     private final JiraApi api;
@@ -22,7 +24,7 @@ public class StoryPublishingService {
     public StoryPublishingService(final PrintWriter out, final PrintWriter err, final JiraApi jiraApi) {
         this.out = out;
         this.err = err;
-        this.api = jiraApi;
+        api = jiraApi;
     }
 
     public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
@@ -30,20 +32,24 @@ public class StoryPublishingService {
                 .getFeatureStories()
                 .stream()
                 .filter(StoryPublishingService::shouldCreateStory)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
-    private static ArchitectureUpdate updateJiraTicketsInAu(ArchitectureUpdate au, List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
-        ArchitectureUpdate resultingAu = au;
-        for (int i = 0; i < createStoriesResults.size(); ++i) {
-            if (createStoriesResults.get(i).isSucceeded()) {
-                resultingAu = resultingAu.addJiraToFeatureStory(
+    private static ArchitectureUpdate updateJiraTicketsInAu(
+            final ArchitectureUpdate au,
+            final List<FeatureStory> stories,
+            final List<JiraCreateStoryStatus> creationStatuses) {
+        ArchitectureUpdate updatedAu = au;
+        for (int i = 0; i < creationStatuses.size(); ++i) {
+            final var result = creationStatuses.get(i);
+
+            if (result.isSuccess()) {
+                updatedAu = updatedAu.addJiraToFeatureStory(
                         stories.get(i),
-                        new Jira(createStoriesResults.get(i).getIssueKey(), createStoriesResults.get(i).getIssueLink())
-                );
+                        new Jira(result.getIssueKey(), result.getIssueLink()));
             }
         }
-        return resultingAu;
+        return updatedAu;
     }
 
     private static boolean shouldCreateStory(FeatureStory story) {
@@ -75,7 +81,7 @@ public class StoryPublishingService {
         out.println("Checking epic...\n");
 
         final var epicJiraTicket = au.getCapabilityContainer().getEpic().getJira();
-        final var informationAboutTheEpic = this.api.getStory(epicJiraTicket, username, password);
+        final var informationAboutTheEpic = api.getStory(epicJiraTicket, username, password);
 
         out.println("Attempting to create stories...\n");
 
@@ -85,7 +91,7 @@ public class StoryPublishingService {
         }
 
         // create stories
-        var createStoriesResults = this.api.createStories(
+        var createStoriesResults = api.createStories(
                 jiraStories,
                 epicJiraTicket.getTicket(),
                 informationAboutTheEpic.getProjectId(),
@@ -107,7 +113,7 @@ public class StoryPublishingService {
         StringBuilder successfulStories = new StringBuilder();
 
         for (int i = 0; i < createStoriesResults.size(); ++i) {
-            if (!createStoriesResults.get(i).isSucceeded()) continue;
+            if (!createStoriesResults.get(i).isSuccess()) continue;
             successfulStories.append("\n  - ").append(stories.get(i).getTitle());
         }
 
@@ -121,7 +127,7 @@ public class StoryPublishingService {
     private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < createStoriesResults.size(); ++i) {
-            if (createStoriesResults.get(i).isSucceeded()) continue;
+            if (createStoriesResults.get(i).isSuccess()) continue;
             errors.append("Story: \"").append(stories.get(i).getTitle()).append("\":\n  - ").append(createStoriesResults.get(i).getError());
         }
         String heading = "Error! Some stories failed to publish. Please retry. Errors reported by Jira:";

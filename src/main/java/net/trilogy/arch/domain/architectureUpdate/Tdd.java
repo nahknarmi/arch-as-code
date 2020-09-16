@@ -7,80 +7,89 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Optional;
-
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @ToString
 @EqualsAndHashCode
+@RequiredArgsConstructor(access = PRIVATE)
 public class Tdd {
+    private static final String SAMPLE_TDD_TEXT = "[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3";
+    private static final String SAMPLE_BLANK_TDD_ID = "[SAMPLE-TDD-ID]";
+    private static final String SAMPLE_NO_PR_TDD_ID = "no-PR";
+    private static final String SAMPLE_BLANK_TDD_COMPONENT_REFERENCE = "[SAMPLE-COMPONENT-ID]";
+
     @JsonProperty(value = "text")
     private final String text;
+    // TODO: Why isn't this a JDK Path object?
     @JsonProperty(value = "file")
     private final String file;
 
     @Getter
-    @Setter
     @JsonIgnore
-    private Optional<TddContent> content = Optional.empty();
+    private final TddContent content;
 
     @JsonCreator(mode = PROPERTIES)
     public Tdd(@JsonProperty("text") String text,
                @JsonProperty("file") String file) {
-        this.text = text;
-        this.file = file;
+        this(text, file, null);
     }
 
     public static Tdd blank() {
-        return new Tdd("[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3", null);
+        return new Tdd(SAMPLE_TDD_TEXT, null);
+    }
+
+    public Tdd withContent(final TddContent tddContent) {
+        // TODO: Needs throught on why caller would pass `null` here
+        return new Tdd(text, tddContent == null ? null : tddContent.getFilename(), tddContent);
     }
 
     public String getDetails() {
-        if (content.isPresent()) {
-            return content.get().getContent();
-        }
-        return text;
+        return null == content ? text : content.getContent();
     }
 
     @EqualsAndHashCode
-    public static class Id implements EntityReference {
+    public static class TddId implements EntityReference {
         @JsonValue
         private final String id;
 
-        public Id(String id) {
+        public TddId(String id) {
             this.id = id;
         }
 
-        public static Id blank() {
-            return new Id("[SAMPLE-TDD-ID]");
+        public static TddId blank() {
+            return new TddId(SAMPLE_BLANK_TDD_ID);
         }
 
-        public static Id noPr() {
-            return new Id("no-PR");
+        public static TddId noPr() {
+            return new TddId(SAMPLE_NO_PR_TDD_ID);
         }
 
+        @Override
         public String toString() {
-            return this.id;
+            return id;
         }
     }
 
     @RequiredArgsConstructor
     @EqualsAndHashCode
-    public static class ComponentReference implements EntityReference {
+    public static class TddComponentReference implements EntityReference {
         @JsonValue
         @Getter
         private final String id;
 
-        public static ComponentReference blank() {
-            return new ComponentReference("[SAMPLE-COMPONENT-ID]");
+        public static TddComponentReference blank() {
+            return new TddComponentReference(SAMPLE_BLANK_TDD_COMPONENT_REFERENCE);
         }
 
+        @Override
         public String toString() {
-            return this.id;
+            // TODO: Implies that `toString` is used in business logic; it is
+            //       intended for debugging
+            return id;
         }
     }
 }

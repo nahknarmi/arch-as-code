@@ -8,7 +8,8 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.Decision;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,16 +34,18 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GoogleDocumentReaderTest {
-
     private final GoogleDocsApiInterface mockedApiInterface = mock(GoogleDocsApiInterface.class);
     private final GoogleDocumentReader reader = new GoogleDocumentReader(mockedApiInterface);
+
+    private static JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {
+        return new ObjectMapper().readValue(content, JsonNode.class);
+    }
 
     @Test
     public void shouldReturnEmptyAu() throws Exception {
         var apiResponse = new GoogleDocsApiInterface.Response(
                 getJsonNodeFrom("{}"),
-                new Document()
-        );
+                new Document());
 
         mockApiToReturnAGivenB(apiResponse, "url");
 
@@ -76,7 +78,7 @@ public class GoogleDocumentReaderTest {
 
         assertThat(
                 result.getDecisions(),
-                Matchers.hasEntry(new Decision.Id(requirementId), new Decision(requirement, List.of(Tdd.Id.blank())))
+                Matchers.hasEntry(new DecisionId(requirementId), new Decision(requirement, List.of(TddId.blank())))
         );
     }
 
@@ -88,8 +90,8 @@ public class GoogleDocumentReaderTest {
         List<String> expected = List.of("P2 IFD 1", "P2 IFD 2", "P2 IFD 3", "P2 ITD 4", "P1 ITD 4.1", "P2 ITD 5", "P1 ITD 5.1");
 
         int count = 0;
-        for (Map.Entry<Decision.Id, Decision> entry : result.getDecisions().entrySet()) {
-            Decision.Id k = entry.getKey();
+        for (Map.Entry<DecisionId, Decision> entry : result.getDecisions().entrySet()) {
+            DecisionId k = entry.getKey();
             assertThat(expected.get(count), equalTo(k.toString()));
             count++;
         }
@@ -172,23 +174,20 @@ public class GoogleDocumentReaderTest {
     @SuppressWarnings("SameParameterValue")
     private void mockApiWith(String fileWhoseContentsWillBeReturned, String whenCalledWithUrl) throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        final Path path = Paths.get(
-                Objects.requireNonNull(
-                        classLoader.getResource(fileWhoseContentsWillBeReturned)
-                ).getPath()
-        );
+        final Path path = Paths.get(Objects.requireNonNull(
+                classLoader.getResource(fileWhoseContentsWillBeReturned))
+                .getPath());
         final JsonNode sampleSpec = getJsonNodeFrom(Files.readString(path));
 
         mockApiToReturnAGivenB(
                 new GoogleDocsApiInterface.Response(sampleSpec, null),
-                whenCalledWithUrl
-        );
+                whenCalledWithUrl);
     }
 
     // TODO [TEST UTIL]: Remove when no longer needed
     @Test
     @Ignore("This is not a test. Use this to generate new json from google docs if needed.")
-    public void NotATest_UtilToFetchSampleP1Spec() throws GeneralSecurityException, IOException {
+    public void NotATest_UtilToFetchSampleP1Spec() throws IOException {
         String url1 = "https://docs.google.com/document/d/1xPIrv159vlRKklTABSxJx9Yq76MOrRfEdKLiVlXUQ68";
         String url2 = "https://docs.google.com/document/d/1Mhli4ZvCAAIwIguE7UY-DihkI1JsdxZjRG36QVen5aU/edit#";
         String url3 = "https://docs.google.com/document/d/1h-yiali65IQp6qXWb6qxkKvwvYTI9oshfOqJ3SmM4jQ/edit#";
@@ -220,6 +219,7 @@ public class GoogleDocumentReaderTest {
         new ObjectMapper().writeValue(tempFile5.toFile(), response5.asJson());
 
         String resourcePath = " src/test/resources/";
+
         assertThat(
                 "********* STATUS *********" +
                         "\n\nReading doc: " + url1 +
@@ -240,12 +240,7 @@ public class GoogleDocumentReaderTest {
                         " && mv " + tempFile5.toAbsolutePath() + resourcePath + ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-5.json" +
                         "\n\nNow failing test on purpose :)" +
                         "\n\n********* STATUS *********\n\n",
-                true, is(false)
-        );
-    }
-
-    private JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {
-        return new ObjectMapper().readValue(content, JsonNode.class);
+                true, is(false));
     }
 
     private void mockApiToReturnAGivenB(GoogleDocsApiInterface.Response a, String b) throws IOException {

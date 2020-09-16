@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
@@ -14,8 +15,11 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @EqualsAndHashCode
 public class Jira {
     @JsonProperty(value = "ticket")
+    @NonNull
     private final String ticket;
+    // TODO: Should this be a JDK URI?
     @JsonProperty(value = "link")
+    @NonNull
     private final String link;
 
     @Builder(toBuilder = true)

@@ -1,7 +1,7 @@
 package net.trilogy.arch.services;
 
-import net.trilogy.arch.ArchitectureDataStructureHelper;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.C4Path;
 import net.trilogy.arch.domain.diff.Diff;
@@ -23,6 +23,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class DiffToDotCalculatorTest {
 
+    private static void appendln(StringBuilder builder, String line) {
+        builder.append(line).append("\n");
+    }
+
     @Test
     public void shouldGenerateEmptyGraph() {
         var actual = DiffToDotCalculator.toDot("title", Set.of(), null, "");
@@ -38,7 +42,7 @@ public class DiffToDotCalculatorTest {
     @Test
     public void shouldGenerateEmptyGraphWithParent() {
         var parentSystem = new Diff(
-                new DiffableEntity(ArchitectureDataStructureHelper.createSystem("parent-system")),
+                new DiffableEntity(createSystem("parent-system")),
                 null
         );
         var actual = DiffToDotCalculator.toDot("title", Set.of(), parentSystem, "");
@@ -98,7 +102,7 @@ public class DiffToDotCalculatorTest {
                 diffOfRelationship
         );
         var parentSystem = new Diff(
-                new DiffableEntity(ArchitectureDataStructureHelper.createSystem("parent-system")),
+                new DiffableEntity(createSystem("parent-system")),
                 Set.of(diffOwnedByParent.getElement(), diffOfRelationship.getElement(), descendentDiffToNotDisplay.getElement()),
                 null,
                 null
@@ -267,7 +271,7 @@ public class DiffToDotCalculatorTest {
         var rel = new DiffableRelationship("1", createRelationship("r", "2"));
         var relDiff = new Diff(rel, null);
 
-        String tooltip = DiffToDotCalculator.getTooltip(rel, Set.of(p1Diff, p2Diff, relDiff));
+        String tooltip = DiffToDotCalculator.getRelationshipTooltip(rel, Set.of(p1Diff, p2Diff, relDiff));
 
         assertThat(tooltip, equalTo("person-1 -> person-2"));
     }
@@ -295,7 +299,7 @@ public class DiffToDotCalculatorTest {
     public void shouldGenerateComponentWithTddTooltipWhenComponentHasTdds() {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
-        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"), new Tdd("Some text", null)));
+        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new Tdd("Some text", null)));
 
         var diff = new Diff(null, after);
 
@@ -310,7 +314,7 @@ public class DiffToDotCalculatorTest {
     public void shouldGenerateComponentWithTddTuncatedTooltipWhenComponentHasTddsWithLongText() {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
-        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"),
+        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"),
                 new Tdd("Some text for this tdd that is longer than 50 character and should be truncated with added elipses.", null)));
 
         var diff = new Diff(null, after);
@@ -330,7 +334,7 @@ public class DiffToDotCalculatorTest {
     public void shouldRenderRelatedTdds() {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
-        after.setRelatedTdds(Map.of(new Tdd.Id("TDD 1.1"), new Tdd("Some text", null)));
+        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new Tdd("Some text", null)));
 
         var diff = new Diff(
                 null,
@@ -348,9 +352,5 @@ public class DiffToDotCalculatorTest {
                 "}");
 
         assertThat(actual.trim(), equalTo(expected));
-    }
-
-    private void appendln(StringBuilder builder, String line) {
-        builder.append(line).append("\n");
     }
 }

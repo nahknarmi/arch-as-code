@@ -36,13 +36,13 @@ public abstract class Entity implements HasRelation, HasTag, HasIdentity, Compar
         this.name = name;
     }
 
-    abstract public Entity shallowCopy();
+    public abstract Entity shallowCopy();
 
-    abstract public C4Type getType();
+    public abstract C4Type getType();
 
     @Override
     public int compareTo(Entity other) {
-        return this.getId().compareTo(other.getId());
+        return getId().compareTo(other.getId());
     }
 
     public void setPath(String path) {

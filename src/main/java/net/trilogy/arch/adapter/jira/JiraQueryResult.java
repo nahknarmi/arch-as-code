@@ -19,7 +19,7 @@ public class JiraQueryResult {
 
     public JiraQueryResult(HttpResponse<String> response) throws JsonProcessingException {
         JsonNode json = new ObjectMapper().readValue(response.body(), JsonNode.class);
-        this.projectId = json.get("fields").get("project").get("id").asText();
-        this.projectKey = json.get("fields").get("project").get("key").asText();
+        projectId = json.get("fields").get("project").get("id").asText();
+        projectKey = json.get("fields").get("project").get("key").asText();
     }
 }

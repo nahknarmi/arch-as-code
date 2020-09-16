@@ -1,27 +1,21 @@
 package net.trilogy.arch.adapter.architectureDataStructure;
 
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
 import java.io.IOException;
 
-/**
- * This class is being strangle-patterned away. Use {@link
- * net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper
- * }
- */
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+
 @Deprecated
+@RequiredArgsConstructor
 public class ArchitectureDataStructureReader {
+    private final FilesFacade filesFacade;
 
-    final private FilesFacade filesFacade;
-
-    public ArchitectureDataStructureReader(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-    }
-
-    public ArchitectureDataStructure load(File manifest) throws IOException {
-        final String archAsString = filesFacade.readString(manifest.toPath());
-        return new ArchitectureDataStructureObjectMapper().readValue(archAsString);
+    public ArchitectureDataStructure loadArchitectureDataStructure(File manifest) throws IOException {
+        final String architectureAsString = filesFacade.readString(manifest.toPath());
+        return YAML_OBJECT_MAPPER.readValue(architectureAsString, ArchitectureDataStructure.class);
     }
 }

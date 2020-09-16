@@ -19,6 +19,6 @@ public class C4ContainerInstance implements Comparable<C4ContainerInstance> {
 
     @Override
     public int compareTo(C4ContainerInstance other) {
-        return this.getId().compareTo(other.getId());
+        return getId().compareTo(other.getId());
     }
 }

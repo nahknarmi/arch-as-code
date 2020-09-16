@@ -13,7 +13,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toList;
 
-@SuppressWarnings("deprecation") // ArchitectureDataStructureReader
+@SuppressWarnings("deprecation")
 public class ArchitectureDataStructureValidator {
     private final List<DataStructureValidator> dataStructureDataStructureValidators;
     private final SchemaValidator schemaValidator;
@@ -32,11 +32,11 @@ public class ArchitectureDataStructureValidator {
         File manifestFile = new File(productArchitectureDirectory.getAbsolutePath() + File.separator + manifestFileName);
         checkArgument(manifestFile.exists(), String.format("Product Architecture manifest file %s does not exist.", manifestFile.getAbsolutePath()));
 
-        List<String> schemaValidationMessages = this.schemaValidator.validateArchitectureDocument(new FileInputStream(manifestFile)).stream().map(ValidationMessage::getMessage).collect(toList());
+        List<String> schemaValidationMessages = schemaValidator.validateArchitectureDocument(new FileInputStream(manifestFile)).stream().map(ValidationMessage::getMessage).collect(toList());
 
         if (schemaValidationMessages.isEmpty()) {
-            ArchitectureDataStructure dataStructure = dataStructureReader.load(manifestFile);
-            return this.dataStructureDataStructureValidators.stream().flatMap(v -> v.validate(dataStructure).stream()).collect(toList());
+            ArchitectureDataStructure dataStructure = dataStructureReader.loadArchitectureDataStructure(manifestFile);
+            return dataStructureDataStructureValidators.stream().flatMap(v -> v.validate(dataStructure).stream()).collect(toList());
         } else {
             return schemaValidationMessages;
         }

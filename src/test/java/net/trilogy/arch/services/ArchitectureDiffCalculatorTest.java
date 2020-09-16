@@ -1,6 +1,5 @@
 package net.trilogy.arch.services;
 
-import net.trilogy.arch.ArchitectureDataStructureHelper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.c4.C4Action;
 import net.trilogy.arch.domain.c4.C4Component;
@@ -38,12 +37,30 @@ public class ArchitectureDiffCalculatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
+    private static ArchitectureDataStructure getArchWithPeople(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch, Set<C4Person> people) {
+        return arch.model(
+                new C4Model(people, Set.of(), Set.of(), Set.of(), Set.of()
+                )
+        ).build();
+    }
+
+    private static ArchitectureDataStructure getArch(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch,
+                                                     Set<C4Person> people,
+                                                     Set<C4SoftwareSystem> systems,
+                                                     Set<C4Container> containers,
+                                                     Set<C4Component> components,
+                                                     Set<C4DeploymentNode> deploymentNodes) {
+        return arch.model(
+                new C4Model(people, systems, containers, components, deploymentNodes)
+        ).build();
+    }
+
     @Test
     public void shouldDiffEmptyArchitectures() {
         final ArchitectureDataStructure first = emptyArch().build();
         final ArchitectureDataStructure second = emptyArch().build();
 
-        assertThat(ArchitectureDiffCalculator.diff(first, second), equalTo(new DiffSet(Set.of())));
+        assertThat(ArchitectureDiffCalculator.architectureDiff(first, second), equalTo(new DiffSet(Set.of())));
     }
 
     @Test
@@ -65,7 +82,7 @@ public class ArchitectureDiffCalculatorTest {
                 new Diff(new DiffableEntity(commonPersonNameToBeChanged), new DiffableEntity(commonPersonNameChanged))
         );
 
-        var actual = ArchitectureDiffCalculator.diff(first, second);
+        var actual = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         expected.forEach(e -> collector.checkThat(actual.getDiffs(), hasItem(e)));
         collector.checkThat(actual.getDiffs().size(), equalTo(expected.size()));
@@ -88,7 +105,7 @@ public class ArchitectureDiffCalculatorTest {
         var first = getArchWithPeople(arch, Set.of(personBefore));
         var second = getArchWithPeople(arch, Set.of(personAfter));
 
-        var actual = ArchitectureDiffCalculator.diff(first, second);
+        var actual = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         collector.checkThat(
                 actual.getDiffs().stream()
@@ -116,7 +133,7 @@ public class ArchitectureDiffCalculatorTest {
         var first = getArchWithPeople(arch, Set.of(personBefore));
         var second = getArchWithPeople(arch, Set.of(personAfter));
 
-        var actual = ArchitectureDiffCalculator.diff(first, second);
+        var actual = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         collector.checkThat(
                 actual.getDiffs().stream()
@@ -146,7 +163,7 @@ public class ArchitectureDiffCalculatorTest {
                 new DiffableRelationship("1", relationToSys2),
                 new DiffableRelationship("1", relationToSys3)
         );
-        var actual = ArchitectureDiffCalculator.diff(first, second);
+        var actual = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         collector.checkThat(actual.getDiffs(), hasItem(expected));
     }
@@ -168,7 +185,7 @@ public class ArchitectureDiffCalculatorTest {
         var second = getArch(arch, Set.of(), Set.of(system2), Set.of(container2), Set.of(component2), Set.of());
 
         // WHEN
-        var diffs = ArchitectureDiffCalculator.diff(first, second);
+        var diffs = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         // THEN
         var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId().equals("1")).findAny().get();
@@ -192,18 +209,18 @@ public class ArchitectureDiffCalculatorTest {
         var system1 = createSystem("1");
         var container1 = createContainer("2", "1");
         var component1 = createComponent("3", "2");
-        component1.setRelationships(Set.of(ArchitectureDataStructureHelper.createRelationship("r", "100")));
+        component1.setRelationships(Set.of(createRelationship("r", "100")));
 
         var system2 = createSystem("1");
         var container2 = createContainer("2", "1");
         var component2 = createComponent("3", "2");
-        component2.setRelationships(Set.of(ArchitectureDataStructureHelper.createRelationship("r", "999")));
+        component2.setRelationships(Set.of(createRelationship("r", "999")));
 
         var first = getArch(arch, Set.of(), Set.of(system1), Set.of(container1), Set.of(component1), Set.of());
         var second = getArch(arch, Set.of(), Set.of(system2), Set.of(container2), Set.of(component2), Set.of());
 
         // WHEN
-        var diffs = ArchitectureDiffCalculator.diff(first, second);
+        var diffs = ArchitectureDiffCalculator.architectureDiff(first, second);
 
         // THEN
         var actual = diffs.getDiffs().stream().filter(it -> it.getElement().getId().equals("1")).findAny().get();
@@ -217,23 +234,5 @@ public class ArchitectureDiffCalculatorTest {
                 actual.getStatus(),
                 equalTo(Status.NO_UPDATE_BUT_CHILDREN_UPDATED)
         );
-    }
-
-    private ArchitectureDataStructure getArchWithPeople(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch, Set<C4Person> people) {
-        return arch.model(
-                new C4Model(people, Set.of(), Set.of(), Set.of(), Set.of()
-                )
-        ).build();
-    }
-
-    private ArchitectureDataStructure getArch(ArchitectureDataStructure.ArchitectureDataStructureBuilder arch,
-                                              Set<C4Person> people,
-                                              Set<C4SoftwareSystem> systems,
-                                              Set<C4Container> containers,
-                                              Set<C4Component> components,
-                                              Set<C4DeploymentNode> deploymentNodes) {
-        return arch.model(
-                new C4Model(people, systems, containers, components, deploymentNodes)
-        ).build();
     }
 }

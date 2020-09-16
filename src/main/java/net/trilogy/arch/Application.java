@@ -15,12 +15,7 @@ import net.trilogy.arch.commands.ListComponentsCommand;
 import net.trilogy.arch.commands.ParentCommand;
 import net.trilogy.arch.commands.PublishCommand;
 import net.trilogy.arch.commands.ValidateCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuAnnotateCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuInitializeCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuNewCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuPublishStoriesCommand;
-import net.trilogy.arch.commands.architectureUpdate.AuValidateCommand;
+import net.trilogy.arch.commands.architectureUpdate.*;
 import net.trilogy.arch.config.AppConfig;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine;
@@ -73,6 +68,7 @@ public class Application {
                                 .addSubcommand(new AuValidateCommand(filesFacade, gitInterface))
                                 .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
                                 .addSubcommand(new AuAnnotateCommand(filesFacade))
+                                .addSubcommand(new AuFinalizeAndPublishCommand(jiraApiFactory, filesFacade, gitInterface))
                 );
     }
 

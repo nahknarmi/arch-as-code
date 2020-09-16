@@ -1,7 +1,5 @@
 package net.trilogy.arch.e2e.architectureUpdate;
 
-import net.trilogy.arch.TestHelper;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
@@ -12,10 +10,16 @@ import org.junit.rules.ErrorCollector;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.lang.System.setErr;
+import static java.lang.System.setOut;
+import static java.nio.file.Files.delete;
+import static java.nio.file.Files.move;
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_VALIDATION_E2E;
 import static net.trilogy.arch.TestHelper.execute;
+import static org.apache.commons.io.FileUtils.copyDirectory;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -23,10 +27,12 @@ import static org.hamcrest.Matchers.not;
 public class AuValidateCommandTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
+
     private File rootDir;
     private Path auDir;
     private Git git;
@@ -35,14 +41,14 @@ public class AuValidateCommandTest {
     public void setUp() throws Exception {
         out.reset();
         err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-        var buildDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_VALIDATION_E2E).getPath());
+        setOut(new PrintStream(out));
+        setErr(new PrintStream(err));
+        var buildDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_AU_VALIDATION_E2E).getPath());
 
         rootDir = buildDir.toPath().resolve("git").toFile();
         auDir = rootDir.toPath().resolve("architecture-updates/");
 
-        FileUtils.copyDirectory(buildDir, rootDir);
+        copyDirectory(buildDir, rootDir);
         git = Git.init().setDirectory(rootDir).call();
 
         setUpRealisticGitRepository();
@@ -50,16 +56,15 @@ public class AuValidateCommandTest {
 
     @After
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(rootDir);
-        System.setOut(originalOut);
-        System.setErr(originalErr);
+        deleteDirectory(rootDir);
+        setOut(originalOut);
+        setErr(originalErr);
     }
 
     private void setUpRealisticGitRepository() throws Exception {
-        Files.move(
+        move(
                 rootDir.toPath().resolve("master-branch-product-architecture.yml"),
-                rootDir.toPath().resolve("product-architecture.yml")
-        );
+                rootDir.toPath().resolve("product-architecture.yml"));
         git.add().addFilepattern("product-architecture.yml").call();
         git.commit().setMessage("add architecture to master").call();
 
@@ -67,11 +72,10 @@ public class AuValidateCommandTest {
         git.commit().setMessage("add AU yamls").call();
 
         git.checkout().setCreateBranch(true).setName("au").call();
-        Files.delete(rootDir.toPath().resolve("product-architecture.yml"));
-        Files.move(
+        delete(rootDir.toPath().resolve("product-architecture.yml"));
+        move(
                 rootDir.toPath().resolve("au-branch-product-architecture.yml"),
-                rootDir.toPath().resolve("product-architecture.yml")
-        );
+                rootDir.toPath().resolve("product-architecture.yml"));
         git.add().addFilepattern("product-architecture.yml").call();
         git.commit().setMessage("change architecture in au").call();
     }
@@ -80,7 +84,7 @@ public class AuValidateCommandTest {
     public void shouldBeFullyValid() {
         var auPath = auDir.resolve("blank/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
@@ -89,9 +93,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeFullyValidWithTddContent() {
-        var auPath = auDir.resolve("tdd-content-valid/").toString();
+        final var auPath = auDir.resolve("tdd-content-valid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
@@ -100,9 +104,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeTDDValid() {
-        var auPath = auDir.resolve("invalid-capabilities/").toString();
+        final var auPath = auDir.resolve("invalid-capabilities/").toString();
 
-        Integer status = execute("architecture-update", "validate", "-b", "master", "-t", auPath, rootDir.getAbsolutePath());
+        final var status = execute("architecture-update", "validate", "-b", "master", "-t", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
@@ -111,9 +115,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeStoryValid() {
-        var auPath = auDir.resolve("invalid-tdds/").toString();
+        final var auPath = auDir.resolve("invalid-tdds/").toString();
 
-        Integer status = execute("architecture-update", "validate", "-b", "master", "-s", auPath, rootDir.getAbsolutePath());
+        final var status = execute("architecture-update", "validate", "-b", "master", "-s", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
         collector.checkThat(out.toString(), containsString("Success, no errors found."));
@@ -122,9 +126,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldPresentErrorsNicely() {
-        var auPath = auDir.resolve("both-invalid/").toString();
+        final var auPath = auDir.resolve("both-invalid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
@@ -139,16 +143,14 @@ public class AuValidateCommandTest {
                         "    Story \"[SAMPLE FEATURE STORY TITLE]\" must have at least one TDD reference.\n" +
                         "Missing Capability:\n" +
                         "    TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story.\n" +
-                        ""
-                )
-        );
+                        ""));
     }
 
     @Test
     public void shouldBeFullyInvalid() {
-        var auPath = auDir.resolve("both-invalid/").toString();
+        final var auPath = auDir.resolve("both-invalid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
@@ -162,9 +164,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeTddContentInvalid() {
-        var auPath = auDir.resolve("tdd-content-invalid/").toString();
+        final var auPath = auDir.resolve("tdd-content-invalid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
@@ -174,9 +176,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeTddInvalid() {
-        var auPath = auDir.resolve("both-invalid/").toString();
+        final var auPath = auDir.resolve("both-invalid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", "--TDDs", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", "--TDDs", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
@@ -190,9 +192,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeStoryInvalid() {
-        var auPath = auDir.resolve("both-invalid/").toString();
+        final var auPath = auDir.resolve("both-invalid/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", "--stories", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", "--stories", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
@@ -206,9 +208,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldFindErrorsAcrossGitBranches() {
-        var auPath = auDir.resolve("invalid-deleted-component/").toString();
+        final var auPath = auDir.resolve("invalid-deleted-component/").toString();
 
-        Integer status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(err.toString(), containsString("Deleted component id \"deleted-component-invalid\" is invalid. (Checked architecture in \"master\" branch.)"));
@@ -216,9 +218,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldHandleIfGitReaderFails() {
-        var auPath = auDir.resolve("architecture-updates/blank/").toString();
+        final var auPath = auDir.resolve("architecture-updates/blank/").toString();
 
-        Integer status = execute("architecture-update", "validate", "-b", "invalid", auPath, rootDir.getAbsolutePath());
+        final var status = execute("architecture-update", "validate", "-b", "invalid", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(err.toString(), containsString("Unable to load 'invalid' branch architecture\nError: net.trilogy.arch.adapter.git.GitInterface$BranchNotFoundException"));
@@ -226,9 +228,9 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldHandleIfUnableToLoadArchitecture() {
-        var auPath = auDir.resolve("architecture-updates/blank/").toString();
+        final var auPath = auDir.resolve("architecture-updates/blank/").toString();
 
-        Integer status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath() + "invalid");
+        final var status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath() + "invalid");
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(err.toString(), containsString("Error: java.nio.file.NoSuchFileException"));
@@ -236,38 +238,36 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldFindAUStructureErrors() {
-        var auPath = auDir.resolve("invalid-structure/").toString();
+        final var auPath = auDir.resolve("invalid-structure/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
 
         collector.checkThat(
                 err.toString(),
-                containsString("Unable to load architecture update file\nError: com.fasterxml")
-        );
+                containsString("Duplicate field '[SAMPLE-TDD-ID]'"));
     }
 
     @Test
     public void shouldFindAUSchemaErrors() {
-        var auPath = auDir.resolve("invalid-schema/").toString();
+        final var auPath = auDir.resolve("invalid-schema/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(
                 err.toString(),
-                containsString("Unrecognized field \"notext\"")
-        );
+                containsString("Unrecognized field \"notext\""));
     }
 
     @Test
     public void shouldPassAUSchemaValidation() {
-        var auPath = auDir.resolve("valid-schema/").toString();
+        final var auPath = auDir.resolve("valid-schema/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(err.toString(), equalTo(""));
         collector.checkThat(status, equalTo(0));
@@ -275,15 +275,14 @@ public class AuValidateCommandTest {
 
     @Test
     public void shouldBeInValidForNoPR() {
-        var auPath = auDir.resolve("noPR/").toString();
+        final var auPath = auDir.resolve("noPR/").toString();
 
-        Integer status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
+        final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(
                 err.toString(),
-                containsString("No-Pr is combined with another TDD")
-        );
+                containsString("No-Pr is combined with another TDD"));
     }
 }

@@ -3,7 +3,6 @@ package net.trilogy.arch.publish;
 import com.structurizr.Workspace;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
-import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,16 +20,15 @@ public class ArchitectureDataStructurePublisherTest {
     @Test
     public void shouldLoadProductArchitecture() throws Exception {
         // Given
-        File productArchitectureDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_GENERALLY).getPath());
-        ArchitectureDataStructurePublisher publisher = new ArchitectureDataStructurePublisher(
+        final var productArchitectureDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_GENERALLY).getPath());
+        final var publisher = new ArchitectureDataStructurePublisher(
                 new StructurizrAdapter(),
                 new FilesFacade(),
                 productArchitectureDir,
-                "product-architecture.yml"
-        );
+                "product-architecture.yml");
 
         // When
-        ArchitectureDataStructure dataStructure = publisher.loadProductArchitecture(productArchitectureDir, "product-architecture.yml");
+        final var dataStructure = publisher.loadProductArchitecture(productArchitectureDir, "product-architecture.yml");
 
         // Then
         assertThat(dataStructure.getName(), equalTo("TestSpaces"));
@@ -39,18 +37,18 @@ public class ArchitectureDataStructurePublisherTest {
     @Test
     public void shouldPublishWorkspace() throws Exception {
         // Given
-        StructurizrAdapter mockedStructurizrAdapter = mock(StructurizrAdapter.class);
-        ArgumentCaptor<Workspace> workspaceArgumentCaptor = ArgumentCaptor.forClass(Workspace.class);
+        final var mockedStructurizrAdapter = mock(StructurizrAdapter.class);
+        final var workspaceArgumentCaptor = ArgumentCaptor.forClass(Workspace.class);
 
-        File productArchitectureDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_GENERALLY).getPath());
-        String manifestFileName = "product-architecture.yml";
-        ArchitectureDataStructurePublisher publisher = new ArchitectureDataStructurePublisher(
+        final var productArchitectureDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_GENERALLY).getPath());
+        final var manifestFileName = "product-architecture.yml";
+        final var publisher = new ArchitectureDataStructurePublisher(
                 mockedStructurizrAdapter,
                 new FilesFacade(),
                 productArchitectureDir,
                 manifestFileName);
 
-        Workspace expectedWorkspace = publisher.getWorkspace(productArchitectureDir, manifestFileName);
+        final var expectedWorkspace = publisher.getWorkspace(productArchitectureDir, manifestFileName);
 
         when(mockedStructurizrAdapter.publish(any(Workspace.class))).thenReturn(true);
 
@@ -59,7 +57,7 @@ public class ArchitectureDataStructurePublisherTest {
 
         // Then
         verify(mockedStructurizrAdapter).publish(workspaceArgumentCaptor.capture());
-        Workspace actualWorkspace = workspaceArgumentCaptor.getValue();
+        final var actualWorkspace = workspaceArgumentCaptor.getValue();
 
         assertThat(actualWorkspace.getName(), equalTo(expectedWorkspace.getName()));
         assertThat(actualWorkspace.getId(), equalTo(expectedWorkspace.getId()));

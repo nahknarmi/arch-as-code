@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * @todo Utility class with static methods -- resolve static mock testing
+ */
 public class FilesFacade {
     public Path writeString(Path path, String toWrite) throws IOException {
         return Files.writeString(path, toWrite);

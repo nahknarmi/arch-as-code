@@ -1,6 +1,7 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.facade.FilesFacade;
@@ -29,9 +30,11 @@ import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants
 import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_LINK_PREFIX;
 
 @Command(name = "initialize", aliases = "init", mixinStandardHelpOptions = true, description = "Initialize the architecture updates work space within a single product's existing workspace. Sets up Google API credentials to import P1 documents.")
+@RequiredArgsConstructor
 public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMixin, DisplaysErrorMixin {
     private final FilesFacade filesFacade;
 
+    // TODO: Do not make these flags required -- read from client_secret.json if present
     @Option(names = {"-c", "--client-id"}, description = "Google API client id", required = true)
     private String googleApiClientId;
 
@@ -47,10 +50,6 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     @Getter
     @Spec
     private CommandLine.Model.CommandSpec spec;
-
-    public AuInitializeCommand(FilesFacade filesFacade) {
-        this.filesFacade = filesFacade;
-    }
 
     @Override
     public Integer call() {

@@ -30,13 +30,14 @@ public class C4Person extends Entity implements HasLocation {
         this.location = location;
     }
 
+    @Override
     public C4Type getType() {
         return C4Type.PERSON;
     }
 
     @Override
     public C4Person shallowCopy() {
-        return this.toBuilder().build();
+        return toBuilder().build();
     }
 
     public static class C4PersonBuilder {

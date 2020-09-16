@@ -55,7 +55,7 @@ public abstract class Credentials {
     static Optional<FileInputStream> credentialsAsStream() {
         return Try.of(() -> new FileInputStream(new File(CREDENTIALS_FILE_PATH)))
                 .map(Optional::of)
-                .getOrElse(Optional.empty());
+                .getOrElse(empty());
     }
 
     static Optional<Long> workspaceId() {

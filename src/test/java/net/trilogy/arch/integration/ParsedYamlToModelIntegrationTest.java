@@ -49,8 +49,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces API/Sign In Controller"));
 
-        assertEquals(person.getDescription(), "Developer building software");
-        assertEquals(person.getLocation(), Location.Internal);
+        assertEquals("Developer building software", person.getDescription());
+        assertEquals(Location.Internal, person.getLocation());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(relationshipNames.contains("DevSpaces"));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces Web Application"));
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
-        assertEquals(person.getDescription(), "SaasOps operating system");
+        assertEquals("SaasOps operating system", person.getDescription());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(relationshipNames.contains("GitHub"));
         assertTrue(relationshipNames.contains("XO Chat"));
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
-        assertEquals(person.getDescription(), "Product Chief Architect");
+        assertEquals("Product Chief Architect", person.getDescription());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
 
-        assertEquals(system.getDescription(), "Realtime team communication");
+        assertEquals("Realtime team communication", system.getDescription());
     }
 
     @Test
@@ -122,8 +122,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(1));
         assertThat(system.getContainers(), hasSize(0));
 
-        assertEquals(system.getDescription(), "Book keeping");
-        assertEquals(system.getLocation(), Location.External);
+        assertEquals("Book keeping", system.getDescription());
+        assertEquals(Location.External, system.getLocation());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertThat(system.getContainers(), hasSize(0));
 
-        assertEquals(system.getDescription(), "Team collaboration via sheets, docs and presentations");
+        assertEquals("Team collaboration via sheets, docs and presentations", system.getDescription());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
 
-        assertEquals(system.getDescription(), "Hosts code and used for identity management");
+        assertEquals("Hosts code and used for identity management", system.getDescription());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(containerNames.contains("DevSpaces/DevSpaces Backend"));
         assertTrue(containerNames.contains("DevSpaces/DevSpaces Web Application"));
 
-        assertEquals(system.getDescription(), "allows developers to collaborate");
+        assertEquals("allows developers to collaborate", system.getDescription());
     }
 
     @Test
@@ -206,8 +206,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces API"));
 
-        assertEquals(container.getDescription(), "Restful API providing capabilities for interacting with a DevSpace");
-        assertEquals(container.getTechnology(), "Spring Boot");
+        assertEquals("Restful API providing capabilities for interacting with a DevSpace", container.getDescription());
+        assertEquals("Spring Boot", container.getTechnology());
     }
 
     @Test
@@ -228,8 +228,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces Backend"));
 
-        assertEquals(container.getDescription(), "Manage dev spaces");
-        assertEquals(container.getTechnology(), "Angular");
+        assertEquals("Manage dev spaces", container.getDescription());
+        assertEquals("Angular", container.getTechnology());
     }
 
     @Test
@@ -256,8 +256,8 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(componentNames.contains("DevSpaces/DevSpaces API/Reset Password Controller"));
         assertTrue(componentNames.contains("DevSpaces/DevSpaces API/E-mail Component"));
 
-        assertEquals(container.getDescription(), "API to programmatically create/manage dev spaces");
-        assertEquals(container.getTechnology(), "Spring Boot");
+        assertEquals("API to programmatically create/manage dev spaces", container.getDescription());
+        assertEquals("Spring Boot", container.getTechnology());
     }
 
     @Test
@@ -280,8 +280,8 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 
-        assertEquals(component.getDescription(), "Allows users to sign in");
-        assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
+        assertEquals("Allows users to sign in", component.getDescription());
+        assertEquals("Spring MVC Rest Controller", component.getTechnology());
     }
 
     @Test
@@ -304,8 +304,8 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 
-        assertEquals(component.getDescription(), "Provides functionality related to signing in, changing passwords, permissions, etc.");
-        assertEquals(component.getTechnology(), "Spring Bean");
+        assertEquals("Provides functionality related to signing in, changing passwords, permissions, etc.", component.getDescription());
+        assertEquals("Spring Bean", component.getTechnology());
     }
 
     @Test
@@ -329,8 +329,8 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 
-        assertEquals(component.getDescription(), "Allows users to reset their passwords");
-        assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
+        assertEquals("Allows users to reset their passwords", component.getDescription());
+        assertEquals("Spring MVC Rest Controller", component.getTechnology());
     }
 
     @Test
@@ -351,8 +351,8 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertTrue(tagSet.contains("DevSpaces API Component View"));
 
-        assertEquals(component.getDescription(), "Sends emails to users");
-        assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
+        assertEquals("Sends emails to users", component.getDescription());
+        assertEquals("Spring MVC Rest Controller", component.getTechnology());
     }
 
     @SuppressWarnings("deprecation")
@@ -360,7 +360,7 @@ public class ParsedYamlToModelIntegrationTest {
         File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "product-architecture.yml");
 
-        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader(new FilesFacade()).load(manifestFile);
+        ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader(new FilesFacade()).loadArchitectureDataStructure(manifestFile);
         ArchitectureDataStructureTransformer transformer = TransformerFactory.create(documentationRoot);
         return transformer.toWorkSpace(dataStructure);
     }

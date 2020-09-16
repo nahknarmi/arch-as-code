@@ -4,33 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import org.junit.Test;
 
+import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.blank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ArchitectureUpdateObjectMapperTest {
-
-    @Test
-    public void shouldWriteBlank() throws Exception {
-        String actual = new ArchitectureUpdateObjectMapper().writeValueAsString(ArchitectureUpdate.blank());
-        String expected = getBlankYamlText();
-        assertThat(actual.trim(), equalTo(expected.trim()));
-    }
-
-    @Test
-    public void shouldReadBlank() throws JsonProcessingException {
-        ArchitectureUpdate actual = new ArchitectureUpdateObjectMapper().readValue(getBlankYamlText());
-
-        assertThat(actual, equalTo(ArchitectureUpdate.blank()));
-    }
-
-    @Test
-    public void shouldWriteBlankYamlWithOverriddenName() throws Exception {
-        String actual = new ArchitectureUpdateObjectMapper().writeValueAsString(ArchitectureUpdate.builderPreFilledWithBlanks().name("OVERRIDDEN").build());
-        String expected = getBlankYamlText().replace("'[SAMPLE NAME]'", "OVERRIDDEN");
-        assertThat(actual.trim(), equalTo(expected.trim()));
-    }
-
-    private String getBlankYamlText() {
+    private static String getBlankYamlText() {
         return String.join("\n"
                 , ""
                 , "name: '[SAMPLE NAME]'"
@@ -96,5 +76,31 @@ public class ArchitectureUpdateObjectMapperTest {
                 , "    functional-requirement-references:"
                 , "    - '[SAMPLE-REQUIREMENT-ID]'"
         );
+    }
+
+    @Test
+    public void shouldWriteBlank() throws Exception {
+        final var actual = YAML_OBJECT_MAPPER.writeValueAsString(blank());
+        final var expected = getBlankYamlText();
+
+        assertThat(actual.trim(), equalTo(expected.trim()));
+    }
+
+    @Test
+    public void shouldReadBlank() throws JsonProcessingException {
+        final var actual = YAML_OBJECT_MAPPER.readValue(getBlankYamlText(), ArchitectureUpdate.class);
+
+        assertThat(actual, equalTo(blank()));
+    }
+
+    @Test
+    public void shouldWriteBlankYamlWithOverriddenName() throws Exception {
+        final var actual = YAML_OBJECT_MAPPER.writeValueAsString(
+                ArchitectureUpdate.prefilledWithBlanks()
+                        .name("OVERRIDDEN")
+                        .build());
+        final var expected = getBlankYamlText().replace("'[SAMPLE NAME]'", "OVERRIDDEN");
+
+        assertThat(actual.trim(), equalTo(expected.trim()));
     }
 }

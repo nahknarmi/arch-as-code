@@ -33,6 +33,6 @@ public class C4Relationship implements Comparable<C4Relationship> {
 
     @Override
     public int compareTo(C4Relationship other) {
-        return this.getId().compareTo(other.getId());
+        return getId().compareTo(other.getId());
     }
 }

@@ -3,6 +3,7 @@ package net.trilogy.arch.transformation.enhancer;
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Image;
 import com.structurizr.documentation.Section;
+import net.trilogy.arch.Util;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.After;
@@ -15,8 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,15 +38,8 @@ public class DocumentationEnhancerTest {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-    private static <T> T first(final Collection<T> first) {
-        final Iterator<T> it = first.iterator();
-        if (!it.hasNext())
-            throw new IllegalStateException("No first element");
-        return it.next();
-    }
-
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         out.reset();
         err.reset();
         System.setOut(new PrintStream(out));
@@ -55,7 +47,7 @@ public class DocumentationEnhancerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         System.setOut(originalOut);
         System.setErr(originalErr);
     }
@@ -129,7 +121,7 @@ public class DocumentationEnhancerTest {
         // Then
         final Set<Image> images = workspace.getDocumentation().getImages();
         collector.checkThat(images.size(), equalTo(1));
-        final Image image = first(images);
+        final Image image = Util.first(images);
         collector.checkThat(image.getName(), equalTo("devfactory.png"));
     }
 }

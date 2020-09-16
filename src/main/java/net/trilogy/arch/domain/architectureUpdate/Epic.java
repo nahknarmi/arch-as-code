@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Epic {
     public static final String BLANK_AU_EPIC_TITLE_VALUE = "Please enter epic title from Jira";
     public static final String BLANK_AU_EPIC_JIRA_LINK_VALUE = "Please enter epic link from Jira";
@@ -24,8 +26,7 @@ public class Epic {
     @JsonCreator(mode = PROPERTIES)
     public Epic(
             @JsonProperty("title") String title,
-            @JsonProperty("jira") Jira jira
-    ) {
+            @JsonProperty("jira") Jira jira) {
         this.title = title;
         this.jira = jira;
     }

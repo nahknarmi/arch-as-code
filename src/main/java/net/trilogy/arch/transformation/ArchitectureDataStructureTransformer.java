@@ -25,7 +25,7 @@ public class ArchitectureDataStructureTransformer {
         Workspace workspace = new Workspace(dataStructure.getName(), dataStructure.getDescription());
         workspace.setId(Credentials.config().getWorkspaceId());
 
-        this.enhancers.forEach(e -> e.enhance(workspace, dataStructure));
+        enhancers.forEach(e -> e.enhance(workspace, dataStructure));
 
         structurizrViewsMapper.loadAndSetViews(workspace);
         return workspace;

@@ -32,23 +32,132 @@ import net.trilogy.arch.domain.c4.C4Tag;
 import net.trilogy.arch.transformation.DeploymentNodeTransformer;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.structurizr.documentation.DecisionStatus.Proposed;
+import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static net.trilogy.arch.domain.DocumentationSection.Format.ASCIIDOC;
+import static net.trilogy.arch.domain.DocumentationSection.Format.MARKDOWN;
 import static net.trilogy.arch.domain.c4.C4Action.DELIVERS;
 import static net.trilogy.arch.domain.c4.C4Action.INTERACTS_WITH;
 import static net.trilogy.arch.domain.c4.C4Action.USES;
 import static net.trilogy.arch.domain.c4.C4Path.buildPath;
 
 public class WorkspaceReader {
+    public static ViewSet loadViews(File workspaceFile) throws Exception {
+        Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
+        return workspace.getViews();
+    }
 
-    public ArchitectureDataStructure load(File workspaceFile) throws Exception {
+    private static List<C4DeploymentNode> deploymentNodes(Model model) {
+        return model
+                .getDeploymentNodes()
+                .stream()
+                .map(DeploymentNodeTransformer::toC4)
+                .collect(toList());
+    }
+
+    private static ArchitectureDataStructure build(Workspace workspace) {
+        ArchitectureDataStructure result = new ArchitectureDataStructure();
+        result.setName(workspace.getName());
+
+        Enterprise enterprise = workspace.getModel().getEnterprise();
+        if (enterprise != null) {
+            result.setBusinessUnit(enterprise.getName());
+        }
+
+        String description = workspace.getDescription();
+        if (description == null) {
+            description = "";
+        }
+        result.setDescription(description);
+
+        return result;
+    }
+
+    private static C4Location convertLocation(Location location) {
+        return C4Location.valueOf(location.name().toUpperCase());
+    }
+
+    private static Set<C4Tag> convertTags(String tags) {
+        return stream(tags.split(",")).map(C4Tag::new).collect(toSet());
+    }
+
+    private static List<String> getSrcMappings(Component co) {
+        try {
+            return List.of(new ObjectMapper().readValue(
+                    co.getProperties().get("Source Code Mappings"),
+                    String[].class));
+        } catch (Exception ignored) {
+        }
+        return List.of();
+    }
+
+    private static List<C4Relationship> mapRelationships(Model model, Element fromElement, Set<Relationship> relationships) {
+        return relationships
+                .stream()
+                .map(r -> {
+                    String destinationId = r.getDestination().getId();
+                    Element element = model.getElement(destinationId);
+                    C4Action action = convertAction(fromElement, element);
+                    return new C4Relationship(r.getId(), null, action, null, destinationId, r.getDescription(), r.getTechnology());
+                })
+                .collect(toList());
+    }
+
+    private static C4Action convertAction(Element source, Element destination) {
+        if (source instanceof Person && destination instanceof Person) {
+            return INTERACTS_WITH;
+        } else if (destination instanceof Person) {
+            return DELIVERS;
+        } else {
+            return USES;
+        }
+    }
+
+    private static List<ImportantTechnicalDecision> decisions(Workspace workspace) {
+        Set<Decision> decisions = workspace.getDocumentation().getDecisions();
+        return decisions.stream().map(d -> ImportantTechnicalDecision.builder()
+                .content(d.getContent())
+                .date(d.getDate())
+                .id(d.getId())
+                .status(ofNullable(d.getStatus()).orElse(Proposed).toString())
+                .title(d.getTitle())
+                .build())
+                .collect(toList());
+    }
+
+    private static List<DocumentationSection> documentation(Workspace workspace) {
+        Set<Section> docs = workspace.getDocumentation().getSections();
+        return docs.stream().map(d -> new DocumentationSection(
+                d.getElementId(),
+                d.getTitle(),
+                d.getOrder(),
+                getFormat(d),
+                d.getContent()))
+                .collect(toList());
+    }
+
+    private static DocumentationSection.Format getFormat(Section d) {
+        return d.getFormat().toString().equals("Markdown")
+                ? MARKDOWN
+                : ASCIIDOC;
+    }
+
+    private static List<DocumentationImage> documentationImages(Workspace workspace) {
+        Set<Image> images = workspace.getDocumentation().getImages();
+        return images.stream().map(i -> new DocumentationImage(
+                i.getName(),
+                i.getType(),
+                i.getContent()))
+                .collect(toList());
+    }
+
+    public static ArchitectureDataStructure loadWorkspace(File workspaceFile) throws Exception {
         Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
         ArchitectureDataStructure architectureDataStructure = build(workspace);
         Model model = workspace.getModel();
@@ -56,8 +165,8 @@ public class WorkspaceReader {
         C4Model c4Model = new C4Model();
         people(model).forEach(c4Model::addPerson);
         softwareSystems(model).forEach(c4Model::addSoftwareSystem);
-        containers(model, c4Model).forEach(c4Model::addContainer);
-        components(model, c4Model).forEach(c4Model::addComponent);
+        containers(model).forEach(c4Model::addContainer);
+        components(model).forEach(c4Model::addComponent);
         deploymentNodes(model).forEach(c4Model::addDeploymentNode);
         architectureDataStructure.setModel(c4Model);
 
@@ -73,20 +182,7 @@ public class WorkspaceReader {
         return architectureDataStructure;
     }
 
-    public ViewSet loadViews(File workspaceFile) throws Exception {
-        Workspace workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
-        return workspace.getViews();
-    }
-
-    private List<C4DeploymentNode> deploymentNodes(Model model) {
-        return model
-                .getDeploymentNodes()
-                .stream()
-                .map(DeploymentNodeTransformer::toC4)
-                .collect(Collectors.toList());
-    }
-
-    private Set<C4Component> components(Model model, C4Model c4Model) {
+    private static Set<C4Component> components(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -112,14 +208,11 @@ public class WorkspaceReader {
                                             .relationships(relationships)
                                             .url(co.getUrl())
                                             .build();
-                                })
-
-                        )
-
-                ).collect(toSet());
+                                })))
+                .collect(toSet());
     }
 
-    private Set<C4Container> containers(Model model, C4Model c4Model) {
+    private static Set<C4Container> containers(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -143,7 +236,7 @@ public class WorkspaceReader {
                 .collect(toSet());
     }
 
-    private Set<C4SoftwareSystem> softwareSystems(Model model) {
+    private static Set<C4SoftwareSystem> softwareSystems(Model model) {
         return model
                 .getSoftwareSystems()
                 .stream()
@@ -165,7 +258,7 @@ public class WorkspaceReader {
                 .collect(toSet());
     }
 
-    private Set<C4Person> people(Model model) {
+    private static Set<C4Person> people(Model model) {
         return model
                 .getPeople()
                 .stream()
@@ -185,105 +278,5 @@ public class WorkspaceReader {
                             .build();
                 })
                 .collect(toSet());
-    }
-
-    private ArchitectureDataStructure build(Workspace workspace) {
-        ArchitectureDataStructure result = new ArchitectureDataStructure();
-        result.setName(workspace.getName());
-
-        Enterprise enterprise = workspace.getModel().getEnterprise();
-        if (enterprise != null) {
-            result.setBusinessUnit(enterprise.getName());
-        }
-
-        String description = workspace.getDescription();
-        if (description == null) {
-            description = "";
-        }
-        result.setDescription(description);
-
-        return result;
-    }
-
-    private C4Location convertLocation(Location location) {
-        return C4Location.valueOf(location.name().toUpperCase());
-    }
-
-    private Set<C4Tag> convertTags(String tags) {
-        return Arrays.stream(tags.split(",")).map(C4Tag::new).collect(toSet());
-    }
-
-    private List<String> getSrcMappings(Component co) {
-        try {
-            return List.of(new ObjectMapper().readValue(
-                    co.getProperties().get("Source Code Mappings"),
-                    String[].class
-            ));
-        } catch (Exception ignored) {
-        }
-        return List.of();
-    }
-
-    private List<C4Relationship> mapRelationships(Model model, Element fromElement, Set<Relationship> relationships) {
-        return relationships
-                .stream()
-                .map(r -> {
-                    String destinationId = r.getDestination().getId();
-                    Element element = model.getElement(destinationId);
-                    C4Action action = convertAction(fromElement, element);
-                    return new C4Relationship(r.getId(), null, action, null, destinationId, r.getDescription(), r.getTechnology());
-                }).collect(toList());
-    }
-
-    private C4Action convertAction(Element source, Element destination) {
-        C4Action action;
-        if (source instanceof Person && destination instanceof Person) {
-            action = INTERACTS_WITH;
-        } else if (destination instanceof Person) {
-            action = DELIVERS;
-        } else {
-            action = USES;
-        }
-        return action;
-    }
-
-    private List<ImportantTechnicalDecision> decisions(Workspace workspace) {
-        Set<Decision> decisions = workspace.getDocumentation().getDecisions();
-        return decisions.stream().map(d -> ImportantTechnicalDecision.builder()
-                .content(d.getContent())
-                .date(d.getDate())
-                .id(d.getId())
-                .status(ofNullable(d.getStatus()).orElse(Proposed).toString())
-                .title(d.getTitle())
-                .build())
-                .collect(toList());
-    }
-
-    private List<DocumentationSection> documentation(Workspace workspace) {
-        Set<Section> docs = workspace.getDocumentation().getSections();
-        return docs.stream().map(d -> new DocumentationSection(
-                d.getElementId(),
-                d.getTitle(),
-                d.getOrder(),
-                getFormat(d),
-                d.getContent())
-        ).collect(toList());
-    }
-
-    private DocumentationSection.Format getFormat(Section d) {
-        DocumentationSection.Format format;
-        if (d.getFormat().toString().equals("Markdown"))
-            format = DocumentationSection.Format.MARKDOWN;
-        else format = DocumentationSection.Format.ASCIIDOC;
-        return format;
-    }
-
-    private List<DocumentationImage> documentationImages(Workspace workspace) {
-        Set<Image> images = workspace.getDocumentation().getImages();
-        return images.stream().map(i -> new DocumentationImage(
-                i.getName(),
-                i.getType(),
-                i.getContent())
-        ).collect(toList());
     }
 }

@@ -17,8 +17,8 @@ public class DiffableRelationship extends DiffableWithRelatedTdds implements Dif
     private final C4Relationship relationship;
 
     public DiffableRelationship(Entity entity, C4Relationship c4Relationship) {
-        this.sourceId = entity.getId();
-        this.relationship = c4Relationship;
+        sourceId = entity.getId();
+        relationship = c4Relationship;
     }
 
     public DiffableRelationship(ArchitectureDataStructure arch, C4Relationship c4Relationship) {
@@ -32,8 +32,8 @@ public class DiffableRelationship extends DiffableWithRelatedTdds implements Dif
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("No matching entity for relationship: " + c4Relationship.toString()));
 
-        this.sourceId = source.getId();
-        this.relationship = c4Relationship;
+        sourceId = source.getId();
+        relationship = c4Relationship;
     }
 
     public String getDestinationId() {
@@ -42,12 +42,12 @@ public class DiffableRelationship extends DiffableWithRelatedTdds implements Dif
 
     @Override
     public String getId() {
-        return this.relationship.getId();
+        return relationship.getId();
     }
 
     @Override
     public String getName() {
-        return this.relationship.getDescription();
+        return relationship.getDescription();
     }
 
     @Override

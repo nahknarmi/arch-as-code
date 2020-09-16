@@ -1,6 +1,5 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
-import com.google.common.io.Files;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,8 +7,9 @@ import net.trilogy.arch.facade.FilesFacade;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.google.common.io.Files.getFileExtension;
 
 @Getter
 @ToString
@@ -17,12 +17,13 @@ import java.util.regex.Pattern;
 public class TddContent {
     public static final int TDD_MATCHER_GROUP = 1;
     public static final int COMPONENT_ID_MATCHER_GROUP = 2;
+
     private static final String REGEX = "(.*) : Component-([a-zA-Z\\d]+)";
     private static final Pattern pattern = Pattern.compile(REGEX);
+
     private final String content;
+    // TODO: Why isn't this a JDK Path object?
     private final String filename;
-    @EqualsAndHashCode.Exclude
-    private Matcher matcher;
 
     public TddContent(String content, String filename) {
         this.content = content;
@@ -33,7 +34,8 @@ public class TddContent {
         if (file == null) return false;
         if (file.isDirectory()) return false;
 
-        String fileExtension = Files.getFileExtension(file.getName());
+        // TODO: Guava marks this method as @Beta
+        final var fileExtension = getFileExtension(file.getName());
 
         // Supported content types
         return fileExtension.equals("md") || fileExtension.equals("txt");
@@ -46,36 +48,26 @@ public class TddContent {
         return pattern.matcher(file.getName()).find();
     }
 
-    public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
+    public static TddContent fromFile(File file, FilesFacade filesFacade) {
         if (file == null) return null;
 
-        String content;
-        String filename;
-
         try {
-            content = filesFacade.readString(file.toPath());
-            filename = file.getName();
+            final var content = filesFacade.readString(file.toPath());
+            final var filename = file.getName();
+            return new TddContent(content, filename);
         } catch (IOException e) {
+            // TODO: Give warning the filename is somehow invalid
             return null;
         }
-
-        return new TddContent(content, filename);
     }
 
     public String getTdd() {
-        return matcher().group(TDD_MATCHER_GROUP);
+        final var matcher = pattern.matcher(filename);
+        return matcher.find() ? matcher.group(TDD_MATCHER_GROUP) : null;
     }
 
     public String getComponentId() {
-        return matcher().group(COMPONENT_ID_MATCHER_GROUP);
-    }
-
-    private Matcher matcher() {
-        if (matcher == null) {
-            matcher = pattern.matcher(filename);
-            matcher.find();
-        }
-
-        return this.matcher;
+        final var matcher = pattern.matcher(filename);
+        return matcher.find() ? matcher.group(COMPONENT_ID_MATCHER_GROUP) : null;
     }
 }

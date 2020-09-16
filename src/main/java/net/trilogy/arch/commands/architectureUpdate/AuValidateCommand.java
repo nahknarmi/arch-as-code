@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
-import net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
@@ -29,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import static net.trilogy.arch.Util.first;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 import static picocli.CommandLine.Parameters;
@@ -36,8 +37,6 @@ import static picocli.CommandLine.Spec;
 
 @Command(name = "validate", description = "Validate Architecture Update", mixinStandardHelpOptions = true)
 public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFromGitMixin, LoadArchitectureMixin, DisplaysErrorMixin, DisplaysOutputMixin {
-    @Getter
-    private final ArchitectureDataStructureObjectMapper architectureDataStructureObjectMapper;
     @Getter
     private final FilesFacade filesFacade;
     @Getter
@@ -49,20 +48,28 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
     boolean tddValidation;
     @Option(names = {"-s", "--stories"}, description = "Run validation for feature stories only")
     boolean capabilityValidation;
-    @Getter
-    @Spec
-    private CommandSpec spec;
     @Parameters(index = "0", description = "Directory name of architecture update to validate")
     private File architectureUpdateDirectory;
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
 
+    @Getter
+    @Spec
+    private CommandSpec spec;
+
     public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
-        this.architectureDataStructureObjectMapper = new ArchitectureDataStructureObjectMapper();
-        this.architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+        architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
+    }
+
+    public AuValidateCommand(FilesFacade filesFacade, GitInterface gitInterface, CommandSpec spec, File architectureUpdateDirectory, File productArchitectureDirectory, String baseBranch) {
+        this(filesFacade, gitInterface);
+        this.spec = spec;
+        this.architectureUpdateDirectory = architectureUpdateDirectory;
+        this.productArchitectureDirectory = productArchitectureDirectory;
+        this.baseBranch = baseBranch;
     }
 
     @Override
@@ -97,8 +104,8 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
 
     private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
-            if (validateAuSchema(auDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATE_FILE_NAME).toFile())) {
-                return Optional.of(architectureUpdateReader.load(auDirectory.toPath()));
+            if (validateAuSchema(auDirectory.toPath().resolve(ARCHITECTURE_UPDATE_YML).toFile())) {
+                return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auDirectory.toPath()));
             }
         } catch (final Exception e) {
             printError("Unable to load architecture update file", e);
@@ -119,7 +126,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return false;
     }
 
-    private String getPrettyStringOfErrors(final List<ValidationError> errors, final String baseBranchName) {
+    private static String getPrettyStringOfErrors(final List<ValidationError> errors, final String baseBranchName) {
         return getTypes(errors).stream()
                 .map(type -> getErrorsOfType(type, errors))
                 .map(it -> getPrettyStringOfErrorsInSingleType(it, baseBranchName))
@@ -127,42 +134,42 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
                 .trim();
     }
 
-    private List<ValidationError> getErrorsOfStages(final List<ValidationStage> stages, final ValidationResult validationResults) {
+    private static List<ValidationError> getErrorsOfStages(final List<ValidationStage> stages, final ValidationResult validationResults) {
         return stages.stream()
                 .map(validationResults::getErrors)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
-    private List<ValidationErrorType> getTypes(final List<ValidationError> errors) {
+    private static List<ValidationErrorType> getTypes(final List<ValidationError> errors) {
         return errors.stream()
                 .map(ValidationError::getValidationErrorType)
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private List<ValidationError> getErrorsOfType(final ValidationErrorType type, final List<ValidationError> allErrors) {
+    private static List<ValidationError> getErrorsOfType(final ValidationErrorType type, final List<ValidationError> allErrors) {
         return allErrors.stream()
                 .filter(error -> error.getValidationErrorType() == type)
                 .collect(Collectors.toList());
     }
 
-    private String getPrettyStringOfErrorsInSingleType(final List<ValidationError> errors, final String baseBranchName) {
-        return errors.get(0).getValidationErrorType() + ":" +
+    private static String getPrettyStringOfErrorsInSingleType(final List<ValidationError> errors, final String baseBranchName) {
+        return first(errors).getValidationErrorType() + ":" +
                 errors.stream()
                         .map(error -> toString(error, baseBranchName))
                         .collect(Collectors.joining()) +
                 "\n";
     }
 
-    private String toString(ValidationError error, String baseBranchName) {
+    private static String toString(ValidationError error, String baseBranchName) {
         var result = "\n    " + error.getDescription();
         if (error.getValidationErrorType() == ValidationErrorType.INVALID_DELETED_COMPONENT_REFERENCE)
             result += " (Checked architecture in \"" + baseBranchName + "\" branch.)";
         return result;
     }
 
-    private List<ValidationStage> determineValidationStages(final boolean tddValidation, final boolean capabilityValidation) {
+    private static List<ValidationStage> determineValidationStages(final boolean tddValidation, final boolean capabilityValidation) {
         if (tddValidation && capabilityValidation) {
             return List.of(ValidationStage.TDD, ValidationStage.STORY);
         }
