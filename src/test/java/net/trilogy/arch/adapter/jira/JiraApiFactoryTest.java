@@ -57,7 +57,7 @@ public class JiraApiFactoryTest {
         HttpClient client = factory.createClient();
         JiraApi jiraApi = factory.create(mockedFiles, rootDir);
 
-        collector.checkThat(jiraApi.getHttpClient(), is(client));
+        collector.checkThat(jiraApi.getClient(), is(client));
         collector.checkThat(jiraApi.getBaseUri(), equalTo(expectedBaseUri));
         collector.checkThat(jiraApi.getGetStoryEndpoint(), equalTo(expectedGetStoryEndpoint));
         collector.checkThat(jiraApi.getBulkCreateEndpoint(), equalTo(expectedBulkCreateEndpoint));

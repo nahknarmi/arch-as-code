@@ -23,7 +23,10 @@ import java.util.concurrent.ExecutionException;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static lombok.AccessLevel.PACKAGE;
 
+@Getter(PACKAGE)
+@VisibleForTesting
 public class JiraApi {
     private final HttpClient client;
     private final String baseUri;
@@ -37,94 +40,6 @@ public class JiraApi {
         this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
         this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
         this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
-    }
-
-    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, Object itemToInsert) {
-        final int sizeOfArray = arrayToInsertInto.length;
-        for (int i = 0; i < sizeOfArray; ++i) {
-            if (null == arrayToInsertInto[i]) {
-                arrayToInsertInto[i] = itemToInsert;
-                break;
-            }
-        }
-        // TODO: Funky algo -- what happens if we reach then end without inserting?
-    }
-
-    private static String extractErrorFromJiraCreateStoryResult(JSONObject jiraErrorObj) {
-        final var errorMessages = jiraErrorObj.getJSONObject("elementErrors")
-                .getJSONArray("errorMessages")
-                .toList().stream()
-                .map(it -> it + "\n")
-                .collect(joining());
-
-        final var mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
-                .getJSONObject("errors");
-
-        final var mappedErrorMessages = mappedErrorsAsJson.keySet().stream()
-                .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
-                .collect(joining());
-
-        return errorMessages + mappedErrorMessages;
-    }
-
-    private static String buildTddRow(JiraStory.JiraTdd tdd) {
-        if (tdd.hasTddContent()) {
-            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
-        } else {
-            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
-        }
-    }
-
-    private static String makeFunctionalRequirementRow(JiraStory.JiraFunctionalRequirement funcReq) {
-        return "| " + funcReq.getId() + " | "
-                + funcReq.getSource()
-                + " | {noformat}" + funcReq.getText() + "{noformat} |\n";
-    }
-
-    private static String getEncodeAuth(String username, char[] password) {
-        final var s = username + ":" + String.valueOf(password);
-
-        return Base64Converter.toString(s);
-    }
-
-    private static String makeDescription(JiraStory story) {
-        return makeFunctionalRequirementTable(story) +
-                makeTddTablesByComponent(story);
-    }
-
-    private static String makeTddTablesByComponent(JiraStory story) {
-        final var compMap = story.getTdds().stream()
-                .collect(groupingBy(JiraStory.JiraTdd::getComponentPath));
-
-        return "h3. Technical Design:\n" + compMap.entrySet().stream()
-                .map(it ->
-                        "h4. Component: " + it.getKey() + "\n||TDD||Description||\n" +
-                                it.getValue().stream()
-                                        .map(JiraApi::buildTddRow)
-                                        .collect(joining()))
-                .collect(joining());
-    }
-
-    private static String makeFunctionalRequirementTable(JiraStory story) {
-        return "h3. Implements functionality:\n" +
-                "||Id||Source||Description||\n" +
-                story.getFunctionalRequirements().stream()
-                        .map(JiraApi::makeFunctionalRequirementRow)
-                        .collect(joining());
-    }
-
-    private static String generateBodyForCreateStories(String epicKey, List<JiraStory> jiraStories, String projectId) {
-        return new JSONObject(
-                Map.of("issueUpdates", new JSONArray(jiraStories.stream()
-                        .map(story -> new JSONObject(Map.of(
-                                "fields", Map.of(
-                                        "customfield_10002", epicKey,
-                                        "project", Map.of("id", projectId),
-                                        "summary", story.getTitle(),
-                                        "issuetype", Map.of("name", "Feature Story"),
-                                        "description", makeDescription(story)))))
-                        .collect(toList()))))
-                .toString();
     }
 
     public static void main(final String... args) throws ExecutionException, InterruptedException {
@@ -248,29 +163,92 @@ public class JiraApi {
                 .build();
     }
 
-    @VisibleForTesting
-    HttpClient getHttpClient() {
-        return client;
+    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, Object itemToInsert) {
+        final int sizeOfArray = arrayToInsertInto.length;
+        for (int i = 0; i < sizeOfArray; ++i) {
+            if (null == arrayToInsertInto[i]) {
+                arrayToInsertInto[i] = itemToInsert;
+                break;
+            }
+        }
+        // TODO: Funky algo -- what happens if we reach then end without inserting?
     }
 
-    @VisibleForTesting
-    String getBaseUri() {
-        return baseUri;
+    private static String extractErrorFromJiraCreateStoryResult(JSONObject jiraErrorObj) {
+        final var errorMessages = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONArray("errorMessages")
+                .toList().stream()
+                .map(it -> it + "\n")
+                .collect(joining());
+
+        final var mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONObject("errors");
+
+        final var mappedErrorMessages = mappedErrorsAsJson.keySet().stream()
+                .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
+                .collect(joining());
+
+        return errorMessages + mappedErrorMessages;
     }
 
-    @VisibleForTesting
-    String getGetStoryEndpoint() {
-        return getStoryEndpoint;
+    private static String buildTddRow(JiraStory.JiraTdd tdd) {
+        if (tdd.hasTddContent()) {
+            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
+        } else {
+            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
+        }
     }
 
-    @VisibleForTesting
-    String getBulkCreateEndpoint() {
-        return bulkCreateEndpoint;
+    private static String makeFunctionalRequirementRow(JiraStory.JiraFunctionalRequirement funcReq) {
+        return "| " + funcReq.getId() + " | "
+                + funcReq.getSource()
+                + " | {noformat}" + funcReq.getText() + "{noformat} |\n";
     }
 
-    @VisibleForTesting
-    String getLinkPrefix() {
-        return linkPrefix;
+    private static String getEncodeAuth(String username, char[] password) {
+        final var s = username + ":" + String.valueOf(password);
+
+        return Base64Converter.toString(s);
+    }
+
+    private static String makeDescription(JiraStory story) {
+        return makeFunctionalRequirementTable(story) +
+                makeTddTablesByComponent(story);
+    }
+
+    private static String makeTddTablesByComponent(JiraStory story) {
+        final var compMap = story.getTdds().stream()
+                .collect(groupingBy(JiraStory.JiraTdd::getComponentPath));
+
+        return "h3. Technical Design:\n" + compMap.entrySet().stream()
+                .map(it ->
+                        "h4. Component: " + it.getKey() + "\n||TDD||Description||\n" +
+                                it.getValue().stream()
+                                        .map(JiraApi::buildTddRow)
+                                        .collect(joining()))
+                .collect(joining());
+    }
+
+    private static String makeFunctionalRequirementTable(JiraStory story) {
+        return "h3. Implements functionality:\n" +
+                "||Id||Source||Description||\n" +
+                story.getFunctionalRequirements().stream()
+                        .map(JiraApi::makeFunctionalRequirementRow)
+                        .collect(joining());
+    }
+
+    private static String generateBodyForCreateStories(String epicKey, List<JiraStory> jiraStories, String projectId) {
+        return new JSONObject(
+                Map.of("issueUpdates", new JSONArray(jiraStories.stream()
+                        .map(story -> new JSONObject(Map.of(
+                                "fields", Map.of(
+                                        "customfield_10002", epicKey,
+                                        "project", Map.of("id", projectId),
+                                        "summary", story.getTitle(),
+                                        "issuetype", Map.of("name", "Feature Story"),
+                                        "description", makeDescription(story)))))
+                        .collect(toList()))))
+                .toString();
     }
 
     @Builder
