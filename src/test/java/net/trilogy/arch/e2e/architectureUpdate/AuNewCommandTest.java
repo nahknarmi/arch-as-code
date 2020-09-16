@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
+import net.trilogy.arch.adapter.google.GoogleDocsFacade;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
@@ -54,7 +54,7 @@ public class AuNewCommandTest {
     private final ByteArrayOutputStream out = new ByteArrayOutputStream();
     private final ByteArrayOutputStream err = new ByteArrayOutputStream();
 
-    private GoogleDocsApiInterface googleDocsApiMock;
+    private GoogleDocsFacade googleDocsApiMock;
     private FilesFacade filesFacadeSpy;
     private GitInterface gitInterfaceSpy;
     private Application app;
@@ -88,7 +88,7 @@ public class AuNewCommandTest {
         setErr(new PrintStream(err));
 
         rootDir = getTempRepositoryDirectory().toFile();
-        googleDocsApiMock = mock(GoogleDocsApiInterface.class);
+        googleDocsApiMock = mock(GoogleDocsFacade.class);
         final var googleDocsApiFactoryMock = mock(GoogleDocsAuthorizedApiFactory.class);
         when(googleDocsApiFactoryMock.getAuthorizedDocsApi(rootDir)).thenReturn(googleDocsApiMock);
         filesFacadeSpy = spy(new FilesFacade());
@@ -340,6 +340,6 @@ public class AuNewCommandTest {
     private void mockGoogleDocsApi() throws IOException {
         final var rawFileContents = Files.readString(Paths.get(requireNonNull(getClass().getClassLoader().getResource(TestHelper.ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-1.json")).getPath()));
         final var jsonFileContents = new ObjectMapper().readValue(rawFileContents, JsonNode.class);
-        when(googleDocsApiMock.fetch("url")).thenReturn(new GoogleDocsApiInterface.Response(jsonFileContents, null));
+        when(googleDocsApiMock.fetch("url")).thenReturn(new GoogleDocsFacade.Response(jsonFileContents, null));
     }
 }

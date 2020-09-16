@@ -3,7 +3,7 @@ package net.trilogy.arch.e2e;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
+import net.trilogy.arch.adapter.graphviz.GraphvizFacade;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
 import org.apache.commons.io.FileUtils;
@@ -180,7 +180,7 @@ public class DiffCommandE2ETest {
                 .gitInterface(mockedGitInterface)
                 .build();
 
-        try (final var ignored = mockStatic(GraphvizInterface.class, invocation -> {
+        try (final var ignored = mockStatic(GraphvizFacade.class, invocation -> {
             throw new RuntimeException("BOOM!");
         })) {
             // WHEN

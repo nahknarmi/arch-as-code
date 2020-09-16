@@ -11,11 +11,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @EqualsAndHashCode
-public class GoogleDocsApiInterface {
+public class GoogleDocsFacade {
     private static final Pattern pattern = Pattern.compile("/document/d/([^/]+)");
     private final Docs api;
 
-    public GoogleDocsApiInterface(Docs rawGoogleDocsApi) {
+    public GoogleDocsFacade(Docs rawGoogleDocsApi) {
         api = rawGoogleDocsApi;
     }
 

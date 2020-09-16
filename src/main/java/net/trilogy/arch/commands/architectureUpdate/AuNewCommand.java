@@ -3,7 +3,7 @@ package net.trilogy.arch.commands.architectureUpdate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.google.GoogleDocsApiInterface;
+import net.trilogy.arch.adapter.google.GoogleDocsFacade;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.google.GoogleDocumentReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
@@ -82,7 +82,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
 
     private Optional<ArchitectureUpdate> loadFromP1() {
         try {
-            GoogleDocsApiInterface authorizedDocsApi = googleDocsApiFactory.getAuthorizedDocsApi(productArchitectureDirectory);
+            GoogleDocsFacade authorizedDocsApi = googleDocsApiFactory.getAuthorizedDocsApi(productArchitectureDirectory);
             return Optional.of(new GoogleDocumentReader(authorizedDocsApi).load(p1GoogleDocUrl));
         } catch (Exception e) {
             String configPath = productArchitectureDirectory.toPath().resolve(".arch-as-code").toAbsolutePath().toString();

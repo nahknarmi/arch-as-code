@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.graphviz.GraphvizInterface;
+import net.trilogy.arch.adapter.graphviz.GraphvizFacade;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
@@ -160,7 +160,7 @@ public class DiffCommand
         final var name = outputFile.getFileName().toString().replaceAll(".svg", ".gv");
 
         try {
-            GraphvizInterface.render(dotGraph, outputFile);
+            GraphvizFacade.render(dotGraph, outputFile);
             filesFacade.writeString(outputFile.getParent().resolve(name), dotGraph);
             return true;
         } catch (Exception e) {

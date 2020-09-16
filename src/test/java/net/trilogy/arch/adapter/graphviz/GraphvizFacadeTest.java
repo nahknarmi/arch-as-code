@@ -8,13 +8,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-public class GraphvizInterfaceTest {
+public class GraphvizFacadeTest {
     @Test
     public void shouldRenderSvg() throws Exception {
         var dir = Files.createTempDirectory("aac");
         String dot = "digraph G { a -> b; }";
 
-        GraphvizInterface.render(dot, dir.resolve("file.svg"));
+        GraphvizFacade.render(dot, dir.resolve("file.svg"));
 
         assertThat(dir.resolve("file.svg").toFile().exists(), is(true));
 

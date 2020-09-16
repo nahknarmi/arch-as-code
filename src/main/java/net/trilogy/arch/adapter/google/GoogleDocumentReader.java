@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public class GoogleDocumentReader {
-    private final GoogleDocsApiInterface api;
+    private final GoogleDocsFacade api;
 
-    public GoogleDocumentReader(GoogleDocsApiInterface api) {
+    public GoogleDocumentReader(GoogleDocsFacade api) {
         this.api = api;
     }
 
@@ -50,7 +50,7 @@ public class GoogleDocumentReader {
                 ).build();
     }
 
-    private static boolean isEmpty(GoogleDocsApiInterface.Response response) {
+    private static boolean isEmpty(GoogleDocsFacade.Response response) {
         return !response.asJson().hasNonNull("body");
     }
 

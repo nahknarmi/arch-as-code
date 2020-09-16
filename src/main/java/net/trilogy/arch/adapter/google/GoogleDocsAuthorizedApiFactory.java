@@ -67,9 +67,9 @@ public class GoogleDocsAuthorizedApiFactory {
         this.docsFactory = docsFactory;
     }
 
-    public GoogleDocsApiInterface getAuthorizedDocsApi(File productArchitectureDirectory) throws IOException {
+    public GoogleDocsFacade getAuthorizedDocsApi(File productArchitectureDirectory) throws IOException {
         Docs rawApi = docsFactory.make(httpTransport, jsonFactory, authorize(productArchitectureDirectory));
-        return new GoogleDocsApiInterface(rawApi);
+        return new GoogleDocsFacade(rawApi);
     }
 
     private Credential authorize(File productArchitectureDirectory) throws IOException {

@@ -92,7 +92,7 @@ public class GoogleDocsAuthorizedApiFactoryTest {
     @Test
     public void shouldCallTheGoogleApiInTheCorrectSequence() throws Exception {
         Docs docsApi = setBehaviourOnMockedGoogleApiBuilderClassesToReturnMockedApi();
-        GoogleDocsApiInterface expected = new GoogleDocsApiInterface(docsApi);
+        GoogleDocsFacade expected = new GoogleDocsFacade(docsApi);
 
         var result = new GoogleDocsAuthorizedApiFactory(
                 httpTransport,

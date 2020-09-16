@@ -19,18 +19,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
-public class GoogleDocsApiInterfaceTest {
+public class GoogleDocsFacadeTest {
     private Docs mockedApi;
-    private GoogleDocsApiInterface apiInterface;
+    private GoogleDocsFacade apiInterface;
 
     @Before
     public void setUp() {
         mockedApi = mock(Docs.class);
-        apiInterface = new GoogleDocsApiInterface(mockedApi);
+        apiInterface = new GoogleDocsFacade(mockedApi);
     }
 
     @Parameters({"", " ", " \n ", "https://docs.fake.com/document/d/"})
-    @Test(expected = GoogleDocsApiInterface.InvalidUrlException.class)
+    @Test(expected = GoogleDocsFacade.InvalidUrlException.class)
     public void shouldRaiseExceptionOnEmptyUrl(String url) throws IOException {
         apiInterface.fetch(url);
     }
@@ -63,7 +63,7 @@ public class GoogleDocsApiInterfaceTest {
         mockApiToReturn(doc, id);
 
         // when
-        GoogleDocsApiInterface.Response output = apiInterface.fetch(url);
+        GoogleDocsFacade.Response output = apiInterface.fetch(url);
 
         // then
         assertThat(output.asDocument(), is(doc));
@@ -80,7 +80,7 @@ public class GoogleDocsApiInterfaceTest {
         mockApiToReturn(doc, id);
 
         // when
-        GoogleDocsApiInterface.Response output = apiInterface.fetch(url);
+        GoogleDocsFacade.Response output = apiInterface.fetch(url);
 
         // then
         assertThat(output.asJson().get("body").toString(), equalTo("{}"));

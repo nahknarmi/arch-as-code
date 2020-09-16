@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @UtilityClass
-public class GraphvizInterface {
+public class GraphvizFacade {
     public static void render(String dotGraph, Path outputPath) throws IOException {
         final var graph = new Parser().read(dotGraph);
         final var file = new File(outputPath.toAbsolutePath().toString());

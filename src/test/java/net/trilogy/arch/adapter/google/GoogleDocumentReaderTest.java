@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GoogleDocumentReaderTest {
-    private final GoogleDocsApiInterface mockedApiInterface = mock(GoogleDocsApiInterface.class);
+    private final GoogleDocsFacade mockedApiInterface = mock(GoogleDocsFacade.class);
     private final GoogleDocumentReader reader = new GoogleDocumentReader(mockedApiInterface);
 
     private static JsonNode getJsonNodeFrom(String content) throws JsonProcessingException {
@@ -43,7 +43,7 @@ public class GoogleDocumentReaderTest {
 
     @Test
     public void shouldReturnEmptyAu() throws Exception {
-        var apiResponse = new GoogleDocsApiInterface.Response(
+        var apiResponse = new GoogleDocsFacade.Response(
                 getJsonNodeFrom("{}"),
                 new Document());
 
@@ -180,7 +180,7 @@ public class GoogleDocumentReaderTest {
         final JsonNode sampleSpec = getJsonNodeFrom(Files.readString(path));
 
         mockApiToReturnAGivenB(
-                new GoogleDocsApiInterface.Response(sampleSpec, null),
+                new GoogleDocsFacade.Response(sampleSpec, null),
                 whenCalledWithUrl);
     }
 
@@ -243,7 +243,7 @@ public class GoogleDocumentReaderTest {
                 true, is(false));
     }
 
-    private void mockApiToReturnAGivenB(GoogleDocsApiInterface.Response a, String b) throws IOException {
+    private void mockApiToReturnAGivenB(GoogleDocsFacade.Response a, String b) throws IOException {
         when(mockedApiInterface.fetch(b)).thenReturn(a);
     }
 }
