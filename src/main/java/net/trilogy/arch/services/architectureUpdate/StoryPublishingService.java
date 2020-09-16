@@ -53,15 +53,7 @@ public class StoryPublishingService {
     }
 
     private static boolean shouldCreateStory(FeatureStory story) {
-        return !isStoryAlreadyCreated(story);
-    }
-
-    private static boolean isStoryAlreadyCreated(FeatureStory story) {
-        return !(
-                story.getJira() == null ||
-                        (story.getJira().getTicket() == null || story.getJira().getTicket().isBlank() &&
-                                story.getJira().getLink() == null || story.getJira().getLink().isBlank())
-        );
+        return !story.exists();
     }
 
     public ArchitectureUpdate createStories(
