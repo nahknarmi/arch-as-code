@@ -1,23 +1,14 @@
 package net.trilogy.arch.adapter.structurizr;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
+@Builder
 @Data
+@RequiredArgsConstructor
 public class WorkspaceConfig {
-    @Setter(AccessLevel.PRIVATE)
-    private Long workspaceId;
-    @Setter(AccessLevel.PRIVATE)
-    private String apiKey;
-    @Setter(AccessLevel.PRIVATE)
-    private String apiSecret;
-
-    @Builder
-    public WorkspaceConfig(Long workspaceId, String apiKey, String apiSecret) {
-        this.workspaceId = workspaceId;
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-    }
+    private final Long workspaceId;
+    private final String apiKey;
+    private final String apiSecret;
 }
