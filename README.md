@@ -196,10 +196,16 @@ To create a local demo folder for AaC, run:
 $ ./scripts/create-demo-folder.sh
 $ pushd /tmp/aac/demo-folder
 $ alias aac=$PWD/arch-as-code.sh
-# Proceed using the command-line
+# Proceed using the command-line as `aac ...`
 ```
 Until we get upstream to add "technology" lines to "product-architect.yml",
 you will need to _manually_ edit before validation passes.
+
+### Credentials
+
+When prompted for Jira credentials, such as publishing stories, use your
+Trilogy email with no `@` suffix, and your Jira password.  An example:
+`brian.oxley` rather than `brian.oxley@trilogy.com`.
 
 ## TODO
 
