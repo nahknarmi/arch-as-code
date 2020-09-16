@@ -28,32 +28,20 @@ import static lombok.AccessLevel.PACKAGE;
 @VisibleForTesting
 public class JiraApi {
     private final JiraRestClient jiraClient;
-    private final String baseUri;
+    private final URI baseUri;
     private final String getStoryEndpoint;
     private final String bulkCreateEndpoint;
     private final String linkPrefix;
 
     public JiraApi(
-            String baseUri,
-            String getStoryEndpoint,
-            String bulkCreateEndpoint,
-            String linkPrefix) {
-        jiraClient = null;
-
-        this.baseUri = baseUri.replaceAll("/$", "") + "/";
-        this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
-        this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
-        this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
-    }
-
-    public JiraApi(
             JiraRestClient jiraClient,
-            String baseUri,
+            URI baseUri,
             String getStoryEndpoint,
             String bulkCreateEndpoint,
             String linkPrefix) {
         this.jiraClient = jiraClient;
-        this.baseUri = baseUri.replaceAll("/$", "") + "/";
+
+        this.baseUri = URI.create(baseUri.toString().replaceAll("/$", "") + "/");
         this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
         this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
         this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";

@@ -38,7 +38,7 @@ public class Application {
     @Builder.Default
     private final GoogleDocsAuthorizedApiFactory googleDocsAuthorizedApiFactory = new GoogleDocsAuthorizedApiFactory();
     @Builder.Default
-    private final JiraApiFactory jiraApiFactory = new JiraApiFactory();
+    private final JiraApiFactory jiraApiFactory = new JiraApiFactory(jiraUsername, jiraPassword);
     @Builder.Default
     private final FilesFacade filesFacade = new FilesFacade();
     @Builder.Default
@@ -50,9 +50,14 @@ public class Application {
         int exitCode = app.execute(args);
 
         if (exitCode != 0) {
-            app.getCli().getCommandSpec().commandLine().getOut().println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
-                    "/.arch-as-code/arch-as-code.log");
+            app.getCli()
+                    .getCommandSpec()
+                    .commandLine()
+                    .getOut()
+                    .println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
+                            "/.arch-as-code/arch-as-code.log");
         }
+
         exit(exitCode);
     }
 

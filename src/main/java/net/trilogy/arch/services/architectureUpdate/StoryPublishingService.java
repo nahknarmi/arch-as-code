@@ -13,7 +13,6 @@ import net.trilogy.arch.domain.architectureUpdate.Jira;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -59,7 +58,7 @@ public class StoryPublishingService {
             final ArchitectureDataStructure afterAuArchitecture,
             String username,
             char[] password)
-            throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException, ExecutionException, InterruptedException {
+            throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException {
         printStoriesNotToBeSent(au);
 
         final var stories = getFeatureStoriesToCreate(au);

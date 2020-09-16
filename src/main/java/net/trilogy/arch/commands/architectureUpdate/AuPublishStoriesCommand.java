@@ -23,7 +23,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
@@ -45,10 +44,9 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     @Getter
     @Parameters(index = "1", description = "Product architecture root directory")
     private File productArchitectureDirectory;
-    @Option(names = {"-u", "--username"}, description = "Jira username", required = true)
+    @Option(names = {"-u", "--jira-username"}, description = "Jira username", required = true)
     private String username;
-
-    @Option(names = {"-p", "--password"}, description = "Jira password", arity = "0..1", interactive = true, required = true)
+    @Option(names = {"-p", "--jira-password"}, description = "Jira password", arity = "0..1", interactive = true, required = true)
     private char[] password;
 
     @Getter
@@ -116,10 +114,6 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
             printError("ERROR: No stories to create.");
         } catch (InvalidStoryException e) {
             printError("ERROR: Some stories are invalid. Please run 'au validate' command.");
-        } catch (InterruptedException e) {
-            printError("ERROR: You interrupted.");
-        } catch (ExecutionException e) {
-            printError("ERROR: JIRA failed: " + e.getCause());
         }
 
         return Optional.empty();

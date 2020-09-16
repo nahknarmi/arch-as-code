@@ -53,7 +53,7 @@ public class JiraApiFactoryTest {
 
     @Test
     public void shouldCreateJiraApiWithCorrectClient() throws IOException {
-        final JiraApiFactory factory = new JiraApiFactory();
+        final JiraApiFactory factory = new JiraApiFactory(baseUri, username, password);
         HttpClient client = factory.createClient();
         JiraApi jiraApi = factory.create(mockedFiles, rootDir);
 
@@ -66,7 +66,7 @@ public class JiraApiFactoryTest {
 
     @Test
     public void shouldCreateCorrectClient() throws NoSuchAlgorithmException {
-        final var factory = new JiraApiFactory();
+        final var factory = new JiraApiFactory(baseUri, username, password);
         final var client = factory.createClient();
 
         assertThat(client.connectTimeout(), equalTo(Optional.empty()));
