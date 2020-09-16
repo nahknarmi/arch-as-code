@@ -5,7 +5,6 @@ import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -42,7 +41,7 @@ public class ArchitectureUpdateReader {
         return stream(requireNonNull(path.toFile().listFiles()))
                 .filter(TddContent::isContentType)
                 .filter(TddContent::isTddContentName)
-                .map((File file) -> TddContent.createCreateFromFile(file, filesFacade))
+                .map(it -> TddContent.fromFile(it, filesFacade))
                 .filter(Objects::nonNull)
                 .collect(toList());
     }

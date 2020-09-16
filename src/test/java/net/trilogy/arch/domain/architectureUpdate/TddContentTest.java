@@ -52,7 +52,7 @@ public class TddContentTest {
         Path rootDir = Files.createTempDirectory("temp");
         Path file = new FilesFacade().writeString(rootDir.resolve("markdown.md"), "contents");
 
-        TddContent tddContent = TddContent.createCreateFromFile(file.toFile(), new FilesFacade());
+        TddContent tddContent = TddContent.fromFile(file.toFile(), new FilesFacade());
 
         collector.checkThat(tddContent.getContent(), equalTo("contents"));
         collector.checkThat(tddContent.getFilename(), equalTo("markdown.md"));
@@ -60,7 +60,7 @@ public class TddContentTest {
 
     @Test
     public void shouldReturnNullIfFileNull() {
-        TddContent nullContent = TddContent.createCreateFromFile(null, new FilesFacade());
+        TddContent nullContent = TddContent.fromFile(null, new FilesFacade());
 
         collector.checkThat(nullContent, equalTo(null));
     }
@@ -75,7 +75,7 @@ public class TddContentTest {
         when(filesFacade.readString(any())).thenThrow(new IOException("boom"));
 
         // When
-        TddContent content = TddContent.createCreateFromFile(file.toFile(), filesFacade);
+        TddContent content = TddContent.fromFile(file.toFile(), filesFacade);
 
         // Then
         collector.checkThat(content, equalTo(null));

@@ -34,7 +34,8 @@ public class TddContent {
         if (file == null) return false;
         if (file.isDirectory()) return false;
 
-        String fileExtension = getFileExtension(file.getName());
+        // TODO: Guava marks this method as @Beta
+        final var fileExtension = getFileExtension(file.getName());
 
         // Supported content types
         return fileExtension.equals("md") || fileExtension.equals("txt");
@@ -47,20 +48,17 @@ public class TddContent {
         return pattern.matcher(file.getName()).find();
     }
 
-    public static TddContent createCreateFromFile(File file, FilesFacade filesFacade) {
+    public static TddContent fromFile(File file, FilesFacade filesFacade) {
         if (file == null) return null;
 
-        String content;
-        String filename;
-
         try {
-            content = filesFacade.readString(file.toPath());
-            filename = file.getName();
+            final var content = filesFacade.readString(file.toPath());
+            final var filename = file.getName();
+            return new TddContent(content, filename);
         } catch (IOException e) {
+            // TODO: Give warning the filename is somehow invalid
             return null;
         }
-
-        return new TddContent(content, filename);
     }
 
     public String getTdd() {
