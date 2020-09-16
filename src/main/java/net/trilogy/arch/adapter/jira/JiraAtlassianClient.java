@@ -3,7 +3,6 @@ package net.trilogy.arch.adapter.jira;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
-import com.google.common.annotations.VisibleForTesting;
 
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
@@ -23,24 +22,14 @@ public class JiraAtlassianClient {
         client = liveClient;
     }
 
-    /**
-     * A testing-only client.
-     *
-     * @param client typically a mock of the Atlassian JIRA library client
-     */
-    @VisibleForTesting
-    JiraAtlassianClient(final JiraRestClient client) {
-        this.client = client;
+    /** For live prototyping and spiking. */
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        out.println(new JiraAtlassianClient().getIssue("AAC-129"));
     }
 
     /** @todo Avoid the duplication with Atlassian's library */
     public Issue getIssue(final String issueId)
             throws ExecutionException, InterruptedException {
         return client.getIssueClient().getIssue(issueId).get();
-    }
-
-    /** For live prototyping and spiking. */
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        out.println(new JiraAtlassianClient().getIssue("AAC-129"));
     }
 }
