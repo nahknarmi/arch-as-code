@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ArchitectureDiffCalculator {
-    public static DiffSet diff(ArchitectureDataStructure beforeArch, ArchitectureDataStructure afterArch) {
+    public static DiffSet architectureDiff(ArchitectureDataStructure beforeArch, ArchitectureDataStructure afterArch) {
         final Set<Diff> firstDiffs = getAllDiffables(beforeArch).stream()
                 .map(diffableInFirst -> {
                             var diffableInSecond = findById(afterArch, diffableInFirst.getId()).orElse(null);

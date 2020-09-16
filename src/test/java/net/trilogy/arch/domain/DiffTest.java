@@ -3,6 +3,7 @@ package net.trilogy.arch.domain;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import net.trilogy.arch.domain.c4.C4Type;
@@ -142,6 +143,7 @@ public class DiffTest {
     }
 
     @EqualsAndHashCode(callSuper = false)
+    @ToString
     private static class Thing extends DiffableWithRelatedTdds implements Diffable {
         @Getter
         private final String id;
