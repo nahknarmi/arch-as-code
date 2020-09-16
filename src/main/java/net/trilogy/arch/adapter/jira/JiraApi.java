@@ -39,7 +39,8 @@ public class JiraApi {
         this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
     }
 
-    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, int sizeOfArray, Object itemToInsert) {
+    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, Object itemToInsert) {
+        final int sizeOfArray = arrayToInsertInto.length;
         for (int i = 0; i < sizeOfArray; ++i) {
             if (null == arrayToInsertInto[i]) {
                 arrayToInsertInto[i] = itemToInsert;
@@ -197,7 +198,7 @@ public class JiraApi {
             final var key = successfulItems.getJSONObject(i).getString("key");
             final var item = JiraCreateStoryStatus.succeeded(key, baseUri + linkPrefix + key);
 
-            insertInNextAvailableSpot(result, totalElements, item);
+            insertInNextAvailableSpot(result, item);
         }
 
         return List.of(result);
