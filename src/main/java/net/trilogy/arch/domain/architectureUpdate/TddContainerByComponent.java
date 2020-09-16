@@ -9,7 +9,6 @@ import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 
-import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class TddContainerByComponent {
 
     public TddContainerByComponent updateTddContents(List<TddContent> tddContents) {
         final var tdds = getTdds().entrySet().stream()
-                .map(it -> this.updateTddWithContent(it, tddContents))
+                .map(it -> updateTddWithContent(it, tddContents))
                 .collect(toMap(Entry::getKey, Entry::getValue));
 
         return toBuilder()

@@ -20,24 +20,7 @@ public class GoogleDocumentReader {
         this.api = api;
     }
 
-    public ArchitectureUpdate load(String url) throws IOException {
-        var response = api.fetch(url);
-
-        if (isEmpty(response)) {
-            return ArchitectureUpdate.blank();
-        }
-
-        GoogleDocsJsonParser jsonParser = new GoogleDocsJsonParser(response.asJson());
-
-        return ArchitectureUpdate.builderPreFilledWithBlanks()
-                .milestone(jsonParser.getMilestone().orElse(""))
-                .p1(extractP1(jsonParser, url))
-                .p2(extractP2(jsonParser))
-                .decisions(extractDecisions(jsonParser))
-                .build();
-    }
-
-    private Map<DecisionId, Decision> extractDecisions(GoogleDocsJsonParser jsonParser) {
+    private static Map<DecisionId, Decision> extractDecisions(GoogleDocsJsonParser jsonParser) {
         var map = new LinkedHashMap<DecisionId, Decision>();
         jsonParser.getDecisions().forEach(decisionString -> {
             String[] split = decisionString.split("-", 2);
@@ -50,13 +33,13 @@ public class GoogleDocumentReader {
         return map;
     }
 
-    private P2 extractP2(GoogleDocsJsonParser jsonParser) {
+    private static P2 extractP2(GoogleDocsJsonParser jsonParser) {
         return P2.builder()
                 .link(jsonParser.getP2Link().orElse(""))
                 .build();
     }
 
-    private P1 extractP1(GoogleDocsJsonParser jsonParser, String url) {
+    private static P1 extractP1(GoogleDocsJsonParser jsonParser, String url) {
         return P1.builder()
                 .link(url)
                 .executiveSummary(jsonParser.getExecutiveSummary().orElse(""))
@@ -67,7 +50,24 @@ public class GoogleDocumentReader {
                 ).build();
     }
 
-    private boolean isEmpty(GoogleDocsApiInterface.Response response) {
+    private static boolean isEmpty(GoogleDocsApiInterface.Response response) {
         return !response.asJson().hasNonNull("body");
+    }
+
+    public ArchitectureUpdate load(String url) throws IOException {
+        var response = api.fetch(url);
+
+        if (isEmpty(response)) {
+            return ArchitectureUpdate.blank();
+        }
+
+        GoogleDocsJsonParser jsonParser = new GoogleDocsJsonParser(response.asJson());
+
+        return ArchitectureUpdate.prefilledWithBlanks()
+                .milestone(jsonParser.getMilestone().orElse(""))
+                .p1(extractP1(jsonParser, url))
+                .p2(extractP2(jsonParser))
+                .decisions(extractDecisions(jsonParser))
+                .build();
     }
 }

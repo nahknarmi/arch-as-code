@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DiffableWithRelatedTdds {
-
     private Map<TddId, Tdd> relatedTdds = new HashMap<>();
 
     public String[] getRelatedTddsText() {
-        return relatedTdds.entrySet().stream().map(e -> e.getKey() + " - " + e.getValue().getDetails()).toArray(String[]::new);
+        return relatedTdds.entrySet().stream()
+                .map(e -> e.getKey() + " - " + e.getValue().getDetails())
+                .toArray(String[]::new);
     }
 
     public void setRelatedTdds(Map<TddId, Tdd> relatedTo) {

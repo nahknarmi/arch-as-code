@@ -7,8 +7,8 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.publish.ArchitectureDataStructurePublisher;
 import net.trilogy.arch.validation.ArchitectureDataStructureValidatorFactory;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
@@ -25,11 +25,7 @@ public class PublishCommand implements Callable<Integer>, DisplaysOutputMixin, D
 
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
-
-    public PublishCommand() {
-        structurizrAdapter = new StructurizrAdapter();
-    }
+    private CommandSpec spec;
 
     public PublishCommand(StructurizrAdapter structurizrAdapter) {
         this.structurizrAdapter = structurizrAdapter;

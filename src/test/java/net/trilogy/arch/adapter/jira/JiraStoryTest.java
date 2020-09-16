@@ -31,6 +31,60 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class JiraStoryTest {
 
+    private static ArchitectureUpdate getAu() {
+        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
+        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
+
+        return ArchitectureUpdate.prefilledWithBlanks()
+                .tddContainersByComponent(List.of(
+                        new TddContainerByComponent(
+                                new TddComponentReference("31"),
+                                null, false,
+                                Map.of(
+                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null).withContent(tddContent1),
+                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null).withContent(null),
+                                        new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
+                        new TddContainerByComponent(
+                                new TddComponentReference("404"),
+                                null, true,
+                                Map.of(
+                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null).withContent(tddContent3),
+                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null).withContent(null)))))
+                .capabilityContainer(new CapabilitiesContainer(
+                        Epic.blank(),
+                        singletonList(
+                                new FeatureStory(
+                                        "story title",
+                                        new Jira("", ""),
+                                        List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
+                                        List.of(FunctionalRequirementId.blank())))))
+                .build();
+    }
+
+    private static ArchitectureUpdate getAuWithInvalidComponent() {
+        return changeAllTddsToBeUnderComponent("1231231323123", getAu());
+    }
+
+    private static ArchitectureUpdate getAuWithInvalidRequirement() {
+        return getAu().toBuilder().functionalRequirements(
+                Map.of(new FunctionalRequirementId("different id than the reference in the story"),
+                        new FunctionalRequirement("any text", "any source", List.of())))
+                .build();
+    }
+
+    private static ArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, ArchitectureUpdate au) {
+        var oldTdds = new HashMap<TddId, Tdd>();
+        for (var container : au.getTddContainersByComponent()) {
+            oldTdds.putAll(container.getTdds());
+        }
+        final TddContainerByComponent newComponentWithTdds = new TddContainerByComponent(
+                new TddComponentReference(newComponentId),
+                null, false,
+                oldTdds
+        );
+        return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
+    }
+
     @Test
     public void ShouldConstructJiraStory() throws Exception {
         // GIVEN:
@@ -159,59 +213,5 @@ public class JiraStoryTest {
                 getClass(),
                 MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
         return YAML_OBJECT_MAPPER.readValue(archAsString, ArchitectureDataStructure.class);
-    }
-
-    private static ArchitectureUpdate getAu() {
-        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
-        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
-
-        return ArchitectureUpdate.builderPreFilledWithBlanks()
-                .tddContainersByComponent(List.of(
-                        new TddContainerByComponent(
-                                new TddComponentReference("31"),
-                                null, false,
-                                Map.of(
-                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null).withContent(tddContent1),
-                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null).withContent(null),
-                                        new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
-                        new TddContainerByComponent(
-                                new TddComponentReference("404"),
-                                null, true,
-                                Map.of(
-                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null).withContent(tddContent3),
-                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null).withContent(null)))))
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.blank(),
-                        singletonList(
-                                new FeatureStory(
-                                        "story title",
-                                        new Jira("", ""),
-                                        List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
-                                        List.of(FunctionalRequirementId.blank())))))
-                .build();
-    }
-
-    private static ArchitectureUpdate getAuWithInvalidComponent() {
-        return changeAllTddsToBeUnderComponent("1231231323123", getAu());
-    }
-
-    private static ArchitectureUpdate getAuWithInvalidRequirement() {
-        return getAu().toBuilder().functionalRequirements(
-                Map.of(new FunctionalRequirementId("different id than the reference in the story"),
-                        new FunctionalRequirement("any text", "any source", List.of())))
-                .build();
-    }
-
-    private static ArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, ArchitectureUpdate au) {
-        var oldTdds = new HashMap<TddId, Tdd>();
-        for (var container : au.getTddContainersByComponent()) {
-            oldTdds.putAll(container.getTdds());
-        }
-        final TddContainerByComponent newComponentWithTdds = new TddContainerByComponent(
-                new TddComponentReference(newComponentId),
-                null, false,
-                oldTdds
-        );
-        return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
     }
 }

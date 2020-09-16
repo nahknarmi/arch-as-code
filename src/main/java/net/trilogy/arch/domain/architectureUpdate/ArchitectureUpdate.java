@@ -12,7 +12,6 @@ import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.Function
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 import static java.util.stream.Collectors.toList;
@@ -95,7 +94,8 @@ public class ArchitectureUpdate {
         this.milestoneDependencies = milestoneDependencies;
     }
 
-    public static ArchitectureUpdateBuilder builderPreFilledWithBlanks() {
+    /** @todo How does this differ from {@link #blank()}? */
+    public static ArchitectureUpdateBuilder prefilledWithBlanks() {
         return ArchitectureUpdate.builder()
                 .name("[SAMPLE NAME]")
                 .milestone("[SAMPLE MILESTONE]")
@@ -112,15 +112,7 @@ public class ArchitectureUpdate {
     }
 
     public static ArchitectureUpdate blank() {
-        return builderPreFilledWithBlanks().build();
-    }
-
-    public List<TddContent> listTddContents() {
-        return getTddContainersByComponent().stream()
-                .flatMap(it -> it.getTdds().values().stream())
-                .map(Tdd::getContent)
-                .filter(Objects::isNull)
-                .collect(toList());
+        return prefilledWithBlanks().build();
     }
 
     public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {

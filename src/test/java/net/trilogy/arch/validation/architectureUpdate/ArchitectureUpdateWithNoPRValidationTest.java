@@ -25,7 +25,7 @@ import java.util.Map;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.builderPreFilledWithBlanks;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -44,7 +44,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Decisions
     @Test
     public void shouldAllowMultipleDecisionsWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .decisions(Map.of(
                         new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"))),
                         new DecisionId("second Decision"), new Decision("Decision Text", List.of(new TddId("no-PR")))))
@@ -57,7 +57,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowADecisionsWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .decisions(Map.of(
                         new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR")))))
                 .build();
@@ -69,7 +69,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowADecisionsWithNoPRandATDDReference() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .decisions(Map.of(
                         new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"), TddId.blank()))))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
@@ -87,7 +87,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Feature Stories
     @Test
     public void shouldAllowMultipleStoriesWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.blank(),
                         List.of(
@@ -108,7 +108,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAStoryWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.blank(),
                         List.of(
@@ -127,7 +127,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowAStoryWithNoPRandATDDReference() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.blank(),
                         List.of(
@@ -151,7 +151,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Functional Requirements
     @Test
     public void shouldAllowMultipleFunctionalRequirementsWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
                         new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
@@ -164,7 +164,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAFunctionalRequirementWithNoPR() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
                         new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
@@ -177,7 +177,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowAFunctionalRequirementWithNoPRandATDDReference() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
                         new FunctionalRequirement("Text", "Source", List.of(TddId.noPr(), TddId.blank()))))
@@ -195,7 +195,7 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAFunctionalRequirementWithNullTdds() {
-        final var invalidAu = builderPreFilledWithBlanks()
+        final var invalidAu = prefilledWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
                         new FunctionalRequirement("Text", "Source", null)))

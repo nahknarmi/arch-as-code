@@ -66,7 +66,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         if (p1GoogleDocUrl != null) {
             return loadFromP1();
         } else {
-            return Optional.of(ArchitectureUpdate.builderPreFilledWithBlanks().name(name).build());
+            return Optional.of(ArchitectureUpdate.prefilledWithBlanks().name(name).build());
         }
     }
 

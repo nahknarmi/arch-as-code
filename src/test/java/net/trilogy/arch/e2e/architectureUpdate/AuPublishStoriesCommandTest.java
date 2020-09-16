@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.System.setErr;
@@ -116,30 +115,30 @@ public class AuPublishStoriesCommandTest {
         final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
         return asList(new JiraStory(
-                "story that should be created",
-                singletonList(new JiraStory.JiraTdd(
-                        new TddId("TDD 1.0"),
-                        tdd,
-                        "c4://Internet Banking System/API Application/Sign In Controller",
-                        tddContent)),
-                singletonList(new JiraFunctionalRequirement(
-                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                        new FunctionalRequirement(
-                                "[SAMPLE REQUIREMENT TEXT]",
-                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                singletonList(new TddId("TDD 1.0")))))),
+                        "story that should be created",
+                        singletonList(new JiraStory.JiraTdd(
+                                new TddId("TDD 1.0"),
+                                tdd,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                tddContent)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))),
                 new JiraStory("story that should be created for no pr",
-                singletonList(new JiraStory.JiraTdd(
-                        TddId.noPr(),
-                        null,
-                        "c4://Internet Banking System/API Application/Sign In Controller",
-                        null)),
-                singletonList(new JiraFunctionalRequirement(
-                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                        new FunctionalRequirement(
-                                "[SAMPLE REQUIREMENT TEXT]",
-                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                singletonList(new TddId("TDD 1.0")))))));
+                        singletonList(new JiraStory.JiraTdd(
+                                TddId.noPr(),
+                                null,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))));
     }
 
     @Before

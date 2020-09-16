@@ -13,7 +13,6 @@ import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.C4Container;
 import net.trilogy.arch.domain.c4.C4DeploymentNode;
 import net.trilogy.arch.domain.c4.C4Model;
-import net.trilogy.arch.domain.c4.C4Path;
 import net.trilogy.arch.domain.c4.C4Person;
 import net.trilogy.arch.domain.c4.C4SoftwareSystem;
 import net.trilogy.arch.domain.c4.C4Tag;
@@ -54,17 +53,7 @@ public class ModelMediator {
         return (Person) model.getElement(id);
     }
 
-    public Person person(C4Path path) {
-        String id = path.getId();
-        return (Person) model.getElement(id);
-    }
-
     public SoftwareSystem softwareSystem(String id) {
-        return (SoftwareSystem) model.getElement(id);
-    }
-
-    public SoftwareSystem softwareSystem(C4Path path) {
-        String id = path.getId();
         return (SoftwareSystem) model.getElement(id);
     }
 
@@ -72,17 +61,7 @@ public class ModelMediator {
         return (Container) model.getElement(id);
     }
 
-    public Container container(C4Path path) {
-        String id = path.getId();
-        return (Container) model.getElement(id);
-    }
-
     public Component component(String id) {
-        return (Component) model.getElement(id);
-    }
-
-    public Component component(C4Path path) {
-        String id = path.getId();
         return (Component) model.getElement(id);
     }
 

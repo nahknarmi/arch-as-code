@@ -35,7 +35,7 @@ import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.builderPreFilledWithBlanks;
+import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
 import static net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator.validate;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forComponentPathNotMatchingId;
@@ -89,7 +89,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_DecisionsMustHaveTdds() {
-        var invalidAu = builderPreFilledWithBlanks().decisions(Map.of(
+        var invalidAu = prefilledWithBlanks().decisions(Map.of(
                 new DecisionId("Null TDD references"), new Decision("[SAMPLE DECISION TEXT]", null),
                 new DecisionId("Empty TDD references"), new Decision("Decision Text", List.of())))
                 .build();
@@ -105,7 +105,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_DecisionsTddsMustBeValidReferences() {
-        var invalidAu = builderPreFilledWithBlanks().decisions(Map.of(
+        var invalidAu = prefilledWithBlanks().decisions(Map.of(
                 new DecisionId("Bad-TDD-Decision"),
                 new Decision("Decision Text", List.of(new TddId("BAD-TDD-ID")))))
                 .build();
@@ -118,7 +118,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_FunctionalRequirementsTddsMustBeValidReferences() {
-        var invalidAu = builderPreFilledWithBlanks().functionalRequirements(Map.of(
+        var invalidAu = prefilledWithBlanks().functionalRequirements(Map.of(
                 new FunctionalRequirementId("Bad-TDD-Functional-Requirement"),
                 new FunctionalRequirement("Text", "Source", List.of(
                         new TddId("BAD-TDD-ID-1"),
@@ -137,7 +137,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveUniqueIds() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("1"),
                         null, true,
@@ -167,7 +167,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_ComponentsMustBeReferencedOnlyOnceForTdds() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("Dupe-1"),
                         null, false,
@@ -197,7 +197,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsComponentsMustBeValidReferences() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("Non-existent-1"),
                         null, false,
@@ -220,7 +220,7 @@ public class ArchitectureUpdateValidatorTest {
     @Test
     public void shouldValidate_TddsDeletedComponentsMustBeValidReferences() {
         // Given
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("Non-existent-deleted-1"),
                         null, true,
@@ -254,7 +254,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveDecisionsOrRequirements() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, false,
@@ -276,7 +276,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesMustHaveFunctionalRequirements() {
-        var invalidAu = builderPreFilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
+        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
                 Epic.blank(),
                 List.of(
                         new FeatureStory(
@@ -297,7 +297,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValiate_StoriesFunctionalRequirementsMustBeValidReferences() {
-        var invalidAu = builderPreFilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
+        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
                 Epic.blank(),
                 List.of(
                         new FeatureStory(
@@ -315,7 +315,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesMustHaveTdds() {
-        var invalidAu = builderPreFilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
+        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
                 Epic.blank(),
                 List.of(
                         new FeatureStory(
@@ -339,7 +339,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesTddsMustBeValidReferences() {
-        var invalidAu = builderPreFilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
+        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
                 Epic.blank(),
                 List.of(new FeatureStory(
                         "Feat Title 1", Jira.blank(),
@@ -359,7 +359,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveStories() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, false,
@@ -381,7 +381,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_FunctionalRequirementsMustHaveStories() {
-        var invalidAu = builderPreFilledWithBlanks().functionalRequirements(Map.of(
+        var invalidAu = prefilledWithBlanks().functionalRequirements(Map.of(
                 new FunctionalRequirementId("Func-req-with-no-story-1"),
                 new FunctionalRequirement("Text", "Source", List.of()),
                 new FunctionalRequirementId("Func-req-with-no-story-2"),
@@ -399,7 +399,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_LinksAreAvailable() {
-        var invalidAu = builderPreFilledWithBlanks()
+        var invalidAu = prefilledWithBlanks()
                 .p1(new P1("n/a", new Jira("ticket", "n/a"), "exec summary"))
                 .p2(new P2(null, new Jira("ticket", null)))
                 .usefulLinks(List.of(new Link("desc", null)))
@@ -426,7 +426,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldAllowJiraLinksToBeEmpty() {
-        var invalidAu = builderPreFilledWithBlanks()
+        var invalidAu = prefilledWithBlanks()
                 .p1(new P1("validLink", new Jira("ticket", "validLink"), "exec summary"))
                 .p2(new P2("validLink", new Jira("ticket", "validLink")))
                 .usefulLinks(List.of(new Link("desc", "validLink")))
@@ -445,7 +445,7 @@ public class ArchitectureUpdateValidatorTest {
     public void shouldValidate_ComponentIdIsMatchingPath() {
         var tdds = new HashMap<TddId, Tdd>();
         tdds.put(new TddId("1"), new Tdd("abc", null));
-        var invalidAu = builderPreFilledWithBlanks()
+        var invalidAu = prefilledWithBlanks()
                 .p1(new P1("valid", new Jira("ticket", "valid"), "exec summary"))
                 .p2(new P2("valid", new Jira("ticket", "valid")))
                 .usefulLinks(List.of(new Link("desc", "valid")))
@@ -470,7 +470,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_OnlyOneTddContentsReference() {
-        var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(List.of(
+        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
                 new TddContainerByComponent(
                         new TddComponentReference("10"),
                         null,
@@ -498,7 +498,7 @@ public class ArchitectureUpdateValidatorTest {
 
         Tdd tdd1_1 = new Tdd("overridden-text", null).withContent(new TddContent("contents", errorFilename1));
 
-        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+        final var invalidAu = prefilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
                         new TddComponentReference("16"),
                         null, false,
@@ -520,7 +520,7 @@ public class ArchitectureUpdateValidatorTest {
 
         Tdd tdd1_1 = new Tdd("", null).withContent(new TddContent("contents", errorFilename1));
 
-        final var invalidAu = builderPreFilledWithBlanks().tddContainersByComponent(singletonList(
+        final var invalidAu = prefilledWithBlanks().tddContainersByComponent(singletonList(
                 new TddContainerByComponent(
                         new TddComponentReference("16"),
                         null, false,

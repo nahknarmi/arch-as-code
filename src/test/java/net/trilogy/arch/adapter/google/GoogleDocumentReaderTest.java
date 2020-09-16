@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -188,7 +187,7 @@ public class GoogleDocumentReaderTest {
     // TODO [TEST UTIL]: Remove when no longer needed
     @Test
     @Ignore("This is not a test. Use this to generate new json from google docs if needed.")
-    public void NotATest_UtilToFetchSampleP1Spec() throws GeneralSecurityException, IOException {
+    public void NotATest_UtilToFetchSampleP1Spec() throws IOException {
         String url1 = "https://docs.google.com/document/d/1xPIrv159vlRKklTABSxJx9Yq76MOrRfEdKLiVlXUQ68";
         String url2 = "https://docs.google.com/document/d/1Mhli4ZvCAAIwIguE7UY-DihkI1JsdxZjRG36QVen5aU/edit#";
         String url3 = "https://docs.google.com/document/d/1h-yiali65IQp6qXWb6qxkKvwvYTI9oshfOqJ3SmM4jQ/edit#";

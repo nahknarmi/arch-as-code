@@ -65,11 +65,9 @@ public class JiraApiFactoryTest {
     }
 
     @Test
-    public void shouldCreateCorrectClient() throws NoSuchAlgorithmException, IOException {
-
-        final JiraApiFactory factory = new JiraApiFactory();
-
-        HttpClient client = factory.createClient();
+    public void shouldCreateCorrectClient() throws NoSuchAlgorithmException {
+        final var factory = new JiraApiFactory();
+        final var client = factory.createClient();
 
         assertThat(client.connectTimeout(), equalTo(Optional.empty()));
         assertThat(client.authenticator(), equalTo(Optional.empty()));
