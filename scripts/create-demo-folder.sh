@@ -30,12 +30,12 @@ function maybe-create-init-au-yaml() {
         esac
     done
 
-    run git checkout -b test
+    run git checkout -q -b test
     mkdir -p architecture-update/test
     cp "$repo_dir/documentation/products/arch-as-code/architecture-updates/show-tdd-in-diff/architecture-update.yml" architecture-update/test
     git add .
-    git commit -m 'Set up demonstration AU'
-    run git checkout master
+    git commit -q -m 'Set up demonstration AU'
+    run git checkout -q master
 }
 
 # shellcheck disable=SC1090
@@ -134,10 +134,11 @@ maybe-create-init-au-yaml
 cat <<EOM
 Demo folder created in '$PWD'.
 Change to that directory, and use ./arch-as-code or "aac" alias.
-(Once there, you may find 'alias aac=\$PWD/arch-as-code' helpful)
+(Once there, you may find 'alias aac=\$PWD/arch-as-code' helpful.)
 This is setup as a Git repo (or there was already one present).
-If there were already a '$PWD' directory, we overwrite the AaC parts.
+If there were already a '$PWD' directory, we overwrite the AaC
+parts only.
 If there were already a 'test' branch for architecture updates, we left it be.
 If there were already a '.arch-as-code/' directory, we left it be, else we
-copied one from 1) your home directory, or 2) project defaults.
+copied one from your home directory.
 EOM
