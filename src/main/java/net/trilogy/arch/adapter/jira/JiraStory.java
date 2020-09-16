@@ -51,10 +51,8 @@ public class JiraStory {
     private static List<JiraTdd> getTdds(
             ArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
-            FeatureStory featureStory
-    ) throws InvalidStoryException {
-
-        List<JiraTdd> tdds = new ArrayList<>();
+            FeatureStory featureStory) throws InvalidStoryException {
+        final var tdds = new ArrayList<JiraTdd>();
         for (var tddId : featureStory.getTddReferences()) {
             var tdd = au.getTddContainersByComponent()
                     .stream()

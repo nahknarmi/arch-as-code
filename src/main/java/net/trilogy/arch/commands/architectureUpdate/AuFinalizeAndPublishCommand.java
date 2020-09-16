@@ -7,15 +7,15 @@ import picocli.CommandLine.Command;
 
 @Command(name = "finalizeAndPublish", description = "Annotate AU, validate AU and publish AU Jira stories.", mixinStandardHelpOptions = true)
 public class AuFinalizeAndPublishCommand extends AuPublishStoriesCommand {
-
     public AuFinalizeAndPublishCommand(JiraApiFactory jiraApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
         super(jiraApiFactory, filesFacade, gitInterface);
     }
 
+    @Override
     public Integer call() {
         AuAnnotateCommand auAnnotateCommand = createAuAnnotateCommand();
         Integer annotateResults = auAnnotateCommand.call();
-        if (annotateResults != 0 ) {
+        if (annotateResults != 0) {
             return annotateResults;
         }
 
@@ -47,6 +47,4 @@ public class AuFinalizeAndPublishCommand extends AuPublishStoriesCommand {
                 getArchitectureUpdateDirectory(),
                 getProductArchitectureDirectory());
     }
-
 }
-
