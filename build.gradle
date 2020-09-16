@@ -21,15 +21,15 @@ repositories {
     mavenCentral()
     jcenter()
     maven {
-        // JIRA uses non-public repositories
-        url "https://m2proxy.atlassian.com/repository/public"
+        // JIRA uses non-central repositories
+        url "https://packages.atlassian.com/public"
     }
 }
 
 dependencies {
     //Spotbugs suppress annotations
     implementation "com.github.spotbugs:spotbugs:4.1.2"
-    
+
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-jackson:2.9.0"
