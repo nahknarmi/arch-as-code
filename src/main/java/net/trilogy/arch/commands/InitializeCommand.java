@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
-import static net.trilogy.arch.adapter.structurizr.Credentials.createCredentials;
+import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.createCredentials;
 
 @Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
 @RequiredArgsConstructor

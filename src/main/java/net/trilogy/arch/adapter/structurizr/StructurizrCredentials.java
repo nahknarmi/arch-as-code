@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 
-public abstract class Credentials {
+public abstract class StructurizrCredentials {
     private static final String STRUCTURIZR_PATH = ".arch-as-code" + File.separator + "structurizr";
     private static final String CREDENTIALS_FILE_PATH = STRUCTURIZR_PATH + File.separator + "credentials.json";
 

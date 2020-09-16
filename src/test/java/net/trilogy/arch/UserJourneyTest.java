@@ -1,6 +1,6 @@
 package net.trilogy.arch;
 
-import net.trilogy.arch.adapter.structurizr.Credentials;
+import net.trilogy.arch.adapter.structurizr.StructurizrCredentials;
 import net.trilogy.arch.adapter.structurizr.WorkspaceConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class UserJourneyTest {
 
     @Before
     public void setUp() throws Exception {
-        config = Credentials.config();
+        config = StructurizrCredentials.config();
         workspaceRoot = Files.createTempDirectory("arch-as-code").toAbsolutePath().toString();
         exportedWorkspacePath = new File(getClass().getResource("/structurizr/Think3-Sococo.c4model.json").getPath());
     }

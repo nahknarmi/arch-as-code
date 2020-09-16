@@ -1,22 +1,21 @@
-package net.trilogy.arch.adapter.structurizr;
+    package net.trilogy.arch.adapter.structurizr;
 
 import com.structurizr.Workspace;
 import com.structurizr.api.StructurizrClient;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.trilogy.arch.adapter.structurizr.Credentials.config;
+import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.config;
 
+@RequiredArgsConstructor
 public class StructurizrAdapter {
     @Getter
-    private StructurizrClient client;
+    private final StructurizrClient client;
 
     public StructurizrAdapter() {
-    }
-
-    public StructurizrAdapter(StructurizrClient client) {
-        this.client = client;
+        this(buildClient());
     }
 
     /**
@@ -27,21 +26,20 @@ public class StructurizrAdapter {
     public Boolean publish(Workspace workspace) {
         checkNotNull(workspace, "Workspace must not be null!");
 
-        if (client == null) client = buildClient();
-
         try {
             client.setMergeFromRemote(false);
             client.putWorkspace(config().getWorkspaceId(), workspace);
+
+            return true;
         } catch (Exception e) {
             LogManager.getLogger(getClass()).error("Unable to publish to Structurizr", e);
+
             return false;
         }
-
-        return true;
     }
 
-    StructurizrClient buildClient() {
-        StructurizrClient client = new StructurizrClient(config().getApiKey(), config().getApiSecret());
+    private static StructurizrClient buildClient() {
+        final var client = new StructurizrClient(config().getApiKey(), config().getApiSecret());
         client.setWorkspaceArchiveLocation(null);
         return client;
     }

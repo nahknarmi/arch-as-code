@@ -1,7 +1,7 @@
 package net.trilogy.arch.transformation;
 
 import com.structurizr.Workspace;
-import net.trilogy.arch.adapter.structurizr.Credentials;
+import net.trilogy.arch.adapter.structurizr.StructurizrCredentials;
 import net.trilogy.arch.adapter.structurizr.StructurizrViewsMapper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.transformation.enhancer.WorkspaceEnhancer;
@@ -23,7 +23,7 @@ public class ArchitectureDataStructureTransformer {
         checkNotNull(dataStructure, "ArchitectureDataStructure must not be null.");
 
         Workspace workspace = new Workspace(dataStructure.getName(), dataStructure.getDescription());
-        workspace.setId(Credentials.config().getWorkspaceId());
+        workspace.setId(StructurizrCredentials.config().getWorkspaceId());
 
         enhancers.forEach(e -> e.enhance(workspace, dataStructure));
 
