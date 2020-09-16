@@ -1,5 +1,7 @@
 package net.trilogy.arch.adapter.jira;
 
+import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +18,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
@@ -128,6 +131,28 @@ public class JiraApi {
                                                 "description", makeDescription(story)))))
                                 .collect(toList()))))
                 .toString();
+    }
+
+    public static void main(final String... args) throws ExecutionException, InterruptedException {
+        final var root = URI.create("http://jira.devfactory.com");
+
+        final String username;
+        final String password;
+        if (args.length == 2) {
+            username = args[0];
+            password = args[1];
+        } else {
+            System.err.println("REQUIRED: <username> <password>");
+            System.exit(2);
+            throw new Error("BUG");
+        }
+
+        final var client = new AsynchronousJiraRestClientFactory().create(
+                root,
+                new BasicHttpAuthenticationHandler(username, password));
+
+        final var issue = client.getIssueClient().getIssue("AU-1").get();
+        System.out.println("issue = " + issue);
     }
 
     public List<JiraCreateStoryStatus> createStories(List<JiraStory> jiraStories, String epicKey, String projectId, String username, char[] password) throws JiraApiException {
