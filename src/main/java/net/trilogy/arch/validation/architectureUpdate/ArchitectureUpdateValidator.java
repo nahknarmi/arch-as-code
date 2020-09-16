@@ -1,8 +1,6 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
@@ -16,13 +14,31 @@ import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static io.vavr.collection.Stream.concat;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static net.trilogy.arch.validation.architectureUpdate.ValidationError.*;
+import static java.util.stream.Stream.concat;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forComponentPathNotMatchingId;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDecisionsMustHaveTdds;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forDuplicatedComponent;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forFunctionalRequirementsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNoPrWithAnotherTdd;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forNotAvailableLink;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forOverriddenByTddContentFile;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesMustHaveFunctionalRequirements;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesMustHaveTdds;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forStoriesTddsMustBeValidReferences;
+import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forTddsMustBeValidReferences;
 
 public class ArchitectureUpdateValidator {
 
@@ -61,12 +77,62 @@ public class ArchitectureUpdateValidator {
             ArchitectureUpdate architectureUpdateToValidate,
             ArchitectureDataStructure architectureAfterUpdate,
             ArchitectureDataStructure architectureBeforeUpdate) {
-
         return new ArchitectureUpdateValidator(
                 architectureUpdateToValidate,
                 architectureAfterUpdate,
-                architectureBeforeUpdate
-        ).run();
+                architectureBeforeUpdate)
+                .run();
+    }
+
+    private static boolean tddReferenceCombinedWithNoPr(List<TddId> refs) {
+        return refs != null && refs.contains(TddId.noPr()) && refs.size() > 1;
+    }
+
+    private static ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<TddId, Tdd> pair) {
+        TddId id = pair.getKey();
+        Tdd tdd = pair.getValue();
+
+        boolean tddContentIsEmpty = (tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty());
+        if (tddContentIsEmpty) return null;
+
+        boolean errorCondition = tdd.getText() != null &&
+                tdd.getFile() != null &&
+                !tdd.getText().isEmpty() &&
+                !tdd.getFile().isEmpty();
+
+        if (errorCondition) {
+            return forAmbiguousTddContentReference(tddContainerByComponent.getComponentId(), id);
+        }
+
+        return null;
+    }
+
+    private static java.util.stream.Stream<TddId> getTddReferencesStream(FeatureStory story) {
+        if (story.getTddReferences() == null)
+            return java.util.stream.Stream.empty();
+
+        return story.getTddReferences().stream();
+    }
+
+    private static java.util.stream.Stream<FunctionalRequirementId> getStoryRequirementReferencesStream(FeatureStory story) {
+        if (story.getRequirementReferences() == null)
+            return java.util.stream.Stream.empty();
+
+        return story.getRequirementReferences().stream();
+    }
+
+    private static Set<String> getAllComponentIdsIn(ArchitectureDataStructure architecture) {
+        return architecture.getModel().getComponents().stream().map(Entity::getId).collect(toSet());
+    }
+
+    /**
+     * @todo There are better ways, such as a library, or removing altogether
+     */
+    private static <T> Set<T> findDuplicates(Collection<T> collection) {
+        final var uniques = new HashSet<T>();
+        return collection.stream()
+                .filter(t -> !uniques.add(t))
+                .collect(toSet());
     }
 
     private ValidationResult run() {
@@ -97,18 +163,21 @@ public class ArchitectureUpdateValidator {
                 getErrors_OnlyOneTddContentsReference(),
                 getErrors_TddTextAndContentsFileExists(),
 
-                getErrors_ComponentPathMatchingId()
-        ).collect(toList()));
+                getErrors_ComponentPathMatchingId())
+                .collect(toList()));
     }
 
     private Set<ValidationError> getErrors_ComponentPathMatchingId() {
         return architectureUpdate.getTddContainersByComponent().stream()
                 .filter(c -> c.getComponentId() != null && c.getComponentPath() != null)
                 .filter(c -> {
-                    Optional<C4Component> c4Component = allComponents.stream().filter(c4 -> c4.getId().equals(c.getComponentId().getId())).findFirst();
-                    if (c4Component.isEmpty() || c4Component.get().getPath() == null) return false;
-                    return ! c4Component.get().getPath().getPath().equalsIgnoreCase(c.getComponentPath());
-                }).map(c -> forComponentPathNotMatchingId(c.getComponentId().getId())).collect(toSet());
+                    final var c4Component = allComponents.stream().filter(c4 -> c4.getId().equals(c.getComponentId().getId())).findFirst();
+                    if (c4Component.isEmpty() || c4Component.get().getPath() == null)
+                        return false;
+                    return !c4Component.get().getPath().getPath().equalsIgnoreCase(c.getComponentPath());
+                })
+                .map(c -> forComponentPathNotMatchingId(c.getComponentId().getId()))
+                .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_NoPrNotCombinedWithAnotherTddId() {
@@ -121,11 +190,8 @@ public class ArchitectureUpdateValidator {
         Stream<ValidationError> storyErrors = architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
                 .filter(s -> tddReferenceCombinedWithNoPr(s.getTddReferences()))
                 .map(s -> forNoPrWithAnotherTdd("Feature story " + s.getTitle()));
-        return Stream.concat(Stream.concat(decisionErrors, requirementErrors), storyErrors).collect(toSet());
-    }
 
-    private boolean tddReferenceCombinedWithNoPr(List<TddId> refs) {
-        return refs != null && refs.contains(TddId.noPr()) && refs.size() > 1;
+        return concat(concat(decisionErrors, requirementErrors), storyErrors).collect(toSet());
     }
 
     private Set<ValidationError> getErrors_LinksAreAvailable() {
@@ -149,21 +215,16 @@ public class ArchitectureUpdateValidator {
 
         if (milestoneDependencies != null) {
             milestoneDependencies.forEach(m -> m.getLinks().forEach(l ->
-                            links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))
-                    )
-            );
+                    links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))));
             milestoneDependencies.forEach(m -> m.getLinks().forEach(l ->
-                            links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))
-                    )
-            );
+                    links.add(Pair.of("Milestone dependency " + m.getDescription() + " link", l.getLink()))));
         }
         architectureUpdate.getUsefulLinks().forEach(l ->
-                links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink()))
-        );
+                links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink())));
 
-        architectureUpdate.getCapabilityContainer().getFeatureStories().stream().filter(s -> s.getJira().getLink() != null ).forEach(s ->
-                links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink()))
-        );
+        architectureUpdate.getCapabilityContainer().getFeatureStories().stream().filter(s -> s.getJira().getLink() != null).forEach(s ->
+                links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink())));
+
         return links;
     }
 
@@ -185,19 +246,18 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_StoriesFunctionalRequirementsMustBeValidReferences() {
-        return architectureUpdate.getCapabilityContainer().getFeatureStories()
-                .stream()
+        return architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
                 .filter(story -> story.getRequirementReferences() != null)
                 .flatMap(story ->
                         getStoryRequirementReferencesStream(story)
                                 .filter(funcReq -> !allFunctionalRequirementIds.contains(funcReq))
-                                .map(funcReq -> forFunctionalRequirementsMustBeValidReferences(story.getTitle(), funcReq))
-                )
+                                .map(funcReq -> forFunctionalRequirementsMustBeValidReferences(story.getTitle(), funcReq)))
                 .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_FunctionalRequirementsMustHaveStories() {
-        var storyReferencedFunctionalRequirements = getAllFunctionalRequirementsReferencedByStories();
+        final var storyReferencedFunctionalRequirements = getAllFunctionalRequirementsReferencedByStories();
+
         return architectureUpdate.getFunctionalRequirements().keySet().stream()
                 .filter(functionalRequirement -> !storyReferencedFunctionalRequirements.contains(functionalRequirement))
                 .map(ValidationError::forMustHaveStories)
@@ -205,8 +265,7 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_TddsComponentsMustBeValidReferences() {
-        return architectureUpdate.getTddContainersByComponent()
-                .stream()
+        return architectureUpdate.getTddContainersByComponent().stream()
                 .filter(component -> !component.isDeleted())
                 .map(TddContainerByComponent::getComponentId)
                 .filter(componentReference ->
@@ -216,8 +275,7 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_TddsDeletedComponentsMustBeValidReferences() {
-        return architectureUpdate.getTddContainersByComponent()
-                .stream()
+        return architectureUpdate.getTddContainersByComponent().stream()
                 .filter(TddContainerByComponent::isDeleted)
                 .map(TddContainerByComponent::getComponentId)
                 .filter(componentReference ->
@@ -251,52 +309,42 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<ValidationError> getErrors_StoriesMustHaveTdds() {
-        return architectureUpdate.getCapabilityContainer().getFeatureStories()
-                .stream()
+        return architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
                 .filter(story -> story.getTddReferences() == null || story.getTddReferences().isEmpty())
                 .map(story -> forStoriesMustHaveTdds(story.getTitle()))
                 .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_StoriesMustHaveFunctionalRequirements() {
-        return architectureUpdate.getCapabilityContainer().getFeatureStories()
-                .stream()
+        return architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
                 .filter(story -> story.getRequirementReferences() == null || story.getRequirementReferences().isEmpty())
                 .map(story -> forStoriesMustHaveFunctionalRequirements(story.getTitle()))
                 .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_DecisionsTddsMustBeValidReferences() {
-        return architectureUpdate.getDecisions()
-                .entrySet()
-                .stream()
+        return architectureUpdate.getDecisions().entrySet().stream()
                 .filter(decisionEntry -> decisionEntry.getValue().getTddReferences() != null)
                 .flatMap(decisionEntry ->
                         decisionEntry.getValue().getTddReferences()
                                 .stream()
                                 .filter(tdd -> !allTddIds.contains(tdd) && !TddId.noPr().equals(tdd))
-                                .map(tdd -> forTddsMustBeValidReferences(decisionEntry.getKey(), tdd))
-                )
+                                .map(tdd -> forTddsMustBeValidReferences(decisionEntry.getKey(), tdd)))
                 .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_StoriesTddsMustBeValidReferences() {
-        return architectureUpdate.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
+        return architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
                 .filter(story -> story.getTddReferences() != null)
                 .flatMap(story ->
                         getTddReferencesStream(story)
                                 .filter(tdd -> !allTddIds.contains(tdd) && !TddId.noPr().equals(tdd))
-                                .map(tdd -> forStoriesTddsMustBeValidReferences(tdd, story.getTitle()))
-                )
+                                .map(tdd -> forStoriesTddsMustBeValidReferences(tdd, story.getTitle())))
                 .collect(toSet());
     }
 
     private Set<ValidationError> getErrors_FunctionalRequirementsTddsMustBeValidReferences() {
-        return architectureUpdate.getFunctionalRequirements()
-                .entrySet()
-                .stream()
+        return architectureUpdate.getFunctionalRequirements().entrySet().stream()
                 .filter(functionalEntry -> functionalEntry.getValue().getTddReferences() != null)
                 .flatMap(functionalEntry ->
                         functionalEntry.getValue().getTddReferences()
@@ -324,42 +372,22 @@ public class ArchitectureUpdateValidator {
                             Tdd tdd = pair.getValue();
 
                             // Error condition: Text exists and is overridden by found matching file.
-                            boolean errorCondition = tdd.getContent()!= null && tdd.getText() != null;
+                            boolean errorCondition = tdd.getContent() != null && tdd.getText() != null;
                             if (errorCondition) {
                                 return forOverriddenByTddContentFile(tddContainer.getComponentId(), id, tdd.getContent().getFilename());
                             }
                             return null;
-                        })
-                ).filter(Objects::nonNull)
+                        }))
+                .filter(Objects::nonNull)
                 .collect(toSet());
-    }
-
-    private ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<TddId, Tdd> pair) {
-        TddId id = pair.getKey();
-        Tdd tdd = pair.getValue();
-
-        boolean tddContentIsEmpty = (tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty());
-        if (tddContentIsEmpty) return null;
-
-        boolean errorCondition =
-                tdd.getText() != null &&
-                        tdd.getFile() != null &&
-                        !tdd.getText().isEmpty() &&
-                        !tdd.getFile().isEmpty();
-        if (errorCondition) {
-            return forAmbiguousTddContentReference(tddContainerByComponent.getComponentId(), id);
-        }
-
-        return null;
     }
 
     private List<TddId> getAllTddIds() {
         Stream<TddId> tddIds = architectureUpdate.getTddContainersByComponent()
                 .stream()
                 .flatMap(container -> container.getTdds().keySet().stream());
-        return Stream.concat(
-                tddIds,
-                Stream.of(TddId.noPr()))
+
+        return concat(tddIds, Stream.of(TddId.noPr()))
                 .collect(toList());
     }
 
@@ -368,17 +396,13 @@ public class ArchitectureUpdateValidator {
     }
 
     private Set<TddId> getAllTddIdsReferencedByStories() {
-        return architectureUpdate.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .flatMap(this::getTddReferencesStream)
+        return architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
+                .flatMap(ArchitectureUpdateValidator::getTddReferencesStream)
                 .collect(toSet());
     }
 
     private Set<TddId> getAllTddIdsReferencedByFunctionalRequirements() {
-        return architectureUpdate.getFunctionalRequirements()
-                .values()
-                .stream()
+        return architectureUpdate.getFunctionalRequirements().values().stream()
                 .filter(requirement -> requirement.getTddReferences() != null)
                 .flatMap(requirement -> requirement.getTddReferences().stream())
                 .collect(toSet());
@@ -387,48 +411,18 @@ public class ArchitectureUpdateValidator {
     private Set<FunctionalRequirementId> getAllFunctionalRequirementsReferencedByStories() {
         return architectureUpdate.getCapabilityContainer()
                 .getFeatureStories().stream()
-                .flatMap(this::getStoryRequirementReferencesStream)
+                .flatMap(ArchitectureUpdateValidator::getStoryRequirementReferencesStream)
                 .collect(toSet());
     }
 
-    private java.util.stream.Stream<TddId> getTddReferencesStream(FeatureStory story) {
-        if (story.getTddReferences() == null)
-            return java.util.stream.Stream.empty();
-
-        return story.getTddReferences().stream();
-    }
-
-    private java.util.stream.Stream<FunctionalRequirementId> getStoryRequirementReferencesStream(FeatureStory story) {
-        if (story.getRequirementReferences() == null)
-            return java.util.stream.Stream.empty();
-
-        return story.getRequirementReferences().stream();
-    }
-
     private Set<TddId> getAllTddIdsReferencedByDecisions() {
-        return architectureUpdate.getDecisions()
-                .values()
-                .stream()
+        return architectureUpdate.getDecisions().values().stream()
                 .filter(decision -> decision.getTddReferences() != null)
                 .flatMap(decision -> decision.getTddReferences().stream())
                 .collect(toSet());
     }
 
-    private Set<String> getAllComponentIdsIn(ArchitectureDataStructure architecture) {
-        return architecture.getModel().getComponents().stream().map(Entity::getId).collect(toSet());
-    }
-
-    private <T> Set<T> findDuplicates(Collection<T> collection) {
-        Set<T> uniques = new HashSet<>();
-        return collection
-                .stream()
-                .filter(t -> !uniques.add(t))
-                .collect(toSet());
-    }
-
-    @EqualsAndHashCode
-    @Getter
-    @RequiredArgsConstructor
+    @Data
     private static class ComponentReferenceAndIsDeleted {
         private final TddComponentReference componentReference;
         private final boolean isDeleted;
