@@ -203,4 +203,7 @@ you will need to _manually_ edit before validation passes.
 
 ## TODO
 
+* Instructions for obtaining various credential files
 * Migrate to JUnit 5
+* Use of modern assertions such as
+  [AssertJ](https://github.com/joel-costigliola/assertj-core), et al
