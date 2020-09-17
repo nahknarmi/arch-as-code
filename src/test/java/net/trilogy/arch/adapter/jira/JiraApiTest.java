@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import java.net.URI;
 import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
@@ -39,12 +38,7 @@ public class JiraApiTest {
         mockIssueClient = mock(IssueRestClient.class);
         when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
 
-        jiraApi = new JiraApi(
-                mockJiraClient,
-                URI.create("http://base-uri/"),
-                "/get-story-endpoint/",
-                "/bulk-create-endpoint",
-                "/browse");
+        jiraApi = new JiraApi(mockJiraClient);
     }
 
     @Test

@@ -17,16 +17,12 @@ public class JiraApiFactory {
     public static JiraApi newJiraApi(FilesFacade files, Path rootDir, String username, char[] password) throws IOException {
         var rawContents = files.readString(rootDir.resolve(JIRA_API_SETTINGS_FILE_PATH));
         final ObjectMapper objectMapper = new ObjectMapper();
-
         final var baseUri = URI.create(objectMapper.readTree(rawContents).get("base_uri").textValue());
-        final var getStoryEndpoint = objectMapper.readTree(rawContents).get("get_story_endpoint").textValue();
-        final var bulkCreateEndpoint = objectMapper.readTree(rawContents).get("bulk_create_endpoint").textValue();
-        final var linkPrefix = objectMapper.readTree(rawContents).get("link_prefix").textValue();
 
         final var jiraClient = new AsynchronousJiraRestClientFactory().create(
                 baseUri,
                 new BasicHttpAuthenticationHandler(username, new String(password)));
 
-        return new JiraApi(jiraClient, baseUri, getStoryEndpoint, bulkCreateEndpoint, linkPrefix);
+        return new JiraApi(jiraClient);
     }
 }

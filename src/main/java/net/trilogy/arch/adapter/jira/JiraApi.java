@@ -4,9 +4,8 @@ import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
-import com.google.common.annotations.VisibleForTesting;
-import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 
 import java.net.URI;
@@ -16,35 +15,12 @@ import java.util.concurrent.ExecutionException;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static lombok.AccessLevel.PACKAGE;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 
-@Getter(PACKAGE)
+@RequiredArgsConstructor
 public class JiraApi {
-    @VisibleForTesting
-    private final URI baseUri;
-    @VisibleForTesting
-    private final String getStoryEndpoint;
-    @VisibleForTesting
-    private final String bulkCreateEndpoint;
-    @VisibleForTesting
-    private final String linkPrefix;
-
     private final JiraRestClient jiraClient;
-
-    public JiraApi(
-            JiraRestClient jiraClient,
-            URI baseUri,
-            String getStoryEndpoint,
-            String bulkCreateEndpoint,
-            String linkPrefix) {
-        this.jiraClient = jiraClient;
-        this.baseUri = URI.create(baseUri.toString().replaceAll("/$", "") + "/");
-        this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
-        this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
-        this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
-    }
 
     public JiraQueryResult getStory(Jira jira)
             throws JiraApiException {
