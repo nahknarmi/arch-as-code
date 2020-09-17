@@ -44,6 +44,8 @@ If unsure of installing a current JDK patch for version 11, use
 Use a 2020+ version of "Ultimate" edition.  "Community Edition" may work, but
 YMMV.
 
+Ensure your Project Structure is using Java 11.
+
 Install these plugins:
 
 * Lombok
