@@ -1,4 +1,4 @@
-name: arch-as-code ci
+name: CI
 
 on: [push]
 

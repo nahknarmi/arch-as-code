@@ -1,6 +1,6 @@
 # Arch as code
 
-![](https://github.com/trilogy-group/arch-as-code/workflows/Build%20&%20Test/badge.svg)
+[![CI](https://github.com/trilogy-group/arch-as-code/workflows/CI/badge.svg?branch=master)](https://github.com/trilogy-group/arch-as-code/actions)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/test_coverage)](https://codeclimate.com/github/trilogy-group/arch-as-code/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/maintainability)](https://codeclimate.com/github/trilogy-group/arch-as-code/maintainability)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=trilogy-group/arch-as-code)](https://dependabot.com)
@@ -30,7 +30,7 @@ and documentation.
 
 ## Getting started
 
-### 4. Use Java 11 locally
+### 0. Use Java 11 locally
 
 The build currently assumes Java 11.  Several tools exist to manage multiple
 JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
