@@ -1,27 +1,26 @@
 package net.trilogy.arch.e2e;
 
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.graphviz.GraphvizFacade;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 
+import static java.nio.file.Files.createTempDirectory;
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_DIFF_COMMAND;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -30,15 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public class DiffCommandE2ETest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
+public class DiffCommandE2ETest extends CommandTestBase {
     private Application app;
     private File rootDir;
     private GitInterface mockedGitInterface;
@@ -46,13 +37,8 @@ public class DiffCommandE2ETest {
 
     @Before
     public void setUp() throws Exception {
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-
-        rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_DIFF_COMMAND).getPath());
-        outputDirParent = Files.createTempDirectory("aac").toFile();
+        rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_DIFF_COMMAND).getPath());
+        outputDirParent = createTempDirectory("aac").toFile();
 
         mockedGitInterface = mock(GitInterface.class);
         app = Application.builder().gitInterface(mockedGitInterface).build();
@@ -60,9 +46,7 @@ public class DiffCommandE2ETest {
 
     @After
     public void tearDown() throws Exception {
-        FileUtils.forceDelete(outputDirParent);
-        System.setOut(originalOut);
-        System.setErr(originalErr);
+        forceDelete(outputDirParent);
     }
 
     @Test
@@ -76,8 +60,8 @@ public class DiffCommandE2ETest {
 
         // THEN
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Unable to create output directory"));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to create output directory"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
     }
 
     @Test
@@ -91,9 +75,9 @@ public class DiffCommandE2ETest {
                 "diff -b master " + rootDir.getAbsolutePath() + " -o " + outputPath.toString());
 
         // THEN
-        collector.checkThat(out.toString(),
+        collector.checkThat(dummyOut.getLog(),
                 equalTo("SVG files created in " + outputPath.toString() + "\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
     }
 
@@ -190,8 +174,8 @@ public class DiffCommandE2ETest {
 
             // THEN
             collector.checkThat(status, not(equalTo(0)));
-            collector.checkThat(err.toString(), containsString("Unable to render SVG"));
-            collector.checkThat(out.toString(), equalTo(""));
+            collector.checkThat(dummyErr.getLog(), containsString("Unable to render SVG"));
+            collector.checkThat(dummyOut.getLog(), equalTo(""));
         }
     }
 

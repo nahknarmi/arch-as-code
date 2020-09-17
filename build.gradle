@@ -83,6 +83,7 @@ dependencies {
     testImplementation "commons-io:commons-io:2.7"
     testImplementation "org.mockito:mockito-inline:3.5.10"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
+    testImplementation "com.github.stefanbirkner:system-rules:1.19.0"
 }
 
 loggingCapabilities {

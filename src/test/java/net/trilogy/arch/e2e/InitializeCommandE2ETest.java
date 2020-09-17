@@ -1,21 +1,19 @@
 package net.trilogy.arch.e2e;
 
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.nio.file.Files.createTempDirectory;
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
@@ -24,31 +22,18 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class InitializeCommandE2ETest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
+public class InitializeCommandE2ETest extends CommandTestBase {
     private Path tempProductDirectory;
 
     @Before
     public void setUp() throws Exception {
-        tempProductDirectory = Files.createTempDirectory("arch-as-code");
-
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
+        tempProductDirectory = createTempDirectory("arch-as-code");
     }
 
     @After
     public void tearDown() throws Exception {
+        //noinspection ResultOfMethodCallIgnored
         Files.walk(tempProductDirectory).map(Path::toFile).forEach(File::delete);
-
-        System.setOut(originalOut);
-        System.setErr(originalErr);
     }
 
     @Test
@@ -99,7 +84,7 @@ public class InitializeCommandE2ETest {
         Integer status = execute(app, "init -i key -k secret -s 1234 " + tempProductDirectory.toAbsolutePath());
 
         collector.checkThat(status, not(0));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to initialize\nError: java.io.IOException: Boom!"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to initialize\nError: java.io.IOException: Boom!"));
     }
 }

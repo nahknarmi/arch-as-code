@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class MasterBranchBuildPublishE2ETest {
-
     @Test
     public void validate() {
         File documentationRoot = new File("documentation/products/arch-as-code");

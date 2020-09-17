@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static net.trilogy.arch.TestHelper.JSON_STRUCTURIZR_NO_SYSTEM;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.TestHelper.getPath;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,10 +15,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
 public class ValidateCommandE2ETest {
-
     @Test
     public void shouldBeOkayWithMostlyEmptyImportedJson() throws Exception {
-        String jsonPath = getClass().getResource(TestHelper.JSON_STRUCTURIZR_NO_SYSTEM).getPath();
+        String jsonPath = getClass().getResource(JSON_STRUCTURIZR_NO_SYSTEM).getPath();
         Path root = Files.createTempDirectory("aac").toAbsolutePath();
 
         execute("import", jsonPath, root.toString());
