@@ -3,19 +3,14 @@ package net.trilogy.arch.transformation.enhancer;
 import com.structurizr.Workspace;
 import com.structurizr.documentation.Image;
 import com.structurizr.documentation.Section;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.Util;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,29 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DocumentationEnhancerTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
-    @Before
-    public void setUp() {
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-    }
-
-    @After
-    public void tearDown() {
-        System.setOut(originalOut);
-        System.setErr(originalErr);
-    }
-
+public class DocumentationEnhancerTest extends CommandTestBase {
     @Test
     public void should_have_two_sections_corresponding_to_two_markdown_files() {
         File root = mock(File.class);
@@ -102,11 +75,11 @@ public class DocumentationEnhancerTest {
         new DocumentationEnhancer(new File(file), mockedFilesFacade).enhance(workspace, new ArchitectureDataStructure());
 
         // Then
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to import documentation: 1_context-diagram.md\nError thrown: java.io.IOException: Boom!"));
-        collector.checkThat(err.toString(), containsString("Unable to import documentation: 2_functional-overview.md\nError thrown: java.io.IOException: Boom!"));
-        collector.checkThat(err.toString(), containsString("Unable to import documentation: 3_Ascii-docs.txt\nError thrown: java.io.IOException: Boom!"));
-        collector.checkThat(err.toString(), containsString("Unable to import documentation: no_order.txt\nError thrown: java.io.IOException: Boom!"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to import documentation: 1_context-diagram.md\nError thrown: java.io.IOException: Boom!"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to import documentation: 2_functional-overview.md\nError thrown: java.io.IOException: Boom!"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to import documentation: 3_Ascii-docs.txt\nError thrown: java.io.IOException: Boom!"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to import documentation: no_order.txt\nError thrown: java.io.IOException: Boom!"));
     }
 
     @Test

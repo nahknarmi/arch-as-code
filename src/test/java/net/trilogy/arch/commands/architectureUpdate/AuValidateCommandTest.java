@@ -1,19 +1,14 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
+import net.trilogy.arch.CommandTestBase;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.file.Path;
 
-import static java.lang.System.setErr;
-import static java.lang.System.setOut;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.move;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_VALIDATION_E2E;
@@ -24,25 +19,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
-public class AuValidateCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    private final PrintStream originalOut = System.out;
-    private final PrintStream originalErr = System.err;
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
+public class AuValidateCommandTest extends CommandTestBase {
     private File rootDir;
     private Path auDir;
     private Git git;
 
     @Before
     public void setUp() throws Exception {
-        out.reset();
-        err.reset();
-        setOut(new PrintStream(out));
-        setErr(new PrintStream(err));
         var buildDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_AU_VALIDATION_E2E).getPath());
 
         rootDir = buildDir.toPath().resolve("git").toFile();
@@ -57,8 +40,6 @@ public class AuValidateCommandTest {
     @After
     public void tearDown() throws Exception {
         deleteDirectory(rootDir);
-        setOut(originalOut);
-        setErr(originalErr);
     }
 
     private void setUpRealisticGitRepository() throws Exception {
@@ -87,8 +68,8 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
-        collector.checkThat(out.toString(), containsString("Success, no errors found."));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), containsString("Success, no errors found."));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -98,8 +79,8 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
-        collector.checkThat(out.toString(), containsString("Success, no errors found."));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), containsString("Success, no errors found."));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -109,8 +90,8 @@ public class AuValidateCommandTest {
         final var status = execute("architecture-update", "validate", "-b", "master", "-t", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
-        collector.checkThat(out.toString(), containsString("Success, no errors found."));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), containsString("Success, no errors found."));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -120,8 +101,8 @@ public class AuValidateCommandTest {
         final var status = execute("architecture-update", "validate", "-b", "master", "-s", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, equalTo(0));
-        collector.checkThat(out.toString(), containsString("Success, no errors found."));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), containsString("Success, no errors found."));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -131,9 +112,9 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("" +
                         "Decision Missing TDD:\n" +
                         "    Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference.\n" +
@@ -153,12 +134,12 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(),
                 containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference."));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."));
     }
 
@@ -169,8 +150,8 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(),
                 containsString("TDD content file \"TDD 1.0 : Component-38.md\" matching Component id \"38\" and TDD \"TDD 1.0\" will override existing TDD text."));
     }
 
@@ -181,12 +162,12 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", "--TDDs", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(),
                 containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference."));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 not(containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story.")));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist."));
     }
 
@@ -197,12 +178,12 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", "--stories", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(),
                 not(containsString("Component id \"[INVALID-COMPONENT-ID]\" does not exist.")));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 not(containsString("Decision \"[SAMPLE-DECISION-ID]\" must have at least one TDD reference.")));
-        collector.checkThat(err.toString(),
+        collector.checkThat(dummyErr.getLog(),
                 containsString("TDD \"[SAMPLE-TDD-ID]\" needs to be referenced in a story."));
     }
 
@@ -213,7 +194,7 @@ public class AuValidateCommandTest {
         final var status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Deleted component id \"deleted-component-invalid\" is invalid. (Checked architecture in \"master\" branch.)"));
+        collector.checkThat(dummyErr.getLog(), containsString("Deleted component id \"deleted-component-invalid\" is invalid. (Checked architecture in \"master\" branch.)"));
     }
 
     @Test
@@ -223,7 +204,7 @@ public class AuValidateCommandTest {
         final var status = execute("architecture-update", "validate", "-b", "invalid", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Unable to load 'invalid' branch architecture\nError: net.trilogy.arch.adapter.git.GitInterface$BranchNotFoundException"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to load 'invalid' branch architecture\nError: net.trilogy.arch.adapter.git.GitInterface$BranchNotFoundException"));
     }
 
     @Test
@@ -233,7 +214,7 @@ public class AuValidateCommandTest {
         final var status = execute("architecture-update", "validate", "-b", "master", auPath, rootDir.getAbsolutePath() + "invalid");
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Error: java.nio.file.NoSuchFileException"));
+        collector.checkThat(dummyErr.getLog(), containsString("Error: java.nio.file.NoSuchFileException"));
     }
 
     @Test
@@ -243,10 +224,10 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
 
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 containsString("Duplicate field '[SAMPLE-TDD-ID]'"));
     }
 
@@ -257,9 +238,9 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 containsString("Unrecognized field \"notext\""));
     }
 
@@ -269,7 +250,7 @@ public class AuValidateCommandTest {
 
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
     }
 
@@ -280,9 +261,9 @@ public class AuValidateCommandTest {
         final var status = execute("au", "validate", "-b", "master", auPath, rootDir.getAbsolutePath());
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 containsString("No-Pr is combined with another TDD"));
     }
 }

@@ -1,6 +1,7 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
@@ -24,22 +25,16 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 import org.mockito.MockedStatic;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.lang.System.setErr;
-import static java.lang.System.setOut;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
@@ -68,15 +63,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class AuPublishStoriesCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    private final PrintStream originalOut = System.out;
-    private final PrintStream originalErr = System.err;
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
+public class AuPublishStoriesCommandTest extends CommandTestBase {
     private File rootDir;
     private Path testCloneDirectory;
     private JiraApi mockedJiraApi;
@@ -90,16 +77,11 @@ public class AuPublishStoriesCommandTest {
         mockedJiraApi = mock(JiraApi.class);
         mockedJiraApiFactory = mockStatic(JiraApiFactory.class, invocation -> mockedJiraApi);
 
-        out.reset();
-        err.reset();
-        setOut(new PrintStream(out));
-        setErr(new PrintStream(err));
-
         spiedFilesFacade = spy(new FilesFacade());
 
         rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
 
-        GoogleDocsAuthorizedApiFactory mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
+        final var mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
         when(newJiraApi(spiedFilesFacade, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
                 .thenReturn(mockedJiraApi);
@@ -125,9 +107,6 @@ public class AuPublishStoriesCommandTest {
     public void tearDown() throws Exception {
         mockedJiraApiFactory.close();
 
-        setOut(originalOut);
-        setErr(originalErr);
-
         deleteIfExists(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         deleteIfExists(testCloneDirectory);
     }
@@ -142,13 +121,13 @@ public class AuPublishStoriesCommandTest {
                 .build();
 
         // When
-        final int status = execute(newApp, genericCommand());
+        final var status = execute(newApp, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
     }
 
@@ -159,13 +138,13 @@ public class AuPublishStoriesCommandTest {
                 .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
         // When
-        final int status = execute(app, genericCommand());
+        final var status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
@@ -177,13 +156,13 @@ public class AuPublishStoriesCommandTest {
                 .when(spiedFilesFacade).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
 
         // When
-        final int status = execute(app, genericCommand());
+        final var status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
@@ -196,17 +175,17 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // When
-        final int status = execute(app, specificCommand("invalid-story"));
+        final var status = execute(app, specificCommand("invalid-story"));
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
                                 "Attempting to create stories...\n\n"));
-        collector.checkThat(err.toString(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
 
     @Test
@@ -272,13 +251,13 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         collector.checkThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
                                 "Attempting to create stories...\n\n" +
                                 "Successfully created:\n  - story that should be created\n  - story that failed to be created\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -321,14 +300,14 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final int statusCode = execute(app, genericCommand());
+        final var statusCode = execute(app, genericCommand());
 
         // THEN:
         assertThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("\nError! Some stories failed to publish. Please retry. Errors reported by Jira:\n\nStory: \"story that failed to be created\":\n  - error-message\n"));
         assertThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo("Not re-creating stories:\n  - story that should not be created\n\n" +
                         "Checking epic...\n\n" +
                         "Attempting to create stories...\n\nSuccessfully created:\n  - story that should be created\n"));
@@ -345,11 +324,11 @@ public class AuPublishStoriesCommandTest {
                         new RuntimeException("Details")));
         mockGitInterface();
 
-        final int statusCode = execute(app, genericCommand());
+        final var statusCode = execute(app, genericCommand());
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
+        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
         assertThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
@@ -361,11 +340,11 @@ public class AuPublishStoriesCommandTest {
     public void shouldHandleNoStoriesToCreate() throws Exception {
         mockGitInterface();
 
-        final int statusCode = execute(app, specificCommand("no-stories-to-create"));
+        final var statusCode = execute(app, specificCommand("no-stories-to-create"));
         verifyNoMoreInteractions(mockedJiraApi);
 
-        collector.checkThat(err.toString(), equalTo("ERROR: No stories to create.\n"));
-        collector.checkThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: No stories to create.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\n"));
         collector.checkThat(statusCode, not(equalTo(0)));
     }
 
@@ -377,10 +356,10 @@ public class AuPublishStoriesCommandTest {
         when(mockedJiraApi.getStory(epic))
                 .thenThrow(new JiraApiException("OOPS!", null));
 
-        final int statusCode = execute(app, genericCommand());
+        final var statusCode = execute(app, genericCommand());
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
-        assertThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
+        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
+        assertThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
         assertThat(statusCode, not(equalTo(0)));
     }
 
@@ -389,10 +368,10 @@ public class AuPublishStoriesCommandTest {
         when(mockedGitInterface.load(any(), any()))
                 .thenThrow(new RuntimeException("Boom!"));
 
-        final int status = execute(app, genericCommand());
+        final var status = execute(app, genericCommand());
 
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
 
@@ -411,11 +390,11 @@ public class AuPublishStoriesCommandTest {
         doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFilesFacade).writeString(any(), any());
 
         // WHEN:
-        final int status = execute(app, genericCommand());
+        final var status = execute(app, genericCommand());
 
         // THEN:
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("Unable to write update to AU.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
