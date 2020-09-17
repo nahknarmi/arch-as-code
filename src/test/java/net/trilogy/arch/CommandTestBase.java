@@ -14,7 +14,7 @@ public abstract class CommandTestBase {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
     @Rule
-    public final SystemOutRule dummyOut = new SystemOutRule().enableLog();
+    public final SystemOutRule dummyOut = new SystemOutRule().enableLog().mute();
     @Rule
-    public final SystemErrRule dummyErr = new SystemErrRule().enableLog();
+    public final SystemErrRule dummyErr = new SystemErrRule().enableLog().mute();
 }

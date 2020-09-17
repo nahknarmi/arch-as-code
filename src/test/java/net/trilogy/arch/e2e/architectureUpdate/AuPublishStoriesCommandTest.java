@@ -1,7 +1,7 @@
 package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
-import net.trilogy.arch.TestHelper;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -21,24 +21,19 @@ import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static java.lang.System.setErr;
-import static java.lang.System.setOut;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
@@ -58,15 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class AuPublishStoriesCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    private final PrintStream originalOut = System.out;
-    private final PrintStream originalErr = System.err;
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
+public class AuPublishStoriesCommandTest extends CommandTestBase {
     private File rootDir;
     private Path testCloneDirectory;
     private JiraApi mockedJiraApi;
@@ -74,83 +61,11 @@ public class AuPublishStoriesCommandTest {
     private FilesFacade spiedFilesFacade;
     private GitInterface mockedGitInterface;
 
-    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
-        return List.of(
-                new JiraStory(
-                        "story that should be created",
-                        List.of(
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/Reset Password Controller",
-                                        null),
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID-2]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/E-mail Component",
-                                        null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
-                new JiraStory(
-                        "story that failed to be created",
-                        singletonList(new JiraStory.JiraTdd(
-                                new TddId("[SAMPLE-TDD-ID]"),
-                                new Tdd("[SAMPLE TDD TEXT]", null),
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
-    }
-
-    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
-        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
-        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
-
-        return asList(new JiraStory(
-                        "story that should be created",
-                        singletonList(new JiraStory.JiraTdd(
-                                new TddId("TDD 1.0"),
-                                tdd,
-                                "c4://Internet Banking System/API Application/Sign In Controller",
-                                tddContent)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("TDD 1.0")))))),
-                new JiraStory("story that should be created for no pr",
-                        singletonList(new JiraStory.JiraTdd(
-                                TddId.noPr(),
-                                null,
-                                "c4://Internet Banking System/API Application/Sign In Controller",
-                                null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("TDD 1.0")))))));
-    }
-
     @Before
     public void setUp() throws Exception {
-        out.reset();
-        err.reset();
-        setOut(new PrintStream(out));
-        setErr(new PrintStream(err));
-
         spiedFilesFacade = spy(new FilesFacade());
 
-        rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
+        rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
 
         GoogleDocsAuthorizedApiFactory mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
@@ -178,9 +93,6 @@ public class AuPublishStoriesCommandTest {
 
     @After
     public void tearDown() throws Exception {
-        setOut(originalOut);
-        setErr(originalErr);
-
         deleteIfExists(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         deleteIfExists(testCloneDirectory);
     }
@@ -197,8 +109,8 @@ public class AuPublishStoriesCommandTest {
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
     }
 
     @Test
@@ -213,8 +125,8 @@ public class AuPublishStoriesCommandTest {
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -230,8 +142,8 @@ public class AuPublishStoriesCommandTest {
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -249,12 +161,12 @@ public class AuPublishStoriesCommandTest {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
                                 "Attempting to create stories...\n\n"));
-        collector.checkThat(err.toString(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
 
     @Test
@@ -323,13 +235,13 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         collector.checkThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
                                 "Attempting to create stories...\n\n" +
                                 "Successfully created:\n  - story that should be created\n  - story that failed to be created\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -377,10 +289,10 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         assertThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("\nError! Some stories failed to publish. Please retry. Errors reported by Jira:\n\nStory: \"story that failed to be created\":\n  - error-message\n"));
         assertThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo("Not re-creating stories:\n  - story that should not be created\n\n" +
                         "Checking epic...\n\n" +
                         "Attempting to create stories...\n\nSuccessfully created:\n  - story that should be created\n"));
@@ -398,9 +310,9 @@ public class AuPublishStoriesCommandTest {
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         final int statusCode = execute(app, command);
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
+        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
         assertThat(
-                out.toString(),
+                dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
                                 "Checking epic...\n\n" +
@@ -416,8 +328,8 @@ public class AuPublishStoriesCommandTest {
         final int statusCode = execute(app, command);
         verifyNoMoreInteractions(mockedJiraApi);
 
-        collector.checkThat(err.toString(), equalTo("ERROR: No stories to create.\n"));
-        collector.checkThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: No stories to create.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\n"));
         collector.checkThat(statusCode, not(equalTo(0)));
     }
 
@@ -432,8 +344,8 @@ public class AuPublishStoriesCommandTest {
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         final int statusCode = execute(app, command);
 
-        assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
-        assertThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
+        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
+        assertThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
         assertThat(statusCode, not(equalTo(0)));
     }
 
@@ -445,8 +357,8 @@ public class AuPublishStoriesCommandTest {
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         final int status = execute(app, command);
 
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
 
@@ -469,7 +381,7 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 equalTo("Unable to write update to AU.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
@@ -482,5 +394,71 @@ public class AuPublishStoriesCommandTest {
                                 .replaceAll("34", "DELETED-COMPONENT-ID"),
                         ArchitectureDataStructure.class));
     }
-}
 
+    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
+        return List.of(
+                new JiraStory(
+                        "story that should be created",
+                        List.of(
+                                new JiraStory.JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                                        null),
+                                new JiraStory.JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID-2]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/E-mail Component",
+                                        null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
+                new JiraStory(
+                        "story that failed to be created",
+                        singletonList(new JiraStory.JiraTdd(
+                                new TddId("[SAMPLE-TDD-ID]"),
+                                new Tdd("[SAMPLE TDD TEXT]", null),
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+    }
+
+    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
+        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
+
+        return asList(new JiraStory(
+                        "story that should be created",
+                        singletonList(new JiraStory.JiraTdd(
+                                new TddId("TDD 1.0"),
+                                tdd,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                tddContent)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))),
+                new JiraStory("story that should be created for no pr",
+                        singletonList(new JiraStory.JiraTdd(
+                                TddId.noPr(),
+                                null,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))));
+    }
+}

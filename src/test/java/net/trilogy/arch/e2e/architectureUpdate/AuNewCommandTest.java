@@ -3,36 +3,31 @@ package net.trilogy.arch.e2e.architectureUpdate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.google.GoogleDocsFacade;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
+import net.trilogy.arch.adapter.google.GoogleDocsFacade;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static java.lang.System.setErr;
-import static java.lang.System.setOut;
 import static java.util.Objects.requireNonNull;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
+import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,48 +40,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class AuNewCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    private final PrintStream originalOut = System.out;
-    private final PrintStream originalErr = System.err;
-    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
+public class AuNewCommandTest extends CommandTestBase {
     private GoogleDocsFacade googleDocsApiMock;
     private FilesFacade filesFacadeSpy;
     private GitInterface gitInterfaceSpy;
     private Application app;
     private File rootDir;
 
-    private static Path initializeAuDirectory(Path rootDir) {
-        execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-
-        return rootDir.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER);
-    }
-
-    private static String str(Path tempDirPath) {
-        return tempDirPath.toAbsolutePath().toString();
-    }
-
-    private static Path getTempRepositoryDirectory() throws Exception {
-        var repoDir = Files.createTempDirectory("aac");
-        var rootDir = Files.createDirectory(repoDir.resolve("root"));
-        var git = Git.init().setDirectory(repoDir.toFile()).call();
-        git.add().addFilepattern(".").call();
-        git.commit().setMessage("First!").call();
-        git.checkout().setCreateBranch(true).setName("au-name").call();
-        return rootDir;
-    }
-
     @Before
     public void setUp() throws Exception {
-        out.reset();
-        err.reset();
-        setOut(new PrintStream(out));
-        setErr(new PrintStream(err));
-
         rootDir = getTempRepositoryDirectory().toFile();
         googleDocsApiMock = mock(GoogleDocsFacade.class);
         final var googleDocsApiFactoryMock = mock(GoogleDocsAuthorizedApiFactory.class);
@@ -104,35 +66,33 @@ public class AuNewCommandTest {
 
     @After
     public void tearDown() throws Exception {
-        FileUtils.forceDelete(rootDir);
-        setOut(originalOut);
-        setErr(originalErr);
+        forceDelete(rootDir);
     }
 
     @Test
     public void shouldFailGracefullyIfGitApiFails() throws Exception {
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir.toPath()));
-        out.reset();
+        dummyOut.clearLog();
 
         doThrow(new RuntimeException("Boom!")).when(gitInterfaceSpy).getBranch(any());
 
         int status = execute(app, "au new not-au-name " + str(rootDir.toPath()));
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("ERROR: Unable to check git branch\nError:"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("ERROR: Unable to check git branch\nError:"));
     }
 
     @Test
     public void shouldFailIfBranchNameDoesNotMatch() {
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir.toPath()));
-        out.reset();
+        dummyOut.clearLog();
 
         final var status = execute("au", "new", "not-au-name", str(rootDir.toPath()));
 
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString(
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString(
                 "ERROR: AU must be created in git branch of same name.\n" +
                         "Current git branch: 'au-name'\n" +
                         "Au name: 'not-au-name'\n"));
@@ -183,7 +143,7 @@ public class AuNewCommandTest {
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(Files.exists(auFile), is(false));
-        collector.checkThat(err.toString(), containsString("Unable to initialize Google Docs API. Does configuration " + configPath + " exist?\n"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to initialize Google Docs API. Does configuration " + configPath + " exist?\n"));
     }
 
     @Test
@@ -203,9 +163,9 @@ public class AuNewCommandTest {
 
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(Files.exists(auFile), is(false));
-        collector.checkThat(err.toString(), containsString("Unable to create architecture-updates directory."));
-        collector.checkThat(err.toString(), containsString("details"));
-        collector.checkThat(err.toString(), containsString("cause"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to create architecture-updates directory."));
+        collector.checkThat(dummyErr.getLog(), containsString("details"));
+        collector.checkThat(dummyErr.getLog(), containsString("cause"));
     }
 
     @Test
@@ -292,22 +252,18 @@ public class AuNewCommandTest {
         Files.writeString(auFile, "EXISTING CONTENTS");
 
         collector.checkThat(setupStatus, equalTo(0));
-        collector.checkThat(err.toString(), equalTo(""));
-
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
                 Files.readString(auFile),
                 equalTo("EXISTING CONTENTS"));
-
         collector.checkThat(
                 "Overwriting an AU must exit with failed status.",
                 execute("au", "new", auName, str(rootDir)),
                 not(equalTo(0)));
-
         collector.checkThat(
-                err.toString(),
+                dummyErr.getLog(),
                 containsString("/root/architecture-updates/au-name/architecture-update.yml already exists. Try a different name."));
-
         collector.checkThat(
                 "Must not overwrite an AU",
                 Files.readString(auFile),
@@ -333,13 +289,33 @@ public class AuNewCommandTest {
         final var command = "au new " + auName + " " + str(rootDir);
 
         assertThat(execute(app, command), not(equalTo(0)));
-        collector.checkThat(err.toString(), containsString("Unable to write AU file."));
-        collector.checkThat(err.toString(), containsString("No disk space!"));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to write AU file."));
+        collector.checkThat(dummyErr.getLog(), containsString("No disk space!"));
     }
 
     private void mockGoogleDocsApi() throws IOException {
         final var rawFileContents = Files.readString(Paths.get(requireNonNull(getClass().getClassLoader().getResource(TestHelper.ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-1.json")).getPath()));
         final var jsonFileContents = new ObjectMapper().readValue(rawFileContents, JsonNode.class);
         when(googleDocsApiMock.fetch("url")).thenReturn(new GoogleDocsFacade.Response(jsonFileContents, null));
+    }
+
+    private static Path initializeAuDirectory(Path rootDir) {
+        execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
+
+        return rootDir.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER);
+    }
+
+    private static String str(Path tempDirPath) {
+        return tempDirPath.toAbsolutePath().toString();
+    }
+
+    private static Path getTempRepositoryDirectory() throws Exception {
+        var repoDir = Files.createTempDirectory("aac");
+        var rootDir = Files.createDirectory(repoDir.resolve("root"));
+        var git = Git.init().setDirectory(repoDir.toFile()).call();
+        git.add().addFilepattern(".").call();
+        git.commit().setMessage("First!").call();
+        git.checkout().setCreateBranch(true).setName("au-name").call();
+        return rootDir;
     }
 }

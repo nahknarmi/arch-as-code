@@ -1,18 +1,13 @@
 package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 import org.mockito.ArgumentMatchers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -29,29 +24,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AuInitializeCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
-    @Before
-    public void setUp() {
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-    }
-
-    @After
-    public void tearDown() {
-        System.setOut(originalOut);
-        System.setErr(originalErr);
-    }
-
+public class AuInitializeCommandTest extends CommandTestBase {
     @Test
     public void shouldUseCorrectAuFolder() {
         collector.checkThat(ARCHITECTURE_UPDATES_ROOT_FOLDER, equalTo("architecture-updates"));
@@ -61,20 +34,16 @@ public class AuInitializeCommandTest {
     public void shouldExitWithHappyStatus() throws Exception {
         collector.checkThat(
                 execute("au", "init", "-c c", "-p p", "-s s", str(getTempDirectory())),
-                equalTo(0)
-        );
+                equalTo(0));
         collector.checkThat(
                 execute("architecture-update", "init", "-c c", "-p p", "-s s", str(getTempDirectory())),
-                equalTo(0)
-        );
+                equalTo(0));
         collector.checkThat(
                 execute("au", "initialize", "-c c", "-p p", "-s s", str(getTempDirectory())),
-                equalTo(0)
-        );
+                equalTo(0));
         collector.checkThat(
                 execute("architecture-update", "initialize", "-c c", "-p p", "-s s", str(getTempDirectory())),
-                equalTo(0)
-        );
+                equalTo(0));
     }
 
     @Test
@@ -83,8 +52,7 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 ARCHITECTURE_UPDATES_ROOT_FOLDER + " folder does not exist. (Precondition check)",
                 Files.exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
-                is(false)
-        );
+                is(false));
 
         Integer status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
@@ -111,12 +79,12 @@ public class AuInitializeCommandTest {
         Files.createDirectory(baseAuFolder);
 
         // When
-        Integer status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+        final var status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
         // Then
         collector.checkThat(status, equalTo(0));
-        collector.checkThat(err.toString(), equalTo(""));
-        collector.checkThat(out.toString(), containsString("already exists"));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), containsString("already exists"));
     }
 
     @Test
@@ -125,18 +93,16 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder does not exist. (Precondition check)",
                 Files.exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
-                is(false)
-        );
+                is(false));
 
-        Integer status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+        final var status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
         collector.checkThat(status, is(equalTo(0)));
 
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder was created.",
                 Files.isDirectory(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
-                is(true)
-        );
+                is(true));
     }
 
     @Test
@@ -145,8 +111,7 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file does not exist. (Precondition check)",
                 Files.exists(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
-                is(false)
-        );
+                is(false));
 
         int status = execute("architecture-update", "initialize", "--client-id", "c", "--project-id", "p", "--secret", "s", str(tempDirPath));
 
@@ -167,8 +132,7 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file contents are correct.",
                 Files.readString(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
-                equalTo(expectedJiraSettingsJson)
-        );
+                equalTo(expectedJiraSettingsJson));
     }
 
     @Test
@@ -193,8 +157,7 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file was not overridden.",
                 Files.readString(root.resolve(JIRA_API_SETTINGS_FILE_PATH)),
-                equalTo("EXISTING CONTENTS")
-        );
+                equalTo("EXISTING CONTENTS"));
     }
 
     @Test
@@ -209,11 +172,8 @@ public class AuInitializeCommandTest {
         );
 
         var mockedFilesFacade = mock(FilesFacade.class);
-        when(
-                mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("jira"))
-        ).thenThrow(
-                new IOException("Something horrible has happened. Maybe we ran out of bytes.")
-        );
+        when(mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("jira")))
+                .thenThrow(new IOException("Something horrible has happened. Maybe we ran out of bytes."));
 
         var app = Application.builder()
                 .jiraApiFactory(mock(JiraApiFactory.class))
@@ -234,14 +194,10 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder does not exist. (Precondition check)",
                 Files.exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
-                is(false)
-        );
+                is(false));
         var mockedFilesFacade = mock(FilesFacade.class);
-        when(
-                mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("google"))
-        ).thenThrow(
-                new IOException("Something horrible has happened. Maybe we ran out of bytes.")
-        );
+        when(mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("google")))
+                .thenThrow(new IOException("Something horrible has happened. Maybe we ran out of bytes."));
         var app = Application.builder().jiraApiFactory(mock(JiraApiFactory.class)).filesFacade(mockedFilesFacade).build();
 
         // when
@@ -259,27 +215,23 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
                 Files.readString(auPathFrom(rootDir)),
-                equalTo("EXISTING CONTENTS")
-        );
+                equalTo("EXISTING CONTENTS"));
 
-        Integer result = execute("au", "init", str(rootDir));
+        final var result = execute("au", "init", str(rootDir));
 
         collector.checkThat(
                 result,
-                not(equalTo(0))
-        );
+                not(equalTo(0)));
         collector.checkThat(
                 Files.readString(auPathFrom(rootDir)),
-                equalTo("EXISTING CONTENTS")
-        );
+                equalTo("EXISTING CONTENTS"));
     }
 
     @Test
     public void shouldRequireDocumentRootParameter() {
         collector.checkThat(
                 execute("au", "init"),
-                is(equalTo(2))
-        );
+                is(equalTo(2)));
     }
 
     @Test
@@ -321,30 +273,27 @@ public class AuInitializeCommandTest {
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
                 Files.readString(auClientCredentialsFile),
-                equalTo("EXISTING CONTENTS")
-        );
+                equalTo("EXISTING CONTENTS"));
 
-        Integer result = execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
+        final var result = execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
 
         collector.checkThat(
                 result,
-                not(equalTo(0))
-        );
+                not(equalTo(0)));
         collector.checkThat(
                 Files.readString(auClientCredentialsFile),
-                equalTo("EXISTING CONTENTS")
-        );
+                equalTo("EXISTING CONTENTS"));
     }
 
-    private Path auPathFrom(Path rootPath) {
+    private static Path auPathFrom(Path rootPath) {
         return rootPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER).resolve("name").toAbsolutePath();
     }
 
-    private String str(Path tempDirPath) {
+    private static String str(Path tempDirPath) {
         return tempDirPath.toAbsolutePath().toString();
     }
 
-    private Path getTempDirectory() throws IOException {
+    private static Path getTempDirectory() throws IOException {
         return createTempDirectory("arch-as-code_architecture-update_command_tests");
     }
 }

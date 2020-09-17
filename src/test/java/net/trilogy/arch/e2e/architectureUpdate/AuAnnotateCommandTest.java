@@ -1,24 +1,22 @@
 package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.facade.FilesFacade;
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static org.apache.commons.io.FileUtils.copyDirectory;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -28,13 +26,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuAnnotateCommandTest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
+public class AuAnnotateCommandTest extends CommandTestBase {
     Path rootPath;
     Path originalAuWithComponentsDirectoryPath;
     Path originalAuWithoutComponentsDirectoryPath;
@@ -58,24 +50,16 @@ public class AuAnnotateCommandTest {
         changedAuWithoutComponentsDirectoryPath = rootPath.resolve("architecture-updates/validWithoutComponentsClone/");
         changedAuWithTddContentsDirectoryPath = rootPath.resolve("architecture-updates/validWithComponentsAndTddContentFilesClone/");
 
-        FileUtils.copyDirectory(originalAuWithComponentsDirectoryPath.toFile(), changedAuWithComponentsDirectoryPath.toFile());
-        FileUtils.copyDirectory(originalAuWithoutComponentsDirectoryPath.toFile(), changedAuWithoutComponentsDirectoryPath.toFile());
-        FileUtils.copyDirectory(originalAuWithTddContentsDirectoryPath.toFile(), changedAuWithTddContentsDirectoryPath.toFile());
-
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
+        copyDirectory(originalAuWithComponentsDirectoryPath.toFile(), changedAuWithComponentsDirectoryPath.toFile());
+        copyDirectory(originalAuWithoutComponentsDirectoryPath.toFile(), changedAuWithoutComponentsDirectoryPath.toFile());
+        copyDirectory(originalAuWithTddContentsDirectoryPath.toFile(), changedAuWithTddContentsDirectoryPath.toFile());
     }
 
     @After
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(changedAuWithComponentsDirectoryPath.toFile());
-        FileUtils.deleteDirectory(changedAuWithoutComponentsDirectoryPath.toFile());
-        FileUtils.deleteDirectory(changedAuWithTddContentsDirectoryPath.toFile());
-
-        System.setOut(originalOut);
-        System.setErr(originalErr);
+        deleteDirectory(changedAuWithComponentsDirectoryPath.toFile());
+        deleteDirectory(changedAuWithoutComponentsDirectoryPath.toFile());
+        deleteDirectory(changedAuWithTddContentsDirectoryPath.toFile());
     }
 
     @Test
@@ -94,8 +78,8 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("component-id: \"34\"",
                         "component-id: \"34\"\n  component-path: c4://Internet Banking System/API Application/E-mail Component");
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo("AU has been annotated.\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
     }
@@ -122,8 +106,8 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("TDD 2.1:\n\\s*file: null",
                         "TDD 2.1:\n      file: 'TDD 2.1 : Component-30.txt'");
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo("AU has been annotated.\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
     }
@@ -152,7 +136,7 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("component-id: \"34\"",
                         "component-id: \"34\"\n  component-path: c4://Internet Banking System/API Application/E-mail Component");
 
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
         collector.checkThat(actual, equalTo(expected));
     }
@@ -168,8 +152,8 @@ public class AuAnnotateCommandTest {
         var expected = Files.readString(originalAuWithoutComponentsDirectoryPath.resolve(ARCHITECTURE_UPDATE_YML));
 
         collector.checkThat(actual, equalTo(expected));
-        collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("No valid components to annotate.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(1));
     }
 
@@ -191,8 +175,8 @@ public class AuAnnotateCommandTest {
                 .replace("component-id: '[SAMPLE-COMPONENT-ID]'", "component-id: \"404\"");
 
         collector.checkThat(actual, equalTo(expected));
-        collector.checkThat(err.toString(), equalTo("No valid components to annotate.\n"));
-        collector.checkThat(out.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("No valid components to annotate.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(1));
     }
 
@@ -217,9 +201,9 @@ public class AuAnnotateCommandTest {
                 .replaceFirst("component-id: \"31\"",
                         "component-id: \"31\"\n  component-path: c4://Internet Banking System/API Application/Reset Password Controller");
 
-        collector.checkThat(out.toString(), equalTo("AU has been annotated.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo("AU has been annotated.\n"));
         collector.checkThat(actual, equalTo(expected));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(status, equalTo(0));
     }
 
@@ -235,8 +219,8 @@ public class AuAnnotateCommandTest {
         int status = TestHelper.execute(app, "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load Architecture Update.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load Architecture Update.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
@@ -252,8 +236,8 @@ public class AuAnnotateCommandTest {
                 "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to load Architecture product-architecture.yml.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load Architecture product-architecture.yml.\nError: java.io.IOException: error-message\nCause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, equalTo(2));
     }
 
@@ -269,8 +253,8 @@ public class AuAnnotateCommandTest {
                 "au annotate " + toString(changedAuWithComponentsDirectoryPath) + " " + toString(rootPath));
 
         // THEN
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), equalTo("Unable to write annotated Architecture Update to yaml file.\nError: java.io.IOException: Ran out of bytes!\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), equalTo("Unable to write annotated Architecture Update to yaml file.\nError: java.io.IOException: Ran out of bytes!\n"));
         collector.checkThat(status, equalTo(2));
     }
 }
