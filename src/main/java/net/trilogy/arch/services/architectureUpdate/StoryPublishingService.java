@@ -69,7 +69,7 @@ public class StoryPublishingService {
         out.println("Checking epic...\n");
 
         final var epicJiraTicket = au.getCapabilityContainer().getEpic().getJira();
-        final var informationAboutTheEpic = api.getStory(epicJiraTicket, username, password);
+        final var informationAboutTheEpic = api.getStory(epicJiraTicket);
 
         out.println("Attempting to create stories...\n");
 

@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
@@ -25,12 +24,13 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
-    private final JiraApiFactory jiraApiFactory;
     private final ArchitectureUpdateReader architectureUpdateReader;
+
     @Getter
     private final FilesFacade filesFacade;
     @Getter
@@ -53,10 +53,10 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
     @Spec
     private CommandSpec spec;
 
-    public AuPublishStoriesCommand(JiraApiFactory jiraApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
+    public AuPublishStoriesCommand(FilesFacade filesFacade, GitInterface gitInterface) {
         this.filesFacade = filesFacade;
         this.gitInterface = gitInterface;
-        this.jiraApiFactory = jiraApiFactory;
+
         architectureUpdateReader = new ArchitectureUpdateReader(filesFacade);
     }
 
@@ -121,7 +121,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<JiraApi> getJiraApi() {
         try {
-            return Optional.of(jiraApiFactory.create(filesFacade, productArchitectureDirectory.toPath()));
+            return Optional.of(newJiraApi(filesFacade, productArchitectureDirectory.toPath(), username, password));
         } catch (Exception e) {
             printError("Unable to load configuration.", e);
             return Optional.empty();

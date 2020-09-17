@@ -42,6 +42,7 @@ import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
@@ -156,13 +157,13 @@ public class AuPublishStoriesCommandTest {
 
         final JiraApiFactory mockedJiraApiFactory = mock(JiraApiFactory.class);
         mockedJiraApi = mock(JiraApi.class);
-        when(mockedJiraApiFactory.create(spiedFilesFacade, rootDir.toPath())).thenReturn(mockedJiraApi);
+        when(newJiraApi(spiedFilesFacade, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
+                .thenReturn(mockedJiraApi);
 
         mockedGitInterface = mock(GitInterface.class);
 
         app = Application.builder()
                 .googleDocsAuthorizedApiFactory(mockedGoogleApiFactory)
-                .jiraApiFactory(mockedJiraApiFactory)
                 .filesFacade(spiedFilesFacade)
                 .gitInterface(mockedGitInterface)
                 .build();
@@ -239,7 +240,7 @@ public class AuPublishStoriesCommandTest {
         // Given
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // When
@@ -268,7 +269,7 @@ public class AuPublishStoriesCommandTest {
         execute(app, command);
 
         // Then
-        verify(mockedJiraApi).getStory(epic, "user", "password".toCharArray());
+        verify(mockedJiraApi).getStory(epic);
     }
 
     @Test
@@ -276,7 +277,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // WHEN:
@@ -293,7 +294,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // WHEN:
@@ -310,7 +311,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
@@ -337,7 +338,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
@@ -364,7 +365,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         final var epic = Jira.blank();
         final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
@@ -389,7 +390,7 @@ public class AuPublishStoriesCommandTest {
 
     @Test
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
-        when(mockedJiraApi.getStory(any(), any(), any()))
+        when(mockedJiraApi.getStory(any()))
                 .thenReturn(new JiraQueryResult("ABC", "DEF"));
         when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
                 .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").cause(new RuntimeException("Details")).build());
@@ -426,7 +427,7 @@ public class AuPublishStoriesCommandTest {
         final var epic = new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
 
         mockGitInterface();
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        when(mockedJiraApi.getStory(epic))
                 .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").build());
 
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
@@ -455,7 +456,7 @@ public class AuPublishStoriesCommandTest {
         // GIVEN:
         Jira epic = Jira.blank();
         final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),

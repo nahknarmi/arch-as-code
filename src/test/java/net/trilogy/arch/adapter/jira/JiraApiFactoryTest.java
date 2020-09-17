@@ -6,17 +6,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
 
 import static net.trilogy.arch.adapter.jira.JiraApiFactory.JIRA_API_SETTINGS_FILE_PATH;
+import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,29 +49,11 @@ public class JiraApiFactoryTest {
 
     @Test
     public void shouldCreateJiraApiWithCorrectClient() throws IOException {
-        final JiraApiFactory factory = new JiraApiFactory(baseUri, username, password);
-        HttpClient client = factory.createClient();
-        JiraApi jiraApi = factory.create(mockedFiles, rootDir);
+        final var jiraApi = newJiraApi(mockedFiles, rootDir, "BOB", "NANCY".toCharArray());
 
-        collector.checkThat(jiraApi.getJiraClient(), is(client));
         collector.checkThat(jiraApi.getBaseUri(), equalTo(expectedBaseUri));
         collector.checkThat(jiraApi.getGetStoryEndpoint(), equalTo(expectedGetStoryEndpoint));
         collector.checkThat(jiraApi.getBulkCreateEndpoint(), equalTo(expectedBulkCreateEndpoint));
         collector.checkThat(jiraApi.getLinkPrefix(), equalTo(expectedLinkPrefix));
-    }
-
-    @Test
-    public void shouldCreateCorrectClient() throws NoSuchAlgorithmException {
-        final var factory = new JiraApiFactory(baseUri, username, password);
-        final var client = factory.createClient();
-
-        assertThat(client.connectTimeout(), equalTo(Optional.empty()));
-        assertThat(client.authenticator(), equalTo(Optional.empty()));
-        assertThat(client.cookieHandler(), equalTo(Optional.empty()));
-        assertThat(client.executor(), equalTo(Optional.empty()));
-        assertThat(client.proxy(), equalTo(Optional.empty()));
-        assertThat(client.followRedirects(), equalTo(HttpClient.Redirect.NORMAL));
-        assertThat(client.sslContext(), equalTo(SSLContext.getDefault()));
-        assertThat(client.version(), equalTo(HttpClient.Version.HTTP_2));
     }
 }

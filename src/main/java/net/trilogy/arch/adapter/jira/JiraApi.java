@@ -27,11 +27,12 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter(PACKAGE)
 @VisibleForTesting
 public class JiraApi {
-    private final JiraRestClient jiraClient;
     private final URI baseUri;
     private final String getStoryEndpoint;
     private final String bulkCreateEndpoint;
     private final String linkPrefix;
+
+    private final JiraRestClient jiraClient;
 
     public JiraApi(
             JiraRestClient jiraClient,
@@ -40,7 +41,6 @@ public class JiraApi {
             String bulkCreateEndpoint,
             String linkPrefix) {
         this.jiraClient = jiraClient;
-
         this.baseUri = URI.create(baseUri.toString().replaceAll("/$", "") + "/");
         this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
         this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
@@ -69,12 +69,13 @@ public class JiraApi {
         System.out.println("issue = " + issue);
     }
 
-    public JiraQueryResult getStory(Jira jira, String username, char[] password)
+    public JiraQueryResult getStory(Jira jira)
             throws JiraApiException {
         final var ticket = jira.getTicket();
 
         try {
-            final var issue = jiraClient.getIssueClient().getIssue(ticket).get();
+            final var issue = jiraClient.getIssueClient()
+                    .getIssue(ticket).get();
 
             // TODO: ICK -- why are we only checking the project ID and Key?
             // TODO: This needs to return the full issue so that we can compare
@@ -109,9 +110,10 @@ public class JiraApi {
     public List<JiraCreateStoryStatus> createStories(List<JiraStory> jiraStories, String epicKey, String projectId, String username, char[] password)
             throws JiraApiException {
         try {
-            final var bulkResponse = jiraClient.getIssueClient().createIssues(jiraStories.stream()
-                    .map(aac -> aac.toJira(epicKey, projectId))
-                    .collect(toList()))
+            final var bulkResponse = jiraClient.getIssueClient()
+                    .createIssues(jiraStories.stream()
+                            .map(aac -> aac.toJira(epicKey, projectId))
+                            .collect(toList()))
                     .get();
 
             final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)

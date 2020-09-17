@@ -1,14 +1,13 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine.Command;
 
 @Command(name = "finalizeAndPublish", description = "Annotate AU, validate AU and publish AU Jira stories.", mixinStandardHelpOptions = true)
 public class AuFinalizeAndPublishCommand extends AuPublishStoriesCommand {
-    public AuFinalizeAndPublishCommand(JiraApiFactory jiraApiFactory, FilesFacade filesFacade, GitInterface gitInterface) {
-        super(jiraApiFactory, filesFacade, gitInterface);
+    public AuFinalizeAndPublishCommand(FilesFacade filesFacade, GitInterface gitInterface) {
+        super(filesFacade, gitInterface);
     }
 
     @Override

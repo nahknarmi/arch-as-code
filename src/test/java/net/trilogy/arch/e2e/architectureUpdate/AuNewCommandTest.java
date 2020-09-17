@@ -96,7 +96,6 @@ public class AuNewCommandTest {
 
         app = Application.builder()
                 .googleDocsAuthorizedApiFactory(googleDocsApiFactoryMock)
-                .jiraApiFactory(mock(JiraApiFactory.class))
                 .filesFacade(filesFacadeSpy)
                 .gitInterface(gitInterfaceSpy)
                 .build();
@@ -327,7 +326,6 @@ public class AuNewCommandTest {
                 .thenThrow(new IOException("No disk space!"));
 
         final var app = Application.builder()
-                .jiraApiFactory(mock(JiraApiFactory.class))
                 .filesFacade(mockedFilesFacade)
                 .build();
         final var command = "au new " + auName + " " + str(rootDir);

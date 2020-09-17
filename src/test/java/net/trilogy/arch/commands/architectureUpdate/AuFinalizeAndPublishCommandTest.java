@@ -1,21 +1,22 @@
 package net.trilogy.arch.commands.architectureUpdate;
 
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class AuFinalizeAndPublishCommandTest {
-
     @Test
     public void shouldCallAuAnnotateAndAuValidateCommands() {
-
-        AuFinalizeAndPublishCommand finalizeSpy = spy(new AuFinalizeAndPublishCommand(
-                mock(JiraApiFactory.class),
+        final var finalizeSpy = spy(new AuFinalizeAndPublishCommand(
                 mock(FilesFacade.class),
                 mock(GitInterface.class)));
 
@@ -36,8 +37,7 @@ public class AuFinalizeAndPublishCommandTest {
 
     @Test
     public void shouldReturnExitCodeFromAuAnnotateCommand() {
-        AuFinalizeAndPublishCommand finalizeSpy = spy(new AuFinalizeAndPublishCommand(
-                mock(JiraApiFactory.class),
+        final var finalizeSpy = spy(new AuFinalizeAndPublishCommand(
                 mock(FilesFacade.class),
                 mock(GitInterface.class)));
 
@@ -58,8 +58,7 @@ public class AuFinalizeAndPublishCommandTest {
 
     @Test
     public void shouldReturnExitCodeFromAuValidateCommand() {
-        AuFinalizeAndPublishCommand finalizeSpy = spy(new AuFinalizeAndPublishCommand(
-                mock(JiraApiFactory.class),
+        final var finalizeSpy = spy(new AuFinalizeAndPublishCommand(
                 mock(FilesFacade.class),
                 mock(GitInterface.class)));
 
@@ -80,8 +79,7 @@ public class AuFinalizeAndPublishCommandTest {
 
     @Test
     public void shouldReturnExitCodeFromAuPublishCommand() {
-        AuFinalizeAndPublishCommand finalizeSpy = spy(new AuFinalizeAndPublishCommand(
-                mock(JiraApiFactory.class),
+        final var finalizeSpy = spy(new AuFinalizeAndPublishCommand(
                 mock(FilesFacade.class),
                 mock(GitInterface.class)));
 

@@ -5,7 +5,6 @@ import lombok.Generated;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
 import net.trilogy.arch.commands.DiffCommand;
 import net.trilogy.arch.commands.ImportCommand;
@@ -37,8 +36,6 @@ public class Application {
     private final StructurizrAdapter structurizrAdapter = new StructurizrAdapter();
     @Builder.Default
     private final GoogleDocsAuthorizedApiFactory googleDocsAuthorizedApiFactory = new GoogleDocsAuthorizedApiFactory();
-    @Builder.Default
-    private final JiraApiFactory jiraApiFactory = new JiraApiFactory(jiraUsername, jiraPassword);
     @Builder.Default
     private final FilesFacade filesFacade = new FilesFacade();
     @Builder.Default
@@ -73,9 +70,9 @@ public class Application {
                         .addSubcommand(new AuInitializeCommand(filesFacade))
                         .addSubcommand(new AuNewCommand(googleDocsAuthorizedApiFactory, filesFacade, gitInterface))
                         .addSubcommand(new AuValidateCommand(filesFacade, gitInterface))
-                        .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
+                        .addSubcommand(new AuPublishStoriesCommand(filesFacade, gitInterface))
                         .addSubcommand(new AuAnnotateCommand(filesFacade))
-                        .addSubcommand(new AuFinalizeAndPublishCommand(jiraApiFactory, filesFacade, gitInterface)));
+                        .addSubcommand(new AuFinalizeAndPublishCommand(filesFacade, gitInterface)));
     }
 
     public int execute(String[] args) {
