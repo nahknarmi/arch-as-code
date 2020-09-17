@@ -30,14 +30,36 @@ and documentation.
 
 ## Getting started
 
-### 1. Create Structurizr account
+### 4. Use Java 11 locally
+
+The build currently assumes Java 11.  Several tools exist to manage multiple
+JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
+[section on jEnv](#jenv).
+
+If unsure of installing a current JDK patch for version 11, use
+[AdoptOpenJdk](https://adoptopenjdk.net/).
+
+### 1. Use IntelliJ
+
+Use a 2020+ version of "Ultimate" edition.  "Community Edition" may work, but
+YMMV.
+
+Install these plugins:
+
+* Lombok
+
+Ensure that underneath the "Setting"/"Preferences" of 
+"Build, Execution, Deployment|Compiler|Annotation Processors" that "Enable
+annotation processing" is enabled.
+
+### 2. Create Structurizr account
 
 First you'll need to create a Structurizr account. You can do this by
 following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide
 that describes how to set up a new account and get a **free** workspace.
 
-### 2. Save credentials files to your home directory
+### 3. Save credentials files to your home directory
 
 ```shell script
 $ cd  # Take you home from where you are
@@ -49,12 +71,6 @@ Save each credential file type to it's related directory name.  Then:
 ```shell script
 $ chmod -R go= .arch-as-code  # Credentials should be readable only by you
 ```
-
-### 3. Use Java 11 locally
-
-The build currently assumes Java 11.  Several tools exist to manage multiple
-JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
-[section on jEnv](#jenv).
 
 ### 4. Install arch-as-code CLI
 
