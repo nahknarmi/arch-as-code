@@ -21,6 +21,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import static com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTrustedTransport;
+
 public class GoogleDocsAuthorizedApiFactory {
 
     public static final String GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH = ".arch-as-code/google/";
@@ -37,17 +39,21 @@ public class GoogleDocsAuthorizedApiFactory {
     private final DocsFactory docsFactory;
 
     public GoogleDocsAuthorizedApiFactory() {
-        this.clientCredentialsFileName = GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
-        this.credentialsDirectory = GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
+        clientCredentialsFileName = GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
+        credentialsDirectory = GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
         try {
-            this.httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            httpTransport = newTrustedTransport();
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            final var x = new RuntimeException(e);
+            x.setStackTrace(e.getStackTrace());
+            throw x;
         }
-        this.jsonFactory = JacksonFactory.getDefaultInstance();
-        this.docsFactory = new DocsFactory();
-        this.codeFlowBuilderFactory = new CodeFlowBuilderFactory();
-        this.authorizationCodeInstalledAppFactory = new AuthorizationCodeInstalledAppFactory();
+        jsonFactory = JacksonFactory.getDefaultInstance();
+        docsFactory = new DocsFactory();
+        codeFlowBuilderFactory = new CodeFlowBuilderFactory();
+        authorizationCodeInstalledAppFactory = new AuthorizationCodeInstalledAppFactory();
     }
 
     @VisibleForTesting
@@ -58,8 +64,8 @@ public class GoogleDocsAuthorizedApiFactory {
             AuthorizationCodeInstalledAppFactory authorizationCodeInstalledAppFactory,
             DocsFactory docsFactory
     ) {
-        this.clientCredentialsFileName = GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
-        this.credentialsDirectory = GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
+        clientCredentialsFileName = GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
+        credentialsDirectory = GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
         this.httpTransport = httpTransport;
         this.jsonFactory = jsonFactory;
         this.codeFlowBuilderFactory = codeFlowBuilderFactory;
@@ -101,7 +107,7 @@ public class GoogleDocsAuthorizedApiFactory {
     }
 
     private GoogleClientSecrets loadClientCredentials(File credentialsDirectory) throws IOException {
-        var clientCredentialsFile = credentialsDirectory.toPath().resolve(this.clientCredentialsFileName).toFile();
+        var clientCredentialsFile = credentialsDirectory.toPath().resolve(clientCredentialsFileName).toFile();
         return GoogleClientSecrets.load(jsonFactory, new FileReader(clientCredentialsFile));
     }
 
