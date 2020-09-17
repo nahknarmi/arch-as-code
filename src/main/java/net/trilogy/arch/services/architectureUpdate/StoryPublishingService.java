@@ -55,9 +55,7 @@ public class StoryPublishingService {
     public ArchitectureUpdate createStories(
             final ArchitectureUpdate au,
             final ArchitectureDataStructure beforeAuArchitecture,
-            final ArchitectureDataStructure afterAuArchitecture,
-            String username,
-            char[] password)
+            final ArchitectureDataStructure afterAuArchitecture)
             throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException {
         printStoriesNotToBeSent(au);
 
@@ -82,9 +80,7 @@ public class StoryPublishingService {
         var createStoriesResults = api.createStories(
                 jiraStories,
                 epicJiraTicket.getTicket(),
-                informationAboutTheEpic.getProjectId(),
-                username,
-                password
+                informationAboutTheEpic.getProjectId()
         );
 
         // update stories

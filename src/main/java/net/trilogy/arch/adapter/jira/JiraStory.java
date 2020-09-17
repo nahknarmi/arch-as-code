@@ -84,7 +84,7 @@ public class JiraStory {
                         .collect(joining());
     }
 
-    public IssueInput toJira(String epicKey, String projectId) {
+    public IssueInput toJira(String epicKey, Long projectId) {
 /*
                 .map(story -> new JSONObject(Map.of(
                         "fields", Map.of(

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class JiraQueryResult {
-    private final String projectId;
+    private final Long projectId;
     private final String projectKey;
 }

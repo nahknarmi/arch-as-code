@@ -5,7 +5,7 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
+import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
@@ -50,6 +50,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
@@ -155,7 +158,6 @@ public class AuPublishStoriesCommandTest {
 
         GoogleDocsAuthorizedApiFactory mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
-        final JiraApiFactory mockedJiraApiFactory = mock(JiraApiFactory.class);
         mockedJiraApi = mock(JiraApi.class);
         when(newJiraApi(spiedFilesFacade, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
                 .thenReturn(mockedJiraApi);
@@ -239,7 +241,7 @@ public class AuPublishStoriesCommandTest {
     public void shouldFailGracefullyIfUnableToCreateJiraStoryDTO() throws Exception {
         // Given
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -276,7 +278,7 @@ public class AuPublishStoriesCommandTest {
     public void shouldTellJiraToCreateStories() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -286,14 +288,14 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         final var expected = getExpectedJiraStoriesToCreate();
-        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
     @Test
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -303,19 +305,20 @@ public class AuPublishStoriesCommandTest {
 
         // THEN:
         final var expected = getExpectedJiraStoriesWithTddContentToCreate();
-        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
     @Test
     public void shouldOutputResult() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                succeeded("ABC-223", "link-to-ABC-223")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        succeeded("ABC-223", "link-to-ABC-223")));
         mockGitInterface();
 
         // WHEN:
@@ -337,10 +340,10 @@ public class AuPublishStoriesCommandTest {
     public void shouldUpdateAuWithNewJiraTickets() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
                 failed("error-message")));
         mockGitInterface();
@@ -364,12 +367,13 @@ public class AuPublishStoriesCommandTest {
     public void shouldDisplayPartialErrorsWhenCreatingStories() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                failed("error-message")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        failed("error-message")));
         mockGitInterface();
 
         // WHEN:
@@ -391,9 +395,11 @@ public class AuPublishStoriesCommandTest {
     @Test
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
         when(mockedJiraApi.getStory(any()))
-                .thenReturn(new JiraQueryResult("ABC", "DEF"));
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
-                .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").cause(new RuntimeException("Details")).build());
+                .thenReturn(new JiraQueryResult(1L, "DEF"));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenThrow(new JiraApiException(
+                        "OOPS!",
+                        new RuntimeException("Details")));
         mockGitInterface();
 
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
@@ -428,7 +434,7 @@ public class AuPublishStoriesCommandTest {
 
         mockGitInterface();
         when(mockedJiraApi.getStory(epic))
-                .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").build());
+                .thenThrow(new JiraApiException("OOPS!", null));
 
         final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
         final int statusCode = execute(app, command);
@@ -455,12 +461,13 @@ public class AuPublishStoriesCommandTest {
     public void shouldGracefullyHandleAuUpdateWriteFailure() throws Exception {
         // GIVEN:
         Jira epic = Jira.blank();
-        final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
+        final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                succeeded("ABC-223", "link-to-ABC-223")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        succeeded("ABC-223", "link-to-ABC-223")));
         mockGitInterface();
         doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFilesFacade).writeString(any(), any());
 
