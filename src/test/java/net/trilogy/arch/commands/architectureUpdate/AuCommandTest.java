@@ -1,4 +1,4 @@
-package net.trilogy.arch.e2e.architectureUpdate;
+package net.trilogy.arch.commands.architectureUpdate;
 
 import org.junit.After;
 import org.junit.Before;
