@@ -30,7 +30,7 @@ and documentation.
 
 ## Getting started
 
-### 4. Use Java 11 locally
+### 0. Use Java 11 locally
 
 The build currently assumes Java 11.  Several tools exist to manage multiple
 JDK versions.  A good choice is [jEnv](https://www.jenv.be/).  See the
