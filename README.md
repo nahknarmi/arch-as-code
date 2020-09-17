@@ -211,5 +211,7 @@ Trilogy email with no `@` suffix, and your Jira password.  An example:
 
 * Instructions for obtaining various credential files
 * Migrate to JUnit 5
+* Use [System Rules](https://stefanbirkner.github.io/system-rules/) rather
+  than tests manually manipulating `System.out` and `System.err`
 * Use of modern assertions such as
   [AssertJ](https://github.com/joel-costigliola/assertj-core), et al
