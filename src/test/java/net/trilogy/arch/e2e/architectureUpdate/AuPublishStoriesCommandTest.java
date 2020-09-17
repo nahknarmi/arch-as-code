@@ -6,9 +6,11 @@ import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
+import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
+import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
@@ -24,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.mockito.MockedStatic;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,6 +60,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -77,76 +81,13 @@ public class AuPublishStoriesCommandTest {
     private Application app;
     private FilesFacade spiedFilesFacade;
     private GitInterface mockedGitInterface;
-
-    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
-        return List.of(
-                new JiraStory(
-                        "story that should be created",
-                        List.of(
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/Reset Password Controller",
-                                        null),
-                                new JiraStory.JiraTdd(
-                                        new TddId("[SAMPLE-TDD-ID-2]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
-                                        "c4://Internet Banking System/API Application/E-mail Component",
-                                        null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
-                new JiraStory(
-                        "story that failed to be created",
-                        singletonList(new JiraStory.JiraTdd(
-                                new TddId("[SAMPLE-TDD-ID]"),
-                                new Tdd("[SAMPLE TDD TEXT]", null),
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
-    }
-
-    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
-        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
-        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
-
-        return asList(new JiraStory(
-                        "story that should be created",
-                        singletonList(new JiraStory.JiraTdd(
-                                new TddId("TDD 1.0"),
-                                tdd,
-                                "c4://Internet Banking System/API Application/Sign In Controller",
-                                tddContent)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("TDD 1.0")))))),
-                new JiraStory("story that should be created for no pr",
-                        singletonList(new JiraStory.JiraTdd(
-                                TddId.noPr(),
-                                null,
-                                "c4://Internet Banking System/API Application/Sign In Controller",
-                                null)),
-                        singletonList(new JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("TDD 1.0")))))));
-    }
+    private MockedStatic<JiraApiFactory> mockedJiraApiFactory;
 
     @Before
     public void setUp() throws Exception {
+        mockedJiraApi = mock(JiraApi.class);
+        mockedJiraApiFactory = mockStatic(JiraApiFactory.class, invocation -> mockedJiraApi);
+
         out.reset();
         err.reset();
         setOut(new PrintStream(out));
@@ -158,7 +99,6 @@ public class AuPublishStoriesCommandTest {
 
         GoogleDocsAuthorizedApiFactory mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
-        mockedJiraApi = mock(JiraApi.class);
         when(newJiraApi(spiedFilesFacade, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
                 .thenReturn(mockedJiraApi);
 
@@ -181,6 +121,8 @@ public class AuPublishStoriesCommandTest {
 
     @After
     public void tearDown() throws Exception {
+        mockedJiraApiFactory.close();
+
         setOut(originalOut);
         setErr(originalErr);
 
@@ -489,6 +431,73 @@ public class AuPublishStoriesCommandTest {
                                 rootDir.toPath().resolve("product-architecture.yml"))
                                 .replaceAll("34", "DELETED-COMPONENT-ID"),
                         ArchitectureDataStructure.class));
+    }
+
+    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
+        return List.of(
+                new JiraStory(
+                        "story that should be created",
+                        List.of(
+                                new JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                                        null),
+                                new JiraTdd(
+                                        new TddId("[SAMPLE-TDD-ID-2]"),
+                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        "c4://Internet Banking System/API Application/E-mail Component",
+                                        null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
+                new JiraStory(
+                        "story that failed to be created",
+                        singletonList(new JiraTdd(
+                                new TddId("[SAMPLE-TDD-ID]"),
+                                new Tdd("[SAMPLE TDD TEXT]", null),
+                                "c4://Internet Banking System/API Application/Reset Password Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+    }
+
+    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
+        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
+
+        return asList(new JiraStory(
+                        "story that should be created",
+                        singletonList(new JiraTdd(
+                                new TddId("TDD 1.0"),
+                                tdd,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                tddContent)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))),
+                new JiraStory("story that should be created for no pr",
+                        singletonList(new JiraTdd(
+                                TddId.noPr(),
+                                null,
+                                "c4://Internet Banking System/API Application/Sign In Controller",
+                                null)),
+                        singletonList(new JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new FunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        singletonList(new TddId("TDD 1.0")))))));
     }
 }
 

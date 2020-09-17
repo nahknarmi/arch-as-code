@@ -11,6 +11,9 @@ plugins {
     id "io.freefair.lombok" version "5.1.1"
     id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.springframework.boot" version "2.3.3.RELEASE"
+    // Magic monkey patching of logging dependencies, checking for problems
+    // See: https://blog.gradle.org/addressing-logging-complexity-capabilities
+    id "dev.jacomet.logging-capabilities" version "0.9.0"
 }
 
 mainClassName = "net.trilogy.arch.Application"
@@ -80,6 +83,10 @@ dependencies {
     testImplementation "commons-io:commons-io:2.7"
     testImplementation "org.mockito:mockito-inline:3.5.10"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
+}
+
+loggingCapabilities {
+    enforceLog4J2() // TODO: SLF4J
 }
 
 java {
