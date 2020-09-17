@@ -142,8 +142,7 @@ public class AuPublishStoriesCommandTest {
                 .build();
 
         // When
-        final String command = command();
-        final int status = execute(newApp, command);
+        final int status = execute(newApp, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
@@ -160,8 +159,7 @@ public class AuPublishStoriesCommandTest {
                 .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
         // When
-        final String command = command();
-        final int status = execute(app, command);
+        final int status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
@@ -179,8 +177,7 @@ public class AuPublishStoriesCommandTest {
                 .when(spiedFilesFacade).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
 
         // When
-        final String command = command();
-        final int status = execute(app, command);
+        final int status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
@@ -199,8 +196,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // When
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/invalid-story/ " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final int status = execute(app, specificCommand("invalid-story"));
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
@@ -220,8 +216,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // When
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/test-clone/ " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, specificCommand("test-clone"));
 
         // Then
         verify(mockedJiraApi).getStory(epic);
@@ -236,8 +231,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final String command = command();
-        execute(app, command);
+        execute(app, genericCommand());
 
         // THEN:
         final var expected = getExpectedJiraStoriesToCreate();
@@ -253,8 +247,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/tdd-content/ " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, specificCommand("tdd-content"));
 
         // THEN:
         final var expected = getExpectedJiraStoriesWithTddContentToCreate();
@@ -275,8 +268,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final String command = command();
-        execute(app, command);
+        execute(app, genericCommand());
 
         // THEN:
         collector.checkThat(
@@ -302,8 +294,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final String command = command();
-        execute(app, command);
+        execute(app, genericCommand());
         final var actualAuAsstring = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
 
@@ -330,8 +321,7 @@ public class AuPublishStoriesCommandTest {
         mockGitInterface();
 
         // WHEN:
-        final String command = command();
-        final int statusCode = execute(app, command);
+        final int statusCode = execute(app, genericCommand());
 
         // THEN:
         assertThat(
@@ -355,8 +345,7 @@ public class AuPublishStoriesCommandTest {
                         new RuntimeException("Details")));
         mockGitInterface();
 
-        final String command = command();
-        final int statusCode = execute(app, command);
+        final int statusCode = execute(app, genericCommand());
 
         assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
         assertThat(
@@ -372,8 +361,7 @@ public class AuPublishStoriesCommandTest {
     public void shouldHandleNoStoriesToCreate() throws Exception {
         mockGitInterface();
 
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/no-stories-to-create/ " + rootDir.getAbsolutePath();
-        final int statusCode = execute(app, command);
+        final int statusCode = execute(app, specificCommand("no-stories-to-create"));
         verifyNoMoreInteractions(mockedJiraApi);
 
         collector.checkThat(err.toString(), equalTo("ERROR: No stories to create.\n"));
@@ -389,8 +377,7 @@ public class AuPublishStoriesCommandTest {
         when(mockedJiraApi.getStory(epic))
                 .thenThrow(new JiraApiException("OOPS!", null));
 
-        final String command = command();
-        final int statusCode = execute(app, command);
+        final int statusCode = execute(app, genericCommand());
 
         assertThat(err.toString(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
         assertThat(out.toString(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
@@ -402,8 +389,7 @@ public class AuPublishStoriesCommandTest {
         when(mockedGitInterface.load(any(), any()))
                 .thenThrow(new RuntimeException("Boom!"));
 
-        final String command = command();
-        final int status = execute(app, command);
+        final int status = execute(app, genericCommand());
 
         collector.checkThat(out.toString(), equalTo(""));
         collector.checkThat(err.toString(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
@@ -425,8 +411,7 @@ public class AuPublishStoriesCommandTest {
         doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFilesFacade).writeString(any(), any());
 
         // WHEN:
-        final String command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final int status = execute(app, genericCommand());
 
         // THEN:
         collector.checkThat(
@@ -444,10 +429,18 @@ public class AuPublishStoriesCommandTest {
                         ArchitectureDataStructure.class));
     }
 
-    private String command() {
+    private String genericCommand() {
         return format(
                 "au publish -b master -u user -p password %s %s",
                 testCloneDirectory,
+                rootDir.getAbsolutePath());
+    }
+
+    private String specificCommand(String variety) {
+        return format(
+                "au publish -b master -u user -p password %s/architecture-updates/%s/ %s",
+                rootDir.getAbsolutePath(),
+                variety,
                 rootDir.getAbsolutePath());
     }
 
