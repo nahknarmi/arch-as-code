@@ -148,7 +148,7 @@ public class AuPublishStoriesCommandTest {
 
     @Test
     public void shouldFailGracefullyIfFailToLoadAu() throws Exception {
-        // Given
+        // Given a filesystem read error
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
                 .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
