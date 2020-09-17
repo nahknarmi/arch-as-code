@@ -2,20 +2,16 @@ package net.trilogy.arch.e2e;
 
 import com.structurizr.Workspace;
 import net.trilogy.arch.Application;
+import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION;
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -29,29 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PublishCommandE2ETest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
-    @Before
-    public void setUp() {
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-    }
-
-    @After
-    public void tearDown() {
-        System.setOut(originalOut);
-        System.setErr(originalErr);
-    }
-
+public class PublishCommandE2ETest extends CommandTestBase {
     @Test
     public void shouldSuccessfullyPublish() {
         // Given
@@ -61,7 +35,7 @@ public class PublishCommandE2ETest {
         Application app = Application.builder()
                 .structurizrAdapter(structurizrAdapter)
                 .build();
-        Path rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath()).toPath();
+        Path rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath()).toPath();
 
         // When
         Integer statusCode = execute(app, "publish", rootDir.toString());
@@ -69,8 +43,8 @@ public class PublishCommandE2ETest {
         // Then
         verify(structurizrAdapter, times(1)).publish(any());
         collector.checkThat(statusCode, equalTo(0));
-        collector.checkThat(out.toString(), equalTo("Successfully published to Structurizr!\n"));
-        collector.checkThat(err.toString(), equalTo(""));
+        collector.checkThat(dummyOut.getLog(), equalTo("Successfully published to Structurizr!\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
     @Test
@@ -95,8 +69,8 @@ public class PublishCommandE2ETest {
         // Then
         verify(structurizrAdapter, never()).publish(any());
         collector.checkThat(statusCode, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Invalid product-architecture.yml has 2 errors:\n$.description: is missing but it is required\n$.name: null found, string expected\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Invalid product-architecture.yml has 2 errors:\n$.description: is missing but it is required\n$.name: null found, string expected\n"));
     }
 
     @Test
@@ -108,14 +82,14 @@ public class PublishCommandE2ETest {
         Application app = Application.builder()
                 .structurizrAdapter(structurizrAdapter)
                 .build();
-        Path rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath()).toPath();
+        Path rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath()).toPath();
 
         // When
         Integer statusCode = execute(app, "publish", rootDir.toString());
 
         // Then
         collector.checkThat(statusCode, not(equalTo(0)));
-        collector.checkThat(out.toString(), equalTo(""));
-        collector.checkThat(err.toString(), containsString("Unable to publish to Structurizer\nError: java.lang.RuntimeException: Boom!"));
+        collector.checkThat(dummyOut.getLog(), equalTo(""));
+        collector.checkThat(dummyErr.getLog(), containsString("Unable to publish to Structurizer\nError: java.lang.RuntimeException: Boom!"));
     }
 }

@@ -7,8 +7,10 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import org.junit.Test;
 
-public class SchemaGenerationTest {
+import static java.lang.System.err;
 
+/** @todo Tests should not print; they should ASSERT */
+public class SchemaGenerationTest {
     @Test
     public void generate_schema() throws Exception {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -20,6 +22,6 @@ public class SchemaGenerationTest {
                         .writerWithDefaultPrettyPrinter()
                         .writeValueAsString(jsonSchema);
 
-        System.err.println(valueAsString);
+        err.println(valueAsString);
     }
 }

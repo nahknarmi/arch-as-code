@@ -1,51 +1,20 @@
 package net.trilogy.arch.e2e;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import net.trilogy.arch.CommandTestBase;
 import org.junit.Test;
-import org.junit.rules.ErrorCollector;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 import static net.trilogy.arch.TestHelper.execute;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ParentCommandE2ETest {
-    @Rule
-    public final ErrorCollector collector = new ErrorCollector();
-
-    final PrintStream originalOut = System.out;
-    final PrintStream originalErr = System.err;
-    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    final ByteArrayOutputStream err = new ByteArrayOutputStream();
-
-    @Before
-    public void setUp() {
-        out.reset();
-        err.reset();
-        System.setOut(new PrintStream(out));
-        System.setErr(new PrintStream(err));
-    }
-
-    @After
-    public void tearDown() {
-        System.setOut(originalOut);
-        System.setErr(originalErr);
-    }
-
+public class ParentCommandE2ETest extends CommandTestBase {
     @Test
     public void rootCommandShouldPrintUsage() {
         collector.checkThat(
                 execute(),
-                equalTo(0)
-        );
-
+                equalTo(0));
         collector.checkThat(
-                out.toString(),
-                containsString("Usage:")
-        );
+                dummyOut.getLog(),
+                containsString("Usage:"));
     }
 }
