@@ -132,7 +132,6 @@ public class AuPublishStoriesCommandTest {
         deleteIfExists(testCloneDirectory);
     }
 
-    @Ignore("TODO: Wrong STDERR output")
     @Test
     public void shouldFailGracefullyIfFailToLoadConfig() throws Exception {
         // Given
