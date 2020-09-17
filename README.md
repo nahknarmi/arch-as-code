@@ -1,6 +1,6 @@
 # Arch as code
 
-![](https://github.com/trilogy-group/arch-as-code/workflows/Build%20&%20Test/badge.svg)
+[![Actions Status](https://github.com/trilogy-group/arch-as-code/workflows/Builds%20&amp;%20tests/badge.svg)](https://github.com/trilogy-group/arch-as-code/actions)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/test_coverage)](https://codeclimate.com/github/trilogy-group/arch-as-code/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/bf154787f36e5afed62e/maintainability)](https://codeclimate.com/github/trilogy-group/arch-as-code/maintainability)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=trilogy-group/arch-as-code)](https://dependabot.com)
