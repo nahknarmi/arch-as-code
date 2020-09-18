@@ -1,14 +1,17 @@
-package net.trilogy.arch.e2e.architectureUpdate;
+package net.trilogy.arch.commands.architectureUpdate;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.CommandTestBase;
+import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
+import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
+import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
@@ -22,21 +25,25 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.String.format;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
+import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
@@ -44,10 +51,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -58,27 +69,36 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     private Path testCloneDirectory;
     private JiraApi mockedJiraApi;
     private Application app;
-    private FilesFacade spiedFilesFacade;
+    private FilesFacade spiedFiles;
     private GitInterface mockedGitInterface;
+    private MockedStatic<JiraApiFactory> jiraApiFactoryMock;
+
+    /** @todo Find better pattern for testing with Mockito.mockStatic */
+    private final AtomicBoolean missingJiraConfiguration = new AtomicBoolean(false);
 
     @Before
     public void setUp() throws Exception {
-        spiedFilesFacade = spy(new FilesFacade());
-
-        rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
-
-        GoogleDocsAuthorizedApiFactory mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
-
-        final JiraApiFactory mockedJiraApiFactory = mock(JiraApiFactory.class);
         mockedJiraApi = mock(JiraApi.class);
-        when(mockedJiraApiFactory.create(spiedFilesFacade, rootDir.toPath())).thenReturn(mockedJiraApi);
+        jiraApiFactoryMock = mockStatic(JiraApiFactory.class, invocation -> {
+            if (missingJiraConfiguration.get())
+                throw new NoSuchFileException("YOUR JIRA CONFIGURATION");
+            else return mockedJiraApi;
+        });
+
+        spiedFiles = spy(new FilesFacade());
+
+        rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
+
+        final var mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
+
+        when(newJiraApi(spiedFiles, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
+                .thenReturn(mockedJiraApi);
 
         mockedGitInterface = mock(GitInterface.class);
 
         app = Application.builder()
                 .googleDocsAuthorizedApiFactory(mockedGoogleApiFactory)
-                .jiraApiFactory(mockedJiraApiFactory)
-                .filesFacade(spiedFilesFacade)
+                .filesFacade(spiedFiles)
                 .gitInterface(mockedGitInterface)
                 .build();
 
@@ -93,40 +113,47 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
     @After
     public void tearDown() throws Exception {
+        jiraApiFactoryMock.close();
+
         deleteIfExists(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         deleteIfExists(testCloneDirectory);
     }
 
     @Test
     public void shouldFailGracefullyIfFailToLoadConfig() throws Exception {
-        // Given
+        missingJiraConfiguration.set(true);
+
         mockGitInterface();
-        final var newApp = Application.builder().gitInterface(mockedGitInterface).build();
+        final var newApp = Application.builder()
+                .gitInterface(mockedGitInterface)
+                .build();
 
         // When
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(newApp, command);
+        final var status = execute(newApp, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(dummyErr.getLog(), containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
+        collector.checkThat(
+                dummyErr.getLog(),
+                containsString("Unable to load JIRA configuration.\nError: java.nio.file.NoSuchFileException"));
     }
 
     @Test
     public void shouldFailGracefullyIfFailToLoadAu() throws Exception {
-        // Given
+        // Given a filesystem read error
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
-                .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
+                .when(spiedFiles).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
         // When
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final var status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(
+                dummyErr.getLog(),
+                equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -134,29 +161,29 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // Given
         mockGitInterface();
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
-                .when(spiedFilesFacade).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
+                .when(spiedFiles).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
 
         // When
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final var status = execute(app, genericCommand());
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(
+                dummyErr.getLog(),
+                equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
     public void shouldFailGracefullyIfUnableToCreateJiraStoryDTO() throws Exception {
         // Given
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // When
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/invalid-story/ " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final var status = execute(app, specificCommand("invalid-story"));
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
@@ -176,62 +203,59 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         mockGitInterface();
 
         // When
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/test-clone/ " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, specificCommand("test-clone"));
 
         // Then
-        verify(mockedJiraApi).getStory(epic, "user", "password".toCharArray());
+        verify(mockedJiraApi).getStory(epic);
     }
 
     @Test
     public void shouldTellJiraToCreateStories() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, genericCommand());
 
         // THEN:
         final var expected = getExpectedJiraStoriesToCreate();
-        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
     @Test
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray())).thenReturn(epicInformation);
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/tdd-content/ " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, specificCommand("tdd-content"));
 
         // THEN:
         final var expected = getExpectedJiraStoriesWithTddContentToCreate();
-        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId(), "user", "password".toCharArray());
+        verify(mockedJiraApi).createStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
     @Test
     public void shouldOutputResult() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                succeeded("ABC-223", "link-to-ABC-223")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        succeeded("ABC-223", "link-to-ABC-223")));
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, genericCommand());
 
         // THEN:
         collector.checkThat(
@@ -248,17 +272,16 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldUpdateAuWithNewJiraTickets() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
                 failed("error-message")));
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        execute(app, command);
+        execute(app, genericCommand());
         final var actualAuAsstring = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
 
@@ -275,17 +298,17 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldDisplayPartialErrorsWhenCreatingStories() throws Exception {
         // GIVEN:
         final var epic = Jira.blank();
-        final var epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                failed("error-message")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        failed("error-message")));
         mockGitInterface();
 
         // WHEN:
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int statusCode = execute(app, command);
+        final var statusCode = execute(app, genericCommand());
 
         // THEN:
         assertThat(
@@ -301,14 +324,15 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
     @Test
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
-        when(mockedJiraApi.getStory(any(), any(), any()))
-                .thenReturn(new JiraQueryResult("ABC", "DEF"));
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any()))
-                .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").cause(new RuntimeException("Details")).build());
+        when(mockedJiraApi.getStory(any()))
+                .thenReturn(new JiraQueryResult(1L, "DEF"));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenThrow(new JiraApiException(
+                        "OOPS!",
+                        new RuntimeException("Details")));
         mockGitInterface();
 
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int statusCode = execute(app, command);
+        final var statusCode = execute(app, genericCommand());
 
         assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
         assertThat(
@@ -324,8 +348,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldHandleNoStoriesToCreate() throws Exception {
         mockGitInterface();
 
-        final var command = "au publish -b master -u user -p password " + rootDir.getAbsolutePath() + "/architecture-updates/no-stories-to-create/ " + rootDir.getAbsolutePath();
-        final int statusCode = execute(app, command);
+        final var statusCode = execute(app, specificCommand("no-stories-to-create"));
         verifyNoMoreInteractions(mockedJiraApi);
 
         collector.checkThat(dummyErr.getLog(), equalTo("ERROR: No stories to create.\n"));
@@ -338,11 +361,10 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epic = new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
 
         mockGitInterface();
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
-                .thenThrow(JiraApi.JiraApiException.builder().message("OOPS!").build());
+        when(mockedJiraApi.getStory(epic))
+                .thenThrow(new JiraApiException("OOPS!", null));
 
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int statusCode = execute(app, command);
+        final var statusCode = execute(app, genericCommand());
 
         assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
         assertThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
@@ -354,8 +376,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         when(mockedGitInterface.load(any(), any()))
                 .thenThrow(new RuntimeException("Boom!"));
 
-        final var command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final var status = execute(app, genericCommand());
 
         collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(dummyErr.getLog(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
@@ -366,18 +387,18 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldGracefullyHandleAuUpdateWriteFailure() throws Exception {
         // GIVEN:
         Jira epic = Jira.blank();
-        final JiraQueryResult epicInformation = new JiraQueryResult("PROJ_ID", "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic, "user", "password".toCharArray()))
+        final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createStories(any(), any(), any(), any(), any())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                succeeded("ABC-223", "link-to-ABC-223")));
+        when(mockedJiraApi.createStories(anyList(), anyString(), anyLong()))
+                .thenReturn(List.of(
+                        succeeded("ABC-123", "link-to-ABC-123"),
+                        succeeded("ABC-223", "link-to-ABC-223")));
         mockGitInterface();
-        doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFilesFacade).writeString(any(), any());
+        doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFiles).writeString(any(), any());
 
         // WHEN:
-        final String command = "au publish -b master -u user -p password " + testCloneDirectory + " " + rootDir.getAbsolutePath();
-        final int status = execute(app, command);
+        final var status = execute(app, genericCommand());
 
         // THEN:
         collector.checkThat(
@@ -395,17 +416,32 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         ArchitectureDataStructure.class));
     }
 
+    private String genericCommand() {
+        return format(
+                "au publish -b master -u user -p password %s %s",
+                testCloneDirectory,
+                rootDir.getAbsolutePath());
+    }
+
+    private String specificCommand(String variety) {
+        return format(
+                "au publish -b master -u user -p password %s/architecture-updates/%s/ %s",
+                rootDir.getAbsolutePath(),
+                variety,
+                rootDir.getAbsolutePath());
+    }
+
     private static List<JiraStory> getExpectedJiraStoriesToCreate() {
         return List.of(
                 new JiraStory(
                         "story that should be created",
                         List.of(
-                                new JiraStory.JiraTdd(
+                                new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/Reset Password Controller",
                                         null),
-                                new JiraStory.JiraTdd(
+                                new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID-2]"),
                                         new Tdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/E-mail Component",
@@ -418,7 +454,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
                 new JiraStory(
                         "story that failed to be created",
-                        singletonList(new JiraStory.JiraTdd(
+                        singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
                                 new Tdd("[SAMPLE TDD TEXT]", null),
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
@@ -437,7 +473,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         return asList(new JiraStory(
                         "story that should be created",
-                        singletonList(new JiraStory.JiraTdd(
+                        singletonList(new JiraTdd(
                                 new TddId("TDD 1.0"),
                                 tdd,
                                 "c4://Internet Banking System/API Application/Sign In Controller",
@@ -449,7 +485,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("TDD 1.0")))))),
                 new JiraStory("story that should be created for no pr",
-                        singletonList(new JiraStory.JiraTdd(
+                        singletonList(new JiraTdd(
                                 TddId.noPr(),
                                 null,
                                 "c4://Internet Banking System/API Application/Sign In Controller",
@@ -462,3 +498,4 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         singletonList(new TddId("TDD 1.0")))))));
     }
 }
+
