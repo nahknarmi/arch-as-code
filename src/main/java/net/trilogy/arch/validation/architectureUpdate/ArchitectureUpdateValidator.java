@@ -222,8 +222,10 @@ public class ArchitectureUpdateValidator {
         architectureUpdate.getUsefulLinks().forEach(l ->
                 links.add(Pair.of("Useful link " + l.getDescription() + " link", l.getLink())));
 
-        architectureUpdate.getCapabilityContainer().getFeatureStories().stream().filter(s -> s.getJira().getLink() != null).forEach(s ->
-                links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink())));
+        architectureUpdate.getCapabilityContainer().getFeatureStories().stream()
+                .filter(s -> null != s.getJira() && null != s.getJira().getLink())
+                .forEach(s ->
+                        links.add(Pair.of("capabilities.featurestory.jira.ticket " + s.getJira().getTicket() + " link", s.getJira().getLink())));
 
         return links;
     }

@@ -51,8 +51,6 @@ capabilities:
       link: "[SAMPLE JIRA TICKET LINK]"
   feature-stories:
   - title: "[SAMPLE FEATURE STORY TITLE]"
-    jira:
-      ticket: "[SAMPLE JIRA TICKET]"
     tdd-references:
       - '[SAMPLE-TDD-ID]'
       - '[SAMPLE-TDD-ID-2]'

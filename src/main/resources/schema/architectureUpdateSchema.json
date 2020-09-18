@@ -1,4 +1,46 @@
 {
+  "definitions": {
+    "jira" : {
+      "$id": "#/definitions/jira",
+      "type": "object",
+      "title": "The jira schema",
+      "description": "Jira ticket that represents the P1.",
+      "default": {},
+      "examples": [
+        {
+          "ticket": "[SAMPLE JIRA TICKET]",
+          "link": "[SAMPLE JIRA TICKET LINK]"
+        }
+      ],
+      "required": [
+        "ticket",
+        "link"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ticket": {
+          "$id": "#/properties/P1/properties/jira/properties/ticket",
+          "type": "string",
+          "title": "The ticket schema",
+          "description": "Title of the Jira ticket that represents the P1.",
+          "default": "",
+          "examples": [
+            "[SAMPLE JIRA TICKET]"
+          ]
+        },
+        "link": {
+          "$id": "#/properties/P1/properties/jira/properties/link",
+          "type": "string",
+          "title": "The link schema",
+          "description": "Link to the Jira epic that represents the P1.",
+          "default": "",
+          "examples": [
+            "[SAMPLE JIRA TICKET LINK]"
+          ]
+        }
+      }
+    }
+  },
   "type": "object",
   "title": "The root schema",
   "description": "The root schema comprises the entire JSON document for the architecture update document.",
@@ -316,46 +358,7 @@
             "[SAMPLE LINK TO P1]"
           ]
         },
-        "jira": {
-          "$id": "#/properties/P2/properties/jira",
-          "type": "object",
-          "title": "The jira schema",
-          "description": "The Jira epic that represents the P2.",
-          "default": {},
-          "examples": [
-            {
-              "ticket": "[SAMPLE JIRA TICKET]",
-              "link": "[SAMPLE JIRA TICKET LINK]"
-            }
-          ],
-          "required": [
-            "ticket",
-            "link"
-          ],
-          "additionalProperties": true,
-          "properties": {
-            "ticket": {
-              "$id": "#/properties/P2/properties/jira/properties/ticket",
-              "type": "string",
-              "title": "The ticket schema",
-              "description": "Title of the Jira ticket that represents the P2.",
-              "default": "",
-              "examples": [
-                "[SAMPLE JIRA TICKET]"
-              ]
-            },
-            "link": {
-              "$id": "#/properties/P2/properties/jira/properties/link",
-              "type": "string",
-              "title": "The link schema",
-              "description": "Link to the actual Jira ticket, it should be a valid jira url.",
-              "default": "",
-              "examples": [
-                "[SAMPLE JIRA TICKET LINK]"
-              ]
-            }
-          }
-        }
+        "jira": { "$ref": "#/definitions/jira" }
       }
     },
     "P1": {
@@ -391,46 +394,7 @@
             "[SAMPLE LINK TO P1]"
           ]
         },
-        "jira": {
-          "$id": "#/properties/P1/properties/jira",
-          "type": "object",
-          "title": "The jira schema",
-          "description": "Jira ticket that represents the P1.",
-          "default": {},
-          "examples": [
-            {
-              "ticket": "[SAMPLE JIRA TICKET]",
-              "link": "[SAMPLE JIRA TICKET LINK]"
-            }
-          ],
-          "required": [
-            "ticket",
-            "link"
-          ],
-          "additionalProperties": true,
-          "properties": {
-            "ticket": {
-              "$id": "#/properties/P1/properties/jira/properties/ticket",
-              "type": "string",
-              "title": "The ticket schema",
-              "description": "Title of the Jira ticket that represents the P1.",
-              "default": "",
-              "examples": [
-                "[SAMPLE JIRA TICKET]"
-              ]
-            },
-            "link": {
-              "$id": "#/properties/P1/properties/jira/properties/link",
-              "type": "string",
-              "title": "The link schema",
-              "description": "Link to the Jira epic that represents the P1.",
-              "default": "",
-              "examples": [
-                "[SAMPLE JIRA TICKET LINK]"
-              ]
-            }
-          }
-        },
+        "jira": { "$ref": "#/definitions/jira" },
         "executive-summary": {
           "$id": "#/properties/P1/properties/executive-summary",
           "type": "string",
@@ -831,6 +795,32 @@
         ]
       }
     },
+    "functional-areas": {
+      "$id": "#/properties/functional-areas",
+      "type": "object",
+      "title": "The functional-areas schema",
+      "description": "A functional area to be referenced by e2e jira issues to avoid duplication.",
+      "default": {},
+      "examples": [
+        {
+          "SONIC-16474": {
+            "jira": {
+              "title": "Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)",
+              "link": "https://jira.devfactory.com/browse/SONIC-16474"
+            }
+          }
+        }
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "jira": { "$ref":  "#/definitions/jira" }
+        },
+        "required": [
+          "jira"
+        ]
+      }
+    },
     "capabilities": {
       "$id": "#/properties/capabilities",
       "type": "object",
@@ -900,46 +890,7 @@
                 "Please enter epic title from Jira"
               ]
             },
-            "jira": {
-              "$id": "#/properties/capabilities/properties/epic/properties/jira",
-              "type": "object",
-              "title": "The jira schema",
-              "description": "Jira object.",
-              "default": {},
-              "examples": [
-                {
-                  "ticket": "please-enter-epic-ticket-from-jira",
-                  "link": "Please enter epic link from Jira"
-                }
-              ],
-              "required": [
-                "ticket",
-                "link"
-              ],
-              "additionalProperties": true,
-              "properties": {
-                "ticket": {
-                  "$id": "#/properties/capabilities/properties/epic/properties/jira/properties/ticket",
-                  "type": "string",
-                  "title": "The ticket schema",
-                  "description": "The title of the Jira epic.",
-                  "default": "",
-                  "examples": [
-                    "please-enter-epic-ticket-from-jira"
-                  ]
-                },
-                "link": {
-                  "$id": "#/properties/capabilities/properties/epic/properties/jira/properties/link",
-                  "type": "string",
-                  "title": "The link schema",
-                  "description": "Link to the Jira epic, it should be a valid Jira url.",
-                  "default": "",
-                  "examples": [
-                    "Please enter epic link from Jira"
-                  ]
-                }
-              }
-            }
+            "jira": { "$ref": "#/definitions/jira" }
           }
         },
         "feature-stories": {
@@ -991,7 +942,6 @@
                 ],
                 "required": [
                   "title",
-                  "jira",
                   "tdd-references",
                   "functional-requirement-references"
                 ],
@@ -1007,45 +957,7 @@
                       "[SAMPLE FEATURE STORY TITLE]"
                     ]
                   },
-                  "jira": {
-                    "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/jira",
-                    "type": "object",
-                    "title": "The jira schema",
-                    "description": "Jira object.",
-                    "default": {},
-                    "examples": [
-                      {
-                        "ticket": "",
-                        "link": ""
-                      }
-                    ],
-                    "required": [
-                      "ticket"
-                    ],
-                    "additionalProperties": true,
-                    "properties": {
-                      "ticket": {
-                        "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/jira/properties/ticket",
-                        "type": "string",
-                        "title": "The ticket schema",
-                        "description": "The title of the Jira ticket.",
-                        "default": "",
-                        "examples": [
-                          ""
-                        ]
-                      },
-                      "link": {
-                        "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/jira/properties/link",
-                        "type": "string",
-                        "title": "The link schema",
-                        "description": "A link to the Jira ticket story, it should be a valid Jira url.",
-                        "default": "",
-                        "examples": [
-                          ""
-                        ]
-                      }
-                    }
-                  },
+                  "jira": { "$ref":  "#/definitions/jira" },
                   "tdd-references": {
                     "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/tdd-references",
                     "type": "array",
