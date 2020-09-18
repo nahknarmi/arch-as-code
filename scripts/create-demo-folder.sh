@@ -125,6 +125,9 @@ ln -fs .install/bin/arch-as-code .
     }
 }
 
+# TODO: Check if:
+# 1) Credentials aready exist, and use them
+# 2) If NOT, prompt user for the 3 needed values
 run .install/bin/arch-as-code init -i i -k i -s s .
 run .install/bin/arch-as-code au init -c c -p p -s s .
 

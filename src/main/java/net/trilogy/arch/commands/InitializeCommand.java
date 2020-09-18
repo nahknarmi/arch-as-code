@@ -6,8 +6,8 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
@@ -18,7 +18,6 @@ import java.util.concurrent.Callable;
 
 import static java.lang.String.format;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
-import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.createCredentials;
 
 @Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
     private File productArchitectureDirectory;
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
+    private CommandSpec spec;
 
     @Override
     public Integer call() {
@@ -68,7 +67,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
         exportArchitectureDataStructure(data, manifestFile, filesFacade);
     }
 
-    private ArchitectureDataStructure createSampleDataStructure() {
+    private static ArchitectureDataStructure createSampleDataStructure() {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
         dataStructure.setDescription("Architecture as code");
         dataStructure.setName("Hello World!!!");
