@@ -45,6 +45,7 @@ functional-requirements:
       - "[SAMPLE-TDD-ID]"
 functional-areas:
   'Sample-functional-area-ID':
+    title: Sample title
     jira:
       ticket: A
       link: A

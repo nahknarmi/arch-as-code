@@ -90,6 +90,7 @@ public class ArchitectureUpdateObjectMapperTest {
                 , "          link: '[SAMPLE JIRA TICKET LINK]'"
                 , "functional-areas:"
                 , "  '[Sample Functional Area Id]':"
+                , "    title: Sample title"
                 , "    jira:"
                 , "      ticket: '[SAMPLE JIRA TICKET]'"
                 , "      link: '[SAMPLE JIRA TICKET LINK]'"

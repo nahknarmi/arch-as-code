@@ -63,10 +63,11 @@ functional-requirements:
     tdd-references:
     - no-PR
 functional-areas:
-  "Sample-functional-area-ID":
+  AU-101:
+    title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
     jira:
-      ticket: fn-101
-      link: https://jira.devfactory.com/browse/fn-101
+      ticket: AU-101 #this is id for a functional area ticket
+      link: https://jira.devfactory.com/browse/AU-101
 capabilities:
   epic:
     title: Use this epic to track Jira integration
@@ -74,28 +75,28 @@ capabilities:
       ticket: AU-1
       link: https://jira.devfactory.com/browse/AU-1
   feature-stories:
-  - title: '[SAMPLE FEATURE STORY TITLE]'
+  - title: "[SAMPLE FEATURE STORY TITLE]"
     jira:
       ticket: AU-70
       link: http://jira.devfactory.com/browse/AU-70
     tdd-references:
     - no-PR
     functional-requirement-references:
-    - '[SAMPLE-REQUIREMENT-ID]'
+    - "[SAMPLE-REQUIREMENT-ID]"
     e2e:
       title: Title of E2E
       business-goal: |
         Some useful business goals
       jira:
-        ticket: E2E-70
-        link: http://jira.devfactory.com/browse/E2E-70
+        ticket: AU-170
+        link: http://jira.devfactory.com/browse/AU-170
       attributes:
         - name: Accessible
           rationale: User interface functions should be accessible
           jira:
-            ticket: SONIC-22412
-            link: https://jira.devfactory.com/browse/SONIC-22412
-      functional-area-id: "Sample-functional-area-ID"
+            ticket: AU-22412
+            link: https://jira.devfactory.com/browse/AU-22412
+      functional-area-id: AU-101
   - title: SAMPLE FEATURE STORY TITLE with No PR
     jira:
       ticket: AU-71
@@ -118,7 +119,7 @@ capabilities:
           jira:
             ticket: SONIC-22412
             link: https://jira.devfactory.com/browse/SONIC-22412
-      functional-area-id: "Sample-functional-area-ID"
+      functional-area-id: AU-101
   - title: SAMPLE FEATURE STORY TITLE new one
     jira:
       ticket: AU-72
@@ -140,4 +141,4 @@ capabilities:
           jira:
             ticket: SONIC-22412
             link: https://jira.devfactory.com/browse/SONIC-22412
-      functional-area-id: "Sample-functional-area-ID"
+      functional-area-id: AU-101

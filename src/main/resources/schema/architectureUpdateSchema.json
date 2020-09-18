@@ -147,6 +147,7 @@
       },
       "functional-areas" : {
         "SAMPLE-AREA-ID": {
+          "title": "Sample title for the functional area",
           "jira": {
             "title": "Title of jira issue",
             "link": "http://jira.com/id"
@@ -823,9 +824,11 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "title": { "type": "string" },
           "jira": { "$ref":  "#/definitions/jira" }
         },
         "required": [
+          "title",
           "jira"
         ]
       }
