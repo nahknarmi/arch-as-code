@@ -1,14 +1,13 @@
 package net.trilogy.arch.adapter.structurizr;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -80,16 +79,13 @@ public final class StructurizrCredentials {
         return value == null ? details().get(jsonKey) : null;
     }
 
-    @SuppressWarnings("unchecked")
     static Map<String, String> details() {
-        final var credentialsFile = credentialsAsStream();
-        if (null == credentialsFile) return emptyMap();
-        // TODO: Use Jackson not Gson
-        //       Note that the javadoc for Gson calls out: "this method should
-        //       not be used if the desired type is a generic type"
-        //       Jackson sensibly throws IOException -- how to manage?
-        //       Gson itself throws under the same conditions, but throws
-        //       classes which extend `RuntimeException`
-        return (Map<String, String>) new Gson().fromJson(new InputStreamReader(credentialsFile), Map.class);
+        try {
+            return new ObjectMapper().readValue(new File(CREDENTIALS_FILE_PATH), new TypeReference<>() {
+            });
+        } catch (final IOException e) {
+            // TODO: This *swallows* lots of problems we should be telling the user about
+            return emptyMap();
+        }
     }
 }
