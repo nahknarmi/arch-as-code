@@ -90,7 +90,11 @@ public final class StructurizrCredentials {
         final var credentialsFile = credentialsAsStream();
         if (null == credentialsFile) return emptyMap();
         // TODO: Use Jackson not Gson
-        // TODO: Jackson sensibly throws IOException -- how to manage?
+        //       Note that the javadoc for Gson calls out: "this method should
+        //       not be used if the desired type is a generic type"
+        //       Jackson sensibly throws IOException -- how to manage?
+        //       Gson itself throws under the same conditions, but throws
+        //       classes which extend `RuntimeException`
         return (Map<String, String>) new Gson().fromJson(new InputStreamReader(credentialsFile), Map.class);
     }
 }
