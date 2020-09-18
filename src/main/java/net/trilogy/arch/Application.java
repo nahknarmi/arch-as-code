@@ -5,6 +5,7 @@ import lombok.Generated;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
+import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.adapter.structurizr.StructurizrAdapter;
 import net.trilogy.arch.commands.DiffCommand;
 import net.trilogy.arch.commands.ImportCommand;
@@ -37,6 +38,8 @@ public class Application {
     @Builder.Default
     private final GoogleDocsAuthorizedApiFactory googleDocsAuthorizedApiFactory = new GoogleDocsAuthorizedApiFactory();
     @Builder.Default
+    private final JiraApiFactory jiraApiFactory = new JiraApiFactory();
+    @Builder.Default
     private final FilesFacade filesFacade = new FilesFacade();
     @Builder.Default
     private final GitInterface gitInterface = new GitInterface();
@@ -47,14 +50,9 @@ public class Application {
         int exitCode = app.execute(args);
 
         if (exitCode != 0) {
-            app.getCli()
-                    .getCommandSpec()
-                    .commandLine()
-                    .getOut()
-                    .println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
-                            "/.arch-as-code/arch-as-code.log");
+            app.getCli().getCommandSpec().commandLine().getOut().println("Command failed, for more info please check log file at: " + System.getProperty("user.home") +
+                    "/.arch-as-code/arch-as-code.log");
         }
-
         exit(exitCode);
     }
 
@@ -70,9 +68,9 @@ public class Application {
                         .addSubcommand(new AuInitializeCommand(filesFacade))
                         .addSubcommand(new AuNewCommand(googleDocsAuthorizedApiFactory, filesFacade, gitInterface))
                         .addSubcommand(new AuValidateCommand(filesFacade, gitInterface))
-                        .addSubcommand(new AuPublishStoriesCommand(filesFacade, gitInterface))
+                        .addSubcommand(new AuPublishStoriesCommand(jiraApiFactory, filesFacade, gitInterface))
                         .addSubcommand(new AuAnnotateCommand(filesFacade))
-                        .addSubcommand(new AuFinalizeAndPublishCommand(filesFacade, gitInterface)));
+                        .addSubcommand(new AuFinalizeAndPublishCommand(jiraApiFactory, filesFacade, gitInterface)));
     }
 
     public int execute(String[] args) {

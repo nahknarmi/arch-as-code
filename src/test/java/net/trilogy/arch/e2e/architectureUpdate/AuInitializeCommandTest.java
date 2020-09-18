@@ -1,7 +1,8 @@
-package net.trilogy.arch.commands.architectureUpdate;
+package net.trilogy.arch.e2e.architectureUpdate;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.CommandTestBase;
+import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -10,10 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static java.nio.file.Files.createDirectory;
 import static java.nio.file.Files.createTempDirectory;
-import static java.nio.file.Files.exists;
-import static java.nio.file.Files.isDirectory;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME;
 import static net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory.GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH;
@@ -53,17 +51,18 @@ public class AuInitializeCommandTest extends CommandTestBase {
         Path tempDirPath = getTempDirectory();
         collector.checkThat(
                 ARCHITECTURE_UPDATES_ROOT_FOLDER + " folder does not exist. (Precondition check)",
-                exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
+                Files.exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
                 is(false));
 
-        final var code = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+        Integer status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
-        collector.checkThat(code, is(equalTo(0)));
+        collector.checkThat(status, is(equalTo(0)));
 
         collector.checkThat(
                 ARCHITECTURE_UPDATES_ROOT_FOLDER + " folder was created.",
-                isDirectory(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
-                is(true));
+                Files.isDirectory(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
+                is(true)
+        );
     }
 
     @Test
@@ -72,55 +71,55 @@ public class AuInitializeCommandTest extends CommandTestBase {
         Path tempDirPath = getTempDirectory();
         collector.checkThat(
                 ARCHITECTURE_UPDATES_ROOT_FOLDER + " folder does not exist. (Precondition check)",
-                exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
+                Files.exists(tempDirPath.resolve(ARCHITECTURE_UPDATES_ROOT_FOLDER)),
                 is(false)
         );
 
-        final var baseAuFolder = tempDirPath.resolve("architecture-updates");
-        createDirectory(baseAuFolder);
+        Path baseAuFolder = tempDirPath.resolve("architecture-updates");
+        Files.createDirectory(baseAuFolder);
 
         // When
-        final var code = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+        final var status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
         // Then
-        collector.checkThat(code, equalTo(0));
+        collector.checkThat(status, equalTo(0));
         collector.checkThat(dummyErr.getLog(), equalTo(""));
         collector.checkThat(dummyOut.getLog(), containsString("already exists"));
     }
 
     @Test
     public void shouldCreateGoogleCredentialsDirectory() throws Exception {
-        final var tempDirPath = getTempDirectory();
+        Path tempDirPath = getTempDirectory();
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder does not exist. (Precondition check)",
-                exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
+                Files.exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
                 is(false));
 
-        final var code = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
+        final var status = execute("au", "init", "-c c", "-p p", "-s s", str(tempDirPath));
 
-        collector.checkThat(code, is(equalTo(0)));
+        collector.checkThat(status, is(equalTo(0)));
 
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder was created.",
-                isDirectory(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
+                Files.isDirectory(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
                 is(true));
     }
 
     @Test
     public void shouldCreateJiraSettingsFile() throws Exception {
-        final var tempDirPath = getTempDirectory();
+        Path tempDirPath = getTempDirectory();
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file does not exist. (Precondition check)",
-                exists(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
+                Files.exists(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
                 is(false));
 
-        final int code = execute("architecture-update", "initialize", "--client-id", "c", "--project-id", "p", "--secret", "s", str(tempDirPath));
+        int status = execute("architecture-update", "initialize", "--client-id", "c", "--project-id", "p", "--secret", "s", str(tempDirPath));
 
-        collector.checkThat(code, is(equalTo(0)));
+        collector.checkThat(status, is(equalTo(0)));
 
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file was created.",
-                exists(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
+                Files.exists(tempDirPath.resolve(JIRA_API_SETTINGS_FILE_PATH)),
                 is(true)
         );
 
@@ -140,10 +139,9 @@ public class AuInitializeCommandTest extends CommandTestBase {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void shouldNotOverwriteExistingJiraSettingsFile() throws Exception {
         // GIVEN:
-        final var root = getTempDirectory();
+        Path root = getTempDirectory();
         root.resolve(JIRA_API_SETTINGS_FILE_PATH).toFile().getParentFile().mkdirs();
         Files.writeString(root.resolve(JIRA_API_SETTINGS_FILE_PATH), "EXISTING CONTENTS");
-
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file contains some existing contents. (Precondition check)",
                 Files.readString(root.resolve(JIRA_API_SETTINGS_FILE_PATH)),
@@ -151,10 +149,11 @@ public class AuInitializeCommandTest extends CommandTestBase {
         );
 
         // WHEN:
-        final int code = execute("architecture-update", "initialize", "--client-id", "c", "--project-id", "p", "--secret", "s", str(root));
+        int status = execute("architecture-update", "initialize", "--client-id", "c", "--project-id", "p", "--secret", "s", str(root));
 
         // THEN:
-        collector.checkThat(code, not(equalTo(0)));
+        collector.checkThat(status, not(equalTo(0)));
+
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " file was not overridden.",
                 Files.readString(root.resolve(JIRA_API_SETTINGS_FILE_PATH)),
@@ -164,23 +163,25 @@ public class AuInitializeCommandTest extends CommandTestBase {
     @Test
     public void shouldFailIfCreatingJiraSettingsFileFails() throws Exception {
         // GIVEN:
-        final var rootDir = getTempDirectory();
+        Path rootDir = getTempDirectory();
 
         collector.checkThat(
                 JIRA_API_SETTINGS_FILE_PATH + " folder does not exist. (Precondition check)",
-                exists(rootDir.resolve(JIRA_API_SETTINGS_FILE_PATH)),
-                is(false));
+                Files.exists(rootDir.resolve(JIRA_API_SETTINGS_FILE_PATH)),
+                is(false)
+        );
 
         var mockedFilesFacade = mock(FilesFacade.class);
         when(mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("jira")))
                 .thenThrow(new IOException("Something horrible has happened. Maybe we ran out of bytes."));
 
-        final var app = Application.builder()
+        var app = Application.builder()
+                .jiraApiFactory(mock(JiraApiFactory.class))
                 .filesFacade(mockedFilesFacade)
                 .build();
 
         // WHEN:
-        final int status = execute(app, "au init -c c -p p -s s " + str(rootDir));
+        int status = execute(app, "au init -c c -p p -s s " + str(rootDir));
 
         // THEN:
         collector.checkThat(status, not(equalTo(0)));
@@ -189,22 +190,18 @@ public class AuInitializeCommandTest extends CommandTestBase {
     @Test
     public void shouldFailIfCreatingGoogleCredentialsFileFails() throws Exception {
         // Given
-        final var tempDirPath = getTempDirectory();
-
+        Path tempDirPath = getTempDirectory();
         collector.checkThat(
                 GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH + " folder does not exist. (Precondition check)",
-                exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
+                Files.exists(tempDirPath.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)),
                 is(false));
-
-        final var mockedFilesFacade = mock(FilesFacade.class);
+        var mockedFilesFacade = mock(FilesFacade.class);
         when(mockedFilesFacade.writeString(ArgumentMatchers.any(), ArgumentMatchers.contains("google")))
                 .thenThrow(new IOException("Something horrible has happened. Maybe we ran out of bytes."));
-        final var app = Application.builder()
-                .filesFacade(mockedFilesFacade)
-                .build();
+        var app = Application.builder().jiraApiFactory(mock(JiraApiFactory.class)).filesFacade(mockedFilesFacade).build();
 
         // when
-        final var status = execute(app, "au init -c c -p p -s s " + str(tempDirPath));
+        Integer status = execute(app, "au init -c c -p p -s s " + str(tempDirPath));
 
         // then
         collector.checkThat(status, not(equalTo(0)));
@@ -212,12 +209,9 @@ public class AuInitializeCommandTest extends CommandTestBase {
 
     @Test
     public void shouldFailIfAuDirectoryAlreadyExists() throws Exception {
-        final var rootDir = getTempDirectory();
-
+        Path rootDir = getTempDirectory();
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-
         Files.writeString(auPathFrom(rootDir), "EXISTING CONTENTS");
-
         collector.checkThat(
                 "Precondition check: AU must contain our contents.",
                 Files.readString(auPathFrom(rootDir)),
@@ -242,15 +236,14 @@ public class AuInitializeCommandTest extends CommandTestBase {
 
     @Test
     public void shouldCreateGoogleApiClientCredentialsFile() throws Exception {
-        final var rootDir = getTempDirectory();
-        final var clientId = "id";
-        final var projectId = "proj";
-        final var secret = "secret";
-
+        Path rootDir = getTempDirectory();
+        String clientId = "id";
+        String projectId = "proj";
+        String secret = "secret";
         execute("au", "init", str(rootDir), "-c " + clientId, "-p " + projectId, "-s " + secret);
 
-        final var auCredFile = rootDir.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME);
-        final var expected = "{\n" +
+        Path auCredFile = rootDir.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME);
+        String expected = "{\n" +
                 "  \"installed\": {\n" +
                 "    \"client_id\": \"" + clientId + "\",\n" +
                 "    \"project_id\": \"" + projectId + "\",\n" +
@@ -272,11 +265,9 @@ public class AuInitializeCommandTest extends CommandTestBase {
 
     @Test
     public void shouldNotOverrideExistingGoogleApiCredentialsFolder() throws Exception {
-        final var rootDir = getTempDirectory();
-
+        Path rootDir = getTempDirectory();
         execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
-
-        final var auClientCredentialsFile = rootDir.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME);
+        final Path auClientCredentialsFile = rootDir.resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME);
         Files.writeString(auClientCredentialsFile.toAbsolutePath(), "EXISTING CONTENTS");
 
         collector.checkThat(
@@ -284,10 +275,10 @@ public class AuInitializeCommandTest extends CommandTestBase {
                 Files.readString(auClientCredentialsFile),
                 equalTo("EXISTING CONTENTS"));
 
-        final var code = execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
+        final var result = execute("au", "init", "-c c", "-p p", "-s s", str(rootDir));
 
         collector.checkThat(
-                code,
+                result,
                 not(equalTo(0)));
         collector.checkThat(
                 Files.readString(auClientCredentialsFile),

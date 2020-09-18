@@ -1,111 +1,49 @@
 package net.trilogy.arch.adapter.jira;
 
-import com.atlassian.jira.rest.client.api.JiraRestClient;
-import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.google.common.annotations.VisibleForTesting;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.services.Base64Converter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
-import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
-import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
+import static lombok.AccessLevel.PACKAGE;
 
-@RequiredArgsConstructor
+@Getter(PACKAGE)
+@VisibleForTesting
 public class JiraApi {
-    private final JiraRestClient jiraClient;
+    private final HttpClient client;
+    private final String baseUri;
+    private final String getStoryEndpoint;
+    private final String bulkCreateEndpoint;
+    private final String linkPrefix;
 
-    public JiraQueryResult getStory(Jira jira)
-            throws JiraApiException {
-        final var ticket = jira.getTicket();
-
-        try {
-            final var issue = jiraClient.getIssueClient()
-                    .getIssue(ticket).get();
-
-            // TODO: ICK -- why are we only checking the project ID and Key?
-            // TODO: This needs to return the full issue so that we can compare
-            //       it against the YAML, and decide if it needs updating
-            return new JiraQueryResult(issue.getProject().getId(), issue.getProject().getKey());
-        } catch (RestClientException e) {
-            final var code = e.getStatusCode();
-            if (!code.isPresent()) throw e;
-
-            switch (code.get()) {
-                case 401:
-                    throw new JiraApiException(
-                            "Failed to log into Jira. Please check your credentials.",
-                            e);
-                case 404:
-                    throw new JiraApiException(
-                            "Story \"" + jira.getTicket() + "\" not found. Issue: " + ticket,
-                            e);
-                default:
-                    throw new JiraApiException(
-                            "Unknown error occurred: " + e.getMessage(),
-                            e);
-            }
-        } catch (InterruptedException e) {
-            throw new JiraApiException("INTERRUPTED", e);
-        } catch (ExecutionException e) {
-            throw new JiraApiException("FAILED", e.getCause());
-        }
-    }
-
-    public List<JiraCreateStoryStatus> createStories(
-            List<JiraStory> jiraStories,
-            String epicKey,
-            Long projectId)
-            throws JiraApiException {
-        try {
-            final var bulkResponse = jiraClient.getIssueClient()
-                    .createIssues(jiraStories.stream()
-                            .map(aac -> aac.toJira(epicKey, projectId))
-                            .collect(toList()))
-                    .get();
-
-            final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)
-                    .map(it -> succeeded(it.getKey(), it.getSelf().toString()))
-                    .collect(toList());
-            final var failed = stream(bulkResponse.getErrors().spliterator(), false)
-                    .map(it -> failed(it.toString()))
-                    .collect(toList());
-
-            final var result = new ArrayList<JiraCreateStoryStatus>(succeeded.size() + failed.size());
-            result.addAll(succeeded);
-            result.addAll(failed);
-            return result;
-        } catch (RestClientException e) {
-            final var x = new JiraApiException(e.getMessage(), e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        } catch (InterruptedException e) {
-            final var x = new JiraApiException("INTERRUPTED", e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        } catch (ExecutionException e) {
-            final var x = new JiraApiException("FAILED", e.getCause());
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        }
-    }
-
-    public static class JiraApiException extends Exception {
-        public JiraApiException(@NonNull String message, Throwable cause) {
-            super(message, cause);
-        }
+    public JiraApi(HttpClient client, String baseUri, String getStoryEndpoint, String bulkCreateEndpoint, String linkPrefix) {
+        this.client = client;
+        this.baseUri = baseUri.replaceAll("/$", "") + "/";
+        this.bulkCreateEndpoint = bulkCreateEndpoint.replaceAll("(^/|/$)", "") + "/";
+        this.getStoryEndpoint = getStoryEndpoint.replaceAll("(^/|/$)", "") + "/";
+        this.linkPrefix = linkPrefix.replaceAll("(^/|/$)", "") + "/";
     }
 
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("http://jira.devfactory.com");
-        final var issueKey = "AU-1";
 
         final String username;
         final String password;
@@ -122,7 +60,204 @@ public class JiraApi {
                 root,
                 new BasicHttpAuthenticationHandler(username, password));
 
-        final var issue = client.getIssueClient().getIssue(issueKey).get();
+        final var issue = client.getIssueClient().getIssue("AU-1").get();
         System.out.println("issue = " + issue);
+    }
+
+    public JiraQueryResult getStory(Jira jira, String username, char[] password) throws JiraApiException {
+        final var encodedAuth = getEncodeAuth(username, password);
+        final var ticket = jira.getTicket();
+        final var request = createGetStoryRequest(encodedAuth, ticket);
+
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 401) {
+                throw JiraApiException.builder()
+                        .message("Failed to log into Jira. Please check your credentials.")
+                        .response(response)
+                        .build();
+            }
+            if (response.statusCode() == 404) {
+                throw JiraApiException.builder()
+                        .message("Story \"" + jira.getTicket() + "\" not found. URL: " + request.uri().toURL().toString())
+                        .response(response)
+                        .build();
+            }
+
+            return new JiraQueryResult(response);
+        } catch (JiraApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw JiraApiException.builder()
+                    .cause(e)
+                    .response(response)
+                    .message("Unknown error occurred")
+                    .build();
+        }
+    }
+
+    public List<JiraCreateStoryStatus> createStories(List<JiraStory> jiraStories, String epicKey, String projectId, String username, char[] password) throws JiraApiException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(generateBodyForCreateStories(epicKey, jiraStories, projectId)))
+                .header("Authorization", "Basic " + getEncodeAuth(username, password))
+                .header("Content-Type", "application/json")
+                .uri(URI.create(baseUri + bulkCreateEndpoint))
+                .build();
+
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (401 == response.statusCode()) {
+                throw JiraApiException.builder()
+                        .message("Failed to log into Jira. Please check your credentials.")
+                        .response(response)
+                        .build();
+            }
+
+            return parseCreateStoriesResponse(response.body());
+        } catch (JiraApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw JiraApiException.builder()
+                    .cause(e)
+                    .response(response)
+                    .message("Unknown error occurred")
+                    .build();
+        }
+    }
+
+    private List<JiraCreateStoryStatus> parseCreateStoriesResponse(String response) {
+        final var successfulItems = new JSONObject(response).getJSONArray("issues");
+        final var failedItems = new JSONObject(response).getJSONArray("errors");
+        final var totalElements = successfulItems.length() + failedItems.length();
+
+        final var result = new JiraCreateStoryStatus[totalElements];
+
+        for (int i = 0; i < failedItems.length(); ++i) {
+            final var indexOfFailedItem = failedItems.getJSONObject(i).getInt("failedElementNumber");
+            final var error = extractErrorFromJiraCreateStoryResult(failedItems.getJSONObject(i));
+
+            result[indexOfFailedItem] = JiraCreateStoryStatus.failed(error);
+        }
+
+        for (int i = 0; i < successfulItems.length(); ++i) {
+            final var key = successfulItems.getJSONObject(i).getString("key");
+            final var item = JiraCreateStoryStatus.succeeded(key, baseUri + linkPrefix + key);
+
+            insertInNextAvailableSpot(result, item);
+        }
+
+        return List.of(result);
+    }
+
+    private HttpRequest createGetStoryRequest(String encodedAuth, String ticket) {
+        return HttpRequest
+                .newBuilder()
+                .GET()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Basic " + encodedAuth)
+                .uri(URI.create(baseUri + getStoryEndpoint + ticket))
+                .build();
+    }
+
+    private static void insertInNextAvailableSpot(Object[] arrayToInsertInto, Object itemToInsert) {
+        final int sizeOfArray = arrayToInsertInto.length;
+        for (int i = 0; i < sizeOfArray; ++i) {
+            if (null == arrayToInsertInto[i]) {
+                arrayToInsertInto[i] = itemToInsert;
+                break;
+            }
+        }
+        // TODO: Funky algo -- what happens if we reach then end without inserting?
+    }
+
+    private static String extractErrorFromJiraCreateStoryResult(JSONObject jiraErrorObj) {
+        final var errorMessages = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONArray("errorMessages")
+                .toList().stream()
+                .map(it -> it + "\n")
+                .collect(joining());
+
+        final var mappedErrorsAsJson = jiraErrorObj.getJSONObject("elementErrors")
+                .getJSONObject("errors");
+
+        final var mappedErrorMessages = mappedErrorsAsJson.keySet().stream()
+                .map(it -> it + ": " + mappedErrorsAsJson.getString(it) + "\n")
+                .collect(joining());
+
+        return errorMessages + mappedErrorMessages;
+    }
+
+    private static String buildTddRow(JiraStory.JiraTdd tdd) {
+        if (tdd.hasTddContent()) {
+            return "| " + tdd.getId() + " | " + tdd.getText() + " |\n";
+        } else {
+            return "| " + tdd.getId() + " | {noformat}" + tdd.getText() + "{noformat} |\n";
+        }
+    }
+
+    private static String makeFunctionalRequirementRow(JiraStory.JiraFunctionalRequirement funcReq) {
+        return "| " + funcReq.getId() + " | "
+                + funcReq.getSource()
+                + " | {noformat}" + funcReq.getText() + "{noformat} |\n";
+    }
+
+    private static String getEncodeAuth(String username, char[] password) {
+        final var s = username + ":" + String.valueOf(password);
+
+        return Base64Converter.toString(s);
+    }
+
+    private static String makeDescription(JiraStory story) {
+        return makeFunctionalRequirementTable(story) +
+                makeTddTablesByComponent(story);
+    }
+
+    private static String makeTddTablesByComponent(JiraStory story) {
+        final var compMap = story.getTdds().stream()
+                .collect(groupingBy(JiraStory.JiraTdd::getComponentPath));
+
+        return "h3. Technical Design:\n" + compMap.entrySet().stream()
+                .map(it ->
+                        "h4. Component: " + it.getKey() + "\n||TDD||Description||\n" +
+                                it.getValue().stream()
+                                        .map(JiraApi::buildTddRow)
+                                        .collect(joining()))
+                .collect(joining());
+    }
+
+    private static String makeFunctionalRequirementTable(JiraStory story) {
+        return "h3. Implements functionality:\n" +
+                "||Id||Source||Description||\n" +
+                story.getFunctionalRequirements().stream()
+                        .map(JiraApi::makeFunctionalRequirementRow)
+                        .collect(joining());
+    }
+
+    private static String generateBodyForCreateStories(String epicKey, List<JiraStory> jiraStories, String projectId) {
+        return new JSONObject(
+                Map.of("issueUpdates", new JSONArray(jiraStories.stream()
+                        .map(story -> new JSONObject(Map.of(
+                                "fields", Map.of(
+                                        "customfield_10002", epicKey,
+                                        "project", Map.of("id", projectId),
+                                        "summary", story.getTitle(),
+                                        "issuetype", Map.of("name", "Feature Story"),
+                                        "description", makeDescription(story)))))
+                        .collect(toList()))))
+                .toString();
+    }
+
+    @Builder
+    @Getter
+    @RequiredArgsConstructor
+    public static class JiraApiException extends Exception {
+        @NonNull
+        private final String message;
+        private final Throwable cause;
+        private final HttpResponse<?> response;
     }
 }

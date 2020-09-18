@@ -1,4 +1,4 @@
-package net.trilogy.arch.commands.architectureUpdate;
+package net.trilogy.arch.e2e.architectureUpdate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,6 +58,7 @@ public class AuNewCommandTest extends CommandTestBase {
 
         app = Application.builder()
                 .googleDocsAuthorizedApiFactory(googleDocsApiFactoryMock)
+                .jiraApiFactory(mock(JiraApiFactory.class))
                 .filesFacade(filesFacadeSpy)
                 .gitInterface(gitInterfaceSpy)
                 .build();
@@ -282,6 +283,7 @@ public class AuNewCommandTest extends CommandTestBase {
                 .thenThrow(new IOException("No disk space!"));
 
         final var app = Application.builder()
+                .jiraApiFactory(mock(JiraApiFactory.class))
                 .filesFacade(mockedFilesFacade)
                 .build();
         final var command = "au new " + auName + " " + str(rootDir);
