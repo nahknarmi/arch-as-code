@@ -76,13 +76,8 @@ public final class StructurizrCredentials {
 
     static String readWorkspaceDetail(String environmentVariableName, String jsonKey) {
         final var value = getenv().get(environmentVariableName);
-        if (value != null) {
-            return value;
-        } else if (!details().isEmpty()) {
-            return details().get(jsonKey);
-        } else {
-            return null;
-        }
+
+        return value == null ? details().get(jsonKey) : null;
     }
 
     @SuppressWarnings("unchecked")
