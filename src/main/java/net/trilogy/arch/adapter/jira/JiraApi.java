@@ -1,9 +1,11 @@
 package net.trilogy.arch.adapter.jira;
 
+import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import lombok.Generated;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
@@ -103,9 +106,11 @@ public class JiraApi {
         }
     }
 
+    @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("http://jira.devfactory.com");
-        final var issueKey = "AU-1";
+        final var epicKey = "AU-1";
+        final var storyKeyPartOfEpicToDelete = "AU-35";
 
         final String username;
         final String password;
@@ -122,7 +127,45 @@ public class JiraApi {
                 root,
                 new BasicHttpAuthenticationHandler(username, password));
 
-        final var issue = client.getIssueClient().getIssue(issueKey).get();
-        System.out.println("issue = " + issue);
+        final var issues = client.getIssueClient();
+        final var issue = issues.getIssue(epicKey).get();
+        out.println("issue = " + issue);
+
+        out.println();
+        out.println("=== TRYING FAKE ISSUES");
+
+        out.println();
+        out.println("=== BAD ISSUE");
+        try {
+            final var badIssue = issues.getIssue("NONSUCH-1").get();
+            out.println("bad issue = " + badIssue.getKey());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
+        }
+
+        out.println();
+        out.println("=== NO SUCH ISSUE");
+        try {
+            final var noSuchIssue = issues.getIssue("AU-2").get();
+            out.println("no such issue = " + noSuchIssue.getKey());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
+        }
+
+        out.println();
+        out.println("=== DELETE EXISTING ISSUE");
+        try {
+            issues.deleteIssue(storyKeyPartOfEpicToDelete, true).get();
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
+        }
+        final var deletedIssue = issues.getIssue(storyKeyPartOfEpicToDelete).get();
+        out.println("deleted issue = " + deletedIssue);
     }
 }
