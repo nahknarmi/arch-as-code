@@ -1,5 +1,6 @@
 package net.trilogy.arch.adapter.structurizr;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -86,6 +87,8 @@ public abstract class StructurizrCredentials {
     static Map<String, String> details() {
         return credentialsAsStream()
                 .map(InputStreamReader::new)
+                // TODO: Use Jackson not Gson
+                // TODO: Jackson sensibly throws IOException -- how to manage?
                 .map(x -> new Gson().fromJson(x, Map.class))
                 .orElse(emptyMap());
     }
