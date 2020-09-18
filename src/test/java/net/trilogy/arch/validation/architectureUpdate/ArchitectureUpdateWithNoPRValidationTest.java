@@ -1,18 +1,11 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
-import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.Epic;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,12 +86,15 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                         List.of(
                                 new FeatureStory(
                                         "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
-                                        List.of(FunctionalRequirementId.blank())),
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()),
                                 new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.noPr()),
-                                        List.of(FunctionalRequirementId.blank())),
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()),
                                 new FeatureStory(
                                         "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                        List.of(FunctionalRequirementId.blank())))))
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -114,10 +110,12 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                         List.of(
                                 new FeatureStory(
                                         "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
-                                        List.of(FunctionalRequirementId.blank())),
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()),
                                 new FeatureStory(
                                         "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                        List.of(FunctionalRequirementId.blank())))))
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -133,9 +131,11 @@ public class ArchitectureUpdateWithNoPRValidationTest {
                         List.of(
                                 new FeatureStory(
                                         "Feat Title 1", Jira.blank(), List.of(TddId.noPr(), TddId.blank()),
-                                        List.of(FunctionalRequirementId.blank())),
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()),
                                 new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
-                                        List.of(FunctionalRequirementId.blank())))))
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()))))
                 .tddContainersByComponent(List.of(new TddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,

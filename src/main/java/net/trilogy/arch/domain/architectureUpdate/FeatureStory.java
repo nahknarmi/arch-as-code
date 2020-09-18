@@ -25,6 +25,8 @@ public class FeatureStory {
     private final List<TddId> tddReferences;
     @JsonProperty(value = "functional-requirement-references")
     private final List<FunctionalRequirementId> requirementReferences;
+    @JsonProperty(value = "e2e")
+    private final E2E e2e;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
@@ -32,11 +34,13 @@ public class FeatureStory {
             @JsonProperty("title") String title,
             @JsonProperty("jira") Jira jira,
             @JsonProperty("tdd-references") List<TddId> tddReferences,
-            @JsonProperty("functional-requirement-references") List<FunctionalRequirementId> requirementReferences) {
+            @JsonProperty("functional-requirement-references") List<FunctionalRequirementId> requirementReferences,
+            @JsonProperty("e2e") E2E e2e) {
         this.title = title;
         this.jira = jira;
         this.tddReferences = tddReferences;
         this.requirementReferences = requirementReferences;
+        this.e2e = e2e;
     }
 
     public boolean exists() {
@@ -54,6 +58,7 @@ public class FeatureStory {
                 "[SAMPLE FEATURE STORY TITLE]",
                 new Jira("", ""),
                 List.of(TddId.blank()),
-                List.of(FunctionalRequirementId.blank()));
+                List.of(FunctionalRequirementId.blank()),
+                E2E.blank());
     }
 }

@@ -2,7 +2,6 @@ package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -38,22 +37,14 @@ public class FunctionalRequirement {
         return new FunctionalRequirement("[SAMPLE REQUIREMENT TEXT]", "[SAMPLE REQUIREMENT SOURCE TEXT]", List.of(TddId.blank()));
     }
 
-    @EqualsAndHashCode
-    public static class FunctionalRequirementId implements EntityReference {
-        @JsonValue
-        private final String id;
+    public static class FunctionalRequirementId extends YamlId implements EntityReference {
 
         public FunctionalRequirementId(String id) {
-            this.id = id;
+            super(id);
         }
 
         public static FunctionalRequirementId blank() {
             return new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]");
-        }
-
-        @Override
-        public String toString() {
-            return id;
         }
     }
 }

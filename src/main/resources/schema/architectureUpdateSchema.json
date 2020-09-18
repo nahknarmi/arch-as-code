@@ -145,6 +145,14 @@
           ]
         }
       },
+      "functional-areas" : {
+        "SAMPLE-AREA-ID": {
+          "jira": {
+            "title": "Title of jira issue",
+            "link": "http://jira.com/id"
+          }
+        }
+      },
       "capabilities": {
         "epic": {
           "title": "Please enter epic title from Jira",
@@ -181,6 +189,7 @@
     "decisions",
     "tdds-per-component",
     "functional-requirements",
+    "functional-areas",
     "capabilities"
   ],
   "additionalProperties": true,
@@ -943,7 +952,8 @@
                 "required": [
                   "title",
                   "tdd-references",
-                  "functional-requirement-references"
+                  "functional-requirement-references",
+                  "e2e"
                 ],
                 "additionalProperties": true,
                 "properties": {
@@ -1012,6 +1022,34 @@
                         }
                       ],
                       "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/functional-requirement-references/items"
+                    }
+                  },
+                  "e2e": {
+                    "$id": "#/properties/capabilities/properties/feature-stories/items/anyOf/0/properties/e2e",
+                    "type": "object",
+                    "title": "E2E issue related to the story.",
+                    "description": "An E2E jira issue that will cover testing of the feature story",
+                    "properties": {
+                      "title": { "type":  "string" },
+                      "jira": { "$ref": "#/definitions/jira" },
+                      "business-goal": { "type": "string" },
+                      "attributes" : {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": { "type": "string"},
+                            "rationale": { "type": "string" },
+                            "jira": { "$ref": "#/definitions/jira" }
+                          },
+                          "required": [
+                            "name",
+                            "rationale",
+                            "jira"
+                          ]
+                        }
+                      },
+                      "functional-area-id" : { "type": "string" }
                     }
                   }
                 }
