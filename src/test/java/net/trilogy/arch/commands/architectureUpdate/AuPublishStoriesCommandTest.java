@@ -24,15 +24,16 @@ import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
 import static java.nio.file.Files.copy;
@@ -68,29 +69,36 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     private Path testCloneDirectory;
     private JiraApi mockedJiraApi;
     private Application app;
-    private FilesFacade spiedFilesFacade;
+    private FilesFacade spiedFiles;
     private GitInterface mockedGitInterface;
-    private MockedStatic<JiraApiFactory> mockedJiraApiFactory;
+    private MockedStatic<JiraApiFactory> jiraApiFactoryMock;
+
+    /** @todo Find better pattern for testing with Mockito.mockStatic */
+    private final AtomicBoolean missingJiraConfiguration = new AtomicBoolean(false);
 
     @Before
     public void setUp() throws Exception {
         mockedJiraApi = mock(JiraApi.class);
-        mockedJiraApiFactory = mockStatic(JiraApiFactory.class, invocation -> mockedJiraApi);
+        jiraApiFactoryMock = mockStatic(JiraApiFactory.class, invocation -> {
+            if (missingJiraConfiguration.get())
+                throw new NoSuchFileException("YOUR JIRA CONFIGURATION");
+            else return mockedJiraApi;
+        });
 
-        spiedFilesFacade = spy(new FilesFacade());
+        spiedFiles = spy(new FilesFacade());
 
         rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
 
         final var mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
-        when(newJiraApi(spiedFilesFacade, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
+        when(newJiraApi(spiedFiles, rootDir.toPath(), "BOB", "NANCY".toCharArray()))
                 .thenReturn(mockedJiraApi);
 
         mockedGitInterface = mock(GitInterface.class);
 
         app = Application.builder()
                 .googleDocsAuthorizedApiFactory(mockedGoogleApiFactory)
-                .filesFacade(spiedFilesFacade)
+                .filesFacade(spiedFiles)
                 .gitInterface(mockedGitInterface)
                 .build();
 
@@ -105,16 +113,16 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
     @After
     public void tearDown() throws Exception {
-        mockedJiraApiFactory.close();
+        jiraApiFactoryMock.close();
 
         deleteIfExists(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         deleteIfExists(testCloneDirectory);
     }
 
-    @Ignore("TODO: Fix STDERR")
     @Test
     public void shouldFailGracefullyIfFailToLoadConfig() throws Exception {
-        // Given
+        missingJiraConfiguration.set(true);
+
         mockGitInterface();
         final var newApp = Application.builder()
                 .gitInterface(mockedGitInterface)
@@ -128,14 +136,14 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         collector.checkThat(dummyOut.getLog(), equalTo(""));
         collector.checkThat(
                 dummyErr.getLog(),
-                containsString("Unable to load configuration.\nError: java.nio.file.NoSuchFileException"));
+                containsString("Unable to load JIRA configuration.\nError: java.nio.file.NoSuchFileException"));
     }
 
     @Test
     public void shouldFailGracefullyIfFailToLoadAu() throws Exception {
         // Given a filesystem read error
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
-                .when(spiedFilesFacade).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
+                .when(spiedFiles).readString(eq(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML)));
 
         // When
         final var status = execute(app, genericCommand());
@@ -153,7 +161,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // Given
         mockGitInterface();
         doThrow(new RuntimeException("ERROR", new RuntimeException("DETAILS")))
-                .when(spiedFilesFacade).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
+                .when(spiedFiles).readString(eq(rootDir.toPath().resolve("product-architecture.yml")));
 
         // When
         final var status = execute(app, genericCommand());
@@ -387,7 +395,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         succeeded("ABC-123", "link-to-ABC-123"),
                         succeeded("ABC-223", "link-to-ABC-223")));
         mockGitInterface();
-        doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFilesFacade).writeString(any(), any());
+        doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFiles).writeString(any(), any());
 
         // WHEN:
         final var status = execute(app, genericCommand());

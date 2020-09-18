@@ -12,7 +12,7 @@ public abstract class CommandTestBase {
      * console; setting it to {@code true} should still pass tests, but also
      * print to the console at tests' conclusion.
      */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     @Rule
     public final ErrorCollector collector = new ErrorCollector();

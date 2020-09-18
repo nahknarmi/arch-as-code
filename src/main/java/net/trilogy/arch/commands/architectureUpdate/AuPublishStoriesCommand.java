@@ -123,7 +123,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         try {
             return Optional.of(newJiraApi(filesFacade, productArchitectureDirectory.toPath(), username, password));
         } catch (Exception e) {
-            printError("Unable to load configuration.", e);
+            printError("Unable to load JIRA configuration.", e);
             return Optional.empty();
         }
     }
