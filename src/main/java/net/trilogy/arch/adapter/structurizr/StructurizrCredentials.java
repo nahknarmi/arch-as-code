@@ -70,7 +70,7 @@ public final class StructurizrCredentials {
     static String readWorkspaceDetail(String environmentVariableName, String jsonKey) {
         final var value = getenv().get(environmentVariableName);
 
-        return value == null ? details().get(jsonKey) : null;
+        return value != null ? value : details().get(jsonKey);
     }
 
     static Map<String, String> details() {
