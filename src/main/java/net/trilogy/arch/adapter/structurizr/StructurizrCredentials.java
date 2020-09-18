@@ -2,11 +2,8 @@ package net.trilogy.arch.adapter.structurizr;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -32,32 +29,29 @@ public final class StructurizrCredentials {
     }
 
     // TODO [TESTING]: Add unit tests
+    // TODO: DO NOT OVERWRITE EXISTING CREDENTIALS
     public static void createCredentials(
             File productArchitectureDirectory,
             String workspaceId,
             String apiKey,
             String apiSecret) throws IOException {
-        final var configPath = format("%s%s%s",
+        String configPath = format("%s%s%s",
                 productArchitectureDirectory.getAbsolutePath(),
                 File.separator,
                 STRUCTURIZR_PATH);
-        if (!new File(configPath).mkdirs())
-            throw new IllegalArgumentException(format("Unable to create directory %s.", configPath));
+        final var dirs = new File(configPath);
+        //noinspection ResultOfMethodCallIgnored
+        dirs.mkdirs();
+        if (!dirs.exists()) {
+            throw new IllegalStateException("Directory created, but doesn't exist afterwards: " + dirs);
+        }
 
         final var credentialsFile = new File(configPath + File.separator + "credentials.json");
 
-        new ObjectMapper().writeValue(credentialsFile, ImmutableMap.of(
+        new ObjectMapper().writeValue(credentialsFile, Map.of(
                 "workspace_id", workspaceId,
                 "api_key", apiKey,
                 "api_secret", apiSecret));
-    }
-
-    static FileInputStream credentialsAsStream() {
-        try {
-            return new FileInputStream(CREDENTIALS_FILE_PATH);
-        } catch (final FileNotFoundException e) {
-            return null;
-        }
     }
 
     static Long workspaceId() {

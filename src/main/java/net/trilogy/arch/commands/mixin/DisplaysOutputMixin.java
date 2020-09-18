@@ -15,8 +15,9 @@ public interface DisplaysOutputMixin {
     }
 
     default void logArgs() {
-        LogManager.getLogger(getClass()).info(getClass().getSimpleName() + " with args : " + getSpec().args().stream().map(this::maskedParamValue
-        ).collect(Collectors.joining(" ")));
+        LogManager.getLogger(getClass()).info(getClass().getSimpleName() + " with args : " + getSpec().args().stream()
+                .map(this::maskedParamValue)
+                .collect(Collectors.joining(" ")));
     }
 
     default String maskedParamValue(CommandLine.Model.ArgSpec spec) {

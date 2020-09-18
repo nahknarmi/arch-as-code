@@ -2,6 +2,9 @@
 
 export PS4='+${BASH_SOURCE}:${LINENO}:${FUNCNAME[0]:+${FUNCNAME[0]}():} '
 
+repo_dir="$(git rev-parse --show-toplevel)"
+aac_dir=/tmp/aac/demo-folder
+
 set -e
 set -u
 set -o pipefail
@@ -35,6 +38,8 @@ function maybe-create-init-au-yaml() {
     cp "$repo_dir/documentation/products/arch-as-code/architecture-updates/show-tdd-in-diff/architecture-update.yml" architecture-update/test
     git add .
     git commit -q -m 'Set up demonstration AU'
+    # TODO: The script leaves you in 'test' branch if exists, but in 'master'
+    #       if copying in demo files
     run git checkout -q master
 }
 
@@ -78,50 +83,56 @@ cd "$repo_dir"
 
 echo "Working..."
 
-rm -rf /tmp/aac/demo-folder/.arch-as-code
-rm -rf /tmp/aac/demo-folder/.install
-mkdir -p /tmp/aac/demo-folder/.install
+mkdir -p "$aac_dir"
 
-cp ./scripts/demo-git-ignore /tmp/aac/demo-folder/.gitignore
-cp ./.java-version /tmp/aac/demo-folder
+if [[ -r "$aac_dir"/.arch-as-code ]]; then
+    :  # Keep existing
+elif [[ -r ~/.arch-as-code ]]; then
+    cp -a ~/.arch-as-code "$aac_dir"
+else
+    echo "$0: No $HOME/.arch-as-code configuration files" >&2
+    exit 1
+fi
 
-mkdir -p /tmp/aac/demo-folder/.install/bin
+rm -rf $aac_dir/.install
+mkdir -p $aac_dir/.install
+
+cp ./scripts/demo-git-ignore $aac_dir/.gitignore
+cp ./.java-version $aac_dir
+mkdir -p $aac_dir/.install/bin
 
 run ./gradlew bootJar
-cp ./build/libs/arch-as-code-*.jar /tmp/aac/demo-folder/.install/bin
+cp ./build/libs/arch-as-code-*.jar $aac_dir/.install/bin
 
-cat <<EOS >/tmp/aac/demo-folder/.install/bin/arch-as-code
+cat <<EOS >$aac_dir/.install/bin/arch-as-code
 #!/bin/sh
 
 # The extra flag is to quiet WARNINGS from Jackson
-exec java --illegal-access=permit -jar /tmp/aac/demo-folder/.install/bin/arch-as-code-*.jar "\$@"
+exec java --illegal-access=permit -jar "$aac_dir"/.install/bin/arch-as-code-*.jar "\$@"
 EOS
-chmod a+rx /tmp/aac/demo-folder/.install/bin/arch-as-code
+chmod a+rx $aac_dir/.install/bin/arch-as-code
 
-cd /tmp/aac/demo-folder
+cd $aac_dir
+
+# shellcheck disable=SC2016
+ln -fs .install/bin/arch-as-code .
 
 # This file is optional
+# TODO: Stop replacing user-edited files
 [[ -r product-architecture.yml ]] && {
     mv product-architecture.yml product-architecture.yml.bak || {
         echo "$0: WARNING: No locally edited product-architecture.yml; ignoring" >&2
     }
 }
 
+# TODO: Check if:
+# 1) Credentials aready exist, and use them
+# 2) If NOT, prompt user for the 3 needed values
 run .install/bin/arch-as-code init -i i -k i -s s .
 run .install/bin/arch-as-code au init -c c -p p -s s .
 
 # TODO: Do not destroy the existing file
 [[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml
-
-# Create initial AaC settings files if none already present
-if [[ -d ~/.arch-as-code ]]; then # Home dir first
-    cp -r ~/.arch-as-code .
-else # Project repo files as a fallback
-    cp -r "$repo_dir"/.arch-as-code .
-fi
-
-# shellcheck disable=SC2016
-ln -fs .install/bin/arch-as-code .
 
 if [[ ! -d .git ]]; then
     run git init

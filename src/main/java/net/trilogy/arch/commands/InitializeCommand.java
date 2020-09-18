@@ -6,8 +6,8 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.facade.FilesFacade;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import static java.lang.String.format;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
 import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.createCredentials;
 
@@ -34,16 +35,22 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
     private File productArchitectureDirectory;
     @Getter
     @Spec
-    private CommandLine.Model.CommandSpec spec;
+    private CommandSpec spec;
 
     @Override
     public Integer call() {
         logArgs();
 
         try {
+            // TODO: RETHINK HOW THIS WORKS
+            //       Only prompt for credentials if NOT already setup via a
+            //       config file copied from the user homedir; we mistakenly
+            //       attempt to overwrite the user-provided credentials, and
+            //       the create-demo-folder.sh script which tries to do the
+            //       right thing instead gets barfage from this command
             createCredentials(productArchitectureDirectory, workspaceId, apiKey, apiSecret);
             createManifest();
-            print(String.format("Architecture as code initialized under - %s", productArchitectureDirectory.getAbsolutePath()));
+            print(format("Architecture as code initialized under - %s", productArchitectureDirectory.getAbsolutePath()));
             print("You're ready to go!!");
 
             return 0;
@@ -66,7 +73,7 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
         exportArchitectureDataStructure(data, manifestFile, filesFacade);
     }
 
-    private ArchitectureDataStructure createSampleDataStructure() {
+    private static ArchitectureDataStructure createSampleDataStructure() {
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructure();
         dataStructure.setDescription("Architecture as code");
         dataStructure.setName("Hello World!!!");
