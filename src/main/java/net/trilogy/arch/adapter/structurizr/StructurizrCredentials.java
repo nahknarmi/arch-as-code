@@ -1,7 +1,6 @@
 package net.trilogy.arch.adapter.structurizr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import io.vavr.control.Try;
 
@@ -13,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 
@@ -37,19 +37,29 @@ public abstract class StructurizrCredentials {
     }
 
     // TODO [TESTING]: Add unit tests
-    public static void createCredentials(File productArchitectureDirectory, String workspaceId, String apiKey, String apiSecret) throws IOException {
-        String configPath = String.format("%s%s%s", productArchitectureDirectory.getAbsolutePath(), File.separator, STRUCTURIZR_PATH);
-        checkArgument(new File(configPath).mkdirs(), String.format("Unable to create directory %s.", configPath));
+    // TODO: DO NOT OVERWRITE EXISTING CREDENTIALS
+    public static void createCredentials(
+            File productArchitectureDirectory,
+            String workspaceId,
+            String apiKey,
+            String apiSecret) throws IOException {
+        String configPath = format("%s%s%s",
+                productArchitectureDirectory.getAbsolutePath(),
+                File.separator,
+                STRUCTURIZR_PATH);
+        final var dirs = new File(configPath);
+        //noinspection ResultOfMethodCallIgnored
+        dirs.mkdirs();
+        if (!dirs.exists()) {
+            throw new IllegalStateException("Directory created, but doesn't exist afterwards: " + dirs);
+        }
 
-        File credentialsFile = new File(configPath + File.separator + "credentials.json");
+        final var credentialsFile = new File(configPath + File.separator + "credentials.json");
 
-        new ObjectMapper().writeValue(credentialsFile,
-                ImmutableMap.of(
-                        "workspace_id", workspaceId,
-                        "api_key", apiKey,
-                        "api_secret", apiSecret
-                )
-        );
+        new ObjectMapper().writeValue(credentialsFile, Map.of(
+                "workspace_id", workspaceId,
+                "api_key", apiKey,
+                "api_secret", apiSecret));
     }
 
     static Optional<FileInputStream> credentialsAsStream() {

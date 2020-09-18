@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import static java.lang.String.format;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
 import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.createCredentials;
 
@@ -41,9 +42,10 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
         logArgs();
 
         try {
-            createCredentials(productArchitectureDirectory, workspaceId, apiKey, apiSecret);
+            // TODO: Creating credentials is *messed up* -- produces nonsense credentials
+            // createCredentials(productArchitectureDirectory, workspaceId, apiKey, apiSecret);
             createManifest();
-            print(String.format("Architecture as code initialized under - %s", productArchitectureDirectory.getAbsolutePath()));
+            print(format("Architecture as code initialized under - %s", productArchitectureDirectory.getAbsolutePath()));
             print("You're ready to go!!");
 
             return 0;
