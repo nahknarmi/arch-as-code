@@ -2,6 +2,8 @@ package net.trilogy.arch.adapter.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import lombok.NonNull;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.DESCRIPTION_FIELD;
+import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
@@ -105,7 +109,7 @@ public class JiraApi {
 
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("http://jira.devfactory.com");
-        final var issueKey = "AU-1";
+        final var epicKey = "AU-1";
 
         final String username;
         final String password;
@@ -121,8 +125,13 @@ public class JiraApi {
         final var client = new AsynchronousJiraRestClientFactory().create(
                 root,
                 new BasicHttpAuthenticationHandler(username, password));
+        final var issues = client.getIssueClient();
 
-        final var issue = client.getIssueClient().getIssue(issueKey).get();
-        System.out.println("issue = " + issue);
+        issues.updateIssue(epicKey, IssueInput.createWithFields(
+                new FieldInput(DESCRIPTION_FIELD, "BOB IS YER UNKEL")
+        )).get();
+
+        final var issue = issues.getIssue(epicKey).get();
+        out.println("issue = " + issue);
     }
 }
