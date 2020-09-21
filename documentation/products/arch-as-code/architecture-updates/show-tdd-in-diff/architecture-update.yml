@@ -139,6 +139,6 @@ capabilities:
         - name: Accessible
           rationale: User interface functions should be accessible
           jira:
-            ticket: SONIC-22412
-            link: https://jira.devfactory.com/browse/SONIC-22412
+            ticket: AU-22412
+            link: https://jira.devfactory.com/browse/AU-22412
       functional-area-id: AU-101

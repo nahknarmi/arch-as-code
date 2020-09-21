@@ -68,8 +68,5 @@ public class FeatureStory {
         return jira.getTicket();
     }
 
-    public boolean isEquivalentToJiraIssue(Issue issue) {
-        return Objects.equals(getKey(), issue.getKey())
-                && Objects.equals(getTitle(), issue.getSummary());
-    }
+
 }

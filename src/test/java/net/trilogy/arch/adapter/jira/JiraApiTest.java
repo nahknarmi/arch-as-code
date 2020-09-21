@@ -6,7 +6,9 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
+import lombok.SneakyThrows;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
+import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import org.junit.Before;
@@ -14,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import java.net.URI;
 import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
@@ -45,7 +48,7 @@ public class JiraApiTest {
 
     @Test
     public void should_find_jira_and_yaml_stories_which_are_to_be_compared() {
-        final var theKey = "INTENTIONALLY RIGHT";
+        final var theKey = "AU-1";
         final var story = FeatureStory.builder()
                 .jira(Jira.builder()
                         .ticket(theKey)
@@ -58,21 +61,48 @@ public class JiraApiTest {
         assertEquals(story.getKey(), issue.getKey());
     }
 
+    @SneakyThrows
+    @Test
+    public void should_find_jira_and_yaml_jira_structure_to_be_equivalent() {
+       final var ticket = Jira.builder()
+                .link("https://jira.devfactory.com/browse/AU-1")
+                .ticket("AU-1")
+                .build();
+
+        final var issue = mock(Issue.class);
+        when(issue.getKey()).thenReturn("AU-1");
+        when(issue.getSelf()).thenReturn(new URI("https://jira.devfactory.com/browse/AU-1"));
+
+        assertTrue(JiraApi.isEquivalentToJiraIssue(ticket,issue));
+    }
+
+    @SneakyThrows
+    @Test
+    public void should_find_jira_and_yaml_epic_structure_to_be_equivalent() {
+        final var theKey = "AU-1";
+        final var theLink = "https://jira.devfactory.com/browse/" + theKey;
+        final var theTitle = "JAVIER IS JEFE";
+        final var ticket = Epic.builder()
+                .jira(Jira.builder()
+                        .ticket(theKey)
+                        .link(theLink)
+                        .build())
+                .title(theTitle)
+                .build();
+
+        final var issue = mock(Issue.class);
+        when(issue.getKey()).thenReturn(theKey);
+        when(issue.getSummary()).thenReturn(theTitle);
+        when(issue.getSelf()).thenReturn(new URI(theLink));
+
+        assertTrue(JiraApi.isEquivalentToJiraIssue(ticket,issue));
+    }
+
     @Test
     public void should_find_jira_and_yaml_feature_story_cards_to_be_equivalent() {
         final var theKey = "INTENTIONALLY RIGHT";
         final var theTitle = "AUNT MARGARET";
 
-        /*
-                // TODO: Test for the EPIC
-                .setFieldValue("customfield_10002", epicKey)
-                // TODO: Test for the Projecdt
-                .setFieldValue("project", projectId)
-                .setFieldValue("summary", title) // DONE
-                // TODO: Super complex -- changing issue type is weird in JIRA
-                .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
-                .setFieldValue("description", makeDescription(this))
-         */
         final var story = FeatureStory.builder()
                 .jira(Jira.builder()
                         .ticket(theKey)
@@ -84,7 +114,7 @@ public class JiraApiTest {
         when(issue.getKey()).thenReturn(theKey);
         when(issue.getSummary()).thenReturn(theTitle);
 
-        assertTrue(story.isEquivalentToJiraIssue(issue));
+        assertTrue(JiraApi.isEquivalentToJiraIssue(story,issue));
     }
 
     @Test

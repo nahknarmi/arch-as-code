@@ -1,5 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -7,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
@@ -34,4 +37,6 @@ public class Jira {
     public static Jira blank() {
         return new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
     }
+
+
 }

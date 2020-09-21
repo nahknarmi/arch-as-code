@@ -9,10 +9,10 @@ import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientF
 import lombok.Generated;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +29,24 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 @RequiredArgsConstructor
 public class JiraApi {
     private final JiraRestClient jiraClient;
+
+    public static boolean isEquivalentToJiraIssue(Jira item, Issue issue) {
+        return item != null && issue != null &&
+                Objects.equals(item.getLink(), issue.getSelf().toString());
+    }
+
+    public static boolean isEquivalentToJiraIssue(FeatureStory item, Issue issue) {
+        return  item != null && issue != null
+                && Objects.equals(item.getKey(), issue.getKey())
+                && Objects.equals(item.getTitle(), issue.getSummary())
+                && isEquivalentToJiraIssue(item.getJira(), issue);
+    }
+
+    public static boolean isEquivalentToJiraIssue(Epic item, Issue issue) {
+        return item != null && issue != null
+                && Objects.equals(item.getTitle(), issue.getSummary())
+                && isEquivalentToJiraIssue(item.getJira(), issue);
+    }
 
     public JiraQueryResult getStory(Jira jira)
             throws JiraApiException {
