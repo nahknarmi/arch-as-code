@@ -4,7 +4,6 @@ import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
-import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.DESCRIPTION_FIELD;
+import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
+import static java.lang.System.err;
 import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -108,7 +108,7 @@ public class JiraApi {
     }
 
     public static void main(final String... args) throws ExecutionException, InterruptedException {
-        final var root = URI.create("http://jira.devfactory.com");
+        final var root = URI.create("https://jira.devfactory.com");
         final var epicKey = "AU-1";
 
         final String username;
@@ -117,19 +117,25 @@ public class JiraApi {
             username = args[0];
             password = args[1];
         } else {
-            System.err.println("REQUIRED: <username> <password>");
+            err.println("REQUIRED: <username> <password>");
             System.exit(2);
             throw new Error("BUG");
         }
 
-        final var client = new AsynchronousJiraRestClientFactory().create(
-                root,
-                new BasicHttpAuthenticationHandler(username, password));
+        final var client = new AsynchronousJiraRestClientFactory()
+                .createWithBasicHttpAuthentication(root, username, password);
         final var issues = client.getIssueClient();
 
-        issues.updateIssue(epicKey, IssueInput.createWithFields(
-                new FieldInput(DESCRIPTION_FIELD, "BOB IS YER UNKEL")
-        )).get();
+        final var start = System.currentTimeMillis();
+        try {
+            issues.updateIssue(epicKey, IssueInput.createWithFields(
+                    new FieldInput(SUMMARY_FIELD, "JAVIER IS JEFE")
+            )).get();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        final var end = System.currentTimeMillis();
+        err.println("TIME -> " + (end - start));
 
         final var issue = issues.getIssue(epicKey).get();
         out.println("issue = " + issue);
