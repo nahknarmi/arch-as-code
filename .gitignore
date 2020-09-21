@@ -14,6 +14,6 @@ bin/
 # Ignore vim
 .vim/
 # Ignore AaC configuration
-.arch-as-code/
+.arch-as-code
 
 .DS_Store
