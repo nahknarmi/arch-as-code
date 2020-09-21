@@ -2,16 +2,20 @@ package net.trilogy.arch.adapter.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import lombok.Generated;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
@@ -25,6 +29,13 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 @RequiredArgsConstructor
 public class JiraApi {
     private final JiraRestClient jiraClient;
+
+    public static boolean equivalent(
+            final FeatureStory story,
+            final Issue issue) {
+        return Objects.equals(story.getKey(), issue.getKey())
+                && Objects.equals(story.getTitle(), issue.getSummary());
+    }
 
     public JiraQueryResult getStory(Jira jira)
             throws JiraApiException {
@@ -107,6 +118,7 @@ public class JiraApi {
         }
     }
 
+    @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");
         final var epicKey = "AU-1";

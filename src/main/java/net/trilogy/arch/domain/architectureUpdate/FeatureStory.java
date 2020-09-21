@@ -61,4 +61,8 @@ public class FeatureStory {
                 List.of(FunctionalRequirementId.blank()),
                 E2E.blank());
     }
+
+    public String getKey() {
+        return jira.getTicket();
+    }
 }

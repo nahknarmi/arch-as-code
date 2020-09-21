@@ -7,6 +7,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +21,7 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -39,6 +41,38 @@ public class JiraApiTest {
         when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
 
         jiraApi = new JiraApi(mockJiraClient);
+    }
+
+    @Test
+    public void should_find_jira_and_yaml_stories_which_are_to_be_compared() {
+        final var theKey = "INTENTIONALLY RIGHT";
+        final var story = FeatureStory.builder()
+                .jira(Jira.builder()
+                        .ticket(theKey)
+                        .build())
+                .build();
+
+        final var issue = mock(Issue.class);
+        when(issue.getKey()).thenReturn(theKey);
+
+        assertEquals(story.getKey(), issue.getKey());
+    }
+
+    @Test
+    public void should_sync_between_lists_of_yaml_and_jira_cards() {
+        final var theKey = "INTENTIONALLY RIGHT";
+        final var story = FeatureStory.builder()
+                .jira(Jira.builder()
+                        .ticket(theKey)
+                        .build())
+                .title("AUNT MARGARET")
+                .build();
+
+        final var issue = mock(Issue.class);
+        when(issue.getKey()).thenReturn(theKey);
+        when(issue.getSummary()).thenReturn("AUNT MARGARET");
+
+        assertTrue(JiraApi.equivalent(story, issue));
     }
 
     @Test

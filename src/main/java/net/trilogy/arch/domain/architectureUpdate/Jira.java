@@ -26,8 +26,7 @@ public class Jira {
     @JsonCreator(mode = PROPERTIES)
     public Jira(
             @JsonProperty("ticket") String ticket,
-            @JsonProperty("link") String link
-    ) {
+            @JsonProperty("link") String link) {
         this.ticket = ticket;
         this.link = link;
     }
