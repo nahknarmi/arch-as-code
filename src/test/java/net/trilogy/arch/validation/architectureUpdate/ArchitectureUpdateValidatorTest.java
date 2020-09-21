@@ -1,24 +1,11 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
-import net.trilogy.arch.domain.architectureUpdate.Decision;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.Epic;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Link;
-import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
-import net.trilogy.arch.domain.architectureUpdate.P1;
-import net.trilogy.arch.domain.architectureUpdate.P2;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Rule;
@@ -281,9 +268,9 @@ public class ArchitectureUpdateValidatorTest {
                 List.of(
                         new FeatureStory(
                                 "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                List.of()),
+                                List.of(), E2E.blank()),
                         new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
-                                null))))
+                                null, E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -302,7 +289,8 @@ public class ArchitectureUpdateValidatorTest {
                 List.of(
                         new FeatureStory(
                                 "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                List.of(new FunctionalRequirementId("Invalid-Functional-Requirement"))))))
+                                List.of(new FunctionalRequirementId("Invalid-Functional-Requirement")),
+                                E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -321,11 +309,13 @@ public class ArchitectureUpdateValidatorTest {
                         new FeatureStory(
                                 "Feat Title 1", Jira.blank(),
                                 List.of(), // Empty TDD reference
-                                List.of()),
+                                List.of(),
+                                E2E.blank()),
                         new FeatureStory(
                                 "Feat Title 2", Jira.blank(),
                                 null, // Null TDD reference
-                                List.of()))))
+                                List.of(),
+                                E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -345,7 +335,8 @@ public class ArchitectureUpdateValidatorTest {
                         "Feat Title 1", Jira.blank(),
                         List.of(new TddId("Invalid TDD 1"),
                                 new TddId("Invalid TDD 2")),
-                        List.of()))))
+                        List.of(),
+                        E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -406,7 +397,7 @@ public class ArchitectureUpdateValidatorTest {
                 .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "n/a")))))
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("N/A").build()).build(),
-                        List.of(new FeatureStory("Title", new Jira("ticket", "n/a"), List.of(), List.of()))))
+                        List.of(new FeatureStory("Title", new Jira("ticket", "n/a"), List.of(), List.of(), E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -433,7 +424,7 @@ public class ArchitectureUpdateValidatorTest {
                 .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "validLink")))))
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("validLink").build()).build(),
-                        singletonList(new FeatureStory("Title", new Jira("jira ticket", null), List.of(), List.of()))))
+                        singletonList(new FeatureStory("Title", new Jira("jira ticket", null), List.of(), List.of(), E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -456,7 +447,7 @@ public class ArchitectureUpdateValidatorTest {
                         new TddContainerByComponent(new TddComponentReference("16"), "bad path on deleted component", false, tdds)))
                 .capabilityContainer(new CapabilitiesContainer(
                         Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("valid").build()).build(),
-                        singletonList(new FeatureStory("Title", new Jira("ticket", "valid"), List.of(new TddId("1")), List.of()))))
+                        singletonList(new FeatureStory("Title", new Jira("ticket", "valid"), List.of(new TddId("1")), List.of(), E2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, hasMissingComponentDataStructure, validDataStructure).getErrors();

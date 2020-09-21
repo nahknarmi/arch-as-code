@@ -47,6 +47,7 @@ public class ArchitectureUpdateYamlTest {
                                 "some FUNC REQ source",
                                 singletonList(new TddId("some func req TDD id"))
                         )),
+                singletonMap(FunctionalArea.FunctionalAreaId.blank(), FunctionalArea.blank()),
                 new CapabilitiesContainer(
                         new Epic(
                                 "some EPIC title",
@@ -59,7 +60,8 @@ public class ArchitectureUpdateYamlTest {
                                         "some feature story JIRA ticket",
                                         "some feature story JIRA link"),
                                 singletonList(new TddId("some feature story TDD id")),
-                                singletonList(new FunctionalRequirementId("some feature story func req id"))))),
+                                singletonList(new FunctionalRequirementId("some feature story func req id")),
+                                E2E.blank()))),
                 new P2(
                         "some link to P2",
                         new Jira(

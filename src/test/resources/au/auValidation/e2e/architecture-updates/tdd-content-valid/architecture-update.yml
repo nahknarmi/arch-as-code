@@ -42,6 +42,12 @@ functional-requirements:
     source: '[SAMPLE REQUIREMENT SOURCE TEXT]'
     tdd-references:
       - "TDD 1.0"
+functional-areas:
+  'Sample-functional-area-ID':
+    title: Sample title
+    jira:
+      ticket: A
+      link: A
 capabilities:
   epic:
     title: Please enter epic title from Jira
@@ -57,3 +63,17 @@ capabilities:
         - "TDD 1.0"
       functional-requirement-references:
         - '[SAMPLE-REQUIREMENT-ID]'
+      e2e:
+        title: Title of E2E
+        business-goal: |
+          Some useful business goals
+        jira:
+          ticket: E2E-70
+          link: http://jira.devfactory.com/browse/E2E-70
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: SONIC-22412
+              link: https://jira.devfactory.com/browse/SONIC-22412
+        functional-area-id: "Sample-functional-area-ID"

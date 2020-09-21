@@ -51,13 +51,10 @@ public class Tdd {
         return null == content ? text : content.getContent();
     }
 
-    @EqualsAndHashCode
-    public static class TddId implements EntityReference {
-        @JsonValue
-        private final String id;
+    public static class TddId extends YamlId implements EntityReference {
 
         public TddId(String id) {
-            this.id = id;
+            super(id);
         }
 
         public static TddId blank() {
@@ -66,11 +63,6 @@ public class Tdd {
 
         public static TddId noPr() {
             return new TddId(SAMPLE_NO_PR_TDD_ID);
-        }
-
-        @Override
-        public String toString() {
-            return id;
         }
     }
 

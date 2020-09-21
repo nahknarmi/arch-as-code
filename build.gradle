@@ -43,6 +43,7 @@ dependencies {
 
     //Structurizr
     implementation "com.structurizr:structurizr-client:1.5.0"
+    // TODO: Why is Gson required if we're using Jackson?
     implementation "com.google.code.gson:gson:2.8.6"
 
     // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit

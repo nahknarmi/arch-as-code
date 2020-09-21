@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalArea.FunctionalAreaId;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 
 import java.util.List;
@@ -58,6 +59,8 @@ public class ArchitectureUpdate {
     private final List<TddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements")
     private final Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements;
+    @JsonProperty(value = "functional-areas")
+    private final Map<FunctionalAreaId, FunctionalArea> functionalAreas;
     @JsonProperty(value = "capabilities")
     private final CapabilitiesContainer capabilityContainer;
 
@@ -75,6 +78,7 @@ public class ArchitectureUpdate {
             @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
             // TODO: Smell: Do func reqs not know their own ID?
             @JsonProperty("functional-requirements") Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements,
+            @JsonProperty("functional-areas") Map<FunctionalAreaId, FunctionalArea> functionalAreas,
             @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
             @JsonProperty("p2") P2 p2,
             @JsonProperty("p1") P1 p1,
@@ -87,6 +91,7 @@ public class ArchitectureUpdate {
         this.decisions = decisions;
         this.tddContainersByComponent = tddContainersByComponent;
         this.functionalRequirements = functionalRequirements;
+        this.functionalAreas = functionalAreas;
         this.capabilityContainer = capabilityContainer;
         this.p2 = p2;
         this.p1 = p1;
@@ -104,6 +109,7 @@ public class ArchitectureUpdate {
                 .decisions(Map.of(DecisionId.blank(), Decision.blank()))
                 .tddContainersByComponent(List.of(TddContainerByComponent.blank()))
                 .functionalRequirements(Map.of(FunctionalRequirementId.blank(), FunctionalRequirement.blank()))
+                .functionalAreas(Map.of(FunctionalAreaId.blank(), FunctionalArea.blank()))
                 .capabilityContainer(CapabilitiesContainer.blank())
                 .p2(P2.blank())
                 .p1(P1.blank())

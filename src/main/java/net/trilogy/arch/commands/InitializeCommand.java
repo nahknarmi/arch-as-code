@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 
 import static java.lang.String.format;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureWriter.exportArchitectureDataStructure;
+import static net.trilogy.arch.adapter.structurizr.StructurizrCredentials.createCredentials;
 
 @Command(name = "init", description = "Initializes a new workspace directory to contain a single project architecture, AUs, documentation, and credentials for Structurizr imports and exports. This is generally the first command to be run.", mixinStandardHelpOptions = true)
 @RequiredArgsConstructor
@@ -41,8 +42,13 @@ public class InitializeCommand implements Callable<Integer>, DisplaysOutputMixin
         logArgs();
 
         try {
-            // TODO: Creating credentials is *messed up* -- produces nonsense credentials
-            // createCredentials(productArchitectureDirectory, workspaceId, apiKey, apiSecret);
+            // TODO: RETHINK HOW THIS WORKS
+            //       Only prompt for credentials if NOT already setup via a
+            //       config file copied from the user homedir; we mistakenly
+            //       attempt to overwrite the user-provided credentials, and
+            //       the create-demo-folder.sh script which tries to do the
+            //       right thing instead gets barfage from this command
+            createCredentials(productArchitectureDirectory, workspaceId, apiKey, apiSecret);
             createManifest();
             print(format("Architecture as code initialized under - %s", productArchitectureDirectory.getAbsolutePath()));
             print("You're ready to go!!");

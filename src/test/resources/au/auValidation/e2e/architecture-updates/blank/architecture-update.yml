@@ -39,6 +39,12 @@ functional-requirements:
   '[SAMPLE-REQUIREMENT-ID]':
     text: "[SAMPLE REQUIREMENT TEXT]"
     source: "[SAMPLE REQUIREMENT SOURCE TEXT]"
+functional-areas:
+  'Sample-functional-area-ID':
+    title: Sample title
+    jira:
+      ticket: "[SAMPLE JIRA TICKET]"
+      link: "[SAMPLE JIRA TICKET LINK]"
 capabilities:
   epic:
     title: "[SAMPLE EPIC TITLE]"
@@ -54,3 +60,16 @@ capabilities:
     - "[SAMPLE-TDD-ID]"
     functional-requirement-references:
     - "[SAMPLE-REQUIREMENT-ID]"
+    e2e:
+      title: Title of E2E
+      business-goal: Some useful business goals
+      jira:
+        ticket: "[SAMPLE JIRA TICKET]"
+        link: "[SAMPLE JIRA TICKET LINK]"
+      attributes:
+        - name: Accessible
+          rationale: User interface functions should be accessible
+          jira:
+            ticket: "[SAMPLE JIRA TICKET]"
+            link: "[SAMPLE JIRA TICKET LINK]"
+      functional-area-id: "Sample-functional-area-ID"

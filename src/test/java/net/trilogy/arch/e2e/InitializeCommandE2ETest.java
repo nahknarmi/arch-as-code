@@ -1,5 +1,7 @@
 package net.trilogy.arch.e2e;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.trilogy.arch.Application;
 import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.facade.FilesFacade;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static java.nio.file.Files.createTempDirectory;
 import static net.trilogy.arch.TestHelper.execute;
@@ -19,6 +22,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -38,14 +42,24 @@ public class InitializeCommandE2ETest extends CommandTestBase {
 
     @Test
     public void shouldInitializeCredentials() throws Exception {
-        Integer status = execute("init -i key -k secret -s 1234 " + tempProductDirectory.toAbsolutePath());
+        final int status = execute("init -i key -k secret -s 1234 " + tempProductDirectory.toAbsolutePath());
         collector.checkThat(status, equalTo(0));
 
         File file = tempProductDirectory.resolve(".arch-as-code/structurizr/credentials.json").toFile();
         collector.checkThat(file.exists(), equalTo(true));
         collector.checkThat(file.isFile(), equalTo(true));
-        collector.checkThat(Files.readAllLines(file.toPath()),
-                contains("{\"workspace_id\":\"key\",\"api_key\":\"secret\",\"api_secret\":\"1234\"}"));
+
+        final var expected = new ObjectMapper().readValue(
+                file,
+                new TypeReference<Map<String, String>>() {
+                });
+
+        // TODO: Fix to use `collector`
+        assertEquals(Map.of(
+                "workspace_id", "key",
+                "api_key", "secret",
+                "api_secret", "1234"),
+                expected);
     }
 
     @Test

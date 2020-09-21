@@ -3,18 +3,10 @@ package net.trilogy.arch.adapter.jira;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.CapabilitiesContainer;
-import net.trilogy.arch.domain.architectureUpdate.Epic;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -57,7 +49,8 @@ public class JiraStoryTest {
                                         "story title",
                                         new Jira("", ""),
                                         List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
-                                        List.of(FunctionalRequirementId.blank())))))
+                                        List.of(FunctionalRequirementId.blank()),
+                                        E2E.blank()))))
                 .build();
     }
 
