@@ -63,6 +63,16 @@ public class JiraApiTest {
         final var theKey = "INTENTIONALLY RIGHT";
         final var theTitle = "AUNT MARGARET";
 
+        /*
+                // TODO: Test for the EPIC
+                .setFieldValue("customfield_10002", epicKey)
+                // TODO: Test for the Projecdt
+                .setFieldValue("project", projectId)
+                .setFieldValue("summary", title) // DONE
+                // TODO: Super complex -- changing issue type is weird in JIRA
+                .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
+                .setFieldValue("description", makeDescription(this))
+         */
         final var story = FeatureStory.builder()
                 .jira(Jira.builder()
                         .ticket(theKey)

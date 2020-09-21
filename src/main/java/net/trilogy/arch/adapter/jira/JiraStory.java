@@ -57,13 +57,8 @@ public class JiraStory {
                 + " | {noformat}" + funcReq.getText() + "{noformat} |\n";
     }
 
-    static String makeDescription(JiraStory story) {
-        return makeFunctionalRequirementTable(story) +
-                makeTddTablesByComponent(story);
-    }
-
-    private static String makeTddTablesByComponent(JiraStory story) {
-        final var compMap = story.getTdds().stream()
+    private String makeTddTablesByComponent() {
+        final var compMap = getTdds().stream()
                 .collect(groupingBy(JiraTdd::getComponentPath));
 
         return "h3. Technical Design:\n" + compMap.entrySet().stream()
@@ -76,30 +71,25 @@ public class JiraStory {
                 .collect(joining());
     }
 
-    private static String makeFunctionalRequirementTable(JiraStory story) {
+    private String makeFunctionalRequirementTable() {
         return "h3. Implements functionality:\n" +
                 "||Id||Source||Description||\n" +
-                story.getFunctionalRequirements().stream()
+                getFunctionalRequirements().stream()
                         .map(JiraStory::makeFunctionalRequirementRow)
                         .collect(joining());
     }
 
+    public String makeDescription() {
+        return makeFunctionalRequirementTable() + makeTddTablesByComponent();
+    }
+
     public IssueInput toJira(String epicKey, Long projectId) {
-/*
-                .map(story -> new JSONObject(Map.of(
-                        "fields", Map.of(
-                                "customfield_10002", epicKey,
-                                "project", Map.of("id", projectId),
-                                "summary", story.getTitle(),
-                                "issuetype", Map.of("name", "Feature Story"),
-                                "description", makeDescription(story)))))
- */
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("project", projectId)
                 .setFieldValue("summary", title)
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
-                .setFieldValue("description", makeDescription(this))
+                .setFieldValue("description", makeDescription())
                 .build();
     }
 

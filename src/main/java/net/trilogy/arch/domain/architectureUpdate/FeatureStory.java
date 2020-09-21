@@ -65,4 +65,7 @@ public class FeatureStory {
     public String getKey() {
         return jira.getTicket();
     }
+
+    public String makeDescription() {
+    }
 }

@@ -34,7 +34,8 @@ public class JiraApi {
             final FeatureStory story,
             final Issue issue) {
         return Objects.equals(story.getKey(), issue.getKey())
-                && Objects.equals(story.getTitle(), issue.getSummary());
+                && Objects.equals(story.getTitle(), issue.getSummary())
+                && Objects.equals(story.makeDescription(), issue.getDescription());
     }
 
     public JiraQueryResult getStory(Jira jira)
