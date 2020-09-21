@@ -1,5 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.Function
 import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
@@ -66,6 +68,8 @@ public class FeatureStory {
         return jira.getTicket();
     }
 
-    public String makeDescription() {
+    public boolean isEquivalentToJiraIssue(Issue issue) {
+        return Objects.equals(getKey(), issue.getKey())
+                && Objects.equals(getTitle(), issue.getSummary());
     }
 }

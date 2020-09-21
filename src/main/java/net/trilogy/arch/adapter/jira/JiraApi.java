@@ -30,14 +30,6 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    public static boolean equivalent(
-            final FeatureStory story,
-            final Issue issue) {
-        return Objects.equals(story.getKey(), issue.getKey())
-                && Objects.equals(story.getTitle(), issue.getSummary())
-                && Objects.equals(story.makeDescription(), issue.getDescription());
-    }
-
     public JiraQueryResult getStory(Jira jira)
             throws JiraApiException {
         final var ticket = jira.getTicket();

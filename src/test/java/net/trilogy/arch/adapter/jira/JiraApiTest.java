@@ -59,7 +59,7 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_find_jira_and_yaml_cards_equivalent_even_if_not_equals() {
+    public void should_find_jira_and_yaml_feature_story_cards_to_be_equivalent() {
         final var theKey = "INTENTIONALLY RIGHT";
         final var theTitle = "AUNT MARGARET";
 
@@ -84,7 +84,7 @@ public class JiraApiTest {
         when(issue.getKey()).thenReturn(theKey);
         when(issue.getSummary()).thenReturn(theTitle);
 
-        assertTrue(JiraApi.equivalent(story, issue));
+        assertTrue(story.isEquivalentToJiraIssue(issue));
     }
 
     @Test
