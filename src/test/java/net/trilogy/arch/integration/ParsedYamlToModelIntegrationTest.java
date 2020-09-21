@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertTrue;
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -36,7 +38,9 @@ public class ParsedYamlToModelIntegrationTest {
         Person person = workspace.getModel().getPersonWithName(personName);
         Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream()
+                .map(r -> r.getDestination().getName())
+                .collect(toList());
 
         assertTrue(tagSet.contains("DevSpaces System View"));
         assertTrue(tagSet.contains("Trilogy System View"));
@@ -61,7 +65,7 @@ public class ParsedYamlToModelIntegrationTest {
         Person person = workspace.getModel().getPersonWithName(personName);
         Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertTrue(tagSet.contains("DevSpaces System View"));
         assertTrue(tagSet.contains("Trilogy System View"));
@@ -83,7 +87,7 @@ public class ParsedYamlToModelIntegrationTest {
         Person person = workspace.getModel().getPersonWithName(personName);
         Set<String> tagSet = person.getTagsAsSet();
         Set<Relationship> relationships = person.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertTrue(tagSet.contains("Trilogy System View"));
 
@@ -134,7 +138,7 @@ public class ParsedYamlToModelIntegrationTest {
         SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
         Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertTrue(tagSet.contains("Trilogy System View"));
 
@@ -173,7 +177,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = system.getTagsAsSet();
         Set<Relationship> relationships = system.getRelationships();
         Set<Container> containers = system.getContainers();
-        List<String> containerNames = system.getContainers().stream().map(Element::getName).collect(Collectors.toList());
+        List<String> containerNames = system.getContainers().stream().map(Element::getName).collect(toList());
 
         assertTrue(tagSet.contains("DevSpaces System View"));
 
@@ -201,7 +205,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(tagSet.contains("DevSpaces Container View"));
 
         Set<Relationship> relationships = container.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces API"));
@@ -221,7 +225,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = container.getTagsAsSet();
 
         Set<Relationship> relationships = container.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertTrue(tagSet.contains("DevSpaces Container View"));
 
@@ -242,7 +246,7 @@ public class ParsedYamlToModelIntegrationTest {
         Container container = system.getContainerWithName(containerName);
         Set<String> tagSet = container.getTagsAsSet();
         Set<Component> components = container.getComponents();
-        List<String> componentNames = components.stream().map(Element::getName).collect(Collectors.toList());
+        List<String> componentNames = components.stream().map(Element::getName).collect(toList());
 
         Set<Relationship> relationships = container.getRelationships();
 
@@ -273,7 +277,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertThat(relationships, hasSize(1));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces API/Security Component"));
@@ -297,7 +301,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
         assertTrue(relationshipNames.contains("InfoSec"));
 
         assertThat(relationships, hasSize(1));
@@ -321,7 +325,7 @@ public class ParsedYamlToModelIntegrationTest {
         Set<String> tagSet = component.getTagsAsSet();
 
         Set<Relationship> relationships = component.getRelationships();
-        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(toList());
 
         assertThat(relationships, hasSize(2));
         assertTrue(relationshipNames.contains("DevSpaces/DevSpaces API/Security Component"));
@@ -357,7 +361,7 @@ public class ParsedYamlToModelIntegrationTest {
 
     @SuppressWarnings("deprecation")
     private Workspace getWorkspace() throws IOException {
-        File documentationRoot = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
+        File documentationRoot = new File(getClass().getResource(ROOT_PATH_TO_TEST_PRODUCT_DOCUMENTATION).getPath());
         File manifestFile = new File(documentationRoot + File.separator + "product-architecture.yml");
 
         ArchitectureDataStructure dataStructure = new ArchitectureDataStructureReader(new FilesFacade()).loadArchitectureDataStructure(manifestFile);

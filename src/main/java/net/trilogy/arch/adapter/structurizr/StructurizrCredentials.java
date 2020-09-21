@@ -23,7 +23,7 @@ public final class StructurizrCredentials {
     public static WorkspaceConfig config() {
         return WorkspaceConfig.builder()
                 .apiKey(requireNonNull(apiKey(), "Structurizr api key missing. Check config."))
-                .apiSecret(requireNonNull(apiSecret(), "Structurizr api key missing. Check config."))
+                .apiSecret(requireNonNull(apiSecret(), "Structurizr api secret missing. Check config."))
                 .workspaceId(requireNonNull(workspaceId(), "Workspace id missing. Check config."))
                 .build();
     }
