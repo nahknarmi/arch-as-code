@@ -59,18 +59,20 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_sync_between_lists_of_yaml_and_jira_cards() {
+    public void should_find_jira_and_yaml_cards_equivalent_even_if_not_equals() {
         final var theKey = "INTENTIONALLY RIGHT";
+        final var theTitle = "AUNT MARGARET";
+
         final var story = FeatureStory.builder()
                 .jira(Jira.builder()
                         .ticket(theKey)
                         .build())
-                .title("AUNT MARGARET")
+                .title(theTitle)
                 .build();
 
         final var issue = mock(Issue.class);
         when(issue.getKey()).thenReturn(theKey);
-        when(issue.getSummary()).thenReturn("AUNT MARGARET");
+        when(issue.getSummary()).thenReturn(theTitle);
 
         assertTrue(JiraApi.equivalent(story, issue));
     }
