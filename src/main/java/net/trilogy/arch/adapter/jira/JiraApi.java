@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
 import static java.lang.System.err;
 import static java.lang.System.out;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
@@ -31,9 +32,11 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    public static boolean isEquivalentToJiraIssue(Jira item, Issue issue) {
-        return item != null && issue != null &&
-                Objects.equals(item.getLink(), issue.getSelf().toString());
+    public static boolean isEquivalentToJiraIssue(Jira fromYaml, Issue fromJira) {
+        requireNonNull(fromYaml);
+        requireNonNull(fromJira);
+
+        return Objects.equals(fromYaml.getLink(), fromJira.getSelf().toString());
     }
 
     public static boolean isEquivalentToJiraIssue(FeatureStory item, Issue issue) {
