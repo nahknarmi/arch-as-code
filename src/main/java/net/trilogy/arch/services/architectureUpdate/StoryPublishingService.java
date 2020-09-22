@@ -3,7 +3,7 @@ package net.trilogy.arch.services.architectureUpdate;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.adapter.jira.JiraApi;
 import net.trilogy.arch.adapter.jira.JiraApiException;
-import net.trilogy.arch.adapter.jira.JiraCreateStoryStatus;
+import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -39,7 +39,7 @@ public class StoryPublishingService {
     private static ArchitectureUpdate updateJiraTicketsInAu(
             final ArchitectureUpdate au,
             final List<FeatureStory> stories,
-            final List<JiraCreateStoryStatus> creationStatuses) {
+            final List<JiraRemoteStoryStatus> creationStatuses) {
         ArchitectureUpdate updatedAu = au;
         for (int i = 0; i < creationStatuses.size(); ++i) {
             final var result = creationStatuses.get(i);
@@ -82,7 +82,7 @@ public class StoryPublishingService {
         }
 
         // create stories
-        var createStoriesResults = api.createStories(
+        var createStoriesResults = api.createNewStories(
                 jiraStoriesToCreate,
                 epicJiraTicket.getTicket(),
                 informationAboutTheEpic.getProjectId());
@@ -99,7 +99,7 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, storiesToCreate, createStoriesResults);
     }
 
-    private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
+    private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
         for (int i = 0; i < createStoriesResults.size(); ++i) {
@@ -114,7 +114,7 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
+    private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < createStoriesResults.size(); ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;

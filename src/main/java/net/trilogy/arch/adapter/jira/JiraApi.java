@@ -7,7 +7,6 @@ import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import lombok.Generated;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
@@ -25,8 +24,8 @@ import static java.lang.System.out;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
-import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
+import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.failed;
+import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.succeeded;
 
 @RequiredArgsConstructor
 public class JiraApi {
@@ -104,7 +103,7 @@ public class JiraApi {
         }
     }
 
-    public List<JiraCreateStoryStatus> createStories(
+    public List<JiraRemoteStoryStatus> createNewStories(
             List<JiraStory> jiraStories,
             String epicKey,
             Long projectId)
@@ -126,7 +125,7 @@ public class JiraApi {
         }
     }
 
-    private ArrayList<JiraCreateStoryStatus> getJiraCreateStoryStatuses(List<JiraStory> jiraStories, String epicKey, Long projectId) throws InterruptedException, ExecutionException {
+    private ArrayList<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(List<JiraStory> jiraStories, String epicKey, Long projectId) throws InterruptedException, ExecutionException {
         final var bulkResponse = jiraClient.getIssueClient()
                 .createIssues(jiraStories.stream()
                         .map(it -> it.toJira(epicKey, projectId))
@@ -140,13 +139,13 @@ public class JiraApi {
                 .map(it -> failed(it.toString()))
                 .collect(toList());
 
-        final var result = new ArrayList<JiraCreateStoryStatus>(succeeded.size() + failed.size());
+        final var result = new ArrayList<JiraRemoteStoryStatus>(succeeded.size() + failed.size());
         result.addAll(succeeded);
         result.addAll(failed);
         return result;
     }
 
-    public List<JiraCreateStoryStatus> updateExistingStories(
+    public List<JiraRemoteStoryStatus> updateExistingStories(
             List<JiraStory> jiraStories,
             String epicKey,
             Long projectId) {
@@ -166,6 +165,7 @@ public class JiraApi {
 //        }
         return null;
     }
+
     @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");
