@@ -88,6 +88,9 @@ public class JiraStoryTest {
         return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
     }
 
+    private static JiraStory.JiraTdd asJiraTdd(TddId tddId, YamlTdd tdd, String componentPath) {
+            return  new JiraStory.JiraTdd(tddId, tdd,componentPath, tdd.getContent());
+    }
     @Test
     public void shouldConstructJiraStory() throws Exception {
         // GIVEN:
@@ -97,10 +100,7 @@ public class JiraStoryTest {
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
-        // WHEN:
-        final JiraStory actual = new JiraStory(featureStory, au, beforeAuArchitecture, afterAuArchitecture);
 
-        // THEN:
         TddId tddId1 = new TddId("TDD 1");
         YamlTdd tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
         TddId tddId2 = new TddId("TDD 2");
@@ -108,28 +108,18 @@ public class JiraStoryTest {
         TddId tddId3 = new TddId("TDD 3");
         YamlTdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
 
+        final var expectedFeatureStoryTddIds = List.of(tddId1, tddId2, tddId3);
+        final var expectedFeatureStoryFRs = List.of( new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"));
+        final var baseComponentPath = "c4://Internet Banking System/API Application/";
         final JiraStory expected = new JiraStory(
                 new YamlFeatureStory("story title",
-                        null,
-                        emptyList(),
-                        emptyList(),
-                        null),
-                List.of(
-                        new JiraStory.JiraTdd(
-                                tddId1,
-                                tdd1,
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                tdd1.getContent()),
-                        new JiraStory.JiraTdd(
-                                tddId2,
-                                tdd2,
-                                "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null),
-                        new JiraStory.JiraTdd(
-                                tddId3,
-                                tdd3,
-                                "c4://Internet Banking System/API Application/Sign In Controller",
-                                tdd3.getContent())),
+                        new YamlJira("",""),
+                        expectedFeatureStoryTddIds,
+                        expectedFeatureStoryFRs,
+                        YamlE2E.blank()),
+                List.of(asJiraTdd(tddId1,tdd1,baseComponentPath +"Reset Password Controller"),
+                        asJiraTdd(tddId2,tdd2,baseComponentPath +"Reset Password Controller"),
+                        asJiraTdd(tddId3,tdd3,baseComponentPath +"Sign In Controller")),
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
@@ -137,7 +127,10 @@ public class JiraStoryTest {
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         List.of(new TddId("[SAMPLE-TDD-ID]"))))));
+        // WHEN:
+        final JiraStory actual = new JiraStory(featureStory, au, beforeAuArchitecture, afterAuArchitecture);
 
+        // THEN:
         assertThat(actual, equalTo(expected));
     }
 
