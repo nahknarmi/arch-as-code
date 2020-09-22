@@ -15,6 +15,7 @@ import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.YamlJira;
@@ -25,6 +26,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.io.File;
@@ -36,9 +38,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
+import static java.lang.System.out;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
@@ -51,6 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -236,7 +241,11 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // THEN:
         final var expected = getExpectedJiraStoriesWithTddContentToCreate();
-        verify(mockedJiraApi).createNewStories(expected, epic.getTicket(), epicInformation.getProjectId());
+        @SuppressWarnings("unchecked") final ArgumentCaptor<List<JiraStory>> actual = ArgumentCaptor.forClass(List.class);
+        verify(mockedJiraApi).createNewStories(actual.capture(), eq(epic.getTicket()), eq(epicInformation.getProjectId()));
+        out.println("expected = " + expected);
+        out.println("actual = " + actual.getAllValues());
+        assertEquals(expected, actual.getValue());
     }
 
     @Test
@@ -415,7 +424,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     private static List<JiraStory> getExpectedJiraStoriesToCreate() {
         return List.of(
                 new JiraStory(
-                        "story that should be created",
+                        new YamlFeatureStory(
+                                "story that should be created",
+                                null,
+                                emptyList(),
+                                emptyList(),
+                                null),
                         List.of(
                                 new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID]"),
@@ -434,7 +448,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
                 new JiraStory(
-                        "story that failed to be created",
+                        new YamlFeatureStory(
+                                "story that failed to be created",
+                                null,
+                                emptyList(),
+                                emptyList(),
+                                null),
                         singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
                                 new YamlTdd("[SAMPLE TDD TEXT]", null),
@@ -453,7 +472,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var tdd = new YamlTdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
         return asList(new JiraStory(
-                        "story that should be created",
+                        new YamlFeatureStory(
+                                "story that should be created",
+                                new YamlJira(null, null),
+                                emptyList(),
+                                emptyList(),
+                                null),
                         singletonList(new JiraTdd(
                                 new TddId("TDD 1.0"),
                                 tdd,
@@ -465,7 +489,13 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("TDD 1.0")))))),
-                new JiraStory("story that should be created for no pr",
+                new JiraStory(
+                        new YamlFeatureStory(
+                                "story that should be created for no pr",
+                                new YamlJira(null, null),
+                                emptyList(),
+                                emptyList(),
+                                null),
                         singletonList(new JiraTdd(
                                 TddId.noPr(),
                                 null,

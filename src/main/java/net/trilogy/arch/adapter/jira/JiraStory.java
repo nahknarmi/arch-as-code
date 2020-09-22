@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
@@ -15,7 +16,6 @@ import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.Func
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +30,16 @@ import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class JiraStory {
-    private final String title;
-    private final String key;
-    private final String link;
+    private final YamlFeatureStory featureStory;
     private final List<JiraTdd> tdds;
     private final List<JiraFunctionalRequirement> functionalRequirements;
 
-    public JiraStory(YamlArchitectureUpdate au,
+    public JiraStory(YamlFeatureStory featureStory,
+                     YamlArchitectureUpdate au,
                      ArchitectureDataStructure beforeAuArchitecture,
-                     ArchitectureDataStructure afterAuArchitecture,
-                     YamlFeatureStory featureStory) throws InvalidStoryException {
-        title = featureStory.getTitle();
-        key = featureStory.getKey();
-        // TODO: Fix law of demeter violations by fixing data models
-        link = featureStory.getJira().getLink();
+                     ArchitectureDataStructure afterAuArchitecture) throws InvalidStoryException {
+        this.featureStory = featureStory;
+        // TODO: More law of demeter: TDDs and FuncReqs
         tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
         functionalRequirements = getFunctionalRequirements(au, featureStory);
     }
@@ -90,16 +86,16 @@ public class JiraStory {
 
     /**
      * @todo Some Epic cards in JIRA seem to put the Epic Summary (title)
-     *       field into "customfield_10002"; manual testing shows that using
-     *       the card key (eg, "AU-1") works as well.  We should <strong>unit
-     *       test</strong> that AaC uses the key, not the title.
+     * field into "customfield_10002"; manual testing shows that using the
+     * card key (eg, "AU-1") works as well.  We should <strong>unit
+     * test</strong> that AaC uses the key, not the title.
      * @todo Are "customfield_10002" and "customfield_10004" equivalent?
      */
     public IssueInput asIssueInput(String epicKey, Long projectId) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("project", projectId)
-                .setFieldValue("summary", title)
+                .setFieldValue("summary", featureStory.getTitle())
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", makeDescription())
                 .build();
@@ -157,6 +153,14 @@ public class JiraStory {
         } catch (Exception ignored) {
             return Optional.empty();
         }
+    }
+
+    public String getKey() {
+        return featureStory.getKey();
+    }
+
+    public String getLink() {
+        return featureStory.getJira().getLink();
     }
 
     @ToString

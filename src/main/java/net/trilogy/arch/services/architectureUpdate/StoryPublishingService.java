@@ -74,11 +74,11 @@ public class StoryPublishingService {
         // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
         final var jiraStoriesToCreate = new ArrayList<JiraStory>(storiesToCreate.size());
         for (final YamlFeatureStory story : storiesToCreate) {
-            jiraStoriesToCreate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
+            jiraStoriesToCreate.add(new JiraStory(story, au, beforeAuArchitecture, afterAuArchitecture));
         }
         final var jiraStoriesToUpdate = new ArrayList<JiraStory>(storiesToUpdate.size());
         for (final YamlFeatureStory story : storiesToUpdate) {
-            jiraStoriesToUpdate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
+            jiraStoriesToUpdate.add(new JiraStory(story, au, beforeAuArchitecture, afterAuArchitecture));
         }
 
         // create stories

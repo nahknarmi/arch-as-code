@@ -3,10 +3,19 @@ package net.trilogy.arch.adapter.jira;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlCapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.YamlE2E;
+import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -14,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION;
 import static net.trilogy.arch.Util.first;
@@ -21,9 +31,8 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class YamlJiraStoryTest {
-
-    private static YamlArchitectureUpdate getAu() {
+public class JiraStoryTest {
+    private static YamlArchitectureUpdate getAuFixture() {
         TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
         TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
 
@@ -55,11 +64,11 @@ public class YamlJiraStoryTest {
     }
 
     private static YamlArchitectureUpdate getAuWithInvalidComponent() {
-        return changeAllTddsToBeUnderComponent("1231231323123", getAu());
+        return changeAllTddsToBeUnderComponent("1231231323123", getAuFixture());
     }
 
     private static YamlArchitectureUpdate getAuWithInvalidRequirement() {
-        return getAu().toBuilder().functionalRequirements(
+        return getAuFixture().toBuilder().functionalRequirements(
                 Map.of(new FunctionalRequirementId("different id than the reference in the story"),
                         new YamlFunctionalRequirement("any text", "any source", List.of())))
                 .build();
@@ -70,25 +79,26 @@ public class YamlJiraStoryTest {
         for (var container : au.getTddContainersByComponent()) {
             oldTdds.putAll(container.getTdds());
         }
-        final YamlTddContainerByComponent newComponentWithTdds = new YamlTddContainerByComponent(
+
+        final var newComponentWithTdds = new YamlTddContainerByComponent(
                 new TddComponentReference(newComponentId),
                 null, false,
-                oldTdds
-        );
+                oldTdds);
+
         return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
     }
 
     @Test
-    public void ShouldConstructJiraStory() throws Exception {
+    public void shouldConstructJiraStory() throws Exception {
         // GIVEN:
-        var au = getAu();
+        var au = getAuFixture();
 
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
-        final JiraStory actual = new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+        final JiraStory actual = new JiraStory(featureStory, au, beforeAuArchitecture, afterAuArchitecture);
 
         // THEN:
         TddId tddId1 = new TddId("TDD 1");
@@ -99,38 +109,34 @@ public class YamlJiraStoryTest {
         YamlTdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
 
         final JiraStory expected = new JiraStory(
-                "story title",
+                new YamlFeatureStory("story title",
+                        null,
+                        emptyList(),
+                        emptyList(),
+                        null),
                 List.of(
                         new JiraStory.JiraTdd(
                                 tddId1,
                                 tdd1,
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
-                                tdd1.getContent()
-                        ),
+                                tdd1.getContent()),
                         new JiraStory.JiraTdd(
                                 tddId2,
                                 tdd2,
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
-                                null
-                        ),
+                                null),
                         new JiraStory.JiraTdd(
                                 tddId3,
                                 tdd3,
                                 "c4://Internet Banking System/API Application/Sign In Controller",
-                                tdd3.getContent()
-                        )
-                ),
+                                tdd3.getContent())),
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
                                 new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        List.of(new TddId("[SAMPLE-TDD-ID]"))
-                                )
-                        )
-                )
-        );
+                                        List.of(new TddId("[SAMPLE-TDD-ID]"))))));
 
         assertThat(actual, equalTo(expected));
     }
@@ -142,7 +148,7 @@ public class YamlJiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
-        new JiraStory(au, getArchitectureBeforeAu(), getArchitectureAfterAu(), featureStory);
+        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
 
         // THEN raise exception.
     }
@@ -150,7 +156,7 @@ public class YamlJiraStoryTest {
     @Test(expected = InvalidStoryException.class)
     public void shouldThrowIfComponentHasNoPath() throws Exception {
         // GIVEN
-        var au = getAu();
+        var au = getAuFixture();
         ArchitectureDataStructure architectureAfterAu = getArchitectureAfterAu();
 
         architectureAfterAu.getModel().getComponents().forEach(c -> c.setPath((String) null));
@@ -158,7 +164,7 @@ public class YamlJiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
-        new JiraStory(au, getArchitectureBeforeAu(), architectureAfterAu, featureStory);
+        new JiraStory(featureStory, au, getArchitectureBeforeAu(), architectureAfterAu);
 
         // THEN
         // Raise Error
@@ -172,7 +178,7 @@ public class YamlJiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
-        new JiraStory(au, getArchitectureBeforeAu(), getArchitectureAfterAu(), featureStory);
+        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
 
         // THEN
         // Raise Error
@@ -181,13 +187,13 @@ public class YamlJiraStoryTest {
     @Test(expected = InvalidStoryException.class)
     public void shouldThrowIfInvalidTdd() throws Exception {
         // GIVEN
-        var au = getAu();
+        var au = getAuFixture();
 
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
         featureStory = featureStory.toBuilder().tddReferences(List.of(new TddId("Invalid TDD ID"))).build();
 
         // WHEN
-        new JiraStory(au, getArchitectureBeforeAu(), getArchitectureAfterAu(), featureStory);
+        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
 
         // THEN
         // Raise Error
