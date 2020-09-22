@@ -6,7 +6,6 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
-import lombok.SneakyThrows;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
@@ -62,7 +61,6 @@ public class JiraApiTest {
         assertEquals(story.getKey(), issue.getKey());
     }
 
-    @SneakyThrows
     @Test
     public void should_find_jira_and_yaml_jira_structure_to_be_equivalent() {
         final var ticket = Jira.builder()
@@ -72,12 +70,11 @@ public class JiraApiTest {
 
         final var issue = mock(Issue.class);
         when(issue.getKey()).thenReturn("AU-1");
-        when(issue.getSelf()).thenReturn(new URI("https://jira.devfactory.com/browse/AU-1"));
+        when(issue.getSelf()).thenReturn(URI.create("https://jira.devfactory.com/browse/AU-1"));
 
         assertTrue(isEquivalentToJiraIssue(ticket, issue));
     }
 
-    @SneakyThrows
     @Test
     public void should_find_jira_and_yaml_epic_structure_to_be_equivalent() {
         final var theKey = "AU-1";
@@ -94,7 +91,7 @@ public class JiraApiTest {
         final var issue = mock(Issue.class);
         when(issue.getKey()).thenReturn(theKey);
         when(issue.getSummary()).thenReturn(theTitle);
-        when(issue.getSelf()).thenReturn(new URI(theLink));
+        when(issue.getSelf()).thenReturn(URI.create(theLink));
 
         assertTrue(isEquivalentToJiraIssue(ticket, issue));
     }
