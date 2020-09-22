@@ -189,7 +189,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         collector.checkThat(
                 dummyOut.getLog(),
                 equalTo(
-                        "Not re-creating stories:\n  - story that should not be created\n\n" +
+                        "Not re-creating stories:\n  - story that should be updated\n\n" +
                                 "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n"));
         collector.checkThat(dummyErr.getLog(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
@@ -237,7 +237,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // THEN:
         final var expected = singletonList(new JiraStory(
                 new YamlFeatureStory(
-                        "story that should not be created",
+                        "story that should be updated",
                         new YamlJira("already existing jira ticket","link to already existing jira ticket"),
                         singletonList(new TddId("[SAMPLE-TDD-ID]")),
                         singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
@@ -294,7 +294,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         collector.checkThat(
                 dummyOut.getLog(),
                 equalTo(
-                        "Not re-creating stories:\n  - story that should not be created\n\n" +
+                        "Not re-creating stories:\n  - story that should be updated\n\n" +
                                 "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
                                 "Successfully created:\n  - story that should be created\n  - story that failed to be created\n"));
         collector.checkThat(dummyErr.getLog(), equalTo(""));
@@ -348,7 +348,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 equalTo("\nError! Some stories failed to publish. Please retry. Errors reported by Jira:\n\nStory: \"story that failed to be created\":\n  - error-message\n"));
         assertThat(
                 dummyOut.getLog(),
-                equalTo("Not re-creating stories:\n  - story that should not be created\n\n" +
+                equalTo("Not re-creating stories:\n  - story that should be updated\n\n" +
                         "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
                         "Successfully created:\n  - story that should be created\n"));
         assertThat(statusCode, equalTo(0));
@@ -383,7 +383,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var statusCode = execute(app, genericCommand());
 
         assertThat(dummyErr.getLog(), containsString("JiraApiException: OOPS!\n"));
-        assertThat(dummyOut.getLog(), containsString("Not re-creating stories:\n  - story that should not be created"));
+        assertThat(dummyOut.getLog(), containsString("Not re-creating stories:\n  - story that should be updated"));
         assertThat(statusCode, not(equalTo(0)));
     }
 

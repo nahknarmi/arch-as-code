@@ -64,7 +64,7 @@ capabilities:
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
 
-    - title: "story that should not be created"
+    - title: "story that should be updated"
       jira:
         ticket: "already existing jira ticket"
         link: "link to already existing jira ticket"
