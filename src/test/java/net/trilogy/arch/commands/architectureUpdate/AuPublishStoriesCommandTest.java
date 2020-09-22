@@ -5,11 +5,7 @@ import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
-import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
-import net.trilogy.arch.adapter.jira.JiraQueryResult;
-import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.adapter.jira.*;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -191,8 +187,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
-                                "Checking epic...\n\n" +
-                                "Attempting to create stories...\n\n"));
+                                "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n"));
         collector.checkThat(dummyErr.getLog(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
 
@@ -262,8 +257,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 dummyOut.getLog(),
                 equalTo(
                         "Not re-creating stories:\n  - story that should not be created\n\n" +
-                                "Checking epic...\n\n" +
-                                "Attempting to create stories...\n\n" +
+                                "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
                                 "Successfully created:\n  - story that should be created\n  - story that failed to be created\n"));
         collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
@@ -317,8 +311,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         assertThat(
                 dummyOut.getLog(),
                 equalTo("Not re-creating stories:\n  - story that should not be created\n\n" +
-                        "Checking epic...\n\n" +
-                        "Attempting to create stories...\n\nSuccessfully created:\n  - story that should be created\n"));
+                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
+                        "Successfully created:\n  - story that should be created\n"));
         assertThat(statusCode, equalTo(0));
     }
 
@@ -334,13 +328,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         final var statusCode = execute(app, genericCommand());
 
-        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
-        assertThat(
-                dummyOut.getLog(),
-                equalTo(
-                        "Not re-creating stories:\n  - story that should not be created\n\n" +
-                                "Checking epic...\n\n" +
-                                "Attempting to create stories...\n\n"));
+        final var log = dummyErr.getLog();
+        assertThat(log, containsString("JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
+        // TODO use containsString to make sure the nice message is present, but don't check against specific full output
         assertThat(statusCode, not(equalTo(0)));
     }
 
@@ -354,8 +344,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         final var statusCode = execute(app, genericCommand());
 
-        assertThat(dummyErr.getLog(), equalTo("Jira API failed\nError: net.trilogy.arch.adapter.jira.JiraApi$JiraApiException: OOPS!\n"));
-        assertThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\nChecking epic...\n\n"));
+        assertThat(dummyErr.getLog(), containsString("JiraApiException: OOPS!\n"));
+        assertThat(dummyOut.getLog(), containsString("Not re-creating stories:\n  - story that should not be created"));
         assertThat(statusCode, not(equalTo(0)));
     }
 

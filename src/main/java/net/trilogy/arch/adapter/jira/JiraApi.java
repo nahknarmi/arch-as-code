@@ -110,23 +110,7 @@ public class JiraApi {
             Long projectId)
             throws JiraApiException {
         try {
-            final var bulkResponse = jiraClient.getIssueClient()
-                    .createIssues(jiraStories.stream()
-                            .map(it -> it.toJira(epicKey, projectId))
-                            .collect(toList()))
-                    .get();
-
-            final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)
-                    .map(it -> succeeded(it.getKey(), it.getSelf().toString()))
-                    .collect(toList());
-            final var failed = stream(bulkResponse.getErrors().spliterator(), false)
-                    .map(it -> failed(it.toString()))
-                    .collect(toList());
-
-            final var result = new ArrayList<JiraCreateStoryStatus>(succeeded.size() + failed.size());
-            result.addAll(succeeded);
-            result.addAll(failed);
-            return result;
+            return getJiraCreateStoryStatuses(jiraStories, epicKey, projectId);
         } catch (RestClientException e) {
             final var x = new JiraApiException(e.getMessage(), e);
             x.setStackTrace(e.getStackTrace());
@@ -142,12 +126,46 @@ public class JiraApi {
         }
     }
 
-    public static class JiraApiException extends Exception {
-        public JiraApiException(@NonNull String message, Throwable cause) {
-            super(message, cause);
-        }
+    private ArrayList<JiraCreateStoryStatus> getJiraCreateStoryStatuses(List<JiraStory> jiraStories, String epicKey, Long projectId) throws InterruptedException, ExecutionException {
+        final var bulkResponse = jiraClient.getIssueClient()
+                .createIssues(jiraStories.stream()
+                        .map(it -> it.toJira(epicKey, projectId))
+                        .collect(toList()))
+                .get();
+
+        final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)
+                .map(it -> succeeded(it.getKey(), it.getSelf().toString()))
+                .collect(toList());
+        final var failed = stream(bulkResponse.getErrors().spliterator(), false)
+                .map(it -> failed(it.toString()))
+                .collect(toList());
+
+        final var result = new ArrayList<JiraCreateStoryStatus>(succeeded.size() + failed.size());
+        result.addAll(succeeded);
+        result.addAll(failed);
+        return result;
     }
 
+    public List<JiraCreateStoryStatus> updateExistingStories(
+            List<JiraStory> jiraStories,
+            String epicKey,
+            Long projectId) {
+//        try {
+//        } catch (RestClientException e) {
+//            final var x = new JiraApiException(e.getMessage(), e);
+//            x.setStackTrace(e.getStackTrace());
+//            throw x;
+//        } catch (InterruptedException e) {
+//            final var x = new JiraApiException("INTERRUPTED", e);
+//            x.setStackTrace(e.getStackTrace());
+//            throw x;
+//        } catch (ExecutionException e) {
+//            final var x = new JiraApiException("FAILED", e.getCause());
+//            x.setStackTrace(e.getStackTrace());
+//            throw x;
+//        }
+        return null;
+    }
     @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");

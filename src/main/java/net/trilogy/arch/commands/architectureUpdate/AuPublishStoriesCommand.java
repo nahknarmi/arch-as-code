@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.jira.JiraApi;
+import net.trilogy.arch.adapter.jira.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
@@ -108,7 +109,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
             StoryPublishingService jiraService) {
         try {
             return Optional.of(jiraService.createOrUpdateStories(au, beforeAuArchitecture, afterAuArchitecture));
-        } catch (JiraApi.JiraApiException e) {
+        } catch (JiraApiException e) {
             printError("Jira API failed", e);
         } catch (InvalidStoryException e) {
             printError("ERROR: Some stories are invalid. Please run 'au validate' command.");

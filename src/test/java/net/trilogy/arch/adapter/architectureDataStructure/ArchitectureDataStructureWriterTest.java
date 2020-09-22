@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.architectureDataStructure;
 
-import lombok.SneakyThrows;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.DocumentationImage;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
@@ -35,8 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ArchitectureDataStructureWriterTest {
     private static final FilesFacade filesFacade = new FilesFacade();
 
-    @SneakyThrows
-    public static void parseDateAsIsoOrThrow(String str) {
+    public static void parseDateAsIsoOrThrow(String str) throws ParseException {
         final var df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         df.parse(str);
@@ -83,7 +82,9 @@ public class ArchitectureDataStructureWriterTest {
                 new FilesFacade().readString(existingYamlFile.toPath()), ArchitectureDataStructure.class);
         final var writtenYamlFile = exportArchitectureDataStructure(dataStructure, filesFacade);
 
-        extractDates(writtenYamlFile).forEach(ArchitectureDataStructureWriterTest::parseDateAsIsoOrThrow);
+        for (var s : extractDates(writtenYamlFile)) {
+            parseDateAsIsoOrThrow(s);
+        }
     }
 
     @Test
