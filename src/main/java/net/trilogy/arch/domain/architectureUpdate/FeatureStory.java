@@ -43,6 +43,7 @@ public class FeatureStory {
         this.e2e = e2e;
     }
 
+    /** @todo This method papers over bugs in YAML */
     public boolean exists() {
         if (null == jira) return false;
         if (null == jira.getTicket()) return false;

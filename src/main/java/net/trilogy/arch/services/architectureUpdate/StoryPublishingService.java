@@ -5,6 +5,7 @@ import net.trilogy.arch.adapter.jira.JiraApi;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraCreateStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
@@ -23,11 +24,15 @@ public class StoryPublishingService {
     private final PrintWriter err;
     private final JiraApi api;
 
-    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
-        return au.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .filter(StoryPublishingService::shouldCreateStory)
+    public static List<FeatureStory> findFeatureStoriesToCreate(final ArchitectureUpdate au) {
+        return au.getCapabilityContainer().getFeatureStories().stream()
+                .filter(story -> !story.exists())
+                .collect(toList());
+    }
+
+    public static List<FeatureStory> findFeatureStoriesToUpdate(final ArchitectureUpdate au) {
+        return au.getCapabilityContainer().getFeatureStories().stream()
+                .filter(FeatureStory::exists)
                 .collect(toList());
     }
 
@@ -48,49 +53,50 @@ public class StoryPublishingService {
         return updatedAu;
     }
 
-    private static boolean shouldCreateStory(FeatureStory story) {
-        return !story.exists();
-    }
-
-    public ArchitectureUpdate createStories(
+    public ArchitectureUpdate createOrUpdateStories(
             final ArchitectureUpdate au,
             final ArchitectureDataStructure beforeAuArchitecture,
             final ArchitectureDataStructure afterAuArchitecture)
-            throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException {
+            throws JiraApiException, InvalidStoryException {
         printStoriesNotToBeSent(au);
 
-        final var stories = getFeatureStoriesToCreate(au);
-        if (stories.size() == 0) {
-            throw new NoStoriesToCreateException();
-        }
-
-        out.println("Checking epic...\n");
+        final var storiesToCreate = findFeatureStoriesToCreate(au);
+        final var storiesToUpdate = findFeatureStoriesToUpdate(au);
+        // TODO: storiesToDelete -- implies calling REST JIRA to check
 
         final var epicJiraTicket = au.getCapabilityContainer().getEpic().getJira();
         final var informationAboutTheEpic = api.getStory(epicJiraTicket);
 
-        out.println("Attempting to create stories...\n");
+        out.println("Creating stories in the epic "
+                + epicJiraTicket.getTicket()
+                + "...\n");
 
-        final var jiraStories = new ArrayList<JiraStory>(stories.size());
-        for (var story : stories) {
-            jiraStories.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
+        // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
+        final var jiraStoriesToCreate = new ArrayList<JiraStory>(storiesToCreate.size());
+        for (final FeatureStory story : storiesToCreate) {
+            jiraStoriesToCreate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
+        }
+        final var jiraStoriesToUpdate = new ArrayList<JiraStory>(storiesToUpdate.size());
+        for (final FeatureStory story : storiesToUpdate) {
+            jiraStoriesToUpdate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }
 
         // create stories
         var createStoriesResults = api.createStories(
-                jiraStories,
+                jiraStoriesToCreate,
                 epicJiraTicket.getTicket(),
-                informationAboutTheEpic.getProjectId()
-        );
-
+                informationAboutTheEpic.getProjectId());
         // update stories
-
+        var updateStoriesResults = api.updateStories(
+                jiraStoriesToUpdate,
+                epicJiraTicket.getTicket(),
+                informationAboutTheEpic.getProjectId());
         // delete stories
 
-        printStoriesThatSucceeded(stories, createStoriesResults);
-        printStoriesThatFailed(stories, createStoriesResults);
+        printStoriesThatSucceeded(storiesToCreate, createStoriesResults);
+        printStoriesThatFailed(storiesToCreate, createStoriesResults);
 
-        return updateJiraTicketsInAu(au, stories, createStoriesResults);
+        return updateJiraTicketsInAu(au, storiesToCreate, createStoriesResults);
     }
 
     private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
@@ -121,18 +127,13 @@ public class StoryPublishingService {
     }
 
     private void printStoriesNotToBeSent(final ArchitectureUpdate au) {
-        String stories = au.getCapabilityContainer()
-                .getFeatureStories()
-                .stream()
-                .filter(story -> !shouldCreateStory(story))
+        String stories = au.getCapabilityContainer().getFeatureStories().stream()
+                .filter(FeatureStory::exists)
                 .map(story -> "  - " + story.getTitle())
                 .collect(Collectors.joining("\n"));
         if (!stories.isBlank()) {
             out.println("Not re-creating stories:\n" + stories + "\n");
         }
-    }
-
-    public static class NoStoriesToCreateException extends Exception {
     }
 }
 

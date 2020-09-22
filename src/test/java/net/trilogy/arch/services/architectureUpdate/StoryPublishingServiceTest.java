@@ -47,17 +47,16 @@ public class StoryPublishingServiceTest {
         ArchitectureUpdate au = getArchitectureUpdate(allStories);
 
         // WHEN
-        List<FeatureStory> actual = StoryPublishingService.getFeatureStoriesToCreate(au);
+        List<FeatureStory> actual = StoryPublishingService.findFeatureStoriesToCreate(au);
 
         // THEN
         assertThat(actual, equalTo(featureStoriesToBeCreated));
     }
 
-    private ArchitectureUpdate getArchitectureUpdate(List<FeatureStory> featureStories) {
+    private static ArchitectureUpdate getArchitectureUpdate(List<FeatureStory> featureStories) {
         CapabilitiesContainer capabilitiesContainer = new CapabilitiesContainer(
                 new Epic("Epic Title", new Jira("AU-1", null)),
-                featureStories
-        );
+                featureStories);
         return ArchitectureUpdate.blank().toBuilder()
                 .capabilityContainer(capabilitiesContainer)
                 .build();

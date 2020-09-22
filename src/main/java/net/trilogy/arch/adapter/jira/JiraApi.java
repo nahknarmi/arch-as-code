@@ -78,6 +78,8 @@ public class JiraApi {
             //       it against the YAML, and decide if it needs updating
             return new JiraQueryResult(issue.getProject().getId(), issue.getProject().getKey());
         } catch (RestClientException e) {
+            // TODO: Tech debt: Use JDK Optional, not Guava's look-a-like
+            //       Root cause: Atlassian library is behind the curve
             final var code = e.getStatusCode();
             if (!code.isPresent()) throw e;
 

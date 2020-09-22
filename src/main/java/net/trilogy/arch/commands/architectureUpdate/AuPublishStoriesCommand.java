@@ -107,11 +107,9 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
             ArchitectureDataStructure afterAuArchitecture,
             StoryPublishingService jiraService) {
         try {
-            return Optional.of(jiraService.createStories(au, beforeAuArchitecture, afterAuArchitecture));
+            return Optional.of(jiraService.createOrUpdateStories(au, beforeAuArchitecture, afterAuArchitecture));
         } catch (JiraApi.JiraApiException e) {
             printError("Jira API failed", e);
-        } catch (StoryPublishingService.NoStoriesToCreateException ignored) {
-            printError("ERROR: No stories to create.");
         } catch (InvalidStoryException e) {
             printError("ERROR: Some stories are invalid. Please run 'au validate' command.");
         }

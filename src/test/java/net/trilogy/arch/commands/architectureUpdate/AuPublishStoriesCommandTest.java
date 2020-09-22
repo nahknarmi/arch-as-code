@@ -345,18 +345,6 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     }
 
     @Test
-    public void shouldHandleNoStoriesToCreate() throws Exception {
-        mockGitInterface();
-
-        final var statusCode = execute(app, specificCommand("no-stories-to-create"));
-        verifyNoMoreInteractions(mockedJiraApi);
-
-        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: No stories to create.\n"));
-        collector.checkThat(dummyOut.getLog(), equalTo("Not re-creating stories:\n  - story that should not be created\n\n"));
-        collector.checkThat(statusCode, not(equalTo(0)));
-    }
-
-    @Test
     public void shouldDisplayGetStoryErrorsFromJira() throws Exception {
         final var epic = new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
 
