@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import java.net.URI;
 import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
@@ -47,7 +46,7 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_find_jira_and_yaml_stories_which_are_to_be_compared() {
+    public void should_find_jira_and_yaml_cards_which_are_to_be_compared() {
         final var theKey = "AU-1";
         final var story = FeatureStory.builder()
                 .jira(Jira.builder()
@@ -62,43 +61,26 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_find_jira_and_yaml_epic_structure_to_be_equivalent() {
-        final var theKey = "AU-1";
-        final var theLink = "https://jira.devfactory.com/browse/" + theKey;
+    public void should_find_jira_and_yaml_epic_data_to_be_equivalent() {
         final var theTitle = "JAVIER IS JEFE";
         final var ticket = Epic.builder()
-                .jira(Jira.builder()
-                        .ticket(theKey)
-                        .link(theLink)
-                        .build())
                 .title(theTitle)
                 .build();
 
         final var epic = mock(Issue.class);
-        when(epic.getKey()).thenReturn(theKey);
         when(epic.getSummary()).thenReturn(theTitle);
-        when(epic.getSelf()).thenReturn(URI.create(theLink));
 
         assertTrue(isEquivalentToJiraIssue(ticket, epic));
     }
 
     @Test
-    public void should_find_jira_and_yaml_feature_story_cards_to_be_equivalent() {
-        final var theKey = "INTENTIONALLY RIGHT";
-        final var theLink = "schema:rest-of-uri";
+    public void should_find_jira_and_yaml_story_data_to_be_equivalent() {
         final var theTitle = "AUNT MARGARET";
-
         final var story = FeatureStory.builder()
-                .jira(Jira.builder()
-                        .link(theLink)
-                        .ticket(theKey)
-                        .build())
                 .title(theTitle)
                 .build();
 
         final var issue = mock(Issue.class);
-        when(issue.getKey()).thenReturn(theKey);
-        when(issue.getSelf()).thenReturn(URI.create(theLink));
         when(issue.getSummary()).thenReturn(theTitle);
 
         assertTrue(isEquivalentToJiraIssue(story, issue));

@@ -32,24 +32,18 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    private static boolean isEquivalentToJiraIssue(Jira fromYaml, Issue fromJira) {
+    public static boolean isEquivalentToJiraIssue(FeatureStory fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 
-        return Objects.equals(fromYaml.getLink(), fromJira.getSelf().toString());
+        return Objects.equals(fromYaml.getTitle(), fromJira.getSummary());
     }
 
-    public static boolean isEquivalentToJiraIssue(FeatureStory item, Issue issue) {
-        return item != null && issue != null
-                && Objects.equals(item.getKey(), issue.getKey())
-                && Objects.equals(item.getTitle(), issue.getSummary())
-                && isEquivalentToJiraIssue(item.getJira(), issue);
-    }
+    public static boolean isEquivalentToJiraIssue(Epic fromYaml, Issue fromJira) {
+        requireNonNull(fromYaml);
+        requireNonNull(fromJira);
 
-    public static boolean isEquivalentToJiraIssue(Epic item, Issue issue) {
-        return item != null && issue != null
-                && Objects.equals(item.getTitle(), issue.getSummary())
-                && isEquivalentToJiraIssue(item.getJira(), issue);
+        return Objects.equals(fromYaml.getTitle(), fromJira.getSummary());
     }
 
     public JiraQueryResult getStory(Jira jira)
