@@ -62,20 +62,6 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_find_jira_and_yaml_jira_structure_to_be_equivalent() {
-        final var ticket = Jira.builder()
-                .link("https://jira.devfactory.com/browse/AU-1")
-                .ticket("AU-1")
-                .build();
-
-        final var issue = mock(Issue.class);
-        when(issue.getKey()).thenReturn("AU-1");
-        when(issue.getSelf()).thenReturn(URI.create("https://jira.devfactory.com/browse/AU-1"));
-
-        assertTrue(isEquivalentToJiraIssue(ticket, issue));
-    }
-
-    @Test
     public void should_find_jira_and_yaml_epic_structure_to_be_equivalent() {
         final var theKey = "AU-1";
         final var theLink = "https://jira.devfactory.com/browse/" + theKey;

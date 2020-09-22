@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
  * <li>Look for disjoint keys (added items for the "ours" collection; removed
  * items for the "theirs" collection)</li>
  * <li>For common keys, use an "equivalence" function to find changed
- * items</li>
+ * items based on satellite data; keys have already been matched</li>
  * </ol>
  *
  * @param <KEY> the common key between data types, eg, "AAC-129"

@@ -32,7 +32,7 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    public static boolean isEquivalentToJiraIssue(Jira fromYaml, Issue fromJira) {
+    private static boolean isEquivalentToJiraIssue(Jira fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 
