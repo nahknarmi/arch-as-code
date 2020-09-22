@@ -13,13 +13,8 @@ import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
-import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.YamlJira;
-import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -426,9 +421,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 new JiraStory(
                         new YamlFeatureStory(
                                 "story that should be created",
-                                null,
-                                emptyList(),
-                                emptyList(),
+                                new YamlJira("",""),
+                                List.of(new TddId("[SAMPLE-TDD-ID]"),  new TddId("[SAMPLE-TDD-ID-2]") ),
+                                List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         List.of(
                                 new JiraTdd(
@@ -450,9 +445,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 new JiraStory(
                         new YamlFeatureStory(
                                 "story that failed to be created",
-                                null,
-                                emptyList(),
-                                emptyList(),
+                                new YamlJira("",""),
+                                List.of(new TddId("[SAMPLE-TDD-ID]")),
+                                List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
