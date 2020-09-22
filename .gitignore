@@ -1,19 +1,10 @@
-# Ignore Gradle project-specific cache directory
-.gradle
-
-# Ignore Gradle build output directory
-build
-
-# Ignore IntelliJ
-.idea/
-# Ignore Eclipse
+.DS_Store
 .classpath
 .project
 .settings/
-bin/
-# Ignore vim
 .vim/
-# Ignore AaC configuration
-.arch-as-code/
-
-.DS_Store
+/.arch-as-code
+/.gradle
+/.idea/
+/build/
+bin/
