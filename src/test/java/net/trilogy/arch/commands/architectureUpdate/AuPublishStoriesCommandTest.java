@@ -224,6 +224,40 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     }
 
     @Test
+    public void shouldTellJiraToUpdateStories() throws Exception {
+        // GIVEN:
+        final var epic = YamlJira.blank();
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
+        mockGitInterface();
+
+        // WHEN:
+        execute(app, genericCommand());
+
+        // THEN:
+        final var expected = singletonList(new JiraStory(
+                new YamlFeatureStory(
+                        "story that should not be created",
+                        new YamlJira("already existing jira ticket","link to already existing jira ticket"),
+                        singletonList(new TddId("[SAMPLE-TDD-ID]")),
+                        singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
+                        null),
+                singletonList(new JiraTdd(
+                        new TddId("[SAMPLE-TDD-ID]"),
+                        new YamlTdd("[SAMPLE TDD TEXT]", null),
+                        "c4://Internet Banking System/API Application/Reset Password Controller",
+                        null)),
+                singletonList(new JiraFunctionalRequirement(
+                        new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                        new YamlFunctionalRequirement(
+                                "[SAMPLE REQUIREMENT TEXT]",
+                                "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+        verify(mockedJiraApi).updateExistingStories(expected, epic.getTicket(), epicInformation.getProjectId());
+    }
+
+
+    @Test
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
@@ -235,12 +269,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         execute(app, specificCommand("tdd-content"));
 
         // THEN:
-        final var expected = getExpectedJiraStoriesWithTddContentToCreate();
-        @SuppressWarnings("unchecked") final ArgumentCaptor<List<JiraStory>> actual = ArgumentCaptor.forClass(List.class);
-        verify(mockedJiraApi).createNewStories(actual.capture(), eq(epic.getTicket()), eq(epicInformation.getProjectId()));
-        out.println("expected = " + expected);
-        out.println("actual = " + actual.getAllValues());
-        assertEquals(expected, actual.getValue());
+        verify(mockedJiraApi).createNewStories(
+                getExpectedJiraStoriesWithTddContentToCreate(), epic.getTicket(), epicInformation.getProjectId());
+
     }
 
     @Test
