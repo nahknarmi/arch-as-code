@@ -3,11 +3,11 @@ package net.trilogy.arch.validation.architectureUpdate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.EntityReference;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.List;

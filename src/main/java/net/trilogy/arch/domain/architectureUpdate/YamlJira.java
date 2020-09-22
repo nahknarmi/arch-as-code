@@ -13,7 +13,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @ToString
 @Getter
 @EqualsAndHashCode
-public class Jira {
+public class YamlJira {
     @JsonProperty(value = "ticket")
     @NonNull
     private final String ticket;
@@ -24,7 +24,7 @@ public class Jira {
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public Jira(
+    public YamlJira(
             @JsonProperty("ticket") String ticket,
             @JsonProperty("link") String link
     ) {
@@ -32,7 +32,7 @@ public class Jira {
         this.link = link;
     }
 
-    public static Jira blank() {
-        return new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
+    public static YamlJira blank() {
+        return new YamlJira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
     }
 }

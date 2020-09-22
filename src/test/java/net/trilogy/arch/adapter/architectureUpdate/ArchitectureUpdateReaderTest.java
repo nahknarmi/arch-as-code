@@ -1,7 +1,7 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
 import net.trilogy.arch.TestHelper;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;

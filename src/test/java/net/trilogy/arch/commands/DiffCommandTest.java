@@ -2,11 +2,11 @@ package net.trilogy.arch.commands;
 
 import net.trilogy.arch.adapter.architectureUpdate.ArchitectureUpdateReader;
 import net.trilogy.arch.adapter.git.GitInterface;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.domain.diff.DiffableEntity;
@@ -38,7 +38,7 @@ public class DiffCommandTest {
         final var mockGit = mock(GitInterface.class);
 
         final var mockAuReader = mock(ArchitectureUpdateReader.class);
-        when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
+        when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(YamlArchitectureUpdate.class));
 
         final var diffCommand = new DiffCommand(mockFiles, mockGit, mockAuReader);
         final var diffCommandSpy = spy(diffCommand);
@@ -56,7 +56,7 @@ public class DiffCommandTest {
         final var mockGit = mock(GitInterface.class);
 
         final var mockAuReader = mock(ArchitectureUpdateReader.class);
-        when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(ArchitectureUpdate.class));
+        when(mockAuReader.loadArchitectureUpdate(any(Path.class))).thenReturn(mock(YamlArchitectureUpdate.class));
 
         final var diffCommand = new DiffCommand(mockFiles, mockGit, mockAuReader);
 
@@ -84,23 +84,23 @@ public class DiffCommandTest {
                 .build()));
         componentLevelDiffs.add(c3);
 
-        final var componentTdds = new ArrayList<TddContainerByComponent>();
-        final var c1Tdds = new HashMap<TddId, Tdd>();
-        c1Tdds.put(new TddId("123"), new Tdd("123 text", null));
-        c1Tdds.put(new TddId("456"), new Tdd("456 text", null));
-        componentTdds.add(TddContainerByComponent.builder()
+        final var componentTdds = new ArrayList<YamlTddContainerByComponent>();
+        final var c1Tdds = new HashMap<TddId, YamlTdd>();
+        c1Tdds.put(new TddId("123"), new YamlTdd("123 text", null));
+        c1Tdds.put(new TddId("456"), new YamlTdd("456 text", null));
+        componentTdds.add(YamlTddContainerByComponent.builder()
                 .componentId(new TddComponentReference("c1"))
                 .tdds(c1Tdds)
                 .build());
 
-        final var c2Tdds = new HashMap<TddId, Tdd>();
-        c2Tdds.put(new TddId("789"), new Tdd("789 text", null));
-        componentTdds.add(TddContainerByComponent.builder()
+        final var c2Tdds = new HashMap<TddId, YamlTdd>();
+        c2Tdds.put(new TddId("789"), new YamlTdd("789 text", null));
+        componentTdds.add(YamlTddContainerByComponent.builder()
                 .componentId(new TddComponentReference("c2"))
                 .tdds(c2Tdds)
                 .build());
 
-        diffConnectToTdds(componentLevelDiffs, ArchitectureUpdate.builder()
+        diffConnectToTdds(componentLevelDiffs, YamlArchitectureUpdate.builder()
                 .tddContainersByComponent(componentTdds)
                 .build());
 

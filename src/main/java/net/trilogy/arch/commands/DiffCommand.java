@@ -9,7 +9,7 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.domain.diff.Diff;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.DiffToDotCalculator;
@@ -67,7 +67,7 @@ public class DiffCommand
     }
 
     @VisibleForTesting
-    static void diffConnectToTdds(Set<Diff> componentLevelDiffs, ArchitectureUpdate architectureUpdate) {
+    static void diffConnectToTdds(Set<Diff> componentLevelDiffs, YamlArchitectureUpdate architectureUpdate) {
         final var containers = architectureUpdate.getTddContainersByComponent();
         componentLevelDiffs.forEach(diff -> {
             final var componentId = diff.getElement().getId();
@@ -133,7 +133,7 @@ public class DiffCommand
         return 0;
     }
 
-    Optional<ArchitectureUpdate> loadArchitectureUpdate() {
+    Optional<YamlArchitectureUpdate> loadArchitectureUpdate() {
         if (getArchitectureUpdateDirectory() == null) return Optional.empty();
 
         try {

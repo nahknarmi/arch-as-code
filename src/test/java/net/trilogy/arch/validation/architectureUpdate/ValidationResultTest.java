@@ -1,7 +1,7 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;

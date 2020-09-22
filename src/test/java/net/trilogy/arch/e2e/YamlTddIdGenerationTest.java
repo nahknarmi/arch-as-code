@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class TddIdGenerationTest {
+public class YamlTddIdGenerationTest {
     @Test
     public void people_id_generation_test() throws Exception {
         ArchitectureDataStructure dataStructure = getDataStructure();

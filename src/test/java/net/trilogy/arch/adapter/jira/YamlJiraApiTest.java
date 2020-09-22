@@ -7,7 +7,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class JiraApiTest {
+public class YamlJiraApiTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
@@ -51,7 +51,7 @@ public class JiraApiTest {
         when(mockProject.getId()).thenReturn(1L);
         when(mockProject.getKey()).thenReturn("B");
 
-        final Jira jiraToQuery = new Jira("JIRA-TICKET-123", "http://link");
+        final YamlJira jiraToQuery = new YamlJira("JIRA-TICKET-123", "http://link");
 
         // WHEN:
         final var queryResult = jiraApi.getStory(jiraToQuery);
@@ -73,7 +73,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.getStory(new Jira("A", "B"));
+            jiraApi.getStory(new YamlJira("A", "B"));
 
             //THEN:
             fail("BUG: Exception not thrown");
@@ -91,7 +91,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.getStory(new Jira("A", "B"));
+            jiraApi.getStory(new YamlJira("A", "B"));
 
             //THEN:
             fail("BUG: Exception not thrown");

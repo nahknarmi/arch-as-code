@@ -8,13 +8,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 
 import java.util.ArrayList;
@@ -34,10 +34,10 @@ public class JiraStory {
     private final List<JiraTdd> tdds;
     private final List<JiraFunctionalRequirement> functionalRequirements;
 
-    public JiraStory(ArchitectureUpdate au,
+    public JiraStory(YamlArchitectureUpdate au,
                      ArchitectureDataStructure beforeAuArchitecture,
                      ArchitectureDataStructure afterAuArchitecture,
-                     FeatureStory featureStory) throws InvalidStoryException {
+                     YamlFeatureStory featureStory) throws InvalidStoryException {
         title = featureStory.getTitle();
         tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
         functionalRequirements = getFunctionalRequirements(au, featureStory);
@@ -103,7 +103,7 @@ public class JiraStory {
                 .build();
     }
 
-    private static List<JiraFunctionalRequirement> getFunctionalRequirements(ArchitectureUpdate au, FeatureStory featureStory) throws InvalidStoryException {
+    private static List<JiraFunctionalRequirement> getFunctionalRequirements(YamlArchitectureUpdate au, YamlFeatureStory featureStory) throws InvalidStoryException {
         final var requirements = new ArrayList<JiraFunctionalRequirement>();
         for (var reqId : featureStory.getRequirementReferences()) {
             if (!au.getFunctionalRequirements().containsKey(reqId))
@@ -114,9 +114,9 @@ public class JiraStory {
     }
 
     private static List<JiraTdd> getTdds(
-            ArchitectureUpdate au,
+            YamlArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
-            FeatureStory featureStory) throws InvalidStoryException {
+            YamlFeatureStory featureStory) throws InvalidStoryException {
         final var tdds = new ArrayList<JiraTdd>();
         for (var tddId : featureStory.getTddReferences()) {
             var tdd = au.getTddContainersByComponent()
@@ -139,7 +139,7 @@ public class JiraStory {
     private static Optional<String> getComponentPath(
             ArchitectureDataStructure beforeAuArchitecture,
             ArchitectureDataStructure afterAuArchitecture,
-            TddContainerByComponent tddContainerByComponent) {
+            YamlTddContainerByComponent tddContainerByComponent) {
         try {
             final ArchitectureDataStructure architecture;
             if (tddContainerByComponent.isDeleted())
@@ -162,13 +162,13 @@ public class JiraStory {
     @RequiredArgsConstructor
     public static class JiraTdd {
         private final TddId id;
-        private final Tdd tdd;
+        private final YamlTdd tdd;
         @Getter
         private final String componentPath;
         @Getter
         private final TddContent tddContent;
 
-        public static JiraTdd jiraTddFrom(TddId id, Tdd tdd, String component, TddContent tddContent) {
+        public static JiraTdd jiraTddFrom(TddId id, YamlTdd tdd, String component, TddContent tddContent) {
             return new JiraTdd(id, tdd, component, tddContent);
         }
 
@@ -197,7 +197,7 @@ public class JiraStory {
     @RequiredArgsConstructor
     public static class JiraFunctionalRequirement {
         private final FunctionalRequirementId id;
-        private final FunctionalRequirement functionalRequirement;
+        private final YamlFunctionalRequirement functionalRequirement;
 
         public String getId() {
             return id.toString();

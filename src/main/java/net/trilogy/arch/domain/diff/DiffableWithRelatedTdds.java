@@ -1,13 +1,13 @@
 package net.trilogy.arch.domain.diff;
 
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DiffableWithRelatedTdds {
-    private Map<TddId, Tdd> relatedTdds = new HashMap<>();
+    private Map<TddId, YamlTdd> relatedTdds = new HashMap<>();
 
     public String[] getRelatedTddsText() {
         return relatedTdds.entrySet().stream()
@@ -15,7 +15,7 @@ public abstract class DiffableWithRelatedTdds {
                 .toArray(String[]::new);
     }
 
-    public void setRelatedTdds(Map<TddId, Tdd> relatedTo) {
+    public void setRelatedTdds(Map<TddId, YamlTdd> relatedTo) {
         relatedTdds = relatedTo;
     }
 

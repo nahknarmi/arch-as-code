@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalArea.FunctionalAreaId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalAreaId;
 
 import java.util.List;
 
 @Getter
 @ToString
 @EqualsAndHashCode
-public class E2E {
-
+public class YamlE2E {
     @JsonProperty(value = "title")
     private final String title;
     @JsonProperty(value = "business-goal")
@@ -20,16 +19,16 @@ public class E2E {
     @JsonProperty(value = "functional-area-id")
     private final FunctionalAreaId functionalAreaId;
     @JsonProperty(value = "jira")
-    private final Jira jira;
+    private final YamlJira jira;
 
     @JsonProperty(value = "attributes")
-    private final List<Attribute> attributes;
+    private final List<YamlAttribute> attributes;
 
-    public E2E(@JsonProperty(value = "title") String title,
-               @JsonProperty(value = "business-goal") String businessGoal,
-               @JsonProperty(value = "functional-area-id") FunctionalAreaId functionalAreaId,
-               @JsonProperty(value = "jira") Jira jira,
-               @JsonProperty(value = "attributes") List<Attribute> attributes) {
+    public YamlE2E(@JsonProperty(value = "title") String title,
+                   @JsonProperty(value = "business-goal") String businessGoal,
+                   @JsonProperty(value = "functional-area-id") FunctionalAreaId functionalAreaId,
+                   @JsonProperty(value = "jira") YamlJira jira,
+                   @JsonProperty(value = "attributes") List<YamlAttribute> attributes) {
         this.title = title;
         this.businessGoal = businessGoal;
         this.functionalAreaId = functionalAreaId;
@@ -37,7 +36,7 @@ public class E2E {
         this.attributes = attributes;
     }
 
-    public static E2E blank() {
-        return new E2E("E2E title", "Need to do this", FunctionalAreaId.blank(), Jira.blank(), List.of(Attribute.blank()));
+    public static YamlE2E blank() {
+        return new YamlE2E("E2E title", "Need to do this", FunctionalAreaId.blank(), YamlJira.blank(), List.of(YamlAttribute.blank()));
     }
 }

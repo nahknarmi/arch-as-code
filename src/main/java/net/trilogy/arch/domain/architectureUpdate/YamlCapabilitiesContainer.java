@@ -14,23 +14,23 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class CapabilitiesContainer {
+public class YamlCapabilitiesContainer {
     @JsonProperty(value = "epic")
-    private final Epic epic;
+    private final YamlEpic epic;
     @JsonProperty(value = "feature-stories")
-    private final List<FeatureStory> featureStories;
+    private final List<YamlFeatureStory> featureStories;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public CapabilitiesContainer(
-            @JsonProperty("epic") Epic epic,
-            @JsonProperty("feature-stories") List<FeatureStory> featureStories
+    public YamlCapabilitiesContainer(
+            @JsonProperty("epic") YamlEpic epic,
+            @JsonProperty("feature-stories") List<YamlFeatureStory> featureStories
     ) {
         this.epic = epic;
         this.featureStories = featureStories;
     }
 
-    public static CapabilitiesContainer blank() {
-        return new CapabilitiesContainer(Epic.blank(), List.of(FeatureStory.blank()));
+    public static YamlCapabilitiesContainer blank() {
+        return new YamlCapabilitiesContainer(YamlEpic.blank(), List.of(YamlFeatureStory.blank()));
     }
 }

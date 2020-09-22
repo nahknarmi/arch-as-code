@@ -1,11 +1,11 @@
 package net.trilogy.arch.annotators;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Rule;
@@ -29,8 +29,8 @@ public class ArchitectureUpdateAnnotatorTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
-    private static ArchitectureUpdate getAuWith(List<TddContainerByComponent> tddContainersByComponent) {
-        return ArchitectureUpdate.blank()
+    private static YamlArchitectureUpdate getAuWith(List<YamlTddContainerByComponent> tddContainersByComponent) {
+        return YamlArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(tddContainersByComponent)
                 .build();
@@ -39,7 +39,7 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldCheckIfEmptyComponentsExist() throws Exception {
         final var architecture = getArchitecture();
-        final var au = ArchitectureUpdate.blank();
+        final var au = YamlArchitectureUpdate.blank();
 
         collector.checkThat(ArchitectureUpdateAnnotator.isComponentsEmpty(architecture, au), equalTo(true));
     }
@@ -47,9 +47,9 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldCheckIfNotEmptyComponentsExistWithId() throws Exception {
         final var architecture = getArchitecture();
-        final var au = ArchitectureUpdate.blank()
+        final var au = YamlArchitectureUpdate.blank()
                 .toBuilder()
-                .tddContainersByComponent(singletonList(new TddContainerByComponent(
+                .tddContainersByComponent(singletonList(new YamlTddContainerByComponent(
                         new TddComponentReference("13"),
                         null,
                         false,
@@ -62,10 +62,10 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldCheckIfNotEmptyComponentsExistWithPath() throws Exception {
         final var architecture = getArchitecture();
-        final var au = ArchitectureUpdate.blank()
+        final var au = YamlArchitectureUpdate.blank()
                 .toBuilder()
                 .tddContainersByComponent(
-                        singletonList(new TddContainerByComponent(
+                        singletonList(new YamlTddContainerByComponent(
                                 null,
                                 "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller",
                                 false,
@@ -78,14 +78,14 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldAnnotateComponentPathWhenIdsAreFound() throws Exception {
         // GIVEN
-        final var firstComponent = new TddContainerByComponent(
+        final var firstComponent = new YamlTddContainerByComponent(
                 new TddComponentReference("13"),
                 null, false,
-                Map.of(new TddId("TDD 1.0"), new Tdd(null, null)));
-        final var secondComponent = new TddContainerByComponent(
+                Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null)));
+        final var secondComponent = new YamlTddContainerByComponent(
                 new TddComponentReference("14"),
                 null, false,
-                Map.of(new TddId("TDD 2.0"), new Tdd(null, null)));
+                Map.of(new TddId("TDD 2.0"), new YamlTdd(null, null)));
 
         final var tddContainers = List.of(
                 firstComponent,
@@ -104,10 +104,10 @@ public class ArchitectureUpdateAnnotatorTest {
     public void shouldNotSetPathWhenIdIsNotFound() throws Exception {
         // GIVEN
         final var tddContainers = singletonList(
-                new TddContainerByComponent(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Non Existing"),
                         null, false,
-                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))));
+                        Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null))));
         var au = getAuWith(tddContainers);
 
         //When
@@ -120,16 +120,16 @@ public class ArchitectureUpdateAnnotatorTest {
     @Test
     public void shouldAnnotateComponentIdWhenPathIsFound() throws Exception {
         // GIVEN
-        final var firstComponent = new TddContainerByComponent(
+        final var firstComponent = new YamlTddContainerByComponent(
                 null,
                 "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Sign In Controller",
                 false,
-                Map.of(new TddId("TDD 1.0"), new Tdd(null, null)));
-        final var secondComponent = new TddContainerByComponent(
+                Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null)));
+        final var secondComponent = new YamlTddContainerByComponent(
                 null,
                 "c4://Internet Banking System/Internet Banking System\\/API Application/Internet Banking System\\/API Application\\/Reset Password Controller",
                 false,
-                Map.of(new TddId("TDD 2.0"), new Tdd(null, null)));
+                Map.of(new TddId("TDD 2.0"), new YamlTdd(null, null)));
         final var tddContainers = List.of(
                 firstComponent,
                 secondComponent);
@@ -148,11 +148,11 @@ public class ArchitectureUpdateAnnotatorTest {
     public void shouldNotSetComponentIdWhenPathIsNotFound() throws Exception {
         // GIVEN
         final var tddContainers = singletonList(
-                new TddContainerByComponent(
+                new YamlTddContainerByComponent(
                         null,
                         "Non existing path",
                         false,
-                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null))));
+                        Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null))));
         var au = getAuWith(tddContainers);
 
         //When
@@ -169,14 +169,14 @@ public class ArchitectureUpdateAnnotatorTest {
         final TddContent content2_0 = new TddContent("content", "TDD 2.0 : Component-200.txt");
 
         final var tddContainers = List.of(
-                new TddContainerByComponent(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("100"),
                         null, false,
-                        Map.of(new TddId("TDD 1.0"), new Tdd(null, null).withContent(content1_0))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null).withContent(content1_0))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("200"),
                         null, false,
-                        Map.of(new TddId("TDD 2.0"), new Tdd(null, null).withContent(content2_0))));
+                        Map.of(new TddId("TDD 2.0"), new YamlTdd(null, null).withContent(content2_0))));
         final var au = getAuWith(tddContainers);
 
         // WHEN
@@ -185,14 +185,14 @@ public class ArchitectureUpdateAnnotatorTest {
         // THEN
         final var expectedAu = au.toBuilder()
                 .tddContainersByComponent(List.of(
-                        new TddContainerByComponent(
+                        new YamlTddContainerByComponent(
                                 new TddComponentReference("100"),
                                 null, false,
-                                Map.of(new TddId("TDD 1.0"), new Tdd(null, "TDD 1.0 : Component-100.txt").withContent(content1_0))),
-                        new TddContainerByComponent(
+                                Map.of(new TddId("TDD 1.0"), new YamlTdd(null, "TDD 1.0 : Component-100.txt").withContent(content1_0))),
+                        new YamlTddContainerByComponent(
                                 new TddComponentReference("200"),
                                 null, false,
-                                Map.of(new TddId("TDD 2.0"), new Tdd(null, "TDD 2.0 : Component-200.txt").withContent(content2_0)))))
+                                Map.of(new TddId("TDD 2.0"), new YamlTdd(null, "TDD 2.0 : Component-200.txt").withContent(content2_0)))))
                 .build();
 
         collector.checkThat(annotatedAu, equalTo(expectedAu));
@@ -202,13 +202,13 @@ public class ArchitectureUpdateAnnotatorTest {
     public void shouldDoNothingWhenTddsHaveNoContent() {
         // GIVEN
 
-        final var tddContainers = singletonList(new TddContainerByComponent(
+        final var tddContainers = singletonList(new YamlTddContainerByComponent(
                 new TddComponentReference("13"),
                 null, false,
                 Map.of(
-                        new TddId("TDD 1.0"), new Tdd(null, null),
-                        new TddId("TDD 1.1"), new Tdd("text", null),
-                        new TddId("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt"))));
+                        new TddId("TDD 1.0"), new YamlTdd(null, null),
+                        new TddId("TDD 1.1"), new YamlTdd("text", null),
+                        new TddId("MatchedTDD 1.0"), new YamlTdd(null, "MatchedTDD 1.0 : Component-13.txt"))));
         final var au = getAuWith(tddContainers);
 
         // WHEN
@@ -217,12 +217,12 @@ public class ArchitectureUpdateAnnotatorTest {
         // THEN
         final var expectedAu = au.toBuilder()
                 .tddContainersByComponent(
-                        singletonList(new TddContainerByComponent(
+                        singletonList(new YamlTddContainerByComponent(
                                 new TddComponentReference("13"),
                                 null, false,
-                                Map.of(new TddId("TDD 1.0"), new Tdd(null, null),
-                                        new TddId("TDD 1.1"), new Tdd("text", null),
-                                        new TddId("MatchedTDD 1.0"), new Tdd(null, "MatchedTDD 1.0 : Component-13.txt")))))
+                                Map.of(new TddId("TDD 1.0"), new YamlTdd(null, null),
+                                        new TddId("TDD 1.1"), new YamlTdd("text", null),
+                                        new TddId("MatchedTDD 1.0"), new YamlTdd(null, "MatchedTDD 1.0 : Component-13.txt")))))
                 .build();
 
         collector.checkThat(annotatedAu, equalTo(expectedAu));

@@ -6,9 +6,9 @@ import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraCreateStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class StoryPublishingService {
     private final PrintWriter err;
     private final JiraApi api;
 
-    public static List<FeatureStory> getFeatureStoriesToCreate(final ArchitectureUpdate au) {
+    public static List<YamlFeatureStory> getFeatureStoriesToCreate(final YamlArchitectureUpdate au) {
         return au.getCapabilityContainer()
                 .getFeatureStories()
                 .stream()
@@ -31,29 +31,29 @@ public class StoryPublishingService {
                 .collect(toList());
     }
 
-    private static ArchitectureUpdate updateJiraTicketsInAu(
-            final ArchitectureUpdate au,
-            final List<FeatureStory> stories,
+    private static YamlArchitectureUpdate updateJiraTicketsInAu(
+            final YamlArchitectureUpdate au,
+            final List<YamlFeatureStory> stories,
             final List<JiraCreateStoryStatus> creationStatuses) {
-        ArchitectureUpdate updatedAu = au;
+        YamlArchitectureUpdate updatedAu = au;
         for (int i = 0; i < creationStatuses.size(); ++i) {
             final var result = creationStatuses.get(i);
 
             if (result.isSuccess()) {
                 updatedAu = updatedAu.addJiraToFeatureStory(
                         stories.get(i),
-                        new Jira(result.getIssueKey(), result.getIssueLink()));
+                        new YamlJira(result.getIssueKey(), result.getIssueLink()));
             }
         }
         return updatedAu;
     }
 
-    private static boolean shouldCreateStory(FeatureStory story) {
+    private static boolean shouldCreateStory(YamlFeatureStory story) {
         return !story.exists();
     }
 
-    public ArchitectureUpdate createStories(
-            final ArchitectureUpdate au,
+    public YamlArchitectureUpdate createStories(
+            final YamlArchitectureUpdate au,
             final ArchitectureDataStructure beforeAuArchitecture,
             final ArchitectureDataStructure afterAuArchitecture)
             throws JiraApiException, NoStoriesToCreateException, JiraStory.InvalidStoryException {
@@ -93,7 +93,7 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, stories, createStoriesResults);
     }
 
-    private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
+    private void printStoriesThatSucceeded(List<YamlFeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
         for (int i = 0; i < createStoriesResults.size(); ++i) {
@@ -108,7 +108,7 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
+    private void printStoriesThatFailed(List<YamlFeatureStory> stories, List<JiraCreateStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < createStoriesResults.size(); ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;
@@ -120,7 +120,7 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesNotToBeSent(final ArchitectureUpdate au) {
+    private void printStoriesNotToBeSent(final YamlArchitectureUpdate au) {
         String stories = au.getCapabilityContainer()
                 .getFeatureStories()
                 .stream()

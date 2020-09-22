@@ -8,7 +8,7 @@ import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.schema.SchemaValidator;
 import net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator;
@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import static net.trilogy.arch.Util.first;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 import static picocli.CommandLine.Parameters;
@@ -102,7 +102,7 @@ public class AuValidateCommand implements Callable<Integer>, LoadArchitectureFro
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAndValidateAu(File auDirectory) {
+    private Optional<YamlArchitectureUpdate> loadAndValidateAu(File auDirectory) {
         try {
             if (validateAuSchema(auDirectory.toPath().resolve(ARCHITECTURE_UPDATE_YML).toFile())) {
                 return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auDirectory.toPath()));

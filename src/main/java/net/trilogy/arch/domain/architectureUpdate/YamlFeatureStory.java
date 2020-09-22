@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 
 import java.util.List;
 
@@ -16,26 +16,26 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @ToString
 @Getter
 @EqualsAndHashCode
-public class FeatureStory {
+public class YamlFeatureStory {
     @JsonProperty(value = "title")
     private final String title;
     @JsonProperty(value = "jira")
-    private final Jira jira;
+    private final YamlJira jira;
     @JsonProperty(value = "tdd-references")
     private final List<TddId> tddReferences;
     @JsonProperty(value = "functional-requirement-references")
     private final List<FunctionalRequirementId> requirementReferences;
     @JsonProperty(value = "e2e")
-    private final E2E e2e;
+    private final YamlE2E e2e;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public FeatureStory(
+    public YamlFeatureStory(
             @JsonProperty("title") String title,
-            @JsonProperty("jira") Jira jira,
+            @JsonProperty("jira") YamlJira jira,
             @JsonProperty("tdd-references") List<TddId> tddReferences,
             @JsonProperty("functional-requirement-references") List<FunctionalRequirementId> requirementReferences,
-            @JsonProperty("e2e") E2E e2e) {
+            @JsonProperty("e2e") YamlE2E e2e) {
         this.title = title;
         this.jira = jira;
         this.tddReferences = tddReferences;
@@ -53,12 +53,12 @@ public class FeatureStory {
         return true;
     }
 
-    public static FeatureStory blank() {
-        return new FeatureStory(
+    public static YamlFeatureStory blank() {
+        return new YamlFeatureStory(
                 "[SAMPLE FEATURE STORY TITLE]",
-                new Jira("", ""),
+                new YamlJira("", ""),
                 List.of(TddId.blank()),
                 List.of(FunctionalRequirementId.blank()),
-                E2E.blank());
+                YamlE2E.blank());
     }
 }

@@ -6,7 +6,7 @@ import net.trilogy.arch.annotators.ArchitectureUpdateAnnotator;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -78,9 +78,9 @@ public class AuAnnotateCommand implements Callable<Integer>, LoadArchitectureMix
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAu(File architectureUpdateDirectory) {
+    private Optional<YamlArchitectureUpdate> loadAu(File architectureUpdateDirectory) {
         try {
-            ArchitectureUpdate au = architectureUpdateReader.loadArchitectureUpdate(architectureUpdateDirectory.toPath());
+            YamlArchitectureUpdate au = architectureUpdateReader.loadArchitectureUpdate(architectureUpdateDirectory.toPath());
             return Optional.of(au);
         } catch (Exception e) {
             printError("Unable to load Architecture Update.", e);

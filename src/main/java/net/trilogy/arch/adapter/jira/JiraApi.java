@@ -1,6 +1,5 @@
 package net.trilogy.arch.adapter.jira;
 
-import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
@@ -8,7 +7,7 @@ import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientF
 import lombok.Generated;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    public JiraQueryResult getStory(Jira jira)
+    public JiraQueryResult getStory(YamlJira jira)
             throws JiraApiException {
         final var ticket = jira.getTicket();
 

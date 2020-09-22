@@ -13,12 +13,12 @@ import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -46,7 +46,7 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -177,7 +177,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldFailGracefullyIfUnableToCreateJiraStoryDTO() throws Exception {
         // Given
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
@@ -199,7 +199,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldQueryJiraForEpic() throws Exception {
         // Given
-        final var epic = new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
+        final var epic = new YamlJira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
         mockGitInterface();
 
         // When
@@ -212,7 +212,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldTellJiraToCreateStories() throws Exception {
         // GIVEN:
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
@@ -228,7 +228,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
@@ -244,7 +244,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldOutputResult() throws Exception {
         // GIVEN:
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
@@ -271,7 +271,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldUpdateAuWithNewJiraTickets() throws Exception {
         // GIVEN:
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
@@ -283,13 +283,13 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // WHEN:
         execute(app, genericCommand());
         final var actualAuAsstring = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
-        final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, ArchitectureUpdate.class);
+        final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, YamlArchitectureUpdate.class);
 
         // THEN:
         final var originalAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
-        final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, ArchitectureUpdate.class);
+        final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, YamlArchitectureUpdate.class);
         final var expectedAu = originalAu.addJiraToFeatureStory(
-                first(originalAu.getCapabilityContainer().getFeatureStories()), new Jira("ABC-123", "link-to-ABC-123"));
+                first(originalAu.getCapabilityContainer().getFeatureStories()), new YamlJira("ABC-123", "link-to-ABC-123"));
 
         collector.checkThat(actualAu, equalTo(expectedAu));
     }
@@ -297,7 +297,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldDisplayPartialErrorsWhenCreatingStories() throws Exception {
         // GIVEN:
-        final var epic = Jira.blank();
+        final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
@@ -358,7 +358,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
     @Test
     public void shouldDisplayGetStoryErrorsFromJira() throws Exception {
-        final var epic = new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
+        final var epic = new YamlJira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
 
         mockGitInterface();
         when(mockedJiraApi.getStory(epic))
@@ -386,7 +386,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldGracefullyHandleAuUpdateWriteFailure() throws Exception {
         // GIVEN:
-        Jira epic = Jira.blank();
+        YamlJira epic = YamlJira.blank();
         final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
@@ -438,17 +438,17 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         List.of(
                                 new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        new YamlTdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/Reset Password Controller",
                                         null),
                                 new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID-2]"),
-                                        new Tdd("[SAMPLE TDD TEXT]", null),
+                                        new YamlTdd("[SAMPLE TDD TEXT]", null),
                                         "c4://Internet Banking System/API Application/E-mail Component",
                                         null)),
                         singletonList(new JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
+                                new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
@@ -456,12 +456,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         "story that failed to be created",
                         singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
-                                new Tdd("[SAMPLE TDD TEXT]", null),
+                                new YamlTdd("[SAMPLE TDD TEXT]", null),
                                 "c4://Internet Banking System/API Application/Reset Password Controller",
                                 null)),
                         singletonList(new JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
+                                new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
@@ -469,7 +469,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
     private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
         final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
-        final var tdd = new Tdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
+        final var tdd = new YamlTdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
         return asList(new JiraStory(
                         "story that should be created",
@@ -480,7 +480,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 tddContent)),
                         singletonList(new JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
+                                new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("TDD 1.0")))))),
@@ -492,7 +492,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 null)),
                         singletonList(new JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
+                                new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("TDD 1.0")))))));
