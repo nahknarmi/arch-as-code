@@ -32,6 +32,8 @@ public class Epic {
     }
 
     public static Epic blank() {
-        return new Epic(BLANK_AU_EPIC_TITLE_VALUE, new Jira(BLANK_AU_EPIC_JIRA_TICKET_VALUE, BLANK_AU_EPIC_JIRA_LINK_VALUE));
+        return new Epic(
+                BLANK_AU_EPIC_TITLE_VALUE,
+                new Jira(BLANK_AU_EPIC_JIRA_TICKET_VALUE, BLANK_AU_EPIC_JIRA_LINK_VALUE));
     }
 }

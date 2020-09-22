@@ -48,42 +48,42 @@ public class JiraApiTest {
     @Test
     public void should_find_jira_and_yaml_cards_which_are_to_be_compared() {
         final var theKey = "AU-1";
-        final var story = FeatureStory.builder()
+        final var fromYaml = FeatureStory.builder()
                 .jira(Jira.builder()
                         .ticket(theKey)
                         .build())
                 .build();
 
-        final var issue = mock(Issue.class);
-        when(issue.getKey()).thenReturn(theKey);
+        final var fromJira = mock(Issue.class);
+        when(fromJira.getKey()).thenReturn(theKey);
 
-        assertEquals(story.getKey(), issue.getKey());
+        assertEquals(fromYaml.getKey(), fromJira.getKey());
     }
 
     @Test
     public void should_find_jira_and_yaml_epic_data_to_be_equivalent() {
         final var theTitle = "JAVIER IS JEFE";
-        final var ticket = Epic.builder()
+        final var fromYaml = Epic.builder()
                 .title(theTitle)
                 .build();
 
-        final var epic = mock(Issue.class);
-        when(epic.getSummary()).thenReturn(theTitle);
+        final var fromJira = mock(Issue.class);
+        when(fromJira.getSummary()).thenReturn(theTitle);
 
-        assertTrue(isEquivalentToJiraIssue(ticket, epic));
+        assertTrue(isEquivalentToJiraIssue(fromYaml, fromJira));
     }
 
     @Test
     public void should_find_jira_and_yaml_story_data_to_be_equivalent() {
         final var theTitle = "AUNT MARGARET";
-        final var story = FeatureStory.builder()
+        final var fromYaml = FeatureStory.builder()
                 .title(theTitle)
                 .build();
 
-        final var issue = mock(Issue.class);
-        when(issue.getSummary()).thenReturn(theTitle);
+        final var fromJira = mock(Issue.class);
+        when(fromJira.getSummary()).thenReturn(theTitle);
 
-        assertTrue(isEquivalentToJiraIssue(story, issue));
+        assertTrue(isEquivalentToJiraIssue(fromYaml, fromJira));
     }
 
     @Test

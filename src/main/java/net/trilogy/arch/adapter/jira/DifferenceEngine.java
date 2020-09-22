@@ -22,6 +22,22 @@ import static java.util.stream.Collectors.toUnmodifiableList;
  * <li>For common keys, use an "equivalence" function to find changed
  * items based on satellite data; keys have already been matched</li>
  * </ol>
+ * The algorithm is: <ol>
+ * <li>Find keys for left side, and for right side</li>
+ * <li>Split the left side into 3 buckets based on key equality: <ul>
+ * <li>New in the left side (added)</li>
+ * <li>Missing from the left side (removed)</li>
+ * <li>Common with the right side (potentially changed)</li>
+ * </ul></li>
+ * <li>For potentially changed, check <var>equivalent</var></li>
+ * <li>Split the potentially changed into 2 buckets (the key has already been
+ * checked above): <ul>
+ * <li>No satellite data changes (unchanged)</li>
+ * <li>Satellite data has changed (changed)</li>
+ * </ul></li>
+ * <li>Discard the "unchanged" bucket</li>
+ * <li>Return the "added", "removed", and "changed" buckets</li>
+ * </ol>
  *
  * @param <KEY> the common key between data types, eg, "AAC-129"
  * @param <OURS> our data type, ie, AaC's notion of JIRA stories
