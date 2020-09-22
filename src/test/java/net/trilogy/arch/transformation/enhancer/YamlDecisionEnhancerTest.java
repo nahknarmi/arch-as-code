@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DecisionEnhancerTest {
+public class YamlDecisionEnhancerTest {
 
     @Test
     public void no_decisions_when_empty_decision_list() {

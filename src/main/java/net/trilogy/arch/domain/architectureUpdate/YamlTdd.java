@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PRIVATE;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = PRIVATE)
-public class Tdd {
+public class YamlTdd {
     private static final String SAMPLE_TDD_TEXT = "[SAMPLE TDD TEXT LONG TEXT FORMAT]\nLine 2\nLine 3";
     private static final String SAMPLE_BLANK_TDD_ID = "[SAMPLE-TDD-ID]";
     private static final String SAMPLE_NO_PR_TDD_ID = "no-PR";
@@ -33,18 +33,18 @@ public class Tdd {
     private final TddContent content;
 
     @JsonCreator(mode = PROPERTIES)
-    public Tdd(@JsonProperty("text") String text,
-               @JsonProperty("file") String file) {
+    public YamlTdd(@JsonProperty("text") String text,
+                   @JsonProperty("file") String file) {
         this(text, file, null);
     }
 
-    public static Tdd blank() {
-        return new Tdd(SAMPLE_TDD_TEXT, null);
+    public static YamlTdd blank() {
+        return new YamlTdd(SAMPLE_TDD_TEXT, null);
     }
 
-    public Tdd withContent(final TddContent tddContent) {
+    public YamlTdd withContent(final TddContent tddContent) {
         // TODO: Needs throught on why caller would pass `null` here
-        return new Tdd(text, tddContent == null ? null : tddContent.getFilename(), tddContent);
+        return new YamlTdd(text, tddContent == null ? null : tddContent.getFilename(), tddContent);
     }
 
     public String getDetails() {

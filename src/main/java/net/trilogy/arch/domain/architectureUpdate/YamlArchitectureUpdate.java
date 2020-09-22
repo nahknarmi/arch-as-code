@@ -7,9 +7,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalArea.FunctionalAreaId;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalAreaId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ import static java.util.stream.Collectors.toList;
         "functional-requirements",
         "capabilities"
 })
-public class ArchitectureUpdate {
+public class YamlArchitectureUpdate {
     public static final String ARCHITECTURE_UPDATE_YML = "architecture-update.yml";
 
     @JsonProperty(value = "name")
@@ -42,48 +42,48 @@ public class ArchitectureUpdate {
     @JsonProperty(value = "milestone")
     private final String milestone;
     @JsonProperty(value = "authors")
-    private final List<Person> authors;
+    private final List<YamlPerson> authors;
     @JsonProperty(value = "PCAs")
-    private final List<Person> PCAs;
+    private final List<YamlPerson> PCAs;
     @JsonProperty(value = "P2")
-    private final P2 p2;
+    private final YamlP2 p2;
     @JsonProperty(value = "P1")
-    private final P1 p1;
+    private final YamlP1 p1;
     @JsonProperty(value = "useful-links")
-    private final List<Link> usefulLinks;
+    private final List<YamlLink> usefulLinks;
     @JsonProperty(value = "milestone-dependencies")
-    private final List<MilestoneDependency> milestoneDependencies;
+    private final List<YamlMilestoneDependency> milestoneDependencies;
     @JsonProperty(value = "decisions")
-    private final Map<DecisionId, Decision> decisions;
+    private final Map<DecisionId, YamlDecision> decisions;
     @JsonProperty(value = "tdds-per-component")
-    private final List<TddContainerByComponent> tddContainersByComponent;
+    private final List<YamlTddContainerByComponent> tddContainersByComponent;
     @JsonProperty(value = "functional-requirements")
-    private final Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements;
+    private final Map<FunctionalRequirementId, YamlFunctionalRequirement> functionalRequirements;
     @JsonProperty(value = "functional-areas")
-    private final Map<FunctionalAreaId, FunctionalArea> functionalAreas;
+    private final Map<FunctionalAreaId, YamlFunctionalArea> functionalAreas;
     @JsonProperty(value = "capabilities")
-    private final CapabilitiesContainer capabilityContainer;
+    private final YamlCapabilitiesContainer capabilityContainer;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public ArchitectureUpdate(
+    public YamlArchitectureUpdate(
             @JsonProperty("name") String name,
             @JsonProperty("milestone") String milestone,
             // TODO: Smell: Author and PCA persons are identical types
-            @JsonProperty("authors") List<Person> authors,
-            @JsonProperty("PCAs") List<Person> PCAs,
+            @JsonProperty("authors") List<YamlPerson> authors,
+            @JsonProperty("PCAs") List<YamlPerson> PCAs,
             // TODO: Smell: Do decisions not know their ID?
-            @JsonProperty("decisions") Map<DecisionId, Decision> decisions,
+            @JsonProperty("decisions") Map<DecisionId, YamlDecision> decisions,
             // TODO: Smell: The subtype is overly complex -- could the real type be passed in?
-            @JsonProperty("tdds-per-component") List<TddContainerByComponent> tddContainersByComponent,
+            @JsonProperty("tdds-per-component") List<YamlTddContainerByComponent> tddContainersByComponent,
             // TODO: Smell: Do func reqs not know their own ID?
-            @JsonProperty("functional-requirements") Map<FunctionalRequirementId, FunctionalRequirement> functionalRequirements,
-            @JsonProperty("functional-areas") Map<FunctionalAreaId, FunctionalArea> functionalAreas,
-            @JsonProperty("capabilities") CapabilitiesContainer capabilityContainer,
-            @JsonProperty("p2") P2 p2,
-            @JsonProperty("p1") P1 p1,
-            @JsonProperty("useful-links") List<Link> usefulLinks,
-            @JsonProperty("milestone-dependencies") List<MilestoneDependency> milestoneDependencies) {
+            @JsonProperty("functional-requirements") Map<FunctionalRequirementId, YamlFunctionalRequirement> functionalRequirements,
+            @JsonProperty("functional-areas") Map<FunctionalAreaId, YamlFunctionalArea> functionalAreas,
+            @JsonProperty("capabilities") YamlCapabilitiesContainer capabilityContainer,
+            @JsonProperty("p2") YamlP2 p2,
+            @JsonProperty("p1") YamlP1 p1,
+            @JsonProperty("useful-links") List<YamlLink> usefulLinks,
+            @JsonProperty("milestone-dependencies") List<YamlMilestoneDependency> milestoneDependencies) {
         this.name = name;
         this.milestone = milestone;
         this.authors = authors;
@@ -100,28 +100,28 @@ public class ArchitectureUpdate {
     }
 
     /** @todo How does this differ from {@link #blank()}? */
-    public static ArchitectureUpdateBuilder prefilledWithBlanks() {
-        return ArchitectureUpdate.builder()
+    public static YamlArchitectureUpdateBuilder prefilledYamlArchitectureUpdateWithBlanks() {
+        return YamlArchitectureUpdate.builder()
                 .name("[SAMPLE NAME]")
                 .milestone("[SAMPLE MILESTONE]")
-                .authors(List.of(Person.blank()))
-                .PCAs(List.of(Person.blank()))
-                .decisions(Map.of(DecisionId.blank(), Decision.blank()))
-                .tddContainersByComponent(List.of(TddContainerByComponent.blank()))
-                .functionalRequirements(Map.of(FunctionalRequirementId.blank(), FunctionalRequirement.blank()))
-                .functionalAreas(Map.of(FunctionalAreaId.blank(), FunctionalArea.blank()))
-                .capabilityContainer(CapabilitiesContainer.blank())
-                .p2(P2.blank())
-                .p1(P1.blank())
-                .usefulLinks(List.of(Link.blank()))
-                .milestoneDependencies(List.of(MilestoneDependency.blank()));
+                .authors(List.of(YamlPerson.blank()))
+                .PCAs(List.of(YamlPerson.blank()))
+                .decisions(Map.of(DecisionId.blank(), YamlDecision.blank()))
+                .tddContainersByComponent(List.of(YamlTddContainerByComponent.blank()))
+                .functionalRequirements(Map.of(FunctionalRequirementId.blank(), YamlFunctionalRequirement.blank()))
+                .functionalAreas(Map.of(FunctionalAreaId.blank(), YamlFunctionalArea.blank()))
+                .capabilityContainer(YamlCapabilitiesContainer.blank())
+                .p2(YamlP2.blank())
+                .p1(YamlP1.blank())
+                .usefulLinks(List.of(YamlLink.blank()))
+                .milestoneDependencies(List.of(YamlMilestoneDependency.blank()));
     }
 
-    public static ArchitectureUpdate blank() {
-        return prefilledWithBlanks().build();
+    public static YamlArchitectureUpdate blank() {
+        return prefilledYamlArchitectureUpdateWithBlanks().build();
     }
 
-    public ArchitectureUpdate addJiraToFeatureStory(FeatureStory storyToChange, Jira jiraToAdd) {
+    public YamlArchitectureUpdate addJiraToFeatureStory(YamlFeatureStory storyToChange, YamlJira jiraToAdd) {
         return toBuilder().capabilityContainer(
                 getCapabilityContainer().toBuilder()
                         .featureStories(

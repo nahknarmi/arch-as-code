@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class FunctionalRequirement {
+public class YamlFunctionalRequirement {
     @JsonProperty(value = "text")
     private final String text;
     // TODO: What is source?  Is it a URI, free text?
@@ -24,7 +24,7 @@ public class FunctionalRequirement {
     private final List<TddId> tddReferences;
 
     @JsonCreator(mode = PROPERTIES)
-    public FunctionalRequirement(
+    public YamlFunctionalRequirement(
             @JsonProperty("text") String text,
             @JsonProperty("source") String source,
             @JsonProperty("tdd-references") List<TddId> tddReferences) {
@@ -33,8 +33,8 @@ public class FunctionalRequirement {
         this.tddReferences = tddReferences;
     }
 
-    public static FunctionalRequirement blank() {
-        return new FunctionalRequirement("[SAMPLE REQUIREMENT TEXT]", "[SAMPLE REQUIREMENT SOURCE TEXT]", List.of(TddId.blank()));
+    public static YamlFunctionalRequirement blank() {
+        return new YamlFunctionalRequirement("[SAMPLE REQUIREMENT TEXT]", "[SAMPLE REQUIREMENT SOURCE TEXT]", List.of(TddId.blank()));
     }
 
     public static class FunctionalRequirementId extends YamlId implements EntityReference {

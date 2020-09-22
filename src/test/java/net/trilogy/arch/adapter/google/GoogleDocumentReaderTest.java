@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.docs.v1.model.Document;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.Decision;
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class GoogleDocumentReaderTest {
 
         mockApiToReturnAGivenB(apiResponse, "url");
 
-        assertThat(reader.load("url"), equalTo(ArchitectureUpdate.blank()));
+        assertThat(reader.load("url"), equalTo(YamlArchitectureUpdate.blank()));
     }
 
     @Parameters({
@@ -72,13 +72,13 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithRequirements(String file, Integer totalRequirementsInFile, String requirementId, String requirement) throws Exception {
         mockApiWith(file, "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getDecisions().size(), equalTo(totalRequirementsInFile));
 
         assertThat(
                 result.getDecisions(),
-                Matchers.hasEntry(new DecisionId(requirementId), new Decision(requirement, List.of(TddId.blank())))
+                Matchers.hasEntry(new DecisionId(requirementId), new YamlDecision(requirement, List.of(TddId.blank())))
         );
     }
 
@@ -86,11 +86,11 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithOrderedRequirements() throws IOException {
         mockApiWith(ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-4.json", "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
         List<String> expected = List.of("P2 IFD 1", "P2 IFD 2", "P2 IFD 3", "P2 ITD 4", "P1 ITD 4.1", "P2 ITD 5", "P1 ITD 5.1");
 
         int count = 0;
-        for (Map.Entry<DecisionId, Decision> entry : result.getDecisions().entrySet()) {
+        for (Map.Entry<DecisionId, YamlDecision> entry : result.getDecisions().entrySet()) {
             DecisionId k = entry.getKey();
             assertThat(expected.get(count), equalTo(k.toString()));
             count++;
@@ -108,7 +108,7 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithExecutiveSummary(String jsonFilename, String expected) throws Exception {
         mockApiWith(jsonFilename, "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getP1().getExecutiveSummary(), equalTo(expected));
     }
@@ -124,7 +124,7 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithP2Link(String jsonFilename, String expected) throws Exception {
         mockApiWith(jsonFilename, "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getP2().getLink(), equalTo(expected));
     }
@@ -133,7 +133,7 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithP1Link() throws Exception {
         mockApiWith(ROOT_PATH_TO_GOOGLE_DOC_P1S + "/SampleP1-1.json", "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getP1().getLink(), equalTo("url"));
     }
@@ -149,7 +149,7 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithP1JiraTicket(String jsonFilename, String expectedTicket, String expectedLink) throws Exception {
         mockApiWith(jsonFilename, "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getP1().getJira().getTicket(), equalTo(expectedTicket));
         assertThat(result.getP1().getJira().getLink(), equalTo(expectedLink));
@@ -166,7 +166,7 @@ public class GoogleDocumentReaderTest {
     public void shouldReturnAuWithMilestone(String jsonFilename, String expected) throws Exception {
         mockApiWith(jsonFilename, "url");
 
-        ArchitectureUpdate result = reader.load("url");
+        YamlArchitectureUpdate result = reader.load("url");
 
         assertThat(result.getMilestone(), equalTo(expected));
     }

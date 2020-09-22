@@ -8,7 +8,7 @@ import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.google.GoogleDocumentReader;
 import net.trilogy.arch.commands.mixin.DisplaysErrorMixin;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @Command(name = "new", mixinStandardHelpOptions = true, description = "Create a new architecture update.")
 @RequiredArgsConstructor
@@ -62,15 +62,15 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> loadAu(String name) {
+    private Optional<YamlArchitectureUpdate> loadAu(String name) {
         if (p1GoogleDocUrl != null) {
             return loadFromP1();
         } else {
-            return Optional.of(ArchitectureUpdate.prefilledWithBlanks().name(name).build());
+            return Optional.of(YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks().name(name).build());
         }
     }
 
-    private boolean writeAu(File auFile, ArchitectureUpdate au) {
+    private boolean writeAu(File auFile, YamlArchitectureUpdate au) {
         try {
             filesFacade.writeString(auFile.toPath(), YAML_OBJECT_MAPPER.writeValueAsString(au));
             return true;
@@ -80,7 +80,7 @@ public class AuNewCommand implements Callable<Integer>, DisplaysErrorMixin, Disp
         }
     }
 
-    private Optional<ArchitectureUpdate> loadFromP1() {
+    private Optional<YamlArchitectureUpdate> loadFromP1() {
         try {
             GoogleDocsFacade authorizedDocsApi = googleDocsApiFactory.getAuthorizedDocsApi(productArchitectureDirectory);
             return Optional.of(new GoogleDocumentReader(authorizedDocsApi).load(p1GoogleDocUrl));

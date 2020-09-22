@@ -1,7 +1,7 @@
 package net.trilogy.arch.services;
 
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.C4Path;
 import net.trilogy.arch.domain.diff.Diff;
@@ -299,7 +299,7 @@ public class DiffToDotCalculatorTest {
     public void shouldGenerateComponentWithTddTooltipWhenComponentHasTdds() {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
-        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new Tdd("Some text", null)));
+        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new YamlTdd("Some text", null)));
 
         var diff = new Diff(null, after);
 
@@ -315,7 +315,7 @@ public class DiffToDotCalculatorTest {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
         after.setRelatedTdds(Map.of(new TddId("TDD 1.1"),
-                new Tdd("Some text for this tdd that is longer than 50 character and should be truncated with added elipses.", null)));
+                new YamlTdd("Some text for this tdd that is longer than 50 character and should be truncated with added elipses.", null)));
 
         var diff = new Diff(null, after);
 
@@ -334,7 +334,7 @@ public class DiffToDotCalculatorTest {
     public void shouldRenderRelatedTdds() {
         C4Component component = createComponent("4", "3");
         DiffableEntity after = new DiffableEntity(component);
-        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new Tdd("Some text", null)));
+        after.setRelatedTdds(Map.of(new TddId("TDD 1.1"), new YamlTdd("Some text", null)));
 
         var diff = new Diff(
                 null,

@@ -8,21 +8,21 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Attribute {
+public class YamlAttribute {
     @JsonProperty(value = "name")
     private final String name;
     @JsonProperty(value = "rationale")
     private final String rationale;
     @JsonProperty(value = "jira")
-    private final Jira jira;
+    private final YamlJira jira;
 
-    public Attribute(@JsonProperty("name") String name,@JsonProperty("rationale") String rationale,@JsonProperty("jira") Jira jira) {
+    public YamlAttribute(@JsonProperty("name") String name, @JsonProperty("rationale") String rationale, @JsonProperty("jira") YamlJira jira) {
         this.name = name;
         this.rationale = rationale;
         this.jira = jira;
     }
 
-    public static Attribute blank() {
-        return new Attribute("Accessible", "UI need to be Accessible", Jira.blank());
+    public static YamlAttribute blank() {
+        return new YamlAttribute("Accessible", "UI need to be Accessible", YamlJira.blank());
     }
 }

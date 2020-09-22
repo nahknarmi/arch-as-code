@@ -11,24 +11,23 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class FunctionalArea {
+public class YamlFunctionalArea {
     @JsonProperty(value = "title")
     private final String title;
     @JsonProperty(value = "jira")
-    private final Jira jira;
+    private final YamlJira jira;
 
     @JsonCreator(mode = PROPERTIES)
-    public FunctionalArea(@JsonProperty("title") String title, @JsonProperty("jira") Jira jira) {
+    public YamlFunctionalArea(@JsonProperty("title") String title, @JsonProperty("jira") YamlJira jira) {
         this.title = title;
         this.jira = jira;
     }
 
-    public static FunctionalArea blank() {
-        return new FunctionalArea("Sample title", Jira.blank());
+    public static YamlFunctionalArea blank() {
+        return new YamlFunctionalArea("Sample title", YamlJira.blank());
     }
 
     public static class FunctionalAreaId extends YamlId implements EntityReference {
-
         public FunctionalAreaId(String id) {
             super(id);
         }

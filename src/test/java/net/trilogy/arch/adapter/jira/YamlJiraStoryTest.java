@@ -4,9 +4,9 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -21,56 +21,56 @@ import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDat
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class JiraStoryTest {
+public class YamlJiraStoryTest {
 
-    private static ArchitectureUpdate getAu() {
+    private static YamlArchitectureUpdate getAu() {
         TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
         TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
 
-        return ArchitectureUpdate.prefilledWithBlanks()
+        return YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks()
                 .tddContainersByComponent(List.of(
-                        new TddContainerByComponent(
+                        new YamlTddContainerByComponent(
                                 new TddComponentReference("31"),
                                 null, false,
                                 Map.of(
-                                        new TddId("TDD 1"), new Tdd("TDD 1 text", null).withContent(tddContent1),
-                                        new TddId("TDD 2"), new Tdd("TDD 2 text", null).withContent(null),
-                                        new TddId("[SAMPLE-TDD-ID]"), new Tdd("sample tdd text", null))),
-                        new TddContainerByComponent(
+                                        new TddId("TDD 1"), new YamlTdd("TDD 1 text", null).withContent(tddContent1),
+                                        new TddId("TDD 2"), new YamlTdd("TDD 2 text", null).withContent(null),
+                                        new TddId("[SAMPLE-TDD-ID]"), new YamlTdd("sample tdd text", null))),
+                        new YamlTddContainerByComponent(
                                 new TddComponentReference("404"),
                                 null, true,
                                 Map.of(
-                                        new TddId("TDD 3"), new Tdd("TDD 3 text", null).withContent(tddContent3),
-                                        new TddId("TDD 4"), new Tdd("TDD 4 text", null).withContent(null)))))
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.blank(),
+                                        new TddId("TDD 3"), new YamlTdd("TDD 3 text", null).withContent(tddContent3),
+                                        new TddId("TDD 4"), new YamlTdd("TDD 4 text", null).withContent(null)))))
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.blank(),
                         singletonList(
-                                new FeatureStory(
+                                new YamlFeatureStory(
                                         "story title",
-                                        new Jira("", ""),
+                                        new YamlJira("", ""),
                                         List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()))))
+                                        YamlE2E.blank()))))
                 .build();
     }
 
-    private static ArchitectureUpdate getAuWithInvalidComponent() {
+    private static YamlArchitectureUpdate getAuWithInvalidComponent() {
         return changeAllTddsToBeUnderComponent("1231231323123", getAu());
     }
 
-    private static ArchitectureUpdate getAuWithInvalidRequirement() {
+    private static YamlArchitectureUpdate getAuWithInvalidRequirement() {
         return getAu().toBuilder().functionalRequirements(
                 Map.of(new FunctionalRequirementId("different id than the reference in the story"),
-                        new FunctionalRequirement("any text", "any source", List.of())))
+                        new YamlFunctionalRequirement("any text", "any source", List.of())))
                 .build();
     }
 
-    private static ArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, ArchitectureUpdate au) {
-        var oldTdds = new HashMap<TddId, Tdd>();
+    private static YamlArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, YamlArchitectureUpdate au) {
+        var oldTdds = new HashMap<TddId, YamlTdd>();
         for (var container : au.getTddContainersByComponent()) {
             oldTdds.putAll(container.getTdds());
         }
-        final TddContainerByComponent newComponentWithTdds = new TddContainerByComponent(
+        final YamlTddContainerByComponent newComponentWithTdds = new YamlTddContainerByComponent(
                 new TddComponentReference(newComponentId),
                 null, false,
                 oldTdds
@@ -92,11 +92,11 @@ public class JiraStoryTest {
 
         // THEN:
         TddId tddId1 = new TddId("TDD 1");
-        Tdd tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
+        YamlTdd tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
         TddId tddId2 = new TddId("TDD 2");
-        Tdd tdd2 = au.getTddContainersByComponent().get(0).getTdds().get(tddId2);
+        YamlTdd tdd2 = au.getTddContainersByComponent().get(0).getTdds().get(tddId2);
         TddId tddId3 = new TddId("TDD 3");
-        Tdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
+        YamlTdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
 
         final JiraStory expected = new JiraStory(
                 "story title",
@@ -123,7 +123,7 @@ public class JiraStoryTest {
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new FunctionalRequirement(
+                                new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         List.of(new TddId("[SAMPLE-TDD-ID]"))

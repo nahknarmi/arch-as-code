@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 
 import java.util.List;
 
@@ -15,23 +15,22 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Decision {
+public class YamlDecision {
     @JsonProperty(value = "text")
     private final String text;
     @JsonProperty(value = "tdd-references")
     private final List<TddId> tddReferences;
 
     @JsonCreator(mode = PROPERTIES)
-    public Decision(
+    public YamlDecision(
             @JsonProperty("text") String text,
-            @JsonProperty("tdd-references") List<TddId> tddReferences
-    ) {
+            @JsonProperty("tdd-references") List<TddId> tddReferences) {
         this.text = text;
         this.tddReferences = tddReferences;
     }
 
-    public static Decision blank() {
-        return new Decision("[SAMPLE DECISION TEXT]", List.of(TddId.blank()));
+    public static YamlDecision blank() {
+        return new YamlDecision("[SAMPLE DECISION TEXT]", List.of(TddId.blank()));
     }
 
     @EqualsAndHashCode

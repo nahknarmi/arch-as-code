@@ -10,7 +10,7 @@ import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.architectureUpdate.StoryPublishingService;
 import picocli.CommandLine.Command;
@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.adapter.jira.JiraApiFactory.newJiraApi;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
 
 @Command(name = "publish", description = "Publish stories.", mixinStandardHelpOptions = true)
 public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitectureMixin, LoadArchitectureFromGitMixin, DisplaysOutputMixin {
@@ -102,8 +102,8 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         return 0;
     }
 
-    private Optional<ArchitectureUpdate> createStories(
-            ArchitectureUpdate au,
+    private Optional<YamlArchitectureUpdate> createStories(
+            YamlArchitectureUpdate au,
             ArchitectureDataStructure beforeAuArchitecture,
             ArchitectureDataStructure afterAuArchitecture,
             StoryPublishingService jiraService) {
@@ -127,7 +127,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         }
     }
 
-    private Optional<ArchitectureUpdate> loadAu(Path auPath) {
+    private Optional<YamlArchitectureUpdate> loadAu(Path auPath) {
         try {
             return Optional.of(architectureUpdateReader.loadArchitectureUpdate(auPath));
         } catch (Exception e) {

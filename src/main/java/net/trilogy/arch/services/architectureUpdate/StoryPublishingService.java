@@ -7,9 +7,9 @@ import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -24,37 +24,37 @@ public class StoryPublishingService {
     private final PrintWriter err;
     private final JiraApi api;
 
-    public static List<FeatureStory> findFeatureStoriesToCreate(final ArchitectureUpdate au) {
+    public static List<YamlFeatureStory> findFeatureStoriesToCreate(final YamlArchitectureUpdate au) {
         return au.getCapabilityContainer().getFeatureStories().stream()
                 .filter(story -> !story.exists())
                 .collect(toList());
     }
 
-    public static List<FeatureStory> findFeatureStoriesToUpdate(final ArchitectureUpdate au) {
+    public static List<YamlFeatureStory> findFeatureStoriesToUpdate(final YamlArchitectureUpdate au) {
         return au.getCapabilityContainer().getFeatureStories().stream()
-                .filter(FeatureStory::exists)
+                .filter(YamlFeatureStory::exists)
                 .collect(toList());
     }
 
-    private static ArchitectureUpdate updateJiraTicketsInAu(
-            final ArchitectureUpdate au,
-            final List<FeatureStory> stories,
+    private static YamlArchitectureUpdate updateJiraTicketsInAu(
+            final YamlArchitectureUpdate au,
+            final List<YamlFeatureStory> stories,
             final List<JiraRemoteStoryStatus> creationStatuses) {
-        ArchitectureUpdate updatedAu = au;
+        YamlArchitectureUpdate updatedAu = au;
         for (int i = 0; i < creationStatuses.size(); ++i) {
             final var result = creationStatuses.get(i);
 
             if (result.isSuccess()) {
                 updatedAu = updatedAu.addJiraToFeatureStory(
                         stories.get(i),
-                        new Jira(result.getIssueKey(), result.getIssueLink()));
+                        new YamlJira(result.getIssueKey(), result.getIssueLink()));
             }
         }
         return updatedAu;
     }
 
-    public ArchitectureUpdate createOrUpdateStories(
-            final ArchitectureUpdate au,
+    public YamlArchitectureUpdate createOrUpdateStories(
+            final YamlArchitectureUpdate au,
             final ArchitectureDataStructure beforeAuArchitecture,
             final ArchitectureDataStructure afterAuArchitecture)
             throws InvalidStoryException, JiraApiException {
@@ -73,11 +73,11 @@ public class StoryPublishingService {
 
         // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
         final var jiraStoriesToCreate = new ArrayList<JiraStory>(storiesToCreate.size());
-        for (final FeatureStory story : storiesToCreate) {
+        for (final YamlFeatureStory story : storiesToCreate) {
             jiraStoriesToCreate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }
         final var jiraStoriesToUpdate = new ArrayList<JiraStory>(storiesToUpdate.size());
-        for (final FeatureStory story : storiesToUpdate) {
+        for (final YamlFeatureStory story : storiesToUpdate) {
             jiraStoriesToUpdate.add(new JiraStory(au, beforeAuArchitecture, afterAuArchitecture, story));
         }
 
@@ -99,7 +99,7 @@ public class StoryPublishingService {
         return updateJiraTicketsInAu(au, storiesToCreate, createStoriesResults);
     }
 
-    private void printStoriesThatSucceeded(List<FeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
+    private void printStoriesThatSucceeded(List<YamlFeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder successfulStories = new StringBuilder();
 
         for (int i = 0; i < createStoriesResults.size(); ++i) {
@@ -114,7 +114,7 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesThatFailed(List<FeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
+    private void printStoriesThatFailed(List<YamlFeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < createStoriesResults.size(); ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;
@@ -126,9 +126,9 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesNotToBeSent(final ArchitectureUpdate au) {
+    private void printStoriesNotToBeSent(final YamlArchitectureUpdate au) {
         String stories = au.getCapabilityContainer().getFeatureStories().stream()
-                .filter(FeatureStory::exists)
+                .filter(YamlFeatureStory::exists)
                 .map(story -> "  - " + story.getTitle())
                 .collect(Collectors.joining("\n"));
         if (!stories.isBlank()) {

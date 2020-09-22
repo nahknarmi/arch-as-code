@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
 
 @ToString
 @EqualsAndHashCode
-public class TddContainerByComponent {
+public class YamlTddContainerByComponent {
     @Getter
     @JsonProperty(value = "component-id")
     private final TddComponentReference componentId;
@@ -30,18 +30,18 @@ public class TddContainerByComponent {
 
     @Getter
     @JsonProperty(value = "tdds")
-    private final Map<TddId, Tdd> tdds;
+    private final Map<TddId, YamlTdd> tdds;
 
     @JsonProperty(value = "deleted")
     private final Boolean deleted;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public TddContainerByComponent(
+    public YamlTddContainerByComponent(
             @JsonProperty(value = "component-id") TddComponentReference componentId,
             @JsonProperty(value = "component-path") String componentPath,
             @JsonProperty(value = "deleted") Boolean deleted,
-            @JsonProperty(value = "tdds") Map<TddId, Tdd> tdds
+            @JsonProperty(value = "tdds") Map<TddId, YamlTdd> tdds
     ) {
         this.componentId = componentId;
         this.componentPath = componentPath;
@@ -49,11 +49,11 @@ public class TddContainerByComponent {
         this.tdds = tdds;
     }
 
-    public static TddContainerByComponent blank() {
-        return new TddContainerByComponent(TddComponentReference.blank(), null, false, Map.of(TddId.blank(), Tdd.blank()));
+    public static YamlTddContainerByComponent blank() {
+        return new YamlTddContainerByComponent(TddComponentReference.blank(), null, false, Map.of(TddId.blank(), YamlTdd.blank()));
     }
 
-    static TddContent contentByMatchingIds(List<TddContent> tddContents, TddContainerByComponent componentTdds, TddId tddId) {
+    static TddContent contentByMatchingIds(List<TddContent> tddContents, YamlTddContainerByComponent componentTdds, TddId tddId) {
         return tddContents.stream()
                 .filter(content -> content.getTdd().equals(tddId.toString()))
                 .filter(content -> componentTdds.getComponentId() != null && content.getComponentId().equals(componentTdds.getComponentId().getId()))
@@ -61,7 +61,7 @@ public class TddContainerByComponent {
                 .orElse(null);
     }
 
-    public TddContainerByComponent updateTddContents(List<TddContent> tddContents) {
+    public YamlTddContainerByComponent updateTddContents(List<TddContent> tddContents) {
         final var tdds = getTdds().entrySet().stream()
                 .map(it -> updateTddWithContent(it, tddContents))
                 .collect(toMap(Entry::getKey, Entry::getValue));
@@ -75,8 +75,8 @@ public class TddContainerByComponent {
         return deleted != null && deleted;
     }
 
-    private Entry<TddId, Tdd> updateTddWithContent(
-            Entry<TddId, Tdd> it,
+    private Entry<TddId, YamlTdd> updateTddWithContent(
+            Entry<TddId, YamlTdd> it,
             List<TddContent> tddContents) {
         final var tddId = it.getKey();
         final var tdd = it.getValue().withContent(contentByMatchingIds(tddContents, this, tddId));

@@ -6,11 +6,11 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
-import net.trilogy.arch.domain.architectureUpdate.Epic;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class JiraApiTest {
+public class YamlJiraApiTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
@@ -49,8 +49,8 @@ public class JiraApiTest {
     @Test
     public void should_find_jira_and_yaml_cards_which_are_to_be_compared() {
         final var theKey = "AU-1";
-        final var fromYaml = FeatureStory.builder()
-                .jira(Jira.builder()
+        final var fromYaml = YamlFeatureStory.builder()
+                .jira(YamlJira.builder()
                         .ticket(theKey)
                         .build())
                 .build();
@@ -64,7 +64,7 @@ public class JiraApiTest {
     @Test
     public void should_find_jira_and_yaml_story_data_to_be_equivalent() {
         final var theTitle = "AUNT MARGARET";
-        final var fromYaml = FeatureStory.builder()
+        final var fromYaml = YamlFeatureStory.builder()
                 .requirementReferences(List.of(new FunctionalRequirementId("ALICE")))
                 .tddReferences(List.of(new TddId("BOB")))
                 .title(theTitle)
@@ -80,7 +80,7 @@ public class JiraApiTest {
     @Test
     public void should_find_jira_and_yaml_epic_data_to_be_equivalent() {
         final var theTitle = "JAVIER IS JEFE";
-        final var fromYaml = Epic.builder()
+        final var fromYaml = YamlEpic.builder()
                 .title(theTitle)
                 .build();
 
@@ -100,7 +100,7 @@ public class JiraApiTest {
         when(mockProject.getId()).thenReturn(1L);
         when(mockProject.getKey()).thenReturn("B");
 
-        final Jira jiraToQuery = new Jira("JIRA-TICKET-123", "http://link");
+        final YamlJira jiraToQuery = new YamlJira("JIRA-TICKET-123", "http://link");
 
         // WHEN:
         final var queryResult = jiraApi.getStory(jiraToQuery);
@@ -122,7 +122,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.getStory(new Jira("A", "B"));
+            jiraApi.getStory(new YamlJira("A", "B"));
 
             //THEN:
             fail("BUG: Exception not thrown");
@@ -140,7 +140,7 @@ public class JiraApiTest {
 
         try {
             // WHEN:
-            jiraApi.getStory(new Jira("A", "B"));
+            jiraApi.getStory(new YamlJira("A", "B"));
 
             //THEN:
             fail("BUG: Exception not thrown");

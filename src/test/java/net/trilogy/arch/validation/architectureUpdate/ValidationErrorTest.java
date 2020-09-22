@@ -1,7 +1,7 @@
 package net.trilogy.arch.validation.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Test;
 

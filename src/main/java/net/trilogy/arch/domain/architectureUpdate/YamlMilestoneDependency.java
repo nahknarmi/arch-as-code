@@ -14,22 +14,22 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class MilestoneDependency {
+public class YamlMilestoneDependency {
     @JsonProperty(value = "description")
     private final String description;
     @JsonProperty(value = "links")
-    private final List<Link> links;
+    private final List<YamlLink> links;
 
     @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public MilestoneDependency(
+    public YamlMilestoneDependency(
             @JsonProperty("description") String description,
-            @JsonProperty("links") List<Link> links) {
+            @JsonProperty("links") List<YamlLink> links) {
         this.description = description;
         this.links = links;
     }
 
-    public static MilestoneDependency blank() {
-        return new MilestoneDependency("[SAMPLE MILESTONE DEPENDENCY]", List.of(Link.blank()));
+    public static YamlMilestoneDependency blank() {
+        return new YamlMilestoneDependency("[SAMPLE MILESTONE DEPENDENCY]", List.of(YamlLink.blank()));
     }
 }

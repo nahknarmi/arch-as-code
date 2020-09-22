@@ -8,7 +8,6 @@ import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.google.GoogleDocsFacade;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
@@ -25,8 +24,8 @@ import static java.util.Objects.requireNonNull;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
 import static net.trilogy.arch.commands.architectureUpdate.AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.ARCHITECTURE_UPDATE_YML;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks;
 import static org.apache.commons.io.FileUtils.forceDelete;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -182,7 +181,7 @@ public class AuNewCommandTest extends CommandTestBase {
         collector.checkThat(Files.exists(auFile), is(true));
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
-                equalTo(YAML_OBJECT_MAPPER.writeValueAsString(prefilledWithBlanks()
+                equalTo(YAML_OBJECT_MAPPER.writeValueAsString(prefilledYamlArchitectureUpdateWithBlanks()
                         .name("au-name")
                         .build())));
     }
@@ -210,7 +209,7 @@ public class AuNewCommandTest extends CommandTestBase {
         collector.checkThat(
                 Files.readString(auFile.toAbsolutePath()),
                 equalTo(YAML_OBJECT_MAPPER.writeValueAsString(
-                        prefilledWithBlanks()
+                        prefilledYamlArchitectureUpdateWithBlanks()
                                 .name(auName)
                                 .build())));
     }

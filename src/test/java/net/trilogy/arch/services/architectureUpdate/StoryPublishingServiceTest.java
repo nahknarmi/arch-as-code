@@ -1,8 +1,13 @@
 package net.trilogy.arch.services.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.*;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlCapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.YamlE2E;
+import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import org.junit.Test;
 
 import java.util.List;
@@ -16,48 +21,49 @@ public class StoryPublishingServiceTest {
     @Test
     public void shouldListStoriesToBeSentToJira() {
         // GIVEN
-        List<FeatureStory> featureStoriesToBeCreated = List.of(
-                new FeatureStory("Story Title",
-                        new Jira("", ""),
+        List<YamlFeatureStory> featureStoriesToBeCreated = List.of(
+                new YamlFeatureStory("Story Title",
+                        new YamlJira("", ""),
                         List.of(new TddId("TDD 1.0")),
                         List.of(new FunctionalRequirementId("FUNC REQ")),
-                        E2E.blank()
-                ), new FeatureStory("Story Title",
-                        new Jira(null, null),
+                        YamlE2E.blank()
+                ), new YamlFeatureStory("Story Title",
+                        new YamlJira(null, null),
                         List.of(new TddId("TDD 2.0")),
                         List.of(new FunctionalRequirementId("FUNC REQ 2")),
-                        E2E.blank()
-                ), new FeatureStory("Story Title",
+                        YamlE2E.blank()
+                ), new YamlFeatureStory("Story Title",
                         null,
                         List.of(new TddId("TDD 3.0")),
                         List.of(new FunctionalRequirementId("FUNC REQ 3")),
-                        E2E.blank()
+                        YamlE2E.blank()
                 )
         );
-        List<FeatureStory> featureStoriesToNotBeCreated = List.of(
-                new FeatureStory("Story Exists - Do Not Create",
-                        new Jira("some ticket", "some link"),
+        List<YamlFeatureStory> featureStoriesToNotBeCreated = List.of(
+                new YamlFeatureStory("Story Exists - Do Not Create",
+                        new YamlJira("some ticket", "some link"),
                         List.of(new TddId("TDD 2.0")),
                         List.of(new FunctionalRequirementId("FUNC REQ")),
-                        E2E.blank()
+                        YamlE2E.blank()
                 )
         );
 
-        List<FeatureStory> allStories = Stream.concat(featureStoriesToBeCreated.stream(), featureStoriesToNotBeCreated.stream()).collect(Collectors.toList());
-        ArchitectureUpdate au = getArchitectureUpdate(allStories);
+        List<YamlFeatureStory> allStories = Stream.concat(featureStoriesToBeCreated.stream(), featureStoriesToNotBeCreated.stream()).collect(Collectors.toList());
+        YamlArchitectureUpdate au = getArchitectureUpdate(allStories);
 
         // WHEN
-        List<FeatureStory> actual = StoryPublishingService.findFeatureStoriesToCreate(au);
+        List<YamlFeatureStory> actual = StoryPublishingService.findFeatureStoriesToCreate(au);
 
         // THEN
         assertThat(actual, equalTo(featureStoriesToBeCreated));
     }
 
-    private static ArchitectureUpdate getArchitectureUpdate(List<FeatureStory> featureStories) {
-        CapabilitiesContainer capabilitiesContainer = new CapabilitiesContainer(
-                new Epic("Epic Title", new Jira("AU-1", null)),
+    private static YamlArchitectureUpdate getArchitectureUpdate(List<YamlFeatureStory> featureStories) {
+        final var capabilitiesContainer = new YamlCapabilitiesContainer(
+                new YamlEpic("Epic Title", new YamlJira("AU-1", null)),
                 featureStories);
-        return ArchitectureUpdate.blank().toBuilder()
+
+        return YamlArchitectureUpdate.blank().toBuilder()
                 .capabilityContainer(capabilitiesContainer)
                 .build();
     }

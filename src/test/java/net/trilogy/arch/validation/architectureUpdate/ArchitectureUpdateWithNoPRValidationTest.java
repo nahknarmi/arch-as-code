@@ -2,10 +2,10 @@ package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import java.util.Map;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -37,10 +37,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Decisions
     @Test
     public void shouldAllowMultipleDecisionsWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .decisions(Map.of(
-                        new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"))),
-                        new DecisionId("second Decision"), new Decision("Decision Text", List.of(new TddId("no-PR")))))
+                        new DecisionId("first Decision"), new YamlDecision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"))),
+                        new DecisionId("second Decision"), new YamlDecision("Decision Text", List.of(new TddId("no-PR")))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -50,9 +50,9 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowADecisionsWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .decisions(Map.of(
-                        new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR")))))
+                        new DecisionId("first Decision"), new YamlDecision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR")))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -62,13 +62,13 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowADecisionsWithNoPRandATDDReference() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .decisions(Map.of(
-                        new DecisionId("first Decision"), new Decision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"), TddId.blank()))))
-                .tddContainersByComponent(List.of(new TddContainerByComponent(
+                        new DecisionId("first Decision"), new YamlDecision("[SAMPLE DECISION TEXT]", List.of(new TddId("no-PR"), TddId.blank()))))
+                .tddContainersByComponent(List.of(new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(TddId.blank(), new Tdd("text", null)))))
+                        Map.of(TddId.blank(), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -80,21 +80,21 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Feature Stories
     @Test
     public void shouldAllowMultipleStoriesWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.blank(),
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.blank(),
                         List.of(
-                                new FeatureStory(
-                                        "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
+                                new YamlFeatureStory(
+                                        "Feat Title 1", YamlJira.blank(), List.of(TddId.noPr()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()),
-                                new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.noPr()),
+                                        YamlE2E.blank()),
+                                new YamlFeatureStory("Feat Title 2", YamlJira.blank(), List.of(TddId.noPr()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()),
-                                new FeatureStory(
-                                        "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
+                                        YamlE2E.blank()),
+                                new YamlFeatureStory(
+                                        "Feat Title 1", YamlJira.blank(), List.of(TddId.blank()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()))))
+                                        YamlE2E.blank()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -104,18 +104,18 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAStoryWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.blank(),
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.blank(),
                         List.of(
-                                new FeatureStory(
-                                        "Feat Title 1", Jira.blank(), List.of(TddId.noPr()),
+                                new YamlFeatureStory(
+                                        "Feat Title 1", YamlJira.blank(), List.of(TddId.noPr()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()),
-                                new FeatureStory(
-                                        "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
+                                        YamlE2E.blank()),
+                                new YamlFeatureStory(
+                                        "Feat Title 1", YamlJira.blank(), List.of(TddId.blank()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()))))
+                                        YamlE2E.blank()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -125,21 +125,21 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowAStoryWithNoPRandATDDReference() {
-        final var invalidAu = prefilledWithBlanks()
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.blank(),
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.blank(),
                         List.of(
-                                new FeatureStory(
-                                        "Feat Title 1", Jira.blank(), List.of(TddId.noPr(), TddId.blank()),
+                                new YamlFeatureStory(
+                                        "Feat Title 1", YamlJira.blank(), List.of(TddId.noPr(), TddId.blank()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()),
-                                new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
+                                        YamlE2E.blank()),
+                                new YamlFeatureStory("Feat Title 2", YamlJira.blank(), List.of(TddId.blank()),
                                         List.of(FunctionalRequirementId.blank()),
-                                        E2E.blank()))))
-                .tddContainersByComponent(List.of(new TddContainerByComponent(
+                                        YamlE2E.blank()))))
+                .tddContainersByComponent(List.of(new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(TddId.blank(), new Tdd("text", null)))))
+                        Map.of(TddId.blank(), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -151,10 +151,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
     // Functional Requirements
     @Test
     public void shouldAllowMultipleFunctionalRequirementsWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
-                        new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
+                        new YamlFunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -164,10 +164,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAFunctionalRequirementWithNoPR() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
-                        new FunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
+                        new YamlFunctionalRequirement("Text", "Source", List.of(TddId.noPr()))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -177,14 +177,14 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldNotAllowAFunctionalRequirementWithNoPRandATDDReference() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
-                        new FunctionalRequirement("Text", "Source", List.of(TddId.noPr(), TddId.blank()))))
-                .tddContainersByComponent(List.of(new TddContainerByComponent(
+                        new YamlFunctionalRequirement("Text", "Source", List.of(TddId.noPr(), TddId.blank()))))
+                .tddContainersByComponent(List.of(new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),  // Present in beforeUpdate Architecture
                         null, false,
-                        Map.of(TddId.blank(), new Tdd("text", null)))))
+                        Map.of(TddId.blank(), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();
@@ -195,10 +195,10 @@ public class ArchitectureUpdateWithNoPRValidationTest {
 
     @Test
     public void shouldAllowAFunctionalRequirementWithNullTdds() {
-        final var invalidAu = prefilledWithBlanks()
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
                 .functionalRequirements(Map.of(
                         FunctionalRequirementId.blank(),
-                        new FunctionalRequirement("Text", "Source", null)))
+                        new YamlFunctionalRequirement("Text", "Source", null)))
                 .build();
 
         var actualErrors = ArchitectureUpdateValidator.validate(invalidAu, validADS, validADS).getErrors();

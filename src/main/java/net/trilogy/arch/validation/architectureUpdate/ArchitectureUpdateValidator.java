@@ -2,14 +2,14 @@ package net.trilogy.arch.validation.architectureUpdate;
 
 import lombok.Data;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.MilestoneDependency;
-import net.trilogy.arch.domain.architectureUpdate.Tdd;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContainerByComponent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlMilestoneDependency;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.domain.c4.C4Component;
 import net.trilogy.arch.domain.c4.Entity;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,7 +42,7 @@ import static net.trilogy.arch.validation.architectureUpdate.ValidationError.for
 
 public class ArchitectureUpdateValidator {
 
-    private final ArchitectureUpdate architectureUpdate;
+    private final YamlArchitectureUpdate architectureUpdate;
 
     private final Set<String> allComponentIdsInBeforeArchitecture;
     private final Set<String> allComponentIdsInAfterArchitecture;
@@ -55,7 +55,7 @@ public class ArchitectureUpdateValidator {
     private final Set<C4Component> allComponents;
 
     private ArchitectureUpdateValidator(
-            ArchitectureUpdate architectureUpdate,
+            YamlArchitectureUpdate architectureUpdate,
             ArchitectureDataStructure architectureAfterUpdate,
             ArchitectureDataStructure architectureBeforeUpdate) {
         this.architectureUpdate = architectureUpdate;
@@ -74,7 +74,7 @@ public class ArchitectureUpdateValidator {
     }
 
     public static ValidationResult validate(
-            ArchitectureUpdate architectureUpdateToValidate,
+            YamlArchitectureUpdate architectureUpdateToValidate,
             ArchitectureDataStructure architectureAfterUpdate,
             ArchitectureDataStructure architectureBeforeUpdate) {
         return new ArchitectureUpdateValidator(
@@ -88,9 +88,9 @@ public class ArchitectureUpdateValidator {
         return refs != null && refs.contains(TddId.noPr()) && refs.size() > 1;
     }
 
-    private static ValidationError createAmbiguousTddContentReferenceValidationError(TddContainerByComponent tddContainerByComponent, Map.Entry<TddId, Tdd> pair) {
+    private static ValidationError createAmbiguousTddContentReferenceValidationError(YamlTddContainerByComponent tddContainerByComponent, Map.Entry<TddId, YamlTdd> pair) {
         TddId id = pair.getKey();
-        Tdd tdd = pair.getValue();
+        YamlTdd tdd = pair.getValue();
 
         boolean tddContentIsEmpty = (tdd.getText() == null || tdd.getText().isEmpty()) && (tdd.getFile() == null || tdd.getFile().isEmpty());
         if (tddContentIsEmpty) return null;
@@ -107,14 +107,14 @@ public class ArchitectureUpdateValidator {
         return null;
     }
 
-    private static java.util.stream.Stream<TddId> getTddReferencesStream(FeatureStory story) {
+    private static java.util.stream.Stream<TddId> getTddReferencesStream(YamlFeatureStory story) {
         if (story.getTddReferences() == null)
             return java.util.stream.Stream.empty();
 
         return story.getTddReferences().stream();
     }
 
-    private static java.util.stream.Stream<FunctionalRequirementId> getStoryRequirementReferencesStream(FeatureStory story) {
+    private static java.util.stream.Stream<FunctionalRequirementId> getStoryRequirementReferencesStream(YamlFeatureStory story) {
         if (story.getRequirementReferences() == null)
             return java.util.stream.Stream.empty();
 
@@ -211,7 +211,7 @@ public class ArchitectureUpdateValidator {
 
         links.add(Pair.of("capabilities.epic.jira.link", architectureUpdate.getCapabilityContainer().getEpic().getJira().getLink()));
 
-        List<MilestoneDependency> milestoneDependencies = architectureUpdate.getMilestoneDependencies();
+        List<YamlMilestoneDependency> milestoneDependencies = architectureUpdate.getMilestoneDependencies();
 
         if (milestoneDependencies != null) {
             milestoneDependencies.forEach(m -> m.getLinks().forEach(l ->
@@ -269,7 +269,7 @@ public class ArchitectureUpdateValidator {
     private Set<ValidationError> getErrors_TddsComponentsMustBeValidReferences() {
         return architectureUpdate.getTddContainersByComponent().stream()
                 .filter(component -> !component.isDeleted())
-                .map(TddContainerByComponent::getComponentId)
+                .map(YamlTddContainerByComponent::getComponentId)
                 .filter(componentReference ->
                         !allComponentIdsInAfterArchitecture.contains(componentReference.toString()))
                 .map(ValidationError::forTddsComponentsMustBeValidReferences)
@@ -278,8 +278,8 @@ public class ArchitectureUpdateValidator {
 
     private Set<ValidationError> getErrors_TddsDeletedComponentsMustBeValidReferences() {
         return architectureUpdate.getTddContainersByComponent().stream()
-                .filter(TddContainerByComponent::isDeleted)
-                .map(TddContainerByComponent::getComponentId)
+                .filter(YamlTddContainerByComponent::isDeleted)
+                .map(YamlTddContainerByComponent::getComponentId)
                 .filter(componentReference ->
                         !allComponentIdsInBeforeArchitecture.contains(componentReference.toString()))
                 .map(ValidationError::forDeletedTddsComponentsMustBeValidReferences)
@@ -371,7 +371,7 @@ public class ArchitectureUpdateValidator {
                 .flatMap(tddContainer -> tddContainer.getTdds().entrySet().stream()
                         .map(pair -> {
                             TddId id = pair.getKey();
-                            Tdd tdd = pair.getValue();
+                            YamlTdd tdd = pair.getValue();
 
                             // Error condition: Text exists and is overridden by found matching file.
                             boolean errorCondition = tdd.getContent() != null && tdd.getText() != null;

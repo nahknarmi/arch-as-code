@@ -1,42 +1,32 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
-
-import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
-@ToString
 @Getter
 @EqualsAndHashCode
-public class Jira {
-    @JsonProperty(value = "ticket")
-    @NonNull
-    private final String ticket;
+@ToString
+public class YamlLink {
+    @JsonProperty(value = "description")
+    private final String description;
     // TODO: Should this be a JDK URI?
     @JsonProperty(value = "link")
-    @NonNull
     private final String link;
 
-    @Builder(toBuilder = true)
     @JsonCreator(mode = PROPERTIES)
-    public Jira(
-            @JsonProperty("ticket") String ticket,
+    public YamlLink(
+            @JsonProperty("description") String description,
             @JsonProperty("link") String link) {
-        this.ticket = ticket;
+        this.description = description;
         this.link = link;
     }
 
-    public static Jira blank() {
-        return new Jira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
+    public static YamlLink blank() {
+        return new YamlLink("[SAMPLE LINK DESCRIPTION]", "[SAMPLE-LINK]");
     }
-
-
 }

@@ -8,9 +8,9 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import lombok.Generated;
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.domain.architectureUpdate.Epic;
-import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class JiraApi {
      * @todo Ensure the Epic field (10002 / 10004) points to the right key;
      * update otherwise
      */
-    public static boolean isEquivalentToJira(FeatureStory fromYaml, Issue fromJira) {
+    public static boolean isEquivalentToJira(YamlFeatureStory fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 
@@ -57,14 +57,14 @@ public class JiraApi {
      * @todo Which is better, "customfield_10002" or "customfield_10004"?
      * @see JiraStory#asIssueInput(String, Long)
      */
-    public static boolean isEquivalentToJira(Epic fromYaml, Issue fromJira) {
+    public static boolean isEquivalentToJira(YamlEpic fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 
         return Objects.equals(fromYaml.getTitle(), fromJira.getSummary());
     }
 
-    public JiraQueryResult getStory(Jira jira)
+    public JiraQueryResult getStory(YamlJira jira)
             throws JiraApiException {
         final var ticket = jira.getTicket();
 
@@ -148,36 +148,24 @@ public class JiraApi {
     public List<JiraRemoteStoryStatus> updateExistingStories(
             List<JiraStory> jiraStories,
             String epicKey,
-            Long projectId) throws JiraApiException {
-        try {
-            final var result = new ArrayList<JiraCreateStoryStatus>(jiraStories.size());
-            jiraStories.stream()
-                    .parallel()
-                    .forEach(it -> {
-                        try {
-                            jiraClient.getIssueClient().updateIssue(it.getKey(), it.asIssueInput(epicKey, projectId));
-                            result.add(succeeded(it.getKey(), it.getLink()));
-                        }
-                        catch (Exception e) {
-                            result.add(failed(e.getMessage()));
-                        }
-
-                    });
-            return result;
-        } catch (RestClientException e) {
-            final var x = new JiraApiException(e.getMessage(), e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        } catch (InterruptedException e) {
-            final var x = new JiraApiException("INTERRUPTED", e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        } catch (ExecutionException e) {
-            final var x = new JiraApiException("FAILED", e.getCause());
-            x.setStackTrace(e.getStackTrace());
-            throw x;
+            Long projectId) {
+        // TODO: This fails fast: No new cards are updated after first failure
+        //       JIRA REST API does not provide a bulk update call
+        // TODO: The matching "createExistingStories" fails fast
+        final var result = new ArrayList<JiraRemoteStoryStatus>(jiraStories.size());
+        for (final var story : jiraStories) {
+            try {
+                jiraClient.getIssueClient().updateIssue(
+                        story.getKey(),
+                        story.asIssueInput(epicKey, projectId)).get();
+                result.add(succeeded(story.getKey(), story.getLink()));
+            } catch (final RuntimeException e) {
+                throw e;
+            } catch (final Exception e) {
+                result.add(failed(e.toString()));
+            }
         }
-        return null;
+        return result;
     }
 
     @Generated

@@ -1,11 +1,11 @@
 package net.trilogy.arch.adapter.architectureUpdate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import org.junit.Test;
 
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.blank;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.blank;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -107,7 +107,7 @@ public class ArchitectureUpdateObjectMapperTest {
 
     @Test
     public void shouldReadBlank() throws JsonProcessingException {
-        final var actual = YAML_OBJECT_MAPPER.readValue(getBlankYamlText(), ArchitectureUpdate.class);
+        final var actual = YAML_OBJECT_MAPPER.readValue(getBlankYamlText(), YamlArchitectureUpdate.class);
 
         assertThat(actual, equalTo(blank()));
     }
@@ -115,7 +115,7 @@ public class ArchitectureUpdateObjectMapperTest {
     @Test
     public void shouldWriteBlankYamlWithOverriddenName() throws Exception {
         final var actual = YAML_OBJECT_MAPPER.writeValueAsString(
-                ArchitectureUpdate.prefilledWithBlanks()
+                YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks()
                         .name("OVERRIDDEN")
                         .build());
         final var expected = getBlankYamlText().replace("'[SAMPLE NAME]'", "OVERRIDDEN");

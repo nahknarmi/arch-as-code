@@ -2,10 +2,10 @@ package net.trilogy.arch.validation.architectureUpdate;
 
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.*;
-import net.trilogy.arch.domain.architectureUpdate.Decision.DecisionId;
-import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddComponentReference;
-import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +22,7 @@ import static java.util.Collections.singletonList;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_AFTER_UPDATE;
 import static net.trilogy.arch.TestHelper.MANIFEST_PATH_TO_TEST_AU_VALIDATION_BEFORE_UPDATE;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
-import static net.trilogy.arch.domain.architectureUpdate.ArchitectureUpdate.prefilledWithBlanks;
+import static net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks;
 import static net.trilogy.arch.validation.architectureUpdate.ArchitectureUpdateValidator.validate;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forAmbiguousTddContentReference;
 import static net.trilogy.arch.validation.architectureUpdate.ValidationError.forComponentPathNotMatchingId;
@@ -67,7 +67,7 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void blankAuShouldBeValid() {
-        var result = validate(ArchitectureUpdate.blank(), validDataStructure, validDataStructure);
+        var result = validate(YamlArchitectureUpdate.blank(), validDataStructure, validDataStructure);
 
         collector.checkThat(result.isValid(), is(true));
         collector.checkThat(result.isValid(ValidationStage.STORY), is(true));
@@ -76,9 +76,9 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_DecisionsMustHaveTdds() {
-        var invalidAu = prefilledWithBlanks().decisions(Map.of(
-                new DecisionId("Null TDD references"), new Decision("[SAMPLE DECISION TEXT]", null),
-                new DecisionId("Empty TDD references"), new Decision("Decision Text", List.of())))
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().decisions(Map.of(
+                new DecisionId("Null TDD references"), new YamlDecision("[SAMPLE DECISION TEXT]", null),
+                new DecisionId("Empty TDD references"), new YamlDecision("Decision Text", List.of())))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -92,9 +92,9 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_DecisionsTddsMustBeValidReferences() {
-        var invalidAu = prefilledWithBlanks().decisions(Map.of(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().decisions(Map.of(
                 new DecisionId("Bad-TDD-Decision"),
-                new Decision("Decision Text", List.of(new TddId("BAD-TDD-ID")))))
+                new YamlDecision("Decision Text", List.of(new TddId("BAD-TDD-ID")))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -105,9 +105,9 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_FunctionalRequirementsTddsMustBeValidReferences() {
-        var invalidAu = prefilledWithBlanks().functionalRequirements(Map.of(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().functionalRequirements(Map.of(
                 new FunctionalRequirementId("Bad-TDD-Functional-Requirement"),
-                new FunctionalRequirement("Text", "Source", List.of(
+                new YamlFunctionalRequirement("Text", "Source", List.of(
                         new TddId("BAD-TDD-ID-1"),
                         new TddId("BAD-TDD-ID-2")
                 ))))
@@ -124,23 +124,23 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveUniqueIds() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("1"),
                         null, true,
-                        Map.of(new TddId("Dupe-1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("Dupe-1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("1"),
                         null, true,
-                        Map.of(new TddId("Dupe-1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("Dupe-1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("1"),
                         null, true,
-                        Map.of(new TddId("Dupe-2"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("Dupe-2"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("1"),
                         null, true,
-                        Map.of(new TddId("Dupe-2"), new Tdd("text", null)))))
+                        Map.of(new TddId("Dupe-2"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -154,23 +154,23 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_ComponentsMustBeReferencedOnlyOnceForTdds() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Dupe-1"),
                         null, false,
-                        Map.of(new TddId("1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Dupe-1"),
                         null, false,
-                        Map.of(new TddId("2"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("2"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Dupe-2"),
                         null, false,
-                        Map.of(new TddId("3"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("3"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Dupe-2"),
                         null, false,
-                        Map.of(new TddId("4"), new Tdd("text", null)))))
+                        Map.of(new TddId("4"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -184,15 +184,15 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsComponentsMustBeValidReferences() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Non-existent-1"),
                         null, false,
-                        Map.of(new TddId("1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Non-existent-2"),
                         null, false,
-                        Map.of(new TddId("2"), new Tdd("text", null)))))
+                        Map.of(new TddId("2"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -207,19 +207,19 @@ public class ArchitectureUpdateValidatorTest {
     @Test
     public void shouldValidate_TddsDeletedComponentsMustBeValidReferences() {
         // Given
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Non-existent-deleted-1"),
                         null, true,
-                        Map.of(new TddId("1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Non-existent-deleted-2"),
                         null, true,
-                        Map.of(new TddId("2"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("2"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("Valid-Deleted-Component-Id"),  // Present in beforeUpdate Architecture
                         null, true,
-                        Map.of(new TddId("3"), new Tdd("text", null)))))
+                        Map.of(new TddId("3"), new YamlTdd("text", null)))))
                 .build();
 
         // When
@@ -241,15 +241,15 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveDecisionsOrRequirements() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, false,
-                        Map.of(new TddId("No-decision-or-req-1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("No-decision-or-req-1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, true,
-                        Map.of(new TddId("No-decision-or-req-2"), new Tdd("text", null)))))
+                        Map.of(new TddId("No-decision-or-req-2"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -263,14 +263,14 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesMustHaveFunctionalRequirements() {
-        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
-                Epic.blank(),
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().capabilityContainer(new YamlCapabilitiesContainer(
+                YamlEpic.blank(),
                 List.of(
-                        new FeatureStory(
-                                "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
-                                List.of(), E2E.blank()),
-                        new FeatureStory("Feat Title 2", Jira.blank(), List.of(TddId.blank()),
-                                null, E2E.blank()))))
+                        new YamlFeatureStory(
+                                "Feat Title 1", YamlJira.blank(), List.of(TddId.blank()),
+                                List.of(), YamlE2E.blank()),
+                        new YamlFeatureStory("Feat Title 2", YamlJira.blank(), List.of(TddId.blank()),
+                                null, YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -284,13 +284,13 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValiate_StoriesFunctionalRequirementsMustBeValidReferences() {
-        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
-                Epic.blank(),
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().capabilityContainer(new YamlCapabilitiesContainer(
+                YamlEpic.blank(),
                 List.of(
-                        new FeatureStory(
-                                "Feat Title 1", Jira.blank(), List.of(TddId.blank()),
+                        new YamlFeatureStory(
+                                "Feat Title 1", YamlJira.blank(), List.of(TddId.blank()),
                                 List.of(new FunctionalRequirementId("Invalid-Functional-Requirement")),
-                                E2E.blank()))))
+                                YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -303,19 +303,19 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesMustHaveTdds() {
-        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
-                Epic.blank(),
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().capabilityContainer(new YamlCapabilitiesContainer(
+                YamlEpic.blank(),
                 List.of(
-                        new FeatureStory(
-                                "Feat Title 1", Jira.blank(),
+                        new YamlFeatureStory(
+                                "Feat Title 1", YamlJira.blank(),
                                 List.of(), // Empty TDD reference
                                 List.of(),
-                                E2E.blank()),
-                        new FeatureStory(
-                                "Feat Title 2", Jira.blank(),
+                                YamlE2E.blank()),
+                        new YamlFeatureStory(
+                                "Feat Title 2", YamlJira.blank(),
                                 null, // Null TDD reference
                                 List.of(),
-                                E2E.blank()))))
+                                YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -329,14 +329,14 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_StoriesTddsMustBeValidReferences() {
-        var invalidAu = prefilledWithBlanks().capabilityContainer(new CapabilitiesContainer(
-                Epic.blank(),
-                List.of(new FeatureStory(
-                        "Feat Title 1", Jira.blank(),
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().capabilityContainer(new YamlCapabilitiesContainer(
+                YamlEpic.blank(),
+                List.of(new YamlFeatureStory(
+                        "Feat Title 1", YamlJira.blank(),
                         List.of(new TddId("Invalid TDD 1"),
                                 new TddId("Invalid TDD 2")),
                         List.of(),
-                        E2E.blank()))))
+                        YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -350,15 +350,15 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_TddsMustHaveStories() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, false,
-                        Map.of(new TddId("TDD-with-no-story-1"), new Tdd("text", null))),
-                new TddContainerByComponent(
+                        Map.of(new TddId("TDD-with-no-story-1"), new YamlTdd("text", null))),
+                new YamlTddContainerByComponent(
                         new TddComponentReference("[SAMPLE-COMPONENT-ID]"),
                         null, true,
-                        Map.of(new TddId("TDD-with-no-story-2"), new Tdd("text", null)))))
+                        Map.of(new TddId("TDD-with-no-story-2"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -372,11 +372,11 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_FunctionalRequirementsMustHaveStories() {
-        var invalidAu = prefilledWithBlanks().functionalRequirements(Map.of(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().functionalRequirements(Map.of(
                 new FunctionalRequirementId("Func-req-with-no-story-1"),
-                new FunctionalRequirement("Text", "Source", List.of()),
+                new YamlFunctionalRequirement("Text", "Source", List.of()),
                 new FunctionalRequirementId("Func-req-with-no-story-2"),
-                new FunctionalRequirement("Text", "Source", List.of())))
+                new YamlFunctionalRequirement("Text", "Source", List.of())))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -390,14 +390,14 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_LinksAreAvailable() {
-        var invalidAu = prefilledWithBlanks()
-                .p1(new P1("n/a", new Jira("ticket", "n/a"), "exec summary"))
-                .p2(new P2(null, new Jira("ticket", null)))
-                .usefulLinks(List.of(new Link("desc", null)))
-                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "n/a")))))
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("N/A").build()).build(),
-                        List.of(new FeatureStory("Title", new Jira("ticket", "n/a"), List.of(), List.of(), E2E.blank()))))
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .p1(new YamlP1("n/a", new YamlJira("ticket", "n/a"), "exec summary"))
+                .p2(new YamlP2(null, new YamlJira("ticket", null)))
+                .usefulLinks(List.of(new YamlLink("desc", null)))
+                .milestoneDependencies(List.of(new YamlMilestoneDependency("milestone desc", List.of(new YamlLink("desc", "n/a")))))
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.builder().title("epic").jira(YamlJira.builder().ticket("ticket").link("N/A").build()).build(),
+                        List.of(new YamlFeatureStory("Title", new YamlJira("ticket", "n/a"), List.of(), List.of(), YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -417,14 +417,14 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldAllowJiraLinksToBeEmpty() {
-        var invalidAu = prefilledWithBlanks()
-                .p1(new P1("validLink", new Jira("ticket", "validLink"), "exec summary"))
-                .p2(new P2("validLink", new Jira("ticket", "validLink")))
-                .usefulLinks(List.of(new Link("desc", "validLink")))
-                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "validLink")))))
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("validLink").build()).build(),
-                        singletonList(new FeatureStory("Title", new Jira("jira ticket", null), List.of(), List.of(), E2E.blank()))))
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .p1(new YamlP1("validLink", new YamlJira("ticket", "validLink"), "exec summary"))
+                .p2(new YamlP2("validLink", new YamlJira("ticket", "validLink")))
+                .usefulLinks(List.of(new YamlLink("desc", "validLink")))
+                .milestoneDependencies(List.of(new YamlMilestoneDependency("milestone desc", List.of(new YamlLink("desc", "validLink")))))
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.builder().title("epic").jira(YamlJira.builder().ticket("ticket").link("validLink").build()).build(),
+                        singletonList(new YamlFeatureStory("Title", new YamlJira("jira ticket", null), List.of(), List.of(), YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -434,20 +434,20 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_ComponentIdIsMatchingPath() {
-        var tdds = new HashMap<TddId, Tdd>();
-        tdds.put(new TddId("1"), new Tdd("abc", null));
-        var invalidAu = prefilledWithBlanks()
-                .p1(new P1("valid", new Jira("ticket", "valid"), "exec summary"))
-                .p2(new P2("valid", new Jira("ticket", "valid")))
-                .usefulLinks(List.of(new Link("desc", "valid")))
-                .milestoneDependencies(List.of(new MilestoneDependency("milestone desc", List.of(new Link("desc", "valid")))))
+        var tdds = new HashMap<TddId, YamlTdd>();
+        tdds.put(new TddId("1"), new YamlTdd("abc", null));
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks()
+                .p1(new YamlP1("valid", new YamlJira("ticket", "valid"), "exec summary"))
+                .p2(new YamlP2("valid", new YamlJira("ticket", "valid")))
+                .usefulLinks(List.of(new YamlLink("desc", "valid")))
+                .milestoneDependencies(List.of(new YamlMilestoneDependency("milestone desc", List.of(new YamlLink("desc", "valid")))))
                 .tddContainersByComponent(List.of(
-                        new TddContainerByComponent(new TddComponentReference("14"), "bad path", false, tdds),
-                        new TddContainerByComponent(new TddComponentReference("15"), null, false, tdds),
-                        new TddContainerByComponent(new TddComponentReference("16"), "bad path on deleted component", false, tdds)))
-                .capabilityContainer(new CapabilitiesContainer(
-                        Epic.builder().title("epic").jira(Jira.builder().ticket("ticket").link("valid").build()).build(),
-                        singletonList(new FeatureStory("Title", new Jira("ticket", "valid"), List.of(new TddId("1")), List.of(), E2E.blank()))))
+                        new YamlTddContainerByComponent(new TddComponentReference("14"), "bad path", false, tdds),
+                        new YamlTddContainerByComponent(new TddComponentReference("15"), null, false, tdds),
+                        new YamlTddContainerByComponent(new TddComponentReference("16"), "bad path on deleted component", false, tdds)))
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.builder().title("epic").jira(YamlJira.builder().ticket("ticket").link("valid").build()).build(),
+                        singletonList(new YamlFeatureStory("Title", new YamlJira("ticket", "valid"), List.of(new TddId("1")), List.of(), YamlE2E.blank()))))
                 .build();
 
         var actualErrors = validate(invalidAu, hasMissingComponentDataStructure, validDataStructure).getErrors();
@@ -461,15 +461,15 @@ public class ArchitectureUpdateValidatorTest {
 
     @Test
     public void shouldValidate_OnlyOneTddContentsReference() {
-        var invalidAu = prefilledWithBlanks().tddContainersByComponent(List.of(
-                new TddContainerByComponent(
+        var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(List.of(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("10"),
                         null,
                         false,
                         Map.of(
-                                new TddId("TDD 1.1"), new Tdd("text", "file"),
-                                new TddId("TDD OK file"), new Tdd(null, "file"),
-                                new TddId("TDD OK text"), new Tdd("text", null)))))
+                                new TddId("TDD 1.1"), new YamlTdd("text", "file"),
+                                new TddId("TDD OK file"), new YamlTdd(null, "file"),
+                                new TddId("TDD OK text"), new YamlTdd("text", null)))))
                 .build();
 
         var actualErrors = validate(invalidAu, validDataStructure, validDataStructure).getErrors();
@@ -487,10 +487,10 @@ public class ArchitectureUpdateValidatorTest {
     public void shouldValidate_TddWithTextContentsAndFileExists() {
         String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
 
-        Tdd tdd1_1 = new Tdd("overridden-text", null).withContent(new TddContent("contents", errorFilename1));
+        YamlTdd tdd1_1 = new YamlTdd("overridden-text", null).withContent(new TddContent("contents", errorFilename1));
 
-        final var invalidAu = prefilledWithBlanks().tddContainersByComponent(singletonList(
-                new TddContainerByComponent(
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(singletonList(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("16"),
                         null, false,
                         Map.of(
@@ -509,10 +509,10 @@ public class ArchitectureUpdateValidatorTest {
     public void shouldValidate_TddWithEmptyTextContentsAndFileExists() {
         String errorFilename1 = "[SAMPLE-TDD-ID] : Component-16.md";
 
-        Tdd tdd1_1 = new Tdd("", null).withContent(new TddContent("contents", errorFilename1));
+        YamlTdd tdd1_1 = new YamlTdd("", null).withContent(new TddContent("contents", errorFilename1));
 
-        final var invalidAu = prefilledWithBlanks().tddContainersByComponent(singletonList(
-                new TddContainerByComponent(
+        final var invalidAu = prefilledYamlArchitectureUpdateWithBlanks().tddContainersByComponent(singletonList(
+                new YamlTddContainerByComponent(
                         new TddComponentReference("16"),
                         null, false,
                         Map.of(
