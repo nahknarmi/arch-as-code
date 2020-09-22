@@ -56,7 +56,6 @@ public class JiraApi {
      * out a "Description" field.
      *
      * @todo Which is better, "customfield_10002" or "customfield_10004"?
-     *
      * @see JiraStory#toJira(String, Long)
      */
     public static boolean isEquivalentToJira(Epic fromYaml, Issue fromJira) {
@@ -111,7 +110,7 @@ public class JiraApi {
         try {
             final var bulkResponse = jiraClient.getIssueClient()
                     .createIssues(jiraStories.stream()
-                            .map(aac -> aac.toJira(epicKey, projectId))
+                            .map(it -> it.toJira(epicKey, projectId))
                             .collect(toList()))
                     .get();
 

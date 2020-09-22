@@ -9,7 +9,9 @@ import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
 import net.trilogy.arch.adapter.jira.JiraApi.JiraApiException;
 import net.trilogy.arch.domain.architectureUpdate.Epic;
 import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.FunctionalRequirement.FunctionalRequirementId;
 import net.trilogy.arch.domain.architectureUpdate.Jira;
+import net.trilogy.arch.domain.architectureUpdate.Tdd.TddId;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,13 +66,16 @@ public class JiraApiTest {
     public void should_find_jira_and_yaml_story_data_to_be_equivalent() {
         final var theTitle = "AUNT MARGARET";
         final var fromYaml = FeatureStory.builder()
+                .requirementReferences(List.of(new FunctionalRequirementId("ALICE")))
+                .tddReferences(List.of(new TddId("BOB")))
                 .title(theTitle)
                 .build();
 
         final var fromJira = mock(Issue.class);
+        // Alas, not using JDK 15 which has multi-line text blocks
         when(fromJira.getSummary()).thenReturn(theTitle);
 
-        assertTrue(JiraApi.isEquivalentToJira(fromYaml, fromJira));
+        assertTrue(isEquivalentToJira(fromYaml, fromJira));
     }
 
     @Test
