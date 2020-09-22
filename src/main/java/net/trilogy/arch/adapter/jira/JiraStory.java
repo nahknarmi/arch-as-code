@@ -83,6 +83,13 @@ public class JiraStory {
         return makeFunctionalRequirementTable() + makeTddTablesByComponent();
     }
 
+    /**
+     * @todo Some Epic cards in JIRA seem to put the Epic Summary (title)
+     *       field into "customfield_10002"; manual testing shows that using
+     *       the card key (eg, "AU-1") works as well.  We should <strong>unit
+     *       test</strong> that AaC uses the key, not the title.
+     * @todo Are "customfield_10002" and "customfield_10004" equivalent?
+     */
     public IssueInput toJira(String epicKey, Long projectId) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)

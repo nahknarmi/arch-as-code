@@ -32,14 +32,34 @@ import static net.trilogy.arch.adapter.jira.JiraCreateStoryStatus.succeeded;
 public class JiraApi {
     private final JiraRestClient jiraClient;
 
-    public static boolean isEquivalentToJiraIssue(FeatureStory fromYaml, Issue fromJira) {
+    /**
+     * Note: The Epic link is stored in field 10002 (or 10004), and seems to
+     * use either the Epic title or key.  Key is <strong>strongly</strong>
+     * preferred.
+     *
+     * @todo Test the Description field; update if changed
+     * @todo Ensure the Epic field (10002 / 10004) points to the right key;
+     * update otherwise
+     */
+    public static boolean isEquivalentToJira(FeatureStory fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 
         return Objects.equals(fromYaml.getTitle(), fromJira.getSummary());
     }
 
-    public static boolean isEquivalentToJiraIssue(Epic fromYaml, Issue fromJira) {
+    /**
+     * The only field which can be compared for Epic cards in JIRA is the
+     * "Summary" (title).  An Epic card has no links to it's Story cards;
+     * instead, the Story cards have a backlink to the Epic via
+     * "customfield_10002" or "customfield_10004" fields.  And we do not write
+     * out a "Description" field.
+     *
+     * @todo Which is better, "customfield_10002" or "customfield_10004"?
+     *
+     * @see JiraStory#toJira(String, Long)
+     */
+    public static boolean isEquivalentToJira(Epic fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
         requireNonNull(fromJira);
 

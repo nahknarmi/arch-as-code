@@ -19,7 +19,7 @@ import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
 import static java.util.Collections.emptyList;
-import static net.trilogy.arch.adapter.jira.JiraApi.isEquivalentToJiraIssue;
+import static net.trilogy.arch.adapter.jira.JiraApi.isEquivalentToJira;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -61,19 +61,6 @@ public class JiraApiTest {
     }
 
     @Test
-    public void should_find_jira_and_yaml_epic_data_to_be_equivalent() {
-        final var theTitle = "JAVIER IS JEFE";
-        final var fromYaml = Epic.builder()
-                .title(theTitle)
-                .build();
-
-        final var fromJira = mock(Issue.class);
-        when(fromJira.getSummary()).thenReturn(theTitle);
-
-        assertTrue(isEquivalentToJiraIssue(fromYaml, fromJira));
-    }
-
-    @Test
     public void should_find_jira_and_yaml_story_data_to_be_equivalent() {
         final var theTitle = "AUNT MARGARET";
         final var fromYaml = FeatureStory.builder()
@@ -83,7 +70,20 @@ public class JiraApiTest {
         final var fromJira = mock(Issue.class);
         when(fromJira.getSummary()).thenReturn(theTitle);
 
-        assertTrue(isEquivalentToJiraIssue(fromYaml, fromJira));
+        assertTrue(JiraApi.isEquivalentToJira(fromYaml, fromJira));
+    }
+
+    @Test
+    public void should_find_jira_and_yaml_epic_data_to_be_equivalent() {
+        final var theTitle = "JAVIER IS JEFE";
+        final var fromYaml = Epic.builder()
+                .title(theTitle)
+                .build();
+
+        final var fromJira = mock(Issue.class);
+        when(fromJira.getSummary()).thenReturn(theTitle);
+
+        assertTrue(isEquivalentToJira(fromYaml, fromJira));
     }
 
     @Test
