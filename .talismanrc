@@ -1,4 +1,0 @@
-fileignoreconfig:
-- filename: 'ArchitectureDataStructureWriterTest.java'
-  checksum: 58b6a591404fc6b956577b2c6a976304
-  ignore_detectors: [filename]
