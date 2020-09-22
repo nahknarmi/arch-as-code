@@ -9,10 +9,11 @@ import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientF
 import lombok.Generated;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.Epic;
+import net.trilogy.arch.domain.architectureUpdate.FeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.Jira;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class JiraApi {
     }
 
     public static boolean isEquivalentToJiraIssue(FeatureStory item, Issue issue) {
-        return  item != null && issue != null
+        return item != null && issue != null
                 && Objects.equals(item.getKey(), issue.getKey())
                 && Objects.equals(item.getTitle(), issue.getSummary())
                 && isEquivalentToJiraIssue(item.getJira(), issue);

@@ -21,6 +21,7 @@ import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
 import static java.util.Collections.emptyList;
+import static net.trilogy.arch.adapter.jira.JiraApi.isEquivalentToJiraIssue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -64,7 +65,7 @@ public class JiraApiTest {
     @SneakyThrows
     @Test
     public void should_find_jira_and_yaml_jira_structure_to_be_equivalent() {
-       final var ticket = Jira.builder()
+        final var ticket = Jira.builder()
                 .link("https://jira.devfactory.com/browse/AU-1")
                 .ticket("AU-1")
                 .build();
@@ -73,7 +74,7 @@ public class JiraApiTest {
         when(issue.getKey()).thenReturn("AU-1");
         when(issue.getSelf()).thenReturn(new URI("https://jira.devfactory.com/browse/AU-1"));
 
-        assertTrue(JiraApi.isEquivalentToJiraIssue(ticket,issue));
+        assertTrue(isEquivalentToJiraIssue(ticket, issue));
     }
 
     @SneakyThrows
@@ -95,7 +96,7 @@ public class JiraApiTest {
         when(issue.getSummary()).thenReturn(theTitle);
         when(issue.getSelf()).thenReturn(new URI(theLink));
 
-        assertTrue(JiraApi.isEquivalentToJiraIssue(ticket,issue));
+        assertTrue(isEquivalentToJiraIssue(ticket, issue));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class JiraApiTest {
         when(issue.getKey()).thenReturn(theKey);
         when(issue.getSummary()).thenReturn(theTitle);
 
-        assertTrue(JiraApi.isEquivalentToJiraIssue(story,issue));
+        assertTrue(isEquivalentToJiraIssue(story, issue));
     }
 
     @Test
