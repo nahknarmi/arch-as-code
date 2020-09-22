@@ -88,18 +88,18 @@ public class JiraApiTest {
                 .title(theTitle)
                 .build();
 
-        final var issue = mock(Issue.class);
-        when(issue.getKey()).thenReturn(theKey);
-        when(issue.getSummary()).thenReturn(theTitle);
-        when(issue.getSelf()).thenReturn(URI.create(theLink));
+        final var epic = mock(Issue.class);
+        when(epic.getKey()).thenReturn(theKey);
+        when(epic.getSummary()).thenReturn(theTitle);
+        when(epic.getSelf()).thenReturn(URI.create(theLink));
 
-        assertTrue(isEquivalentToJiraIssue(ticket, issue));
+        assertTrue(isEquivalentToJiraIssue(ticket, epic));
     }
 
     @Test
     public void should_find_jira_and_yaml_feature_story_cards_to_be_equivalent() {
         final var theKey = "INTENTIONALLY RIGHT";
-        final var theLink = "scheme:rest-of-uri";
+        final var theLink = "schema:rest-of-uri";
         final var theTitle = "AUNT MARGARET";
 
         final var story = FeatureStory.builder()
