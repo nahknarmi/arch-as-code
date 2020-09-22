@@ -31,6 +31,8 @@ import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 @RequiredArgsConstructor
 public class JiraStory {
     private final String title;
+    private final String key;
+    private final String link;
     private final List<JiraTdd> tdds;
     private final List<JiraFunctionalRequirement> functionalRequirements;
 
@@ -39,6 +41,9 @@ public class JiraStory {
                      ArchitectureDataStructure afterAuArchitecture,
                      FeatureStory featureStory) throws InvalidStoryException {
         title = featureStory.getTitle();
+        key = featureStory.getKey();
+        // TODO: Fix law of demeter violations by fixing data models
+        link = featureStory.getJira().getLink();
         tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
         functionalRequirements = getFunctionalRequirements(au, featureStory);
     }
@@ -90,7 +95,7 @@ public class JiraStory {
      *       test</strong> that AaC uses the key, not the title.
      * @todo Are "customfield_10002" and "customfield_10004" equivalent?
      */
-    public IssueInput toJira(String epicKey, Long projectId) {
+    public IssueInput asIssueInput(String epicKey, Long projectId) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("project", projectId)

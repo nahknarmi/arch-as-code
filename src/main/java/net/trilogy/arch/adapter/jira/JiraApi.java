@@ -55,7 +55,7 @@ public class JiraApi {
      * out a "Description" field.
      *
      * @todo Which is better, "customfield_10002" or "customfield_10004"?
-     * @see JiraStory#toJira(String, Long)
+     * @see JiraStory#asIssueInput(String, Long)
      */
     public static boolean isEquivalentToJira(Epic fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
@@ -128,7 +128,7 @@ public class JiraApi {
     private ArrayList<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(List<JiraStory> jiraStories, String epicKey, Long projectId) throws InterruptedException, ExecutionException {
         final var bulkResponse = jiraClient.getIssueClient()
                 .createIssues(jiraStories.stream()
-                        .map(it -> it.toJira(epicKey, projectId))
+                        .map(it -> it.asIssueInput(epicKey, projectId))
                         .collect(toList()))
                 .get();
 
@@ -148,21 +148,35 @@ public class JiraApi {
     public List<JiraRemoteStoryStatus> updateExistingStories(
             List<JiraStory> jiraStories,
             String epicKey,
-            Long projectId) {
-//        try {
-//        } catch (RestClientException e) {
-//            final var x = new JiraApiException(e.getMessage(), e);
-//            x.setStackTrace(e.getStackTrace());
-//            throw x;
-//        } catch (InterruptedException e) {
-//            final var x = new JiraApiException("INTERRUPTED", e);
-//            x.setStackTrace(e.getStackTrace());
-//            throw x;
-//        } catch (ExecutionException e) {
-//            final var x = new JiraApiException("FAILED", e.getCause());
-//            x.setStackTrace(e.getStackTrace());
-//            throw x;
-//        }
+            Long projectId) throws JiraApiException {
+        try {
+            final var result = new ArrayList<JiraCreateStoryStatus>(jiraStories.size());
+            jiraStories.stream()
+                    .parallel()
+                    .forEach(it -> {
+                        try {
+                            jiraClient.getIssueClient().updateIssue(it.getKey(), it.asIssueInput(epicKey, projectId));
+                            result.add(succeeded(it.getKey(), it.getLink()));
+                        }
+                        catch (Exception e) {
+                            result.add(failed(e.getMessage()));
+                        }
+
+                    });
+            return result;
+        } catch (RestClientException e) {
+            final var x = new JiraApiException(e.getMessage(), e);
+            x.setStackTrace(e.getStackTrace());
+            throw x;
+        } catch (InterruptedException e) {
+            final var x = new JiraApiException("INTERRUPTED", e);
+            x.setStackTrace(e.getStackTrace());
+            throw x;
+        } catch (ExecutionException e) {
+            final var x = new JiraApiException("FAILED", e.getCause());
+            x.setStackTrace(e.getStackTrace());
+            throw x;
+        }
         return null;
     }
 
