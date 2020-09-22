@@ -446,8 +446,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         new YamlFeatureStory(
                                 "story that failed to be created",
                                 new YamlJira("",""),
-                                List.of(new TddId("[SAMPLE-TDD-ID]")),
-                                List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
+                                singletonList(new TddId("[SAMPLE-TDD-ID]")),
+                                singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
@@ -469,9 +469,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         return asList(new JiraStory(
                         new YamlFeatureStory(
                                 "story that should be created",
-                                new YamlJira(null, null),
-                                emptyList(),
-                                emptyList(),
+                                new YamlJira("", ""),
+                                singletonList( new TddId("TDD 1.0")),
+                                singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
                                 new TddId("TDD 1.0"),
@@ -487,9 +487,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 new JiraStory(
                         new YamlFeatureStory(
                                 "story that should be created for no pr",
-                                new YamlJira(null, null),
-                                emptyList(),
-                                emptyList(),
+                                new YamlJira("", ""),
+                                singletonList( TddId.noPr()),
+                                singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
                                 TddId.noPr(),
