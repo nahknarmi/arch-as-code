@@ -60,14 +60,16 @@ public class StoryPublishingService {
                 yamlEpicJira,
                 informationAboutTheEpic);
 
+        out.println();
+        printStoriesThatSucceeded(storiesToCreate, createStoriesResults, "created");
+        printStoriesThatFailed(storiesToCreate, createStoriesResults);
+        printStoriesThatSucceeded(storiesToUpdate, updateStoriesResults, "updated");
+        printStoriesThatFailed(storiesToUpdate, updateStoriesResults);
+
         final var processResults = new ArrayList<JiraRemoteStoryStatus>(
                 createStoriesResults.size() + updateStoriesResults.size());
         processResults.addAll(createStoriesResults);
         processResults.addAll(updateStoriesResults);
-
-        out.println();
-        printStoriesThatSucceeded(storiesToCreate, processResults);
-        printStoriesThatFailed(storiesToCreate, processResults);
 
         return au.updateJiraTicketsInAu(storiesToCreate, processResults);
     }
@@ -120,16 +122,17 @@ public class StoryPublishingService {
     }
 
     private void printStoriesThatSucceeded(
-            List<YamlFeatureStory> stories,
-            List<JiraRemoteStoryStatus> createStoriesResults) {
+            final List<YamlFeatureStory> stories,
+            final List<JiraRemoteStoryStatus> results,
+            final String tag) {
         StringBuilder successfulStories = new StringBuilder();
 
-        for (int i = 0; i < createStoriesResults.size(); ++i) {
-            if (!createStoriesResults.get(i).isSuccess()) continue;
+        for (int i = 0; i < results.size(); ++i) {
+            if (!results.get(i).isSuccess()) continue;
             successfulStories.append("\n  - ").append(stories.get(i).getTitle());
         }
 
-        String heading = "Successfully created:";
+        String heading = String.format("Successfully %s:", tag);
 
         if (!successfulStories.toString().isBlank()) {
             out.println(heading + successfulStories);
@@ -139,10 +142,16 @@ public class StoryPublishingService {
     private void printStoriesThatFailed(
             List<YamlFeatureStory> stories,
             List<JiraRemoteStoryStatus> createStoriesResults) {
+        if (stories.size() != createStoriesResults.size())
+            throw new IllegalArgumentException("Mismatch");
+
         StringBuilder errors = new StringBuilder();
-        for (int i = 0; i < createStoriesResults.size(); ++i) {
+        for (int i = 0, x = createStoriesResults.size(); i < x; ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;
-            errors.append("Story: \"").append(stories.get(i).getTitle()).append("\":\n  - ").append(createStoriesResults.get(i).getError());
+            errors.append("Story: \"")
+                    .append(stories.get(i).getTitle())
+                    .append("\":\n  - ")
+                    .append(createStoriesResults.get(i).getError());
         }
         String heading = "Error! Some stories failed to publish. Please retry. Errors reported by Jira:";
         if (!errors.toString().isBlank()) {
