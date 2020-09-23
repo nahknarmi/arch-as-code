@@ -3,9 +3,12 @@ package net.trilogy.arch.adapter.jira;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
+import com.atlassian.jira.rest.client.api.domain.BulkOperationResult;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.Project;
 import com.atlassian.jira.rest.client.api.domain.util.ErrorCollection;
+import io.atlassian.util.concurrent.Promise;
 import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
 import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
@@ -16,7 +19,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static io.atlassian.util.concurrent.Promises.promise;
 import static java.util.Collections.emptyList;
@@ -28,6 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,18 +99,35 @@ public class JiraApiTest {
     }
 
     @Test
-    public void create_a_new_jira_card() throws JiraApiException {
+    @SuppressWarnings("unchecked") // this is because it doesn't like our casting to generic types
+    public void create_a_new_jira_card() throws JiraApiException, ExecutionException, InterruptedException {
         final var mockJiraClient = mock(JiraRestClient.class);
         final var mockIssueClient = mock(IssueRestClient.class);
-        when(mockJiraClient).thenReturn(mockJiraClient);
+        final var mockCreateReturn =
+                (Promise<BulkOperationResult<BasicIssue>>) mock(Promise.class);
+
+        final var epicKey = "BOB-UNCLE-1234567890";
+        final var newCardKey = "new key created by call";
+        final var newCardLink = URI.create("");
+        final var projectId = 314159L;
+
+        when(mockCreateReturn.get())
+                .thenReturn(new BulkOperationResult<>(singletonList(new BasicIssue(newCardLink, newCardKey, projectId)),
+                        emptyList()));
+
+        when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
+
         final var jiraStory = createJiraStoryFixture();
+
+        when(mockIssueClient.createIssues(anyList()))
+                .thenReturn(mockCreateReturn);
 
         final var results = new JiraApi(mockJiraClient).createNewStories(
                 singletonList(jiraStory),
-                "BOB-UNCLE-1234567890",
-                314159L);
+                epicKey,
+                projectId);
 
-        assertEquals(emptyList(), results);
+        assertEquals(singletonList(JiraRemoteStoryStatus.succeeded(newCardKey, newCardLink.toString())), results);
     }
 
     @Test
