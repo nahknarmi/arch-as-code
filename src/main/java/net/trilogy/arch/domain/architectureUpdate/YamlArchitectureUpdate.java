@@ -7,9 +7,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
+import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalAreaId;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
 
 import java.util.List;
 import java.util.Map;
@@ -121,19 +122,49 @@ public class YamlArchitectureUpdate {
         return prefilledYamlArchitectureUpdateWithBlanks().build();
     }
 
+    /**
+     * @todo This checks the saved YAML assuming a previous publish run then
+     * updated the YAML.  More accurate is to consult JIRA
+     */
+    public List<YamlFeatureStory> findFeatureStoriesToCreate() {
+        return getCapabilityContainer().getFeatureStories().stream()
+                .filter(story -> !story.hasJiraKeyAndLink())
+                .collect(toList());
+    }
+
+    /**
+     * @todo This checks the saved YAML assuming a previous publish run then
+     * updated the YAML.  More accurate is to consult JIRA
+     */
+    public List<YamlFeatureStory> findFeatureStoriesToUpdate() {
+        return getCapabilityContainer().getFeatureStories().stream()
+                .filter(YamlFeatureStory::hasJiraKeyAndLink)
+                .collect(toList());
+    }
+
+    public YamlArchitectureUpdate updateJiraTicketsInAu(
+            final List<YamlFeatureStory> stories,
+            final List<JiraRemoteStoryStatus> creationStatuses) {
+        var updatedAu = this;
+        for (int i = 0; i < creationStatuses.size(); ++i) {
+            final var status = creationStatuses.get(i);
+            if (status.isSuccess()) {
+                updatedAu = addJiraToFeatureStory(
+                        stories.get(i),
+                        new YamlJira(status.getIssueKey(), status.getIssueLink()));
+            }
+        }
+        return updatedAu;
+    }
+
     public YamlArchitectureUpdate addJiraToFeatureStory(YamlFeatureStory storyToChange, YamlJira jiraToAdd) {
-        return toBuilder().capabilityContainer(
-                getCapabilityContainer().toBuilder()
-                        .featureStories(
-                                getCapabilityContainer().getFeatureStories().stream()
-                                        .map(story -> {
-                                            if (story.equals(storyToChange)) {
-                                                return story.toBuilder().jira(jiraToAdd).build();
-                                            }
-                                            return story;
-                                        })
-                                        .collect(toList()))
-                        .build())
+        return toBuilder().capabilityContainer(getCapabilityContainer().toBuilder()
+                .featureStories(getCapabilityContainer().getFeatureStories().stream()
+                        .map(story -> story.equals(storyToChange)
+                                ? story.toBuilder().jira(jiraToAdd).build()
+                                : story)
+                        .collect(toList()))
+                .build())
                 .build();
     }
 }

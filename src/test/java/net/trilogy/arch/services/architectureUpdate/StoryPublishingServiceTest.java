@@ -13,8 +13,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.trilogy.arch.services.architectureUpdate.StoryPublishingService.findFeatureStoriesToCreate;
-import static net.trilogy.arch.services.architectureUpdate.StoryPublishingService.findFeatureStoriesToUpdate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -53,8 +51,8 @@ public class StoryPublishingServiceTest {
         final var au = createArchitectureUpdate(allStories);
 
         // WHEN
-        final var actualCreate = findFeatureStoriesToCreate(au);
-        final var actualUpdate = findFeatureStoriesToUpdate(au);
+        final var actualCreate = au.findFeatureStoriesToCreate();
+        final var actualUpdate = au.findFeatureStoriesToUpdate();
 
         // THEN
         assertThat(actualCreate, equalTo(featureStoriesToBeCreated));

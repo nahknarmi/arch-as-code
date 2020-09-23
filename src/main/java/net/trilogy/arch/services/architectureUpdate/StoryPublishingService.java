@@ -9,49 +9,18 @@ import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 public class StoryPublishingService {
     private final PrintWriter out;
     private final PrintWriter err;
     private final JiraApi api;
-
-    public static List<YamlFeatureStory> findFeatureStoriesToCreate(final YamlArchitectureUpdate au) {
-        return au.getCapabilityContainer().getFeatureStories().stream()
-                .filter(story -> !story.exists())
-                .collect(toList());
-    }
-
-    public static List<YamlFeatureStory> findFeatureStoriesToUpdate(final YamlArchitectureUpdate au) {
-        return au.getCapabilityContainer().getFeatureStories().stream()
-                .filter(YamlFeatureStory::exists)
-                .collect(toList());
-    }
-
-    private static YamlArchitectureUpdate updateJiraTicketsInAu(
-            final YamlArchitectureUpdate au,
-            final List<YamlFeatureStory> stories,
-            final List<JiraRemoteStoryStatus> creationStatuses) {
-        YamlArchitectureUpdate updatedAu = au;
-        for (int i = 0; i < creationStatuses.size(); ++i) {
-            final var result = creationStatuses.get(i);
-
-            if (result.isSuccess()) {
-                updatedAu = updatedAu.addJiraToFeatureStory(
-                        stories.get(i),
-                        new YamlJira(result.getIssueKey(), result.getIssueLink()));
-            }
-        }
-        return updatedAu;
-    }
 
     public YamlArchitectureUpdate createOrUpdateStories(
             final YamlArchitectureUpdate au,
@@ -60,8 +29,8 @@ public class StoryPublishingService {
             throws InvalidStoryException, JiraApiException {
         printStoriesToSkip(au);
 
-        final var storiesToCreate = findFeatureStoriesToCreate(au);
-        final var storiesToUpdate = findFeatureStoriesToUpdate(au);
+        final var storiesToCreate = au.findFeatureStoriesToCreate();
+        final var storiesToUpdate = au.findFeatureStoriesToUpdate();
         // TODO: storiesToDelete -- implies calling REST JIRA to check
 
         final var yamlEpicJira = au.getCapabilityContainer().getEpic().getJira();
@@ -102,7 +71,7 @@ public class StoryPublishingService {
         printStoriesThatSucceeded(storiesToCreate, createdOrUpdatedResults);
         printStoriesThatFailed(storiesToCreate, createdOrUpdatedResults);
 
-        return updateJiraTicketsInAu(au, storiesToCreate, createdOrUpdatedResults);
+        return au.updateJiraTicketsInAu(storiesToCreate, createdOrUpdatedResults);
     }
 
     private void printStoriesThatSucceeded(List<YamlFeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {
@@ -138,12 +107,12 @@ public class StoryPublishingService {
         //       - Should note stories to update
         //       - Should note stories to delete
         //       - Should note stories to ignore
-        String stories = au.getCapabilityContainer().getFeatureStories().stream()
-                .filter(YamlFeatureStory::exists)
+        final var toSkip = au.getCapabilityContainer().getFeatureStories().stream()
+                .filter(YamlFeatureStory::hasJiraKeyAndLink)
                 .map(story -> "  - " + story.getTitle() + " (" + story.getKey() + ")")
                 .collect(joining("\n"));
-        if (!stories.isBlank()) {
-            out.println("Not recreating stories:\n" + stories + "\n");
+        if (!toSkip.isBlank()) {
+            out.println("Not recreating stories:\n" + toSkip + "\n");
         }
     }
 }

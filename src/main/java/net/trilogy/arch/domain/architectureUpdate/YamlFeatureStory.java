@@ -44,11 +44,11 @@ public class YamlFeatureStory {
     }
 
     /** @todo This method papers over bugs in YAML */
-    public boolean exists() {
+    public boolean hasJiraKeyAndLink() {
         if (null == jira) return false;
         if (null == jira.getTicket()) return false;
-        if (null == jira.getLink() && jira.getTicket().isBlank())
-            return false;
+        if (jira.getTicket().isBlank()) return false;
+        if (null == jira.getLink()) return false;
         if (jira.getLink().isBlank()) return false;
 
         return true;
@@ -65,9 +65,5 @@ public class YamlFeatureStory {
 
     public String getKey() {
         return jira.getTicket();
-    }
-
-    public String makeDescription() {
-        return null;
     }
 }
