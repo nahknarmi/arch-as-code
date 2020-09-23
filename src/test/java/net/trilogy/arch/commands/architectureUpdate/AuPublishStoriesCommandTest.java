@@ -2,7 +2,6 @@ package net.trilogy.arch.commands.architectureUpdate;
 
 import net.trilogy.arch.Application;
 import net.trilogy.arch.CommandTestBase;
-import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
 import net.trilogy.arch.adapter.jira.JiraApi;
@@ -13,15 +12,19 @@ import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import java.io.File;
@@ -33,12 +36,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.String.format;
-import static java.lang.System.out;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
 import static net.trilogy.arch.adapter.architectureDataStructure.ArchitectureDataStructureObjectMapper.YAML_OBJECT_MAPPER;
@@ -50,7 +52,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -86,7 +87,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         spiedFiles = spy(new FilesFacade());
 
-        rootDir = new File(getClass().getResource(TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
+        rootDir = new File(getClass().getResource(ROOT_PATH_TO_TEST_AU_PUBLISH).getPath());
 
         final var mockedGoogleApiFactory = mock(GoogleDocsAuthorizedApiFactory.class);
 
@@ -238,7 +239,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var expected = singletonList(new JiraStory(
                 new YamlFeatureStory(
                         "story that should be updated",
-                        new YamlJira("already existing jira ticket","link to already existing jira ticket"),
+                        new YamlJira("already existing jira ticket", "link to already existing jira ticket"),
                         singletonList(new TddId("[SAMPLE-TDD-ID]")),
                         singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                         null),
@@ -256,7 +257,6 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         verify(mockedJiraApi).updateExistingStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
-
     @Test
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
@@ -271,7 +271,6 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // THEN:
         verify(mockedJiraApi).createNewStories(
                 getExpectedJiraStoriesWithTddContentToCreate(), epic.getTicket(), epicInformation.getProjectId());
-
     }
 
     @Test
@@ -452,8 +451,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 new JiraStory(
                         new YamlFeatureStory(
                                 "story that should be created",
-                                new YamlJira("",""),
-                                List.of(new TddId("[SAMPLE-TDD-ID]"),  new TddId("[SAMPLE-TDD-ID-2]") ),
+                                new YamlJira("", ""),
+                                List.of(new TddId("[SAMPLE-TDD-ID]"), new TddId("[SAMPLE-TDD-ID-2]")),
                                 List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         List.of(
@@ -476,7 +475,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 new JiraStory(
                         new YamlFeatureStory(
                                 "story that failed to be created",
-                                new YamlJira("",""),
+                                new YamlJira("", ""),
                                 singletonList(new TddId("[SAMPLE-TDD-ID]")),
                                 singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
@@ -501,7 +500,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         new YamlFeatureStory(
                                 "story that should be created",
                                 new YamlJira("", ""),
-                                singletonList( new TddId("TDD 1.0")),
+                                singletonList(new TddId("TDD 1.0")),
                                 singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
@@ -519,7 +518,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         new YamlFeatureStory(
                                 "story that should be created for no pr",
                                 new YamlJira("", ""),
-                                singletonList( TddId.noPr()),
+                                singletonList(TddId.noPr()),
                                 singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
                                 null),
                         singletonList(new JiraTdd(
