@@ -68,7 +68,7 @@ public class StoryPublishingService {
         final var informationAboutTheEpic = api.getStory(epicJiraTicket);
 
         out.println("Creating stories in the epic "
-                + epicJiraTicket.getTicket()
+                + informationAboutTheEpic.getProjectKey() +" which is project id " + informationAboutTheEpic.getProjectId()
                 + "...\n");
 
         // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
