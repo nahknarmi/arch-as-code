@@ -145,9 +145,6 @@ public class YamlArchitectureUpdate {
     public YamlArchitectureUpdate amendJiraTicketsInAu(
             final List<YamlFeatureStory> stories,
             final List<JiraRemoteStoryStatus> statuses) {
-        if (stories.size() != statuses.size())
-            throw new IllegalArgumentException("Mismatch");
-
         var updatedAu = this;
         for (int i = 0; i < statuses.size(); ++i) {
             final var status = statuses.get(i);

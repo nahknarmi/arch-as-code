@@ -299,6 +299,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         "  - story that should be updated (already existing jira ticket)\n" +
                         "\n" +
                         "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
+                        "Updating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
                         "\n" +
                         "Successfully created:\n" +
                         "  - story that should be created\n" +
@@ -358,7 +359,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 "Not recreating stories:\n" +
                         "  - story that should be updated (already existing jira ticket)\n" +
                         "\n" +
-                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
+                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123..." +
+                        "\n" +
+                        "Updating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
                         "\n" +
                         "Successfully created:\n" +
                         "  - story that should be created\n"));

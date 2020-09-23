@@ -146,9 +146,6 @@ public class StoryPublishingService {
     private void printStoriesThatFailed(
             List<YamlFeatureStory> stories,
             List<JiraRemoteStoryStatus> createStoriesResults) {
-        if (stories.size() != createStoriesResults.size())
-            throw new IllegalArgumentException("Mismatch");
-
         StringBuilder errors = new StringBuilder();
         for (int i = 0, x = createStoriesResults.size(); i < x; ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;
