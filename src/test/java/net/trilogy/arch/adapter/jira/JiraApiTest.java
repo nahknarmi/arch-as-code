@@ -160,7 +160,7 @@ public class JiraApiTest {
                 singletonList(jiraStory),
                 epicKey,
                 projectId);
-        System.out.println(results.stream().findFirst().toString());
+
         assertEquals(singletonList(succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
     }
 

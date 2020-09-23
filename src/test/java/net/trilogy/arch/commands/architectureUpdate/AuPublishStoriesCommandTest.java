@@ -134,9 +134,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(
-                dummyErr.getLog(),
-                containsString("Unable to load JIRA configuration.\nError: java.nio.file.NoSuchFileException"));
+        collector.checkThat(dummyErr.getLog(), containsString(
+                "Unable to load JIRA configuration.\n" +
+                        "Error: java.nio.file.NoSuchFileException"));
     }
 
     @Test
@@ -151,9 +151,10 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(
-                dummyErr.getLog(),
-                equalTo("Unable to load architecture update.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(
+                "Unable to load architecture update.\n" +
+                        "Error: java.lang.RuntimeException: ERROR\n" +
+                        "Cause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -169,9 +170,10 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // Then
         collector.checkThat(status, not(equalTo(0)));
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(
-                dummyErr.getLog(),
-                equalTo("Unable to load architecture.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: DETAILS\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(
+                "Unable to load architecture.\n" +
+                        "Error: java.lang.RuntimeException: ERROR\n" +
+                        "Cause: java.lang.RuntimeException: DETAILS\n"));
     }
 
     @Test
@@ -187,12 +189,14 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(
-                dummyOut.getLog(),
-                equalTo(
-                        "Not re-creating stories:\n  - story that should be updated\n\n" +
-                                "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n"));
-        collector.checkThat(dummyErr.getLog(), equalTo("ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(
+                "Not recreating stories:\n" +
+                        "  - story that should be updated (already existing jira ticket)\n" +
+                        "\n" +
+                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
+                        "\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(
+                "ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
 
     @Test
@@ -291,12 +295,15 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         execute(app, genericCommand());
 
         // THEN:
-        collector.checkThat(
-                dummyOut.getLog(),
-                equalTo(
-                        "Not re-creating stories:\n  - story that should be updated\n\n" +
-                                "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
-                                "Successfully created:\n  - story that should be created\n  - story that failed to be created\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(
+                "Not recreating stories:\n" +
+                        "  - story that should be updated (already existing jira ticket)\n" +
+                        "\n" +
+                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
+                        "\n" +
+                        "Successfully created:\n" +
+                        "  - story that should be created\n" +
+                        "  - story that failed to be created\n"));
         collector.checkThat(dummyErr.getLog(), equalTo(""));
     }
 
@@ -321,7 +328,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var originalAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
         final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, YamlArchitectureUpdate.class);
         final var expectedAu = originalAu.addJiraToFeatureStory(
-                first(originalAu.getCapabilityContainer().getFeatureStories()), new YamlJira("ABC-123", "link-to-ABC-123"));
+                first(originalAu.getCapabilityContainer().getFeatureStories()),
+                new YamlJira("ABC-123", "link-to-ABC-123"));
 
         collector.checkThat(actualAu, equalTo(expectedAu));
     }
@@ -343,14 +351,20 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var statusCode = execute(app, genericCommand());
 
         // THEN:
-        assertThat(
-                dummyErr.getLog(),
-                equalTo("\nError! Some stories failed to publish. Please retry. Errors reported by Jira:\n\nStory: \"story that failed to be created\":\n  - error-message\n"));
-        assertThat(
-                dummyOut.getLog(),
-                equalTo("Not re-creating stories:\n  - story that should be updated\n\n" +
-                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n\n" +
-                        "Successfully created:\n  - story that should be created\n"));
+        assertThat(dummyErr.getLog(), equalTo(
+                "\n" +
+                        "Error! Some stories failed to publish. Please retry. Errors reported by Jira:\n" +
+                        "\n" +
+                        "Story: \"story that failed to be created\":\n" +
+                        "  - error-message\n"));
+        assertThat(dummyOut.getLog(), equalTo(
+                "Not recreating stories:\n" +
+                        "  - story that should be updated (already existing jira ticket)\n" +
+                        "\n" +
+                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
+                        "\n" +
+                        "Successfully created:\n" +
+                        "  - story that should be created\n"));
         assertThat(statusCode, equalTo(0));
     }
 
@@ -367,7 +381,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var statusCode = execute(app, genericCommand());
 
         final var log = dummyErr.getLog();
-        assertThat(log, containsString("JiraApiException: OOPS!\nCause: java.lang.RuntimeException: Details\n"));
+        assertThat(log, containsString(
+                "JiraApiException: OOPS!\n" +
+                        "Cause: java.lang.RuntimeException: Details\n"));
         // TODO use containsString to make sure the nice message is present, but don't check against specific full output
         assertThat(statusCode, not(equalTo(0)));
     }
@@ -383,7 +399,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var statusCode = execute(app, genericCommand());
 
         assertThat(dummyErr.getLog(), containsString("JiraApiException: OOPS!\n"));
-        assertThat(dummyOut.getLog(), containsString("Not re-creating stories:\n  - story that should be updated"));
+        assertThat(dummyOut.getLog(), containsString(
+                "Not recreating stories:\n" +
+                        "  - story that should be updated"));
         assertThat(statusCode, not(equalTo(0)));
     }
 
@@ -395,7 +413,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var status = execute(app, genericCommand());
 
         collector.checkThat(dummyOut.getLog(), equalTo(""));
-        collector.checkThat(dummyErr.getLog(), equalTo("Unable to load product architecture in branch: master\nError: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(
+                "Unable to load product architecture in branch: master\n" +
+                        "Error: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
 
@@ -417,15 +437,17 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var status = execute(app, genericCommand());
 
         // THEN:
-        collector.checkThat(
-                dummyErr.getLog(),
-                equalTo("Unable to write update to AU.\nError: java.lang.RuntimeException: ERROR\nCause: java.lang.RuntimeException: Boom!\n"));
+        collector.checkThat(dummyErr.getLog(), equalTo(
+                "Unable to write update to AU.\n" +
+                        "Error: java.lang.RuntimeException: ERROR\n" +
+                        "Cause: java.lang.RuntimeException: Boom!\n"));
         collector.checkThat(status, not(equalTo(0)));
     }
 
     private void mockGitInterface() throws IOException, GitAPIException, GitInterface.BranchNotFoundException {
-        when(mockedGitInterface.load("master", rootDir.toPath().resolve("product-architecture.yml"))).thenReturn(
-                YAML_OBJECT_MAPPER.readValue(
+        when(mockedGitInterface.load("master", rootDir.toPath()
+                .resolve("product-architecture.yml")))
+                .thenReturn(YAML_OBJECT_MAPPER.readValue(
                         Files.readString(
                                 rootDir.toPath().resolve("product-architecture.yml"))
                                 .replaceAll("34", "DELETED-COMPONENT-ID"),
@@ -494,7 +516,10 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     }
 
     private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
-        final var tddContent = new TddContent("## TDD Content for Typical Component\n**TDD 1.0**\n", "TDD 1.0 : Component-29.md");
+        final var tddContent = new TddContent(
+                "## TDD Content for Typical Component\n" +
+                        "**TDD 1.0**\n",
+                "TDD 1.0 : Component-29.md");
         final var tdd = new YamlTdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
 
         return asList(new JiraStory(
@@ -535,4 +560,3 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         singletonList(new TddId("TDD 1.0")))))));
     }
 }
-

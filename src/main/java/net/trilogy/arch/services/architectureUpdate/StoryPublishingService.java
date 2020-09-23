@@ -14,8 +14,8 @@ import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -58,7 +58,7 @@ public class StoryPublishingService {
             final ArchitectureDataStructure beforeAuArchitecture,
             final ArchitectureDataStructure afterAuArchitecture)
             throws InvalidStoryException, JiraApiException {
-        printStoriesNotToBeSent(au);
+        printStoriesToSkip(au);
 
         final var storiesToCreate = findFeatureStoriesToCreate(au);
         final var storiesToUpdate = findFeatureStoriesToUpdate(au);
@@ -131,13 +131,18 @@ public class StoryPublishingService {
         }
     }
 
-    private void printStoriesNotToBeSent(final YamlArchitectureUpdate au) {
+    private void printStoriesToSkip(final YamlArchitectureUpdate au) {
+        // TODO: Fix user output on processing stories:
+        //       - Should note stories to create
+        //       - Should note stories to update
+        //       - Should note stories to delete
+        //       - Should note stories to ignore
         String stories = au.getCapabilityContainer().getFeatureStories().stream()
                 .filter(YamlFeatureStory::exists)
-                .map(story -> "  - " + story.getTitle())
-                .collect(Collectors.joining("\n"));
+                .map(story -> "  - " + story.getTitle() + " (" + story.getKey() + ")")
+                .collect(joining("\n"));
         if (!stories.isBlank()) {
-            out.println("Not re-creating stories:\n" + stories + "\n");
+            out.println("Not recreating stories:\n" + stories + "\n");
         }
     }
 }
