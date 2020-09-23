@@ -254,6 +254,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 "[SAMPLE REQUIREMENT TEXT]",
                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                 singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+
         verify(mockedJiraApi).updateExistingStories(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 

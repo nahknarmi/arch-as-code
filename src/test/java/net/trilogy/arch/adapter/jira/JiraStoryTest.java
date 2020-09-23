@@ -2,6 +2,7 @@ package net.trilogy.arch.adapter.jira;
 
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
+import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
@@ -35,38 +36,13 @@ public class JiraStoryTest {
     @Test
     public void shouldConstructJiraStory() throws Exception {
         // GIVEN:
-        var au = getAuFixture();
+        var au = createArchitectureUpdateFixture();
 
         var afterAuArchitecture = getArchitectureAfterAu();
         var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
-        TddId tddId1 = new TddId("TDD 1");
-        YamlTdd tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
-        TddId tddId2 = new TddId("TDD 2");
-        YamlTdd tdd2 = au.getTddContainersByComponent().get(0).getTdds().get(tddId2);
-        TddId tddId3 = new TddId("TDD 3");
-        YamlTdd tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
-
-        final var expectedFeatureStoryTddIds = List.of(tddId1, tddId2, tddId3);
-        final var expectedFeatureStoryFRs = List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"));
-        final var baseComponentPath = "c4://Internet Banking System/API Application/";
-        final JiraStory expected = new JiraStory(
-                new YamlFeatureStory("story title",
-                        new YamlJira("", ""),
-                        expectedFeatureStoryTddIds,
-                        expectedFeatureStoryFRs,
-                        YamlE2E.blank()),
-                List.of(asJiraTdd(tddId1, tdd1, baseComponentPath + "Reset Password Controller"),
-                        asJiraTdd(tddId2, tdd2, baseComponentPath + "Reset Password Controller"),
-                        asJiraTdd(tddId3, tdd3, baseComponentPath + "Sign In Controller")),
-                List.of(
-                        new JiraStory.JiraFunctionalRequirement(
-                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
-                                new YamlFunctionalRequirement(
-                                        "[SAMPLE REQUIREMENT TEXT]",
-                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        List.of(new TddId("[SAMPLE-TDD-ID]"))))));
+        final JiraStory expected = createJiraStoryFixture();
         // WHEN:
         final JiraStory actual = new JiraStory(featureStory, au, beforeAuArchitecture, afterAuArchitecture);
 
@@ -89,7 +65,7 @@ public class JiraStoryTest {
     @Test(expected = InvalidStoryException.class)
     public void shouldThrowIfComponentHasNoPath() throws Exception {
         // GIVEN
-        var au = getAuFixture();
+        var au = createArchitectureUpdateFixture();
         ArchitectureDataStructure architectureAfterAu = getArchitectureAfterAu();
 
         architectureAfterAu.getModel().getComponents().forEach(c -> c.setPath((String) null));
@@ -120,7 +96,7 @@ public class JiraStoryTest {
     @Test(expected = InvalidStoryException.class)
     public void shouldThrowIfInvalidTdd() throws Exception {
         // GIVEN
-        var au = getAuFixture();
+        var au = createArchitectureUpdateFixture();
 
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
         featureStory = featureStory.toBuilder().tddReferences(List.of(new TddId("Invalid TDD ID"))).build();
@@ -147,7 +123,8 @@ public class JiraStoryTest {
         return YAML_OBJECT_MAPPER.readValue(archAsString, ArchitectureDataStructure.class);
     }
 
-    private static YamlArchitectureUpdate getAuFixture() {
+    /** @todo This should *really* be a FIXTURE in a separate class */
+    public static YamlArchitectureUpdate createArchitectureUpdateFixture() {
         TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
         TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
 
@@ -179,11 +156,11 @@ public class JiraStoryTest {
     }
 
     private static YamlArchitectureUpdate getAuWithInvalidComponent() {
-        return changeAllTddsToBeUnderComponent("1231231323123", getAuFixture());
+        return changeAllTddsToBeUnderComponent("1231231323123", createArchitectureUpdateFixture());
     }
 
     private static YamlArchitectureUpdate getAuWithInvalidRequirement() {
-        return getAuFixture().toBuilder().functionalRequirements(
+        return createArchitectureUpdateFixture().toBuilder().functionalRequirements(
                 Map.of(new FunctionalRequirementId("different id than the reference in the story"),
                         new YamlFunctionalRequirement("any text", "any source", List.of())))
                 .build();
@@ -205,7 +182,40 @@ public class JiraStoryTest {
         return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
     }
 
-    private static JiraStory.JiraTdd asJiraTdd(TddId tddId, YamlTdd tdd, String componentPath) {
-        return new JiraStory.JiraTdd(tddId, tdd, componentPath, tdd.getContent());
+    /** TODO: This should *really* be in a test helper class to share */
+    public static JiraTdd asJiraTdd(TddId tddId, YamlTdd tdd, String componentPath) {
+        return new JiraTdd(tddId, tdd, componentPath, tdd.getContent());
+    }
+
+    /** TODO: This should *really* be in a test helper class to share */
+    public static JiraStory createJiraStoryFixture() {
+        final var au = createArchitectureUpdateFixture();
+        final var tddId1 = new TddId("TDD 1");
+        final var tdd1 = au.getTddContainersByComponent().get(0).getTdds().get(tddId1);
+        final var tddId2 = new TddId("TDD 2");
+        final var tdd2 = au.getTddContainersByComponent().get(0).getTdds().get(tddId2);
+        final var tddId3 = new TddId("TDD 3");
+        final var tdd3 = au.getTddContainersByComponent().get(1).getTdds().get(tddId3);
+
+        final var expectedFeatureStoryTddIds = List.of(tddId1, tddId2, tddId3);
+        final var expectedFeatureStoryFRs = List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"));
+        final var baseComponentPath = "c4://Internet Banking System/API Application/";
+
+        return new JiraStory(
+                new YamlFeatureStory("story title",
+                        new YamlJira("", ""),
+                        expectedFeatureStoryTddIds,
+                        expectedFeatureStoryFRs,
+                        YamlE2E.blank()),
+                List.of(asJiraTdd(tddId1, tdd1, baseComponentPath + "Reset Password Controller"),
+                        asJiraTdd(tddId2, tdd2, baseComponentPath + "Reset Password Controller"),
+                        asJiraTdd(tddId3, tdd3, baseComponentPath + "Sign In Controller")),
+                List.of(
+                        new JiraStory.JiraFunctionalRequirement(
+                                new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),
+                                new YamlFunctionalRequirement(
+                                        "[SAMPLE REQUIREMENT TEXT]",
+                                        "[SAMPLE REQUIREMENT SOURCE TEXT]",
+                                        List.of(new TddId("[SAMPLE-TDD-ID]"))))));
     }
 }

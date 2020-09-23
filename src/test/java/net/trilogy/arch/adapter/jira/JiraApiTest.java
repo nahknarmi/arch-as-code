@@ -20,7 +20,9 @@ import java.util.List;
 
 import static io.atlassian.util.concurrent.Promises.promise;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static net.trilogy.arch.adapter.jira.JiraApi.isEquivalentToJira;
+import static net.trilogy.arch.adapter.jira.JiraStoryTest.createJiraStoryFixture;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -88,6 +90,34 @@ public class JiraApiTest {
         when(fromJira.getSummary()).thenReturn(theTitle);
 
         assertTrue(isEquivalentToJira(fromYaml, fromJira));
+    }
+
+    @Test
+    public void create_a_new_jira_card() throws JiraApiException {
+        final var mockJiraClient = mock(JiraRestClient.class);
+        final var mockIssueClient = mock(IssueRestClient.class);
+        when(mockJiraClient).thenReturn(mockJiraClient);
+        final var jiraStory = createJiraStoryFixture();
+
+        final var results = new JiraApi(mockJiraClient).createNewStories(
+                singletonList(jiraStory),
+                "BOB-UNCLE-1234567890",
+                314159L);
+
+        assertEquals(emptyList(), results);
+    }
+
+    @Test
+    public void update_an_existing_jira_card() {
+        final var mockJiraClient = mock(JiraRestClient.class);
+        final var jiraStory = createJiraStoryFixture();
+
+        final var results = new JiraApi(mockJiraClient).updateExistingStories(
+                singletonList(jiraStory),
+                "BOB-UNCLE-1234567890",
+                314159L);
+
+        assertEquals(emptyList(), results);
     }
 
     @Test
