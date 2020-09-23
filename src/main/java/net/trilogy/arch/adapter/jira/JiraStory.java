@@ -111,9 +111,8 @@ public class JiraStory {
             String epicKey) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
-                .setFieldValue("summary", featureStory.getTitle())
-                .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", makeDescription())
+                .setFieldValue("summary", featureStory.getTitle())
                 .build();
     }
 
