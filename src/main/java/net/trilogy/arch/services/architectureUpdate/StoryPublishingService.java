@@ -93,10 +93,15 @@ public class StoryPublishingService {
                 informationAboutTheEpic.getProjectId());
         // delete stories
 
-        printStoriesThatSucceeded(storiesToCreate, createStoriesResults);
-        printStoriesThatFailed(storiesToCreate, createStoriesResults);
+        final var createdOrUpdatedResults = new ArrayList<JiraRemoteStoryStatus>(
+                createStoriesResults.size() + updateStoriesResults.size());
+        createdOrUpdatedResults.addAll(createStoriesResults);
+        createdOrUpdatedResults.addAll(updateStoriesResults);
 
-        return updateJiraTicketsInAu(au, storiesToCreate, createStoriesResults);
+        printStoriesThatSucceeded(storiesToCreate, createdOrUpdatedResults);
+        printStoriesThatFailed(storiesToCreate, createdOrUpdatedResults);
+
+        return updateJiraTicketsInAu(au, storiesToCreate, createdOrUpdatedResults);
     }
 
     private void printStoriesThatSucceeded(List<YamlFeatureStory> stories, List<JiraRemoteStoryStatus> createStoriesResults) {

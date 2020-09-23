@@ -149,9 +149,6 @@ public class JiraApi {
             List<JiraStory> jiraStories,
             String epicKey,
             Long projectId) {
-        // TODO: This fails fast: No new cards are updated after first failure
-        //       JIRA REST API does not provide a bulk update call
-        // TODO: The matching "createExistingStories" fails fast
         final var result = new ArrayList<JiraRemoteStoryStatus>(jiraStories.size());
         for (final var story : jiraStories) {
             try {
