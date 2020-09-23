@@ -142,12 +142,15 @@ public class YamlArchitectureUpdate {
                 .collect(toList());
     }
 
-    public YamlArchitectureUpdate updateJiraTicketsInAu(
+    public YamlArchitectureUpdate amendJiraTicketsInAu(
             final List<YamlFeatureStory> stories,
-            final List<JiraRemoteStoryStatus> creationStatuses) {
+            final List<JiraRemoteStoryStatus> statuses) {
+        if (stories.size() != statuses.size())
+            throw new IllegalArgumentException("Mismatch");
+
         var updatedAu = this;
-        for (int i = 0; i < creationStatuses.size(); ++i) {
-            final var status = creationStatuses.get(i);
+        for (int i = 0; i < statuses.size(); ++i) {
+            final var status = statuses.get(i);
             if (status.isSuccess()) {
                 updatedAu = addJiraToFeatureStory(
                         stories.get(i),

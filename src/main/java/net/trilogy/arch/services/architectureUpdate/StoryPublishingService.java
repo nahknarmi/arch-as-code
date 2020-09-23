@@ -66,12 +66,16 @@ public class StoryPublishingService {
         printStoriesThatSucceeded(storiesToUpdate, updateStoriesResults, "updated");
         printStoriesThatFailed(storiesToUpdate, updateStoriesResults);
 
+        final var processedStories = new ArrayList<YamlFeatureStory>(
+                storiesToCreate.size() + storiesToUpdate.size());
+        processedStories.addAll(storiesToCreate);
+        processedStories.addAll(storiesToUpdate);
         final var processResults = new ArrayList<JiraRemoteStoryStatus>(
                 createStoriesResults.size() + updateStoriesResults.size());
         processResults.addAll(createStoriesResults);
         processResults.addAll(updateStoriesResults);
 
-        return au.updateJiraTicketsInAu(storiesToCreate, processResults);
+        return au.amendJiraTicketsInAu(processedStories, processResults);
     }
 
     private List<JiraRemoteStoryStatus> createStories(
@@ -117,8 +121,8 @@ public class StoryPublishingService {
 
         return api.updateExistingStories(
                 jiraStoriesToUpdate,
-                yamlEpicJira.getTicket(),
-                informationAboutTheEpic.getProjectId());
+                yamlEpicJira.getTicket()
+        );
     }
 
     private void printStoriesThatSucceeded(

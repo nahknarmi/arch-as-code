@@ -158,8 +158,8 @@ public class JiraApiTest {
 
         final var results = new JiraApi(mockJiraClient).updateExistingStories(
                 singletonList(jiraStory),
-                epicKey,
-                projectId);
+                epicKey
+        );
 
         assertEquals(singletonList(succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
     }

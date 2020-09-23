@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.err;
 import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
@@ -56,7 +57,8 @@ public class JiraApi {
      * out a "Description" field.
      *
      * @todo Which is better, "customfield_10002" or "customfield_10004"?
-     * @see JiraStory#asIssueInput(String, Long)
+     * @see JiraStory#asNewIssueInput(String, Long)
+     * @see JiraStory#asExistingIssueInput(String)
      */
     public static boolean isEquivalentToJira(YamlEpic fromYaml, Issue fromJira) {
         requireNonNull(fromYaml);
@@ -131,7 +133,7 @@ public class JiraApi {
             String epicKey,
             Long projectId) throws InterruptedException, ExecutionException {
         final var jiraIssues = jiraStories.stream()
-                .map(it -> it.asIssueInput(epicKey, projectId))
+                .map(it -> it.asNewIssueInput(epicKey, projectId))
                 .collect(toList());
         final var bulkResponse = jiraClient.getIssueClient()
                 .createIssues(jiraIssues)
@@ -152,19 +154,17 @@ public class JiraApi {
 
     public List<JiraRemoteStoryStatus> updateExistingStories(
             List<JiraStory> jiraStories,
-            String epicKey,
-            Long projectId) {
+            String epicKey) {
         return jiraStories.stream()
-                .map(it -> updateOneExistingStory(it, epicKey, projectId))
+                .map(it -> updateOneExistingStory(it, epicKey))
                 .collect(toList());
     }
 
     private JiraRemoteStoryStatus updateOneExistingStory(
             JiraStory story,
-            String epicKey,
-            Long projectId) {
+            String epicKey) {
         try {
-            final var input = story.asIssueInput(epicKey, projectId);
+            final var input = story.asExistingIssueInput(epicKey);
             jiraClient.getIssueClient().updateIssue(story.getKey(), input).get();
             return succeeded(story.getKey(), story.getLink());
         } catch (final InterruptedException e) {
@@ -195,15 +195,15 @@ public class JiraApi {
                 .createWithBasicHttpAuthentication(root, username, password);
         final var issues = client.getIssueClient();
 
-        final var start = System.currentTimeMillis();
+        final var start = currentTimeMillis();
         try {
             issues.updateIssue(epicKey, IssueInput.createWithFields(
-                    new FieldInput(SUMMARY_FIELD, "JAVIER IS JEFE")
+                    new FieldInput(SUMMARY_FIELD, "AHMED IS JEFE")
             )).get();
         } catch (final Exception e) {
             e.printStackTrace();
         }
-        final var end = System.currentTimeMillis();
+        final var end = currentTimeMillis();
         err.println("TIME -> " + (end - start));
 
         final var issue = issues.getIssue(epicKey).get();

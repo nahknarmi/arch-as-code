@@ -91,10 +91,26 @@ public class JiraStory {
      * test</strong> that AaC uses the key, not the title.
      * @todo Are "customfield_10002" and "customfield_10004" equivalent?
      */
-    public IssueInput asIssueInput(String epicKey, Long projectId) {
+    public IssueInput asNewIssueInput(
+            String epicKey,
+            Long projectId) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("project", projectId)
+                .setFieldValue("summary", featureStory.getTitle())
+                .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
+                .setFieldValue("description", makeDescription())
+                .build();
+    }
+
+    /**
+     * It is <strong>important</strong> to <em>not</em> provide the project ID
+     * for an existing JIRA issue.  JIRA will complain at you if you try.
+     */
+    public IssueInput asExistingIssueInput(
+            String epicKey) {
+        return new IssueInputBuilder()
+                .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("summary", featureStory.getTitle())
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", makeDescription())
