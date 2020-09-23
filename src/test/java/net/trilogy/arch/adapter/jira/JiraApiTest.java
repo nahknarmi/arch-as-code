@@ -147,10 +147,10 @@ public class JiraApiTest {
         when(mockUpdateReturn.get()).thenReturn(mockVoid);
 
         final var jiraStory = createJiraStoryFixture();
-        final var jiraStoryIssueInput = jiraStory.asIssueInput(YamlEpic.BLANK_AU_EPIC_JIRA_TICKET_VALUE, projectId);
+        final var jiraStoryIssueInput = jiraStory.asIssueInput(epicKey, projectId);
 
         when(mockIssueClient
-                .updateIssue(eq(jiraStory.getKey()),any()))
+                .updateIssue(eq(jiraStory.getKey()), any()))
                 .thenReturn(mockUpdateReturn);
 
         final var results = new JiraApi(mockJiraClient).updateExistingStories(
