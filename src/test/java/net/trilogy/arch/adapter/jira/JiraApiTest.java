@@ -27,6 +27,7 @@ import static io.atlassian.util.concurrent.Promises.promise;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static net.trilogy.arch.adapter.jira.JiraApi.isEquivalentToJira;
+import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.succeeded;
 import static net.trilogy.arch.adapter.jira.JiraStoryTest.createJiraStoryFixture;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -101,7 +102,8 @@ public class JiraApiTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // this is because it doesn't like our casting to generic types
+    @SuppressWarnings("unchecked")
+    // this is because it doesn't like our casting to generic types
     public void create_a_new_jira_card() throws JiraApiException, ExecutionException, InterruptedException {
         final var mockJiraClient = mock(JiraRestClient.class);
         final var mockIssueClient = mock(IssueRestClient.class);
@@ -113,9 +115,9 @@ public class JiraApiTest {
         final var newCardLink = URI.create("");
         final var projectId = 314159L;
 
-        when(mockCreateReturn.get())
-                .thenReturn(new BulkOperationResult<>(singletonList(new BasicIssue(newCardLink, newCardKey, projectId)),
-                        emptyList()));
+        when(mockCreateReturn.get()).thenReturn(new BulkOperationResult<>(
+                singletonList(new BasicIssue(newCardLink, newCardKey, projectId)),
+                emptyList()));
 
         when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
 
@@ -129,11 +131,12 @@ public class JiraApiTest {
                 epicKey,
                 projectId);
 
-        assertEquals(singletonList(JiraRemoteStoryStatus.succeeded(newCardKey, newCardLink.toString())), results);
+        assertEquals(singletonList(succeeded(newCardKey, newCardLink.toString())), results);
     }
 
     @Test
-    @SuppressWarnings("unchecked") // this is because it doesn't like our casting to generic types
+    @SuppressWarnings("unchecked")
+    // this is because it doesn't like our casting to generic types
     public void update_an_existing_jira_card() throws ExecutionException, InterruptedException {
         final var mockJiraClient = mock(JiraRestClient.class);
         final var mockIssueClient = mock(IssueRestClient.class);
@@ -147,9 +150,9 @@ public class JiraApiTest {
         when(mockUpdateReturn.get()).thenReturn(mockVoid);
 
         final var jiraStory = createJiraStoryFixture();
-        final var jiraStoryIssueInput = jiraStory.asIssueInput(epicKey, projectId);
 
         when(mockIssueClient
+                // any() stinks, however, JIRA API does not provide an equals()
                 .updateIssue(eq(jiraStory.getKey()), any()))
                 .thenReturn(mockUpdateReturn);
 
@@ -158,7 +161,7 @@ public class JiraApiTest {
                 epicKey,
                 projectId);
         System.out.println(results.stream().findFirst().toString());
-        assertEquals(singletonList(JiraRemoteStoryStatus.succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
+        assertEquals(singletonList(succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
     }
 
     @Test
