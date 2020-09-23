@@ -125,11 +125,15 @@ public class JiraApi {
         }
     }
 
-    private ArrayList<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(List<JiraStory> jiraStories, String epicKey, Long projectId) throws InterruptedException, ExecutionException {
+    private List<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(
+            List<JiraStory> jiraStories,
+            String epicKey,
+            Long projectId) throws InterruptedException, ExecutionException {
+        final var jiraIssues = jiraStories.stream()
+                .map(it -> it.asIssueInput(epicKey, projectId))
+                .collect(toList());
         final var bulkResponse = jiraClient.getIssueClient()
-                .createIssues(jiraStories.stream()
-                        .map(it -> it.asIssueInput(epicKey, projectId))
-                        .collect(toList()))
+                .createIssues(jiraIssues)
                 .get();
 
         final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)
@@ -154,8 +158,8 @@ public class JiraApi {
             try {
                 jiraClient.getIssueClient()
                         .updateIssue(
-                            story.getKey(),
-                            story.asIssueInput(epicKey, projectId))
+                                story.getKey(),
+                                story.asIssueInput(epicKey, projectId))
                         .get();
                 result.add(succeeded(story.getKey(), story.getLink()));
             } catch (final RuntimeException e) {

@@ -108,7 +108,7 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
             ArchitectureDataStructure afterAuArchitecture,
             StoryPublishingService jiraService) {
         try {
-            return Optional.of(jiraService.createOrUpdateStories(au, beforeAuArchitecture, afterAuArchitecture));
+            return Optional.of(jiraService.processStories(au, beforeAuArchitecture, afterAuArchitecture));
         } catch (JiraApiException e) {
             printError("Jira API failed", e);
         } catch (InvalidStoryException e) {
