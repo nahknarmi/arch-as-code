@@ -78,7 +78,7 @@ capabilities:
   - title: "[SAMPLE FEATURE STORY TITLE]"
     jira:
       ticket: AU-70
-      link: http://jira.devfactory.com/browse/AU-70
+      link: https://jira.devfactory.com/browse/AU-70
     tdd-references:
     - no-PR
     functional-requirement-references:
@@ -89,7 +89,7 @@ capabilities:
         Some useful business goals
       jira:
         ticket: AU-170
-        link: http://jira.devfactory.com/browse/AU-170
+        link: https://jira.devfactory.com/browse/AU-170
       attributes:
         - name: Accessible
           rationale: User interface functions should be accessible
@@ -100,7 +100,7 @@ capabilities:
   - title: SAMPLE FEATURE STORY TITLE with No PR
     jira:
       ticket: AU-71
-      link: http://jira.devfactory.com/browse/AU-71
+      link: https://jira.devfactory.com/browse/AU-71
     tdd-references:
     - "111"
     - "112"
@@ -110,7 +110,7 @@ capabilities:
       title: Title of E2E
       jira:
         ticket: E2E-71
-        link: http://jira.devfactory.com/browse/E2E-71
+        link: https://jira.devfactory.com/browse/E2E-71
       business-goal: |
         Some useful business goals
       attributes:
@@ -123,7 +123,7 @@ capabilities:
   - title: SAMPLE FEATURE STORY TITLE new one
     jira:
       ticket: AU-72
-      link: http://jira.devfactory.com/browse/AU-72
+      link: https://jira.devfactory.com/browse/AU-72
     tdd-references:
     - "111"
     functional-requirement-references:
@@ -132,7 +132,7 @@ capabilities:
       title: Title of E2E
       jira:
         ticket: E2E-72
-        link: http://jira.devfactory.com/browse/E2E-72
+        link: https://jira.devfactory.com/browse/E2E-72
       business-goal: |
         Some useful business goals
       attributes:
