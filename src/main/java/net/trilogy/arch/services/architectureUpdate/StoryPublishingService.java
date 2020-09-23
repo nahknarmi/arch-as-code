@@ -64,12 +64,12 @@ public class StoryPublishingService {
         final var storiesToUpdate = findFeatureStoriesToUpdate(au);
         // TODO: storiesToDelete -- implies calling REST JIRA to check
 
-        final var epicJiraTicket = au.getCapabilityContainer().getEpic().getJira();
-        final var informationAboutTheEpic = api.getStory(epicJiraTicket);
+        final var yamlEpicJira = au.getCapabilityContainer().getEpic().getJira();
+        final var informationAboutTheEpic = api.getStory(yamlEpicJira);
 
-        out.println("Creating stories in the epic "
-                + informationAboutTheEpic.getProjectKey() +" which is project id " + informationAboutTheEpic.getProjectId()
-                + "...\n");
+        out.printf("Creating stories in the epic having JIRA key %s and project id %d...%n",
+                informationAboutTheEpic.getProjectKey(),
+                informationAboutTheEpic.getProjectId());
 
         // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
         final var jiraStoriesToCreate = new ArrayList<JiraStory>(storiesToCreate.size());
@@ -84,12 +84,12 @@ public class StoryPublishingService {
         // create stories
         var createStoriesResults = api.createNewStories(
                 jiraStoriesToCreate,
-                epicJiraTicket.getTicket(),
+                yamlEpicJira.getTicket(),
                 informationAboutTheEpic.getProjectId());
         // update stories
         var updateStoriesResults = api.updateExistingStories(
                 jiraStoriesToUpdate,
-                epicJiraTicket.getTicket(),
+                yamlEpicJira.getTicket(),
                 informationAboutTheEpic.getProjectId());
         // delete stories
 
@@ -98,6 +98,7 @@ public class StoryPublishingService {
         createdOrUpdatedResults.addAll(createStoriesResults);
         createdOrUpdatedResults.addAll(updateStoriesResults);
 
+        out.println();
         printStoriesThatSucceeded(storiesToCreate, createdOrUpdatedResults);
         printStoriesThatFailed(storiesToCreate, createdOrUpdatedResults);
 

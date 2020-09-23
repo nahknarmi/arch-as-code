@@ -180,7 +180,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldFailGracefullyIfUnableToCreateJiraStoryDTO() throws Exception {
         // Given
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -193,8 +193,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 "Not recreating stories:\n" +
                         "  - story that should be updated (already existing jira ticket)\n" +
                         "\n" +
-                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
-                        "\n"));
+                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n"));
         collector.checkThat(dummyErr.getLog(), equalTo(
                 "ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
     }
@@ -282,7 +281,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldOutputResult() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
@@ -299,7 +298,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 "Not recreating stories:\n" +
                         "  - story that should be updated (already existing jira ticket)\n" +
                         "\n" +
-                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
+                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
                         "\n" +
                         "Successfully created:\n" +
                         "  - story that should be created\n" +
@@ -337,9 +336,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldDisplayPartialErrorsWhenCreatingStories() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
-        when(mockedJiraApi.getStory(epic))
-                .thenReturn(epicInformation);
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
+        when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
                         succeeded("ABC-123", "link-to-ABC-123"),
@@ -360,7 +358,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 "Not recreating stories:\n" +
                         "  - story that should be updated (already existing jira ticket)\n" +
                         "\n" +
-                        "Creating stories in the epic [SAMPLE JIRA TICKET]...\n" +
+                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n" +
                         "\n" +
                         "Successfully created:\n" +
                         "  - story that should be created\n"));
