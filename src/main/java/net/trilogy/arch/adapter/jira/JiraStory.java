@@ -94,12 +94,9 @@ public class JiraStory {
     public IssueInput asNewIssueInput(
             String epicKey,
             Long projectId) {
-        return new IssueInputBuilder()
-                .setFieldValue("customfield_10002", epicKey)
+        return issueBuilderWithCommonFields(epicKey)
                 .setFieldValue("project", ComplexIssueInputFieldValue.with("id", projectId))
-                .setFieldValue("summary", featureStory.getTitle())
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
-                .setFieldValue("description", makeDescription())
                 .build();
     }
 
@@ -109,11 +106,15 @@ public class JiraStory {
      */
     public IssueInput asExistingIssueInput(
             String epicKey) {
+        return issueBuilderWithCommonFields(epicKey)
+                .build();
+    }
+
+    private IssueInputBuilder issueBuilderWithCommonFields(String epicKey) {
         return new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setFieldValue("description", makeDescription())
-                .setFieldValue("summary", featureStory.getTitle())
-                .build();
+                .setFieldValue("summary", featureStory.getTitle());
     }
 
     private static List<JiraFunctionalRequirement> getFunctionalRequirements(YamlArchitectureUpdate au, YamlFeatureStory featureStory) throws InvalidStoryException {
