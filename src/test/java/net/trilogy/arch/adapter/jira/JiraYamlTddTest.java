@@ -1,8 +1,8 @@
 package net.trilogy.arch.adapter.jira;
 
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -11,7 +11,7 @@ import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 import static org.hamcrest.Matchers.equalTo;
 
-public class YamlJiraYamlTddTest {
+public class JiraYamlTddTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 
@@ -21,8 +21,7 @@ public class YamlJiraYamlTddTest {
                 new TddId("TDD 1.1"),
                 new YamlTdd("text", null),
                 "c4://path",
-                null
-        );
+                null);
 
         collector.checkThat(tdd.getText(), equalTo("text"));
         collector.checkThat(tdd.hasTddContent(), equalTo(false));
@@ -34,8 +33,7 @@ public class YamlJiraYamlTddTest {
                 new TddId("TDD 1.1"),
                 new YamlTdd(null, "TDD 1.1 : Component-10.md"),
                 "c4://path",
-                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
-        );
+                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md"));
 
         collector.checkThat(tdd.getText(), equalTo("#Content\nTdd Content"));
         collector.checkThat(tdd.hasTddContent(), equalTo(true));
@@ -47,8 +45,7 @@ public class YamlJiraYamlTddTest {
                 new TddId("TDD 1.1"),
                 new YamlTdd("ignored text", null),
                 "c4://path",
-                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
-        );
+                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md"));
 
         collector.checkThat(tdd.getText(), equalTo("#Content\nTdd Content"));
     }
@@ -59,8 +56,7 @@ public class YamlJiraYamlTddTest {
                 new TddId("TDD 1.1"),
                 new YamlTdd("ignored text", "TDD 1.1 : Component-10.md"),
                 "c4://path",
-                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md")
-        );
+                new TddContent("#Content\nTdd Content", "TDD 1.1 : Component-10.md"));
 
         collector.checkThat(tdd.getText(), equalTo("#Content\nTdd Content"));
     }

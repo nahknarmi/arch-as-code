@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class YamlJiraApiTest {
+public class JiraApiTest {
     @Rule
     public final ErrorCollector collector = new ErrorCollector();
 

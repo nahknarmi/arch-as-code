@@ -3,10 +3,19 @@ package net.trilogy.arch.adapter.jira;
 import net.trilogy.arch.TestHelper;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.TddContent;
+import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
+import net.trilogy.arch.domain.architectureUpdate.YamlCapabilitiesContainer;
+import net.trilogy.arch.domain.architectureUpdate.YamlE2E;
+import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
+import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
+import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddComponentReference;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
+import net.trilogy.arch.domain.architectureUpdate.YamlTddContainerByComponent;
 import net.trilogy.arch.facade.FilesFacade;
 import org.junit.Test;
 
@@ -22,62 +31,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class YamlJiraStoryTest {
-
-    private static YamlArchitectureUpdate getAu() {
-        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
-        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
-
-        return YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks()
-                .tddContainersByComponent(List.of(
-                        new YamlTddContainerByComponent(
-                                new TddComponentReference("31"),
-                                null, false,
-                                Map.of(
-                                        new TddId("TDD 1"), new YamlTdd("TDD 1 text", null).withContent(tddContent1),
-                                        new TddId("TDD 2"), new YamlTdd("TDD 2 text", null).withContent(null),
-                                        new TddId("[SAMPLE-TDD-ID]"), new YamlTdd("sample tdd text", null))),
-                        new YamlTddContainerByComponent(
-                                new TddComponentReference("404"),
-                                null, true,
-                                Map.of(
-                                        new TddId("TDD 3"), new YamlTdd("TDD 3 text", null).withContent(tddContent3),
-                                        new TddId("TDD 4"), new YamlTdd("TDD 4 text", null).withContent(null)))))
-                .capabilityContainer(new YamlCapabilitiesContainer(
-                        YamlEpic.blank(),
-                        singletonList(
-                                new YamlFeatureStory(
-                                        "story title",
-                                        new YamlJira("", ""),
-                                        List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
-                                        List.of(FunctionalRequirementId.blank()),
-                                        YamlE2E.blank()))))
-                .build();
-    }
-
-    private static YamlArchitectureUpdate getAuWithInvalidComponent() {
-        return changeAllTddsToBeUnderComponent("1231231323123", getAu());
-    }
-
-    private static YamlArchitectureUpdate getAuWithInvalidRequirement() {
-        return getAu().toBuilder().functionalRequirements(
-                Map.of(new FunctionalRequirementId("different id than the reference in the story"),
-                        new YamlFunctionalRequirement("any text", "any source", List.of())))
-                .build();
-    }
-
-    private static YamlArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, YamlArchitectureUpdate au) {
-        var oldTdds = new HashMap<TddId, YamlTdd>();
-        for (var container : au.getTddContainersByComponent()) {
-            oldTdds.putAll(container.getTdds());
-        }
-        final YamlTddContainerByComponent newComponentWithTdds = new YamlTddContainerByComponent(
-                new TddComponentReference(newComponentId),
-                null, false,
-                oldTdds
-        );
-        return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
-    }
-
     @Test
     public void ShouldConstructJiraStory() throws Exception {
         // GIVEN:
@@ -206,5 +159,60 @@ public class YamlJiraStoryTest {
                 getClass(),
                 MANIFEST_PATH_TO_TEST_JIRA_STORY_CREATION).toFile().toPath());
         return YAML_OBJECT_MAPPER.readValue(archAsString, ArchitectureDataStructure.class);
+    }
+
+    private static YamlArchitectureUpdate getAu() {
+        TddContent tddContent1 = new TddContent("content-file-1", "TDD 1 : Component-31.md");
+        TddContent tddContent3 = new TddContent("content-file-3", "TDD 3 : Component-404.txt");
+
+        return YamlArchitectureUpdate.prefilledYamlArchitectureUpdateWithBlanks()
+                .tddContainersByComponent(List.of(
+                        new YamlTddContainerByComponent(
+                                new TddComponentReference("31"),
+                                null, false,
+                                Map.of(
+                                        new TddId("TDD 1"), new YamlTdd("TDD 1 text", null).withContent(tddContent1),
+                                        new TddId("TDD 2"), new YamlTdd("TDD 2 text", null).withContent(null),
+                                        new TddId("[SAMPLE-TDD-ID]"), new YamlTdd("sample tdd text", null))),
+                        new YamlTddContainerByComponent(
+                                new TddComponentReference("404"),
+                                null, true,
+                                Map.of(
+                                        new TddId("TDD 3"), new YamlTdd("TDD 3 text", null).withContent(tddContent3),
+                                        new TddId("TDD 4"), new YamlTdd("TDD 4 text", null).withContent(null)))))
+                .capabilityContainer(new YamlCapabilitiesContainer(
+                        YamlEpic.blank(),
+                        singletonList(
+                                new YamlFeatureStory(
+                                        "story title",
+                                        new YamlJira("", ""),
+                                        List.of(new TddId("TDD 1"), new TddId("TDD 2"), new TddId("TDD 3")),
+                                        List.of(FunctionalRequirementId.blank()),
+                                        YamlE2E.blank()))))
+                .build();
+    }
+
+    private static YamlArchitectureUpdate getAuWithInvalidComponent() {
+        return changeAllTddsToBeUnderComponent("1231231323123", getAu());
+    }
+
+    private static YamlArchitectureUpdate getAuWithInvalidRequirement() {
+        return getAu().toBuilder().functionalRequirements(
+                Map.of(new FunctionalRequirementId("different id than the reference in the story"),
+                        new YamlFunctionalRequirement("any text", "any source", List.of())))
+                .build();
+    }
+
+    private static YamlArchitectureUpdate changeAllTddsToBeUnderComponent(String newComponentId, YamlArchitectureUpdate au) {
+        var oldTdds = new HashMap<TddId, YamlTdd>();
+        for (var container : au.getTddContainersByComponent()) {
+            oldTdds.putAll(container.getTdds());
+        }
+        final YamlTddContainerByComponent newComponentWithTdds = new YamlTddContainerByComponent(
+                new TddComponentReference(newComponentId),
+                null, false,
+                oldTdds
+        );
+        return au.toBuilder().tddContainersByComponent(List.of(newComponentWithTdds)).build();
     }
 }
