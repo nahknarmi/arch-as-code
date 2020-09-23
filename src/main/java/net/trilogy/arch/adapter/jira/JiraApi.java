@@ -152,9 +152,11 @@ public class JiraApi {
         final var result = new ArrayList<JiraRemoteStoryStatus>(jiraStories.size());
         for (final var story : jiraStories) {
             try {
-                jiraClient.getIssueClient().updateIssue(
-                        story.getKey(),
-                        story.asIssueInput(epicKey, projectId)).get();
+                jiraClient.getIssueClient()
+                        .updateIssue(
+                            story.getKey(),
+                            story.asIssueInput(epicKey, projectId))
+                        .get();
                 result.add(succeeded(story.getKey(), story.getLink()));
             } catch (final RuntimeException e) {
                 throw e;

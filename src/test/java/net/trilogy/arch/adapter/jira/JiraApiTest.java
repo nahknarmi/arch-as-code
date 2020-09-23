@@ -33,8 +33,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,16 +133,32 @@ public class JiraApiTest {
     }
 
     @Test
-    public void update_an_existing_jira_card() {
+    @SuppressWarnings("unchecked") // this is because it doesn't like our casting to generic types
+    public void update_an_existing_jira_card() throws ExecutionException, InterruptedException {
         final var mockJiraClient = mock(JiraRestClient.class);
+        final var mockIssueClient = mock(IssueRestClient.class);
+        final var mockUpdateReturn = (Promise<Void>) mock(Promise.class);
+        final var mockVoid = mock(Void.class);
+
+        final var epicKey = "BOB-UNCLE-1234567890";
+        final var projectId = 314159L;
+
+        when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
+        when(mockUpdateReturn.get()).thenReturn(mockVoid);
+
         final var jiraStory = createJiraStoryFixture();
+        final var jiraStoryIssueInput = jiraStory.asIssueInput(YamlEpic.BLANK_AU_EPIC_JIRA_TICKET_VALUE, projectId);
+
+        when(mockIssueClient
+                .updateIssue(eq(jiraStory.getKey()),any()))
+                .thenReturn(mockUpdateReturn);
 
         final var results = new JiraApi(mockJiraClient).updateExistingStories(
                 singletonList(jiraStory),
-                "BOB-UNCLE-1234567890",
-                314159L);
-
-        assertEquals(emptyList(), results);
+                epicKey,
+                projectId);
+        System.out.println(results.stream().findFirst().toString());
+        assertEquals(singletonList(JiraRemoteStoryStatus.succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
     }
 
     @Test
