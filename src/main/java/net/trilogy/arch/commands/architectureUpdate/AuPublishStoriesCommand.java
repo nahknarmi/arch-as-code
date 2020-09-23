@@ -76,12 +76,12 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         if (afterAuArchitecture.isEmpty()) return 1;
 
         var jiraApi = getJiraApi();
-        if (jiraApi.isEmpty()) return 1;
+        if (null == jiraApi) return 1;
 
         final StoryPublishingService jiraService = new StoryPublishingService(
                 spec.commandLine().getOut(),
                 spec.commandLine().getErr(),
-                jiraApi.get());
+                jiraApi);
 
         var updatedAu = createStories(
                 au.get(),
@@ -118,12 +118,12 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         return Optional.empty();
     }
 
-    private Optional<JiraApi> getJiraApi() {
+    private JiraApi getJiraApi() {
         try {
-            return Optional.of(newJiraApi(filesFacade, productArchitectureDirectory.toPath(), username, password));
+            return newJiraApi(filesFacade, productArchitectureDirectory.toPath(), username, password);
         } catch (Exception e) {
             printError("Unable to load JIRA configuration.", e);
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -136,4 +136,3 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
         }
     }
 }
-

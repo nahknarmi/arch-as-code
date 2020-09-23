@@ -321,12 +321,11 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // WHEN:
         execute(app, genericCommand());
-        final var actualAuAsstring = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
-        final var actualAu = YAML_OBJECT_MAPPER.readValue(actualAuAsstring, YamlArchitectureUpdate.class);
 
         // THEN:
-        final var originalAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
-        final var originalAu = YAML_OBJECT_MAPPER.readValue(originalAuAsString, YamlArchitectureUpdate.class);
+        // TODO: How do actual and original differ?
+        final YamlArchitectureUpdate actualAu = auFromYaml();
+        final YamlArchitectureUpdate originalAu = auFromYaml();
         final var expectedAu = originalAu.addJiraToFeatureStory(
                 first(originalAu.getCapabilityContainer().getFeatureStories()),
                 new YamlJira("ABC-123", "link-to-ABC-123"));
@@ -558,5 +557,11 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("TDD 1.0")))))));
+    }
+
+    private YamlArchitectureUpdate auFromYaml() throws IOException {
+        final String actualAuAsString;
+        actualAuAsString = Files.readString(testCloneDirectory.resolve(ARCHITECTURE_UPDATE_YML));
+        return YAML_OBJECT_MAPPER.readValue(actualAuAsString, YamlArchitectureUpdate.class);
     }
 }
