@@ -2,7 +2,6 @@ package net.trilogy.arch.adapter.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
@@ -203,10 +202,10 @@ public class JiraApi {
         //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
+                .setProjectKey("AU")
                 // It seems like this used to work with just the id, but now we seem to need a whole BasicProject instance
                 // maybe we used to use projectId? or some other thing?
-                .setFieldValue("project", new BasicProject(
-                        URI.create("https://jira.devfactory.com/rest/api/2/project/43900"),"AU", 43900L, "Arch-as-Code AU" ))
+                .setFieldValue("project", ComplexIssueInputFieldValue.with("id", epicId))
                 .setFieldValue("summary", "Story Creation saying project is required :-(")
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", "makeDescription call goes here()")
