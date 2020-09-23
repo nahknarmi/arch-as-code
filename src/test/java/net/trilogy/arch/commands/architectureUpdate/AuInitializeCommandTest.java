@@ -125,7 +125,7 @@ public class AuInitializeCommandTest extends CommandTestBase {
         );
 
         final String expectedJiraSettingsJson = "{\n" +
-                "    \"base_uri\": \"http://jira.devfactory.com\",\n" +
+                "    \"base_uri\": \"https://jira.devfactory.com\",\n" +
                 "    \"link_prefix\": \"/browse/\",\n" +
                 "    \"get_story_endpoint\": \"/rest/api/2/issue/\",\n" +
                 "    \"bulk_create_endpoint\": \"/rest/api/2/issue/bulk\"\n" +
