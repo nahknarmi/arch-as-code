@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.SUMMARY_FIELD;
 import static java.lang.System.err;
 import static java.lang.System.out;
+import static java.lang.Thread.currentThread;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -153,22 +154,25 @@ public class JiraApi {
             List<JiraStory> jiraStories,
             String epicKey,
             Long projectId) {
-        final var result = new ArrayList<JiraRemoteStoryStatus>(jiraStories.size());
-        for (final var story : jiraStories) {
-            try {
-                jiraClient.getIssueClient()
-                        .updateIssue(
-                                story.getKey(),
-                                story.asIssueInput(epicKey, projectId))
-                        .get();
-                result.add(succeeded(story.getKey(), story.getLink()));
-            } catch (final RuntimeException e) {
-                throw e;
-            } catch (final Exception e) {
-                result.add(failed(e.toString()));
-            }
+        return jiraStories.stream()
+                .map(it -> updateOneExistingStory(it, epicKey, projectId))
+                .collect(toList());
+    }
+
+    private JiraRemoteStoryStatus updateOneExistingStory(
+            JiraStory story,
+            String epicKey,
+            Long projectId) {
+        try {
+            final var input = story.asIssueInput(epicKey, projectId);
+            jiraClient.getIssueClient().updateIssue(story.getKey(), input).get();
+            return succeeded(story.getKey(), story.getLink());
+        } catch (final InterruptedException e) {
+            currentThread().interrupt();
+            return failed(e.toString());
+        } catch (final ExecutionException e) {
+            return failed(e.getCause().toString());
         }
-        return result;
     }
 
     @Generated

@@ -60,16 +60,16 @@ public class StoryPublishingService {
                 yamlEpicJira,
                 informationAboutTheEpic);
 
-        final var createdOrUpdatedResults = new ArrayList<JiraRemoteStoryStatus>(
+        final var processResults = new ArrayList<JiraRemoteStoryStatus>(
                 createStoriesResults.size() + updateStoriesResults.size());
-        createdOrUpdatedResults.addAll(createStoriesResults);
-        createdOrUpdatedResults.addAll(updateStoriesResults);
+        processResults.addAll(createStoriesResults);
+        processResults.addAll(updateStoriesResults);
 
         out.println();
-        printStoriesThatSucceeded(storiesToCreate, createdOrUpdatedResults);
-        printStoriesThatFailed(storiesToCreate, createdOrUpdatedResults);
+        printStoriesThatSucceeded(storiesToCreate, processResults);
+        printStoriesThatFailed(storiesToCreate, processResults);
 
-        return au.updateJiraTicketsInAu(storiesToCreate, createdOrUpdatedResults);
+        return au.updateJiraTicketsInAu(storiesToCreate, processResults);
     }
 
     private List<JiraRemoteStoryStatus> createStories(
