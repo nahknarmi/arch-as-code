@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class YamlJiraApiFactoryTest {
+public class JiraApiFactoryTest {
     private static final String expectedBaseUri = "BASE-URI/";
     private static final String expectedGetStoryEndpoint = "GET-STORY-ENDPOINT/";
     private static final String expectedBulkCreateEndpoint = "BULK-CREATE-ENDPOINT/";
