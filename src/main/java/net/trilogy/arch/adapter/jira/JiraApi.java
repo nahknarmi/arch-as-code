@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static java.lang.System.currentTimeMillis;
 import static java.lang.System.err;
 import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
@@ -195,8 +194,6 @@ public class JiraApi {
                 .createWithBasicHttpAuthentication(root, username, password);
         final var issues = client.getIssueClient();
 
-        final var start = currentTimeMillis();
-
         final var epicIssue = issues.getIssue(EPIC_KEY).get();
         final var epicLink = epicIssue.getSelf();
         final var epicKey = epicIssue.getKey();
@@ -230,6 +227,7 @@ public class JiraApi {
 
         System.exit(0); // Do NOT update the "real" example!
 
+        // Create NEW Issue example
         final var projectId = epicIssue.getProject().getId();
         //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
@@ -243,12 +241,6 @@ public class JiraApi {
                 .setFieldValue("description", "makeDescription call goes here()")
                 .build();
 
-        try {
-            issues.createIssue(issueInput).get();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-        final var end = currentTimeMillis();
-        err.println("TIME -> " + (end - start));
+        issues.createIssue(issueInput).get();
     }
 }
