@@ -29,7 +29,7 @@ import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class JiraStory {
+public class JiraStory implements JiraIssueConvertible {
     public static final String EPIC_KEY_FIELD = "customfield_10002";
 
     private final YamlFeatureStory featureStory;
@@ -240,6 +240,11 @@ public class JiraStory {
         }
     }
 
-    public static class InvalidStoryException extends Exception {
+    public static class InvalidStoryException extends RuntimeException {
+        public InvalidStoryException() {}
+
+        public InvalidStoryException(String message) {
+            super(message);
+        }
     }
 }

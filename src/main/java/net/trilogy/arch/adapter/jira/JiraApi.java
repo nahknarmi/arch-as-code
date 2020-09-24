@@ -105,8 +105,8 @@ public class JiraApi {
         }
     }
 
-    public List<JiraRemoteStoryStatus> createNewStories(
-            List<JiraStory> jiraStories,
+    public List<JiraRemoteStoryStatus> createJiraIssues(
+            List<? extends JiraIssueConvertible> jiraStories,
             String epicKey,
             Long projectId)
             throws JiraApiException {
@@ -128,7 +128,7 @@ public class JiraApi {
     }
 
     private List<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(
-            List<JiraStory> jiraStories,
+            List<? extends JiraIssueConvertible> jiraStories,
             String epicKey,
             Long projectId) throws InterruptedException, ExecutionException {
         final var jiraIssues = jiraStories.stream()

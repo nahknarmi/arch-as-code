@@ -5,6 +5,7 @@ import net.trilogy.arch.adapter.jira.JiraApi;
 import net.trilogy.arch.adapter.jira.JiraApiException;
 import net.trilogy.arch.adapter.jira.JiraQueryResult;
 import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
+import net.trilogy.arch.adapter.jira.JiraE2E;
 import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
@@ -18,12 +19,18 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 public class StoryPublishingService {
     private final PrintWriter out;
     private final PrintWriter err;
     private final JiraApi api;
+
+    public static List<JiraE2E> getE2EtoCreate(final YamlArchitectureUpdate au) {
+       return au.getCapabilityContainer().getFeatureStories().stream()
+               .map(s -> new JiraE2E(au, s)).collect(toList());
+    }
 
     public YamlArchitectureUpdate processStories(
             final YamlArchitectureUpdate au,
@@ -96,7 +103,7 @@ public class StoryPublishingService {
             jiraStoriesToCreate.add(new JiraStory(story, au, beforeAuArchitecture, afterAuArchitecture));
         }
 
-        return api.createNewStories(
+        return api.createJiraIssues(
                 jiraStoriesToCreate,
                 yamlEpicJira.getTicket(),
                 informationAboutTheEpic.getProjectId());

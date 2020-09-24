@@ -224,7 +224,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // THEN:
         final var expected = getExpectedJiraStoriesToCreate();
-        verify(mockedJiraApi).createNewStories(expected, epic.getTicket(), epicInformation.getProjectId());
+        verify(mockedJiraApi).createJiraIssues(expected, epic.getTicket(), epicInformation.getProjectId());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         execute(app, specificCommand("tdd-content"));
 
         // THEN:
-        verify(mockedJiraApi).createNewStories(
+        verify(mockedJiraApi).createJiraIssues(
                 getExpectedJiraStoriesWithTddContentToCreate(), epic.getTicket(), epicInformation.getProjectId());
     }
 
@@ -284,7 +284,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
+        when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
                         succeeded("ABC-123", "link-to-ABC-123"),
                         succeeded("ABC-223", "link-to-ABC-223")));
@@ -314,7 +314,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong())).thenReturn(List.of(
+        when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong())).thenReturn(List.of(
                 succeeded("ABC-123", "link-to-ABC-123"),
                 failed("error-message")));
         mockGitInterface();
@@ -339,7 +339,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
-        when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
+        when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
                         succeeded("ABC-123", "link-to-ABC-123"),
                         failed("error-message")));
@@ -372,7 +372,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
         when(mockedJiraApi.getStory(any()))
                 .thenReturn(new JiraQueryResult(1L, "DEF"));
-        when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
+        when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenThrow(new JiraApiException(
                         "OOPS!",
                         new RuntimeException("Details")));
@@ -426,7 +426,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
-        when(mockedJiraApi.createNewStories(anyList(), anyString(), anyLong()))
+        when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
                         succeeded("ABC-123", "link-to-ABC-123"),
                         succeeded("ABC-223", "link-to-ABC-223")));

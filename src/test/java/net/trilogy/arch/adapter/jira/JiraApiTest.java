@@ -126,7 +126,7 @@ public class JiraApiTest {
         when(mockIssueClient.createIssues(anyList()))
                 .thenReturn(mockCreateReturn);
 
-        final var results = new JiraApi(mockJiraClient).createNewStories(
+        final var results = new JiraApi(mockJiraClient).createJiraIssues(
                 singletonList(jiraStory),
                 epicKey,
                 projectId);

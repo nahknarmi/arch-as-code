@@ -1,5 +1,5 @@
 name: Show Tdd In Diff
-milestone: 'end of Sep 2020'
+milestone: end of Sep 2020
 authors:
 - name: '[SAMPLE PERSON NAME]'
   email: '[SAMPLE PERSON EMAIL]'
@@ -63,11 +63,11 @@ functional-requirements:
     tdd-references:
     - no-PR
 functional-areas:
-  AU-101:
+  AU-76:
     title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
     jira:
-      ticket: AU-101 #this is id for a functional area ticket
-      link: https://jira.devfactory.com/browse/AU-101
+      ticket: AU-76
+      link: https://jira.devfactory.com/browse/AU-76
 capabilities:
   epic:
     title: Use this epic to track Jira integration
@@ -84,19 +84,16 @@ capabilities:
     functional-requirement-references:
     - "[SAMPLE-REQUIREMENT-ID]"
     e2e:
-      title: Title of E2E
+      title: Title of E2E 1
       business-goal: |
         Some useful business goals
-      jira:
-        ticket: AU-170
-        link: https://jira.devfactory.com/browse/AU-170
+      functional-area-id: AU-76
       attributes:
-        - name: Accessible
-          rationale: User interface functions should be accessible
-          jira:
-            ticket: AU-22412
-            link: https://jira.devfactory.com/browse/AU-22412
-      functional-area-id: AU-101
+      - name: Accessible
+        rationale: User interface functions should be accessible
+        jira:
+          ticket: AU-77
+          link: https://jira.devfactory.com/browse/AU-77
   - title: SAMPLE FEATURE STORY TITLE with No PR
     jira:
       ticket: AU-71
@@ -107,19 +104,16 @@ capabilities:
     functional-requirement-references:
     - '[SAMPLE-REQUIREMENT-ID-2]'
     e2e:
-      title: Title of E2E
-      jira:
-        ticket: E2E-71
-        link: https://jira.devfactory.com/browse/E2E-71
+      title: Title of E2E 2
       business-goal: |
         Some useful business goals
+      functional-area-id: AU-76
       attributes:
-        - name: Accessible
-          rationale: User interface functions should be accessible
-          jira:
-            ticket: SONIC-22412
-            link: https://jira.devfactory.com/browse/SONIC-22412
-      functional-area-id: AU-101
+      - name: Accessible
+        rationale: User interface functions should be accessible
+        jira:
+          ticket: AU-77
+          link: https://jira.devfactory.com/browse/AU-77
   - title: SAMPLE FEATURE STORY TITLE new one
     jira:
       ticket: AU-72
@@ -129,16 +123,14 @@ capabilities:
     functional-requirement-references:
     - '[SAMPLE-REQUIREMENT-ID-2]'
     e2e:
-      title: Title of E2E
-      jira:
-        ticket: E2E-72
-        link: https://jira.devfactory.com/browse/E2E-72
+      title: Title of E2E 3
       business-goal: |
         Some useful business goals
+      functional-area-id: AU-76
       attributes:
-        - name: Accessible
-          rationale: User interface functions should be accessible
-          jira:
-            ticket: AU-22412
-            link: https://jira.devfactory.com/browse/AU-22412
-      functional-area-id: AU-101
+      - name: Accessible
+        rationale: User interface functions should be accessible
+        jira:
+          ticket: AU-77
+          link: https://jira.devfactory.com/browse/AU-77
+
