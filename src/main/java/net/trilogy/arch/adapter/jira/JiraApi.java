@@ -3,6 +3,7 @@ package net.trilogy.arch.adapter.jira;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
@@ -206,23 +207,7 @@ public class JiraApi {
 
         final var storyInEpic = issues.getIssue(STORY_KEY).get();
         Streams.stream(storyInEpic.getFields())
-                .filter(it -> null != it.getValue())
-                .filter(it -> {
-                    final var rawValue = it.getValue();
-                    if (null == rawValue) return false;
-
-                    if (epicKey.equals(rawValue)
-                            || epicId.equals(rawValue)
-                            || epicLink.equals(rawValue))
-                        return true;
-                    final var value = rawValue.toString();
-                    if (value.contains(epicKey)
-                            || value.contains(epicId.toString())
-                            || value.contains(epicLink.toString()))
-                        return true;
-
-                    return false;
-                })
+                .filter(it -> isLinkToEpic(it, epicIssue))
                 .forEach(it -> out.println("linked story field -> " + it));
 
         System.exit(0); // Do NOT update the "real" example!
@@ -242,5 +227,29 @@ public class JiraApi {
                 .build();
 
         issues.createIssue(issueInput).get();
+    }
+
+    private static boolean isLinkToEpic(
+            IssueField storyField,
+            Issue epicIssue) {
+        final var rawValue = storyField.getValue();
+        if (null == rawValue) return false;
+
+        final var epicLink = epicIssue.getSelf();
+        final var epicKey = epicIssue.getKey();
+        final var epicId = epicIssue.getId();
+
+        if (epicKey.equals(rawValue)
+                || epicId.equals(rawValue)
+                || epicLink.equals(rawValue))
+            return true;
+
+        final var value = rawValue.toString();
+        if (value.contains(epicKey)
+                || value.contains(epicId.toString())
+                || value.contains(epicLink.toString()))
+            return true;
+
+        return false;
     }
 }
