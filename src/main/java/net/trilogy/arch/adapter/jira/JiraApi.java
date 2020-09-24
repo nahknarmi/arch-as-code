@@ -178,7 +178,8 @@ public class JiraApi {
     @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");
-        final var EPIC_KEY = "AU-1";
+        final var EPIC_KEY = "DEVHUB-207"; // Real example; Use AU-1 for AaC work
+        final var STORY_KEY = "DEVHUB-896"; // Real example; Use AU-25 for AaC work
 
         final String username;
         final String password;
@@ -207,7 +208,7 @@ public class JiraApi {
         out.println("epicIssue.id = " + epicId);
         out.println();
 
-        final var storyInEpic = issues.getIssue("AU-35").get();
+        final var storyInEpic = issues.getIssue(STORY_KEY).get();
         Streams.stream(storyInEpic.getFields())
                 .filter(it -> null != it.getValue())
                 .filter(it -> {
