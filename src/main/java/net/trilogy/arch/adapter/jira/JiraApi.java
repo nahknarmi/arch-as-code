@@ -6,6 +6,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import com.google.common.collect.Streams;
 import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
@@ -177,7 +178,7 @@ public class JiraApi {
     @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");
-        final var epicKey = "AU-1";
+        final var EPIC_KEY = "AU-1";
 
         final String username;
         final String password;
@@ -196,16 +197,47 @@ public class JiraApi {
 
         final var start = currentTimeMillis();
 
-        final var epicIssue =  issues.getIssue("AU-1").get();
-        final var epicId = epicIssue.getProject().getId();
-        out.println("epicId = " + epicId);
+        final var epicIssue = issues.getIssue(EPIC_KEY).get();
+        final var epicLink = epicIssue.getSelf();
+        final var epicKey = epicIssue.getKey();
+        final var epicId = epicIssue.getId();
+
+        out.println("epicIssue.link = " + epicLink);
+        out.println("epicIssue.key = " + epicKey);
+        out.println("epicIssue.id = " + epicId);
+        out.println();
+
+        final var storyInEpic = issues.getIssue("AU-35").get();
+        Streams.stream(storyInEpic.getFields())
+                .filter(it -> null != it.getValue())
+                .filter(it -> {
+                    final var rawValue = it.getValue();
+                    if (null == rawValue) return false;
+
+                    if (epicKey.equals(rawValue)
+                            || epicId.equals(rawValue)
+                            || epicLink.equals(rawValue))
+                        return true;
+                    final var value = rawValue.toString();
+                    if (value.contains(epicKey)
+                            || value.contains(epicId.toString())
+                            || value.contains(epicLink.toString()))
+                        return true;
+
+                    return false;
+                })
+                .forEach(it -> out.println("linked story field -> " + it));
+
+        System.exit(0);
+
+        final var projectId = epicIssue.getProject().getId();
         //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
                 .setFieldValue("customfield_10002", epicKey)
                 .setProjectKey("AU")
                 // It seems like this used to work with just the id, but now we seem to need a whole BasicProject instance
                 // maybe we used to use projectId? or some other thing?
-                .setFieldValue("project", ComplexIssueInputFieldValue.with("id", epicId))
+                .setFieldValue("project", ComplexIssueInputFieldValue.with("id", projectId))
                 .setFieldValue("summary", "Story Creation saying project is required :-(")
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", "makeDescription call goes here()")
