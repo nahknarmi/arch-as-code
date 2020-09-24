@@ -177,8 +177,8 @@ public class JiraApi {
     @Generated
     public static void main(final String... args) throws ExecutionException, InterruptedException {
         final var root = URI.create("https://jira.devfactory.com");
-        final var EPIC_KEY = "DEVHUB-207"; // Real example; Use AU-1 for AaC work
-        final var STORY_KEY = "DEVHUB-896"; // Real example; Use AU-25 for AaC work
+        final var EPIC_KEY = "AU-1"; // Real example: DEVHUB-207; Use AU-1 for AaC work
+        final var STORY_KEY = "AU-41"; // Real example: DEVHUB-896; Use AU-25 for AaC work
 
         final String username;
         final String password;
@@ -199,10 +199,12 @@ public class JiraApi {
         final var epicLink = epicIssue.getSelf();
         final var epicKey = epicIssue.getKey();
         final var epicId = epicIssue.getId();
+        final var epicTitle = epicIssue.getSummary();
 
         out.println("epicIssue.link = " + epicLink);
         out.println("epicIssue.key = " + epicKey);
         out.println("epicIssue.id = " + epicId);
+        out.println("epicIssue.title = " + epicTitle);
         out.println();
 
         final var storyInEpic = issues.getIssue(STORY_KEY).get();
@@ -210,10 +212,27 @@ public class JiraApi {
                 .filter(it -> isLinkToEpic(it, epicIssue))
                 .forEach(it -> out.println("linked story field -> " + it));
 
+        final var projectId = epicIssue.getProject().getId();
+
+        // Remove card from Epic example -- does NOT delete the card, just unlinks from Epic
+
+        // Note: Setting to "null" does not seem to actually do anything
+        var deleteIssueInput = new IssueInputBuilder()
+                .setFieldValue(EPIC_KEY_FIELD, (String) null)
+                .build();
+        // Note: The more complex construction throws an exception
+        // Is this because the AU project requires cards to be part of an Epic as a business rule?
+        deleteIssueInput = new IssueInputBuilder()
+                .setFieldValue(EPIC_KEY_FIELD, new IssueField(EPIC_KEY_FIELD, "Epic Link", null, ""))
+                .build();
+        issues.updateIssue(STORY_KEY, deleteIssueInput).get();
+
+        final var updatedIssue = issues.getIssue(STORY_KEY).get();
+        out.println("updatedIssue.epic-link = " + updatedIssue.getField(EPIC_KEY_FIELD));
+
         System.exit(0); // Do NOT update the "real" example!
 
         // Create NEW Issue example
-        final var projectId = epicIssue.getProject().getId();
         //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
                 .setFieldValue(EPIC_KEY_FIELD, epicKey)
@@ -238,16 +257,19 @@ public class JiraApi {
         final var epicLink = epicIssue.getSelf();
         final var epicKey = epicIssue.getKey();
         final var epicId = epicIssue.getId();
+        final var epicTitle = epicIssue.getSummary();
 
         if (epicKey.equals(rawValue)
                 || epicId.equals(rawValue)
-                || epicLink.equals(rawValue))
+                || epicLink.equals(rawValue)
+                || epicTitle.equals(rawValue))
             return true;
 
         final var value = rawValue.toString();
         if (value.contains(epicKey)
                 || value.contains(epicId.toString())
-                || value.contains(epicLink.toString()))
+                || value.contains(epicLink.toString())
+                || value.contains(epicTitle))
             return true;
 
         return false;
