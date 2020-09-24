@@ -30,6 +30,8 @@ import static net.trilogy.arch.adapter.jira.JiraStory.JiraTdd.jiraTddFrom;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class JiraStory {
+    public static final String EPIC_KEY_FIELD = "customfield_10002";
+
     private final YamlFeatureStory featureStory;
     private final List<JiraTdd> tdds;
     private final List<JiraFunctionalRequirement> functionalRequirements;
@@ -89,7 +91,6 @@ public class JiraStory {
      * field into "customfield_10002"; manual testing shows that using the
      * card key (eg, "AU-1") works as well.  We should <strong>unit
      * test</strong> that AaC uses the key, not the title.
-     * @todo Are "customfield_10002" and "customfield_10004" equivalent?
      */
     public IssueInput asNewIssueInput(
             String epicKey,
@@ -110,9 +111,14 @@ public class JiraStory {
                 .build();
     }
 
+    /**
+     * @todo Changing the epic might be more <em>intentional</em>.  It isn't
+     * clear what the behavior should be if YAML edits, and changes the epic
+     * key
+     */
     private IssueInputBuilder issueBuilderWithCommonFields(String epicKey) {
         return new IssueInputBuilder()
-                .setFieldValue("customfield_10002", epicKey)
+                .setFieldValue(EPIC_KEY_FIELD, epicKey)
                 .setFieldValue("description", makeDescription())
                 .setFieldValue("summary", featureStory.getTitle());
     }

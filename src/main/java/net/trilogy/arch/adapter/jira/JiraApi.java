@@ -28,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.succeeded;
+import static net.trilogy.arch.adapter.jira.JiraStory.EPIC_KEY_FIELD;
 
 @RequiredArgsConstructor
 public class JiraApi {
@@ -53,10 +54,8 @@ public class JiraApi {
      * The only field which can be compared for Epic cards in JIRA is the
      * "Summary" (title).  An Epic card has no links to it's Story cards;
      * instead, the Story cards have a backlink to the Epic via
-     * "customfield_10002" or "customfield_10004" fields.  And we do not write
-     * out a "Description" field.
+     * "customfield_10002" field.
      *
-     * @todo Which is better, "customfield_10002" or "customfield_10004"?
      * @see JiraStory#asNewIssueInput(String, Long)
      * @see JiraStory#asExistingIssueInput(String)
      */
@@ -229,12 +228,12 @@ public class JiraApi {
                 })
                 .forEach(it -> out.println("linked story field -> " + it));
 
-        System.exit(0);
+        System.exit(0); // Do NOT update the "real" example!
 
         final var projectId = epicIssue.getProject().getId();
         //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
-                .setFieldValue("customfield_10002", epicKey)
+                .setFieldValue(EPIC_KEY_FIELD, epicKey)
                 .setProjectKey("AU")
                 // It seems like this used to work with just the id, but now we seem to need a whole BasicProject instance
                 // maybe we used to use projectId? or some other thing?
