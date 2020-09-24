@@ -36,6 +36,11 @@ public class YamlE2E {
         this.attributes = attributes;
     }
 
+    public boolean hasJiraKeyAndLink() {
+        if (null == jira) return false;
+        return jira.hasJiraKeyAndLink();
+    }
+
     public static YamlE2E blank() {
         return new YamlE2E("E2E title", "Need to do this", FunctionalAreaId.blank(), YamlJira.blank(), List.of(YamlAttribute.blank()));
     }

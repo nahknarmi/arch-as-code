@@ -44,7 +44,7 @@ public class JiraStoryTest {
 
         final JiraStory expected = createJiraStoryFixture();
         // WHEN:
-        final JiraStory actual = new JiraStory(featureStory, au, beforeAuArchitecture, afterAuArchitecture);
+        final JiraStory actual = new JiraStory(featureStory, au);
 
         // THEN:
         assertThat(actual, equalTo(expected));
@@ -57,7 +57,7 @@ public class JiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN:
-        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
+        new JiraStory(featureStory, au);
 
         // THEN raise exception.
     }
@@ -73,7 +73,7 @@ public class JiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
-        new JiraStory(featureStory, au, getArchitectureBeforeAu(), architectureAfterAu);
+        new JiraStory(featureStory, au);
 
         // THEN
         // Raise Error
@@ -87,7 +87,7 @@ public class JiraStoryTest {
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         // WHEN
-        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
+        new JiraStory(featureStory, au);
 
         // THEN
         // Raise Error
@@ -102,7 +102,7 @@ public class JiraStoryTest {
         featureStory = featureStory.toBuilder().tddReferences(List.of(new TddId("Invalid TDD ID"))).build();
 
         // WHEN
-        new JiraStory(featureStory, au, getArchitectureBeforeAu(), getArchitectureAfterAu());
+        new JiraStory(featureStory, au);
 
         // THEN
         // Raise Error
@@ -132,14 +132,14 @@ public class JiraStoryTest {
                 .tddContainersByComponent(List.of(
                         new YamlTddContainerByComponent(
                                 new TddComponentReference("31"),
-                                null, false,
+                                "c4://system 1/container/component31", false,
                                 Map.of(
                                         new TddId("TDD 1"), new YamlTdd("TDD 1 text", null).withContent(tddContent1),
                                         new TddId("TDD 2"), new YamlTdd("TDD 2 text", null).withContent(null),
                                         new TddId("[SAMPLE-TDD-ID]"), new YamlTdd("sample tdd text", null))),
                         new YamlTddContainerByComponent(
                                 new TddComponentReference("404"),
-                                null, true,
+                                "c4://system 1/container/component404", true,
                                 Map.of(
                                         new TddId("TDD 3"), new YamlTdd("TDD 3 text", null).withContent(tddContent3),
                                         new TddId("TDD 4"), new YamlTdd("TDD 4 text", null).withContent(null)))))

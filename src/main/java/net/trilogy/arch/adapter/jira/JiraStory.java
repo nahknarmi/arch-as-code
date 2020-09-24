@@ -37,13 +37,25 @@ public class JiraStory implements JiraIssueConvertible {
     private final List<JiraFunctionalRequirement> functionalRequirements;
 
     public JiraStory(YamlFeatureStory featureStory,
-                     YamlArchitectureUpdate au,
-                     ArchitectureDataStructure beforeAuArchitecture,
-                     ArchitectureDataStructure afterAuArchitecture) throws InvalidStoryException {
+                     YamlArchitectureUpdate au) throws InvalidStoryException {
         this.featureStory = featureStory;
         // TODO: More law of demeter: TDDs and FuncReqs
-        tdds = getTdds(au, beforeAuArchitecture, afterAuArchitecture, featureStory);
+        tdds = getTdds(au, featureStory);
         functionalRequirements = getFunctionalRequirements(au, featureStory);
+    }
+
+    public String title() {
+        return featureStory.getTitle();
+    }
+
+    @Override
+    public String key() {
+        return featureStory.getKey();
+    }
+
+    @Override
+    public String link() {
+        return featureStory.getJira().getLink();
     }
 
     static String buildTddRow(JiraTdd tdd) {
@@ -135,18 +147,17 @@ public class JiraStory implements JiraIssueConvertible {
 
     private static List<JiraTdd> getTdds(
             YamlArchitectureUpdate au,
-            ArchitectureDataStructure beforeAuArchitecture, ArchitectureDataStructure afterAuArchitecture,
             YamlFeatureStory featureStory) throws InvalidStoryException {
         final var tdds = new ArrayList<JiraTdd>();
         for (var tddId : featureStory.getTddReferences()) {
             var tdd = au.getTddContainersByComponent()
                     .stream()
                     .filter(container -> container.getTdds().containsKey(tddId) || TddId.noPr().equals(tddId))
-                    .filter(container -> getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).isPresent())
+                    .filter(container -> container.getComponentPath() != null)
                     .map(container -> jiraTddFrom(
                             tddId,
                             container.getTdds().get(tddId),
-                            getComponentPath(beforeAuArchitecture, afterAuArchitecture, container).orElseThrow(),
+                            container.getComponentPath(),
                             TddId.noPr().equals(tddId) ? null : container.getTdds().get(tddId).getContent()))
                     .findAny()
                     .orElseThrow(InvalidStoryException::new);

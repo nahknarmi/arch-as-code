@@ -50,7 +50,7 @@ public class YamlTddContainerByComponent {
     }
 
     public static YamlTddContainerByComponent blank() {
-        return new YamlTddContainerByComponent(TddComponentReference.blank(), null, false, Map.of(TddId.blank(), YamlTdd.blank()));
+        return new YamlTddContainerByComponent(TddComponentReference.blank(), "c4://DevSpaces/DevSpaces-DevSpaces API/DevSpaces-DevSpaces API-E-mail Component Duplicate", false, Map.of(TddId.blank(), YamlTdd.blank()));
     }
 
     static TddContent contentByMatchingIds(List<TddContent> tddContents, YamlTddContainerByComponent componentTdds, TddId tddId) {

@@ -77,7 +77,7 @@ public class JiraApi {
             // TODO: ICK -- why are we only checking the project ID and Key?
             // TODO: This needs to return the full issue so that we can compare
             //       it against the YAML, and decide if it needs updating
-            return new JiraQueryResult(issue.getProject().getId(), issue.getProject().getKey());
+            return new JiraQueryResult(issue.getProject().getId(), issue.getProject().getKey(), issue.getKey());
         } catch (RestClientException e) {
             // TODO: Tech debt: Use JDK Optional, not Guava's look-a-like
             //       Root cause: Atlassian library is behind the curve
@@ -152,7 +152,7 @@ public class JiraApi {
     }
 
     public List<JiraRemoteStoryStatus> updateExistingStories(
-            List<JiraStory> jiraStories,
+            List<? extends JiraIssueConvertible> jiraStories,
             String epicKey) {
         return jiraStories.stream()
                 .map(it -> updateOneExistingStory(it, epicKey))
@@ -160,12 +160,12 @@ public class JiraApi {
     }
 
     private JiraRemoteStoryStatus updateOneExistingStory(
-            JiraStory story,
+            JiraIssueConvertible story,
             String epicKey) {
         try {
             final var input = story.asExistingIssueInput(epicKey);
-            jiraClient.getIssueClient().updateIssue(story.getKey(), input).get();
-            return succeeded(story.getKey(), story.getLink());
+            jiraClient.getIssueClient().updateIssue(story.key(), input).get();
+            return succeeded(story.key(), story.link());
         } catch (final InterruptedException e) {
             currentThread().interrupt();
             return failed(e.toString());

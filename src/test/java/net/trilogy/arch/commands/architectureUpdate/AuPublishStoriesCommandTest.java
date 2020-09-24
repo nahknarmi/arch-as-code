@@ -40,6 +40,7 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
@@ -180,7 +181,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldFailGracefullyIfUnableToCreateJiraStoryDTO() throws Exception {
         // Given
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]", epic.getTicket());
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -215,7 +216,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldTellJiraToCreateStories() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -231,7 +232,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldTellJiraToUpdateStories() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -265,7 +266,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldTellJiraToCreateStoriesWithTddContent() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         mockGitInterface();
 
@@ -281,7 +282,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldOutputResult() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
@@ -311,7 +312,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldUpdateAuWithNewJiraTickets() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong())).thenReturn(List.of(
@@ -327,7 +328,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final YamlArchitectureUpdate actualAu = auFromYaml();
         final YamlArchitectureUpdate originalAu = auFromYaml();
         final var expectedAu = originalAu.addJiraToFeatureStory(
-                first(originalAu.getCapabilityContainer().getFeatureStories()),
+                first(originalAu.getCapabilityContainer().getFeatureStories().stream().map( s -> new JiraStory(s, originalAu)).collect(toList())),
                 new YamlJira("ABC-123", "link-to-ABC-123"));
 
         collector.checkThat(actualAu, equalTo(expectedAu));
@@ -337,7 +338,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldDisplayPartialErrorsWhenCreatingStories() throws Exception {
         // GIVEN:
         final var epic = YamlJira.blank();
-        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]");
+        final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]", epic.getTicket());
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
@@ -371,7 +372,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
         when(mockedJiraApi.getStory(any()))
-                .thenReturn(new JiraQueryResult(1L, "DEF"));
+                .thenReturn(new JiraQueryResult(1L, "DEF", ""));
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenThrow(new JiraApiException(
                         "OOPS!",
@@ -423,7 +424,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     public void shouldGracefullyHandleAuUpdateWriteFailure() throws Exception {
         // GIVEN:
         YamlJira epic = YamlJira.blank();
-        final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY");
+        final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))

@@ -1,12 +1,7 @@
 package net.trilogy.arch.services.architectureUpdate;
 
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApiException;
-import net.trilogy.arch.adapter.jira.JiraQueryResult;
-import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
-import net.trilogy.arch.adapter.jira.JiraE2E;
-import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.adapter.jira.*;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
@@ -29,7 +24,7 @@ public class StoryPublishingService {
 
     public static List<JiraE2E> getE2EtoCreate(final YamlArchitectureUpdate au) {
        return au.getCapabilityContainer().getFeatureStories().stream()
-               .map(s -> new JiraE2E(au, s)).collect(toList());
+               .map(s -> new JiraE2E(s, au)).collect(toList());
     }
 
     public YamlArchitectureUpdate processStories(
@@ -39,8 +34,8 @@ public class StoryPublishingService {
             throws InvalidStoryException, JiraApiException {
         printStoriesToSkip(au);
 
-        final var storiesToCreate = au.findFeatureStoriesToCreate();
-        final var storiesToUpdate = au.findFeatureStoriesToUpdate();
+        final var storiesToCreate = au.findJiraIssuesToCreate();
+        final var storiesToUpdate = au.findJiraIssuesToUpdate();
         // TODO: storiesToDelete -- implies calling REST JIRA to check
 
         if (storiesToCreate.isEmpty() && storiesToUpdate.isEmpty()) {
@@ -52,17 +47,11 @@ public class StoryPublishingService {
         final var informationAboutTheEpic = api.getStory(yamlEpicJira);
 
         final var createStoriesResults = createStories(
-                au,
-                beforeAuArchitecture,
-                afterAuArchitecture,
                 storiesToCreate,
                 yamlEpicJira,
                 informationAboutTheEpic);
 
         final var updateStoriesResults = updateStories(
-                au,
-                beforeAuArchitecture,
-                afterAuArchitecture,
                 storiesToUpdate,
                 yamlEpicJira,
                 informationAboutTheEpic);
@@ -73,7 +62,7 @@ public class StoryPublishingService {
         printStoriesThatSucceeded(storiesToUpdate, updateStoriesResults, "updated");
         printStoriesThatFailed(storiesToUpdate, updateStoriesResults);
 
-        final var processedStories = new ArrayList<YamlFeatureStory>(
+        final var processedStories = new ArrayList<JiraIssueConvertible>(
                 storiesToCreate.size() + storiesToUpdate.size());
         processedStories.addAll(storiesToCreate);
         processedStories.addAll(storiesToUpdate);
@@ -86,10 +75,7 @@ public class StoryPublishingService {
     }
 
     private List<JiraRemoteStoryStatus> createStories(
-            YamlArchitectureUpdate au,
-            ArchitectureDataStructure beforeAuArchitecture,
-            ArchitectureDataStructure afterAuArchitecture,
-            List<YamlFeatureStory> storiesToCreate,
+            List<? extends JiraIssueConvertible> storiesToCreate,
             YamlJira yamlEpicJira,
             JiraQueryResult informationAboutTheEpic) throws InvalidStoryException, JiraApiException {
         if (storiesToCreate.isEmpty()) return emptyList();
@@ -97,23 +83,15 @@ public class StoryPublishingService {
         out.printf("Creating stories in the epic having JIRA key %s and project id %d...%n",
                 informationAboutTheEpic.getProjectKey(),
                 informationAboutTheEpic.getProjectId());
-        // TODO: Exception thrown in ctor for JiraStory prevents use of Stream
-        final var jiraStoriesToCreate = new ArrayList<JiraStory>(storiesToCreate.size());
-        for (final YamlFeatureStory story : storiesToCreate) {
-            jiraStoriesToCreate.add(new JiraStory(story, au, beforeAuArchitecture, afterAuArchitecture));
-        }
 
         return api.createJiraIssues(
-                jiraStoriesToCreate,
+                storiesToCreate,
                 yamlEpicJira.getTicket(),
                 informationAboutTheEpic.getProjectId());
     }
 
     private List<JiraRemoteStoryStatus> updateStories(
-            YamlArchitectureUpdate au,
-            ArchitectureDataStructure beforeAuArchitecture,
-            ArchitectureDataStructure afterAuArchitecture,
-            List<YamlFeatureStory> storiesToUpdate,
+            List<? extends JiraIssueConvertible> storiesToUpdate,
             YamlJira yamlEpicJira,
             JiraQueryResult informationAboutTheEpic) throws InvalidStoryException {
         if (storiesToUpdate.isEmpty()) return emptyList();
@@ -121,26 +99,22 @@ public class StoryPublishingService {
         out.printf("Updating stories in the epic having JIRA key %s and project id %d...%n",
                 informationAboutTheEpic.getProjectKey(),
                 informationAboutTheEpic.getProjectId());
-        final var jiraStoriesToUpdate = new ArrayList<JiraStory>(storiesToUpdate.size());
-        for (final YamlFeatureStory story : storiesToUpdate) {
-            jiraStoriesToUpdate.add(new JiraStory(story, au, beforeAuArchitecture, afterAuArchitecture));
-        }
 
         return api.updateExistingStories(
-                jiraStoriesToUpdate,
+                storiesToUpdate,
                 yamlEpicJira.getTicket()
         );
     }
 
     private void printStoriesThatSucceeded(
-            final List<YamlFeatureStory> stories,
+            final List<? extends JiraIssueConvertible> stories,
             final List<JiraRemoteStoryStatus> results,
             final String tag) {
         StringBuilder successfulStories = new StringBuilder();
 
         for (int i = 0; i < results.size(); ++i) {
             if (!results.get(i).isSuccess()) continue;
-            successfulStories.append("\n  - ").append(stories.get(i).getTitle());
+            successfulStories.append("\n  - ").append(stories.get(i).title());
         }
 
         String heading = String.format("Successfully %s:", tag);
@@ -151,13 +125,13 @@ public class StoryPublishingService {
     }
 
     private void printStoriesThatFailed(
-            List<YamlFeatureStory> stories,
+            List<? extends JiraIssueConvertible> stories,
             List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
         for (int i = 0, x = createStoriesResults.size(); i < x; ++i) {
             if (createStoriesResults.get(i).isSuccess()) continue;
             errors.append("Story: \"")
-                    .append(stories.get(i).getTitle())
+                    .append(stories.get(i).title())
                     .append("\":\n  - ")
                     .append(createStoriesResults.get(i).getError());
         }

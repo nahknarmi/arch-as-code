@@ -51,8 +51,8 @@ public class StoryPublishingServiceTest {
         final var au = createArchitectureUpdate(allStories);
 
         // WHEN
-        final var actualCreate = au.findFeatureStoriesToCreate();
-        final var actualUpdate = au.findFeatureStoriesToUpdate();
+        final var actualCreate = au.findJiraIssuesToCreate();
+        final var actualUpdate = au.findJiraIssuesToUpdate();
 
         // THEN
         assertThat(actualCreate, equalTo(featureStoriesToBeCreated));

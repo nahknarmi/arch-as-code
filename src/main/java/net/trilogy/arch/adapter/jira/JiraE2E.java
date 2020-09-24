@@ -27,13 +27,26 @@ public class JiraE2E implements JiraIssueConvertible {
     private final YamlE2E e2e;
     private final YamlFunctionalArea functionalArea;
 
-    public JiraE2E(YamlArchitectureUpdate au,
-                   YamlFeatureStory featureStory) throws JiraStory.InvalidStoryException {
+    public JiraE2E(YamlFeatureStory featureStory, YamlArchitectureUpdate au) throws JiraStory.InvalidStoryException {
         this.e2e = featureStory.getE2e();
         functionalArea = au.getFunctionalAreas().get(this.e2e.getFunctionalAreaId());
         if (functionalArea == null) {
             throw new JiraStory.InvalidStoryException("Functional area not found for E2E:" + e2e.getTitle());
         }
+    }
+
+    public String title() {
+        return e2e.getTitle();
+    }
+
+    @Override
+    public String key() {
+        return e2e.getJira().getTicket();
+    }
+
+    @Override
+    public String link() {
+        return e2e.getJira().getLink();
     }
 
     String businessGoal() {
@@ -60,4 +73,12 @@ public class JiraE2E implements JiraIssueConvertible {
                 .build();
     }
 
+    public IssueInput asExistingIssueInput(String epicKey) {
+        return new IssueInputBuilder()
+                .setFieldValue(TEST_SUITE_CATEGORY, ComplexIssueInputFieldValue.with("id", REGRESSION_SUITE))
+                .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", END_TO_END_TEST))
+                .setFieldValue("summary", e2e.getTitle())
+                .setFieldValue("description", makeDescription())
+                .build();
+    }
 }

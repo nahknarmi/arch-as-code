@@ -170,6 +170,7 @@ public class JiraApiTest {
         final var mockIssue = mock(Issue.class);
         final var mockProject = mock(Project.class);
         when(mockIssueClient.getIssue(anyString())).thenReturn(promise(mockIssue));
+        when(mockIssue.getKey()).thenReturn("JIRA-TICKET-123");
         when(mockIssue.getProject()).thenReturn(mockProject);
         when(mockProject.getId()).thenReturn(1L);
         when(mockProject.getKey()).thenReturn("B");
@@ -180,7 +181,7 @@ public class JiraApiTest {
         final var queryResult = jiraApi.getStory(jiraToQuery);
 
         // THEN:
-        assertEquals(new JiraQueryResult(1L, "B"), queryResult);
+        assertEquals(new JiraQueryResult(1L, "B", "JIRA-TICKET-123"), queryResult);
     }
 
     @Test

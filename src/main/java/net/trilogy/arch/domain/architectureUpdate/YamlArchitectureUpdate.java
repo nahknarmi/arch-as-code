@@ -7,13 +7,17 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.trilogy.arch.adapter.jira.JiraE2E;
+import net.trilogy.arch.adapter.jira.JiraIssueConvertible;
 import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
+import net.trilogy.arch.adapter.jira.JiraStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlDecision.DecisionId;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalAreaId;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 import static java.util.stream.Collectors.toList;
@@ -126,24 +130,36 @@ public class YamlArchitectureUpdate {
      * @todo This checks the saved YAML assuming a previous publish run then
      * updated the YAML.  More accurate is to consult JIRA
      */
-    public List<YamlFeatureStory> findFeatureStoriesToCreate() {
-        return getCapabilityContainer().getFeatureStories().stream()
-                .filter(story -> !story.hasJiraKeyAndLink())
-                .collect(toList());
+    public List<? extends JiraIssueConvertible> findJiraIssuesToCreate() {
+        List<YamlFeatureStory> featureStories = getCapabilityContainer().getFeatureStories();
+
+        Stream<JiraIssueConvertible> stories = featureStories.stream()
+                .filter(story -> !story.hasJiraKeyAndLink()).map(s -> new JiraStory(s, this));
+
+        Stream<JiraIssueConvertible> e2es = featureStories.stream()
+                .filter(story -> !story.getE2e().hasJiraKeyAndLink()).map(s -> new JiraE2E(s, this));
+
+        return Stream.concat(stories, e2es).collect(toList());
     }
 
     /**
      * @todo This checks the saved YAML assuming a previous publish run then
      * updated the YAML.  More accurate is to consult JIRA
      */
-    public List<YamlFeatureStory> findFeatureStoriesToUpdate() {
-        return getCapabilityContainer().getFeatureStories().stream()
-                .filter(YamlFeatureStory::hasJiraKeyAndLink)
-                .collect(toList());
+    public List<? extends JiraIssueConvertible> findJiraIssuesToUpdate() {
+        List<YamlFeatureStory> featureStories = getCapabilityContainer().getFeatureStories();
+
+        Stream<JiraIssueConvertible> stories = featureStories.stream()
+                .filter(YamlFeatureStory::hasJiraKeyAndLink).map(s -> new JiraStory(s, this));
+
+        Stream<JiraIssueConvertible> e2es = featureStories.stream()
+                .filter(story -> story.getE2e().hasJiraKeyAndLink()).map(s -> new JiraE2E(s, this));
+
+        return Stream.concat(stories, e2es).collect(toList());
     }
 
     public YamlArchitectureUpdate amendJiraTicketsInAu(
-            final List<YamlFeatureStory> stories,
+            final List<JiraIssueConvertible> stories,
             final List<JiraRemoteStoryStatus> statuses) {
         var updatedAu = this;
         for (int i = 0; i < statuses.size(); ++i) {
@@ -157,14 +173,15 @@ public class YamlArchitectureUpdate {
         return updatedAu;
     }
 
-    public YamlArchitectureUpdate addJiraToFeatureStory(YamlFeatureStory storyToChange, YamlJira jiraToAdd) {
-        return toBuilder().capabilityContainer(getCapabilityContainer().toBuilder()
+    public YamlArchitectureUpdate addJiraToFeatureStory(JiraIssueConvertible storyToChange, YamlJira jiraToAdd) {
+        YamlCapabilitiesContainer updatedContainer = getCapabilityContainer().toBuilder()
                 .featureStories(getCapabilityContainer().getFeatureStories().stream()
-                        .map(story -> story.equals(storyToChange)
+                        .map(story -> story.getTitle().equals(storyToChange.title())
                                 ? story.toBuilder().jira(jiraToAdd).build()
                                 : story)
                         .collect(toList()))
-                .build())
+                .build();
+        return toBuilder().capabilityContainer(updatedContainer)
                 .build();
     }
 }

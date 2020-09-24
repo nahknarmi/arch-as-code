@@ -34,6 +34,15 @@ public class YamlJira {
         this.link = link;
     }
 
+    public boolean hasJiraKeyAndLink() {
+        if (null == getTicket()) return false;
+        if (getTicket().isBlank()) return false;
+        if (null == getLink()) return false;
+        if (getLink().isBlank()) return false;
+
+        return true;
+    }
+
     public static YamlJira blank() {
         return new YamlJira("[SAMPLE JIRA TICKET]", "[SAMPLE JIRA TICKET LINK]");
     }

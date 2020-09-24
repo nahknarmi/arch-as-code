@@ -1,5 +1,6 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
+import net.trilogy.arch.adapter.jira.JiraStory;
 import org.junit.Test;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class YamlArchitectureUpdateTest {
         );
 
         // WHEN:
-        final var actual = originalAu.addJiraToFeatureStory(storyToChange, new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK"));
+        final var actual = originalAu.addJiraToFeatureStory(new JiraStory(storyToChange, originalAu), new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK"));
 
         // THEN:
         final var expected = getAuWithStories(
