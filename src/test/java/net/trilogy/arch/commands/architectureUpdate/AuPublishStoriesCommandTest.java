@@ -182,13 +182,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // Then
         collector.checkThat(status, not(equalTo(0)));
-        collector.checkThat(dummyOut.getLog(), equalTo(
-                "Not recreating stories:\n" +
-                        "  - story that should be updated (already existing jira ticket)\n" +
-                        "\n" +
-                        "Creating stories in the epic having JIRA key [SAMPLE JIRA TICKET] and project id 123...\n"));
         collector.checkThat(dummyErr.getLog(), equalTo(
                 "ERROR: Some stories are invalid. Please run 'au validate' command.\n"));
+        collector.checkThat(dummyOut.getLog(), equalTo(
+                "Not recreating stories:\n" +
+                        "  - story that should be updated (already existing jira ticket)\n\n"));
+
     }
 
     @Test

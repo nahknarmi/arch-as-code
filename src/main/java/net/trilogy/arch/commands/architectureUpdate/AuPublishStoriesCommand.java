@@ -9,7 +9,6 @@ import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
 import net.trilogy.arch.commands.mixin.DisplaysOutputMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureFromGitMixin;
 import net.trilogy.arch.commands.mixin.LoadArchitectureMixin;
-import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.facade.FilesFacade;
 import net.trilogy.arch.services.architectureUpdate.StoryPublishingService;
@@ -85,8 +84,6 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
         var updatedAu = createStories(
                 au.get(),
-                beforeAuArchitecture.get(),
-                afterAuArchitecture.get(),
                 jiraService);
         if (updatedAu.isEmpty()) return 1;
 
@@ -104,11 +101,9 @@ public class AuPublishStoriesCommand implements Callable<Integer>, LoadArchitect
 
     private Optional<YamlArchitectureUpdate> createStories(
             YamlArchitectureUpdate au,
-            ArchitectureDataStructure beforeAuArchitecture,
-            ArchitectureDataStructure afterAuArchitecture,
             StoryPublishingService jiraService) {
         try {
-            return Optional.of(jiraService.processStories(au, beforeAuArchitecture, afterAuArchitecture));
+            return Optional.of(jiraService.processStories(au));
         } catch (JiraApiException e) {
             printError("Jira API failed", e);
         } catch (InvalidStoryException e) {

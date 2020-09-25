@@ -1,9 +1,13 @@
 package net.trilogy.arch.services.architectureUpdate;
 
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.adapter.jira.*;
+import net.trilogy.arch.adapter.jira.JiraApi;
+import net.trilogy.arch.adapter.jira.JiraApiException;
+import net.trilogy.arch.adapter.jira.JiraE2E;
+import net.trilogy.arch.adapter.jira.JiraIssueConvertible;
+import net.trilogy.arch.adapter.jira.JiraQueryResult;
+import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
-import net.trilogy.arch.domain.ArchitectureDataStructure;
 import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
 import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlJira;
@@ -28,9 +32,7 @@ public class StoryPublishingService {
     }
 
     public YamlArchitectureUpdate processStories(
-            final YamlArchitectureUpdate au,
-            final ArchitectureDataStructure beforeAuArchitecture,
-            final ArchitectureDataStructure afterAuArchitecture)
+            final YamlArchitectureUpdate au)
             throws InvalidStoryException, JiraApiException {
         printStoriesToSkip(au);
 
