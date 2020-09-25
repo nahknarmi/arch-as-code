@@ -1,18 +1,19 @@
 package net.trilogy.arch.services.architectureUpdate;
 
-import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.YamlCapabilitiesContainer;
-import net.trilogy.arch.domain.architectureUpdate.YamlE2E;
-import net.trilogy.arch.domain.architectureUpdate.YamlEpic;
-import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
+import net.trilogy.arch.adapter.jira.JiraE2E;
+import net.trilogy.arch.adapter.jira.JiraIssueConvertible;
+import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.domain.architectureUpdate.*;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -24,23 +25,24 @@ public class StoryPublishingServiceTest {
                 new YamlFeatureStory("Story Title",
                         new YamlJira("", ""),
                         List.of(new TddId("TDD 1.0")),
-                        List.of(new FunctionalRequirementId("FUNC REQ")),
+                        List.of(FunctionalRequirementId.blank()),
                         YamlE2E.blank()),
                 new YamlFeatureStory("Story Title",
                         new YamlJira(null, null),
                         List.of(new TddId("TDD 2.0")),
-                        List.of(new FunctionalRequirementId("FUNC REQ 2")),
+                        List.of(FunctionalRequirementId.blank()),
                         YamlE2E.blank()),
                 new YamlFeatureStory("Story Title",
                         null,
                         List.of(new TddId("TDD 3.0")),
-                        List.of(new FunctionalRequirementId("FUNC REQ 3")),
+                        List.of(FunctionalRequirementId.blank()),
                         YamlE2E.blank()));
+
         final var featureStoriesToBeUpdated = List.of(
                 new YamlFeatureStory("Story Exists - Do Not Create",
                         new YamlJira("some ticket", "some link"),
                         List.of(new TddId("TDD 2.0")),
-                        List.of(new FunctionalRequirementId("FUNC REQ")),
+                        List.of(FunctionalRequirementId.blank()),
                         YamlE2E.blank()));
 
         final var allStories = new ArrayList<YamlFeatureStory>(
@@ -50,21 +52,37 @@ public class StoryPublishingServiceTest {
         allStories.addAll(featureStoriesToBeUpdated);
         final var au = createArchitectureUpdate(allStories);
 
+        List<JiraIssueConvertible> jiraStoriesToCreate = featureStoriesToBeCreated.stream().map(s -> new JiraStory(s, au)).collect(toList());
+
+        List<JiraIssueConvertible> jiraStoriesToUpdate = List.of(new JiraStory(featureStoriesToBeUpdated.get(0), au),
+                new JiraE2E(YamlE2E.blank(), au.getFunctionalAreas().get(YamlFunctionalArea.FunctionalAreaId.blank())),
+                new JiraE2E(YamlE2E.blank(), au.getFunctionalAreas().get(YamlFunctionalArea.FunctionalAreaId.blank())),
+                new JiraE2E(YamlE2E.blank(), au.getFunctionalAreas().get(YamlFunctionalArea.FunctionalAreaId.blank())),
+                new JiraE2E(YamlE2E.blank(), au.getFunctionalAreas().get(YamlFunctionalArea.FunctionalAreaId.blank())));
+
         // WHEN
         final var actualCreate = au.findJiraIssuesToCreate();
         final var actualUpdate = au.findJiraIssuesToUpdate();
 
         // THEN
-        assertThat(actualCreate, equalTo(featureStoriesToBeCreated));
-        assertThat(actualUpdate, equalTo(featureStoriesToBeUpdated));
+        assertThat(actualCreate, equalTo(jiraStoriesToCreate));
+        assertThat(actualUpdate, equalTo(jiraStoriesToUpdate));
     }
 
     private static YamlArchitectureUpdate createArchitectureUpdate(List<YamlFeatureStory> featureStories) {
         final var capabilitiesContainer = new YamlCapabilitiesContainer(
-                new YamlEpic("Epic Title", new YamlJira("AU-1", null)),
+                new YamlEpic("Epic Title", new YamlJira("AU-1", "epic link")),
                 featureStories);
-
-        return YamlArchitectureUpdate.blank().toBuilder()
+        var au =YamlArchitectureUpdate.blank();
+        var tdds = new HashMap<TddId, YamlTdd>();
+        featureStories.stream().forEach( fs -> {
+            fs.getTddReferences().stream().forEach(tddId -> {
+                tdds.put(tddId, YamlTdd.blank());
+            });
+        });
+        YamlTddContainerByComponent container = au.getTddContainersByComponent().get(0).toBuilder().tdds(tdds).build();
+        return au.toBuilder()
+                .tddContainersByComponent(singletonList(container))
                 .capabilityContainer(capabilitiesContainer)
                 .build();
     }

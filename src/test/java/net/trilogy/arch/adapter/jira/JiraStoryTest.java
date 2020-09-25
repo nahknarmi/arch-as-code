@@ -38,8 +38,6 @@ public class JiraStoryTest {
         // GIVEN:
         var au = createArchitectureUpdateFixture();
 
-        var afterAuArchitecture = getArchitectureAfterAu();
-        var beforeAuArchitecture = getArchitectureBeforeAu();
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
         final JiraStory expected = createJiraStoryFixture();
@@ -66,9 +64,8 @@ public class JiraStoryTest {
     public void shouldThrowIfComponentHasNoPath() throws Exception {
         // GIVEN
         var au = createArchitectureUpdateFixture();
-        ArchitectureDataStructure architectureAfterAu = getArchitectureAfterAu();
-
-        architectureAfterAu.getModel().getComponents().forEach(c -> c.setPath((String) null));
+        YamlTddContainerByComponent withNoPath = au.getTddContainersByComponent().get(0).toBuilder().componentPath(null).build();
+        au = au.toBuilder().tddContainersByComponent(singletonList(withNoPath)).build();
 
         var featureStory = first(au.getCapabilityContainer().getFeatureStories());
 
@@ -132,14 +129,14 @@ public class JiraStoryTest {
                 .tddContainersByComponent(List.of(
                         new YamlTddContainerByComponent(
                                 new TddComponentReference("31"),
-                                "c4://system 1/container/component31", false,
+                                "c4://Internet Banking System/API Application/Reset Password Controller", false,
                                 Map.of(
                                         new TddId("TDD 1"), new YamlTdd("TDD 1 text", null).withContent(tddContent1),
                                         new TddId("TDD 2"), new YamlTdd("TDD 2 text", null).withContent(null),
                                         new TddId("[SAMPLE-TDD-ID]"), new YamlTdd("sample tdd text", null))),
                         new YamlTddContainerByComponent(
                                 new TddComponentReference("404"),
-                                "c4://system 1/container/component404", true,
+                                "c4://Internet Banking System/API Application/Reset Password Controller", true,
                                 Map.of(
                                         new TddId("TDD 3"), new YamlTdd("TDD 3 text", null).withContent(tddContent3),
                                         new TddId("TDD 4"), new YamlTdd("TDD 4 text", null).withContent(null)))))
@@ -199,7 +196,7 @@ public class JiraStoryTest {
 
         final var expectedFeatureStoryTddIds = List.of(tddId1, tddId2, tddId3);
         final var expectedFeatureStoryFRs = List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"));
-        final var baseComponentPath = "c4://Internet Banking System/API Application/";
+        final var componentPath = "c4://Internet Banking System/API Application/Reset Password Controller";
 
         return new JiraStory(
                 new YamlFeatureStory("story title",
@@ -207,9 +204,9 @@ public class JiraStoryTest {
                         expectedFeatureStoryTddIds,
                         expectedFeatureStoryFRs,
                         YamlE2E.blank()),
-                List.of(asJiraTdd(tddId1, tdd1, baseComponentPath + "Reset Password Controller"),
-                        asJiraTdd(tddId2, tdd2, baseComponentPath + "Reset Password Controller"),
-                        asJiraTdd(tddId3, tdd3, baseComponentPath + "Sign In Controller")),
+                List.of(asJiraTdd(tddId1, tdd1, componentPath),
+                        asJiraTdd(tddId2, tdd2, componentPath),
+                        asJiraTdd(tddId3, tdd3, componentPath)),
                 List.of(
                         new JiraStory.JiraFunctionalRequirement(
                                 new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]"),

@@ -37,6 +37,7 @@ decisions:
       - "[SAMPLE-TDD-ID]"
 tdds-per-component:
 - component-id: "[SAMPLE-COMPONENT-ID]"
+  component-path: "c4://Internet Banking System/API Application/Reset Password Controller"
   tdds:
     '[SAMPLE-TDD-ID]':
       text: "[SAMPLE TDD TEXT]"
