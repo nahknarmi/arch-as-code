@@ -4,21 +4,13 @@ import net.trilogy.arch.Application;
 import net.trilogy.arch.CommandTestBase;
 import net.trilogy.arch.adapter.git.GitInterface;
 import net.trilogy.arch.adapter.google.GoogleDocsAuthorizedApiFactory;
-import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApiException;
-import net.trilogy.arch.adapter.jira.JiraApiFactory;
-import net.trilogy.arch.adapter.jira.JiraQueryResult;
-import net.trilogy.arch.adapter.jira.JiraStory;
+import net.trilogy.arch.adapter.jira.*;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraFunctionalRequirement;
 import net.trilogy.arch.adapter.jira.JiraStory.JiraTdd;
 import net.trilogy.arch.domain.ArchitectureDataStructure;
-import net.trilogy.arch.domain.architectureUpdate.TddContent;
-import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement;
+import net.trilogy.arch.domain.architectureUpdate.*;
+import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalAreaId;
 import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalRequirement.FunctionalRequirementId;
-import net.trilogy.arch.domain.architectureUpdate.YamlJira;
-import net.trilogy.arch.domain.architectureUpdate.YamlTdd;
 import net.trilogy.arch.domain.architectureUpdate.YamlTdd.TddId;
 import net.trilogy.arch.facade.FilesFacade;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -225,7 +217,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
 
         // THEN:
         final var expected = getExpectedJiraStoriesToCreate();
-        verify(mockedJiraApi).createJiraIssues(expected, epic.getTicket(), epicInformation.getProjectId());
+        verify(mockedJiraApi).createJiraIssues(expected, epicInformation.getIssueKey(), epicInformation.getProjectId());
     }
 
     @Test
@@ -240,13 +232,17 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         execute(app, genericCommand());
 
         // THEN:
-        final var expected = singletonList(new JiraStory(
+        List<YamlAttribute> attributes = singletonList(new YamlAttribute("Accessible", "User interface functions should be accessible", new YamlJira("AU-77", "https://jira.devfactory.com/browse/AU-77")));
+        YamlFunctionalArea functionalArea = new YamlFunctionalArea("Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s", new YamlJira("AU-76", "https://jira.devfactory.com/browse/AU-76"));
+        FunctionalAreaId functionalAreaId = new FunctionalAreaId("AU-76");
+        YamlE2E e2e2 = new YamlE2E("Title of E2E 2", "Some useful business goals", functionalAreaId, new YamlJira("existing", "existing link"), attributes);
+        final var expected = List.of(new JiraStory(
                 new YamlFeatureStory(
                         "story that should be updated",
                         new YamlJira("already existing jira ticket", "link to already existing jira ticket"),
                         singletonList(new TddId("[SAMPLE-TDD-ID]")),
                         singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
-                        null),
+                        e2e2),
                 singletonList(new JiraTdd(
                         new TddId("[SAMPLE-TDD-ID]"),
                         new YamlTdd("[SAMPLE TDD TEXT]", null),
@@ -257,7 +253,8 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                         new YamlFunctionalRequirement(
                                 "[SAMPLE REQUIREMENT TEXT]",
                                 "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+                                singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
+                new JiraE2E(e2e2, functionalArea));
 
         verify(mockedJiraApi).updateExistingStories(expected, epic.getTicket());
     }
@@ -372,7 +369,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
     @Test
     public void shouldDisplayNiceErrorIfCreatingStoriesCrashes() throws Exception {
         when(mockedJiraApi.getStory(any()))
-                .thenReturn(new JiraQueryResult(1L, "DEF", ""));
+                .thenReturn(new JiraQueryResult(1L, "DEF", "[SAMPLE JIRA TICKET]"));
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenThrow(new JiraApiException(
                         "OOPS!",
@@ -470,15 +467,28 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                 rootDir.getAbsolutePath());
     }
 
-    private static List<JiraStory> getExpectedJiraStoriesToCreate() {
+    private static List<JiraIssueConvertible> getExpectedJiraStoriesToCreate() {
+        List<YamlAttribute> attributes = singletonList(new YamlAttribute("Accessible", "User interface functions should be accessible", new YamlJira("AU-77", "https://jira.devfactory.com/browse/AU-77")));
+        YamlFunctionalArea functionalArea = new YamlFunctionalArea("Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s", new YamlJira("AU-76", "https://jira.devfactory.com/browse/AU-76"));
+        FunctionalAreaId functionalAreaId = new FunctionalAreaId("AU-76");
+        YamlE2E e2e1 = new YamlE2E("Title of E2E 1", "Some useful business goals", functionalAreaId, null, attributes);
+        YamlE2E e2e3 = new YamlE2E("Title of E2E 3", "Some useful business goals", functionalAreaId, null, attributes);
+        YamlFeatureStory story1 = new YamlFeatureStory(
+                "story that should be created",
+                new YamlJira("", ""),
+                List.of(new TddId("[SAMPLE-TDD-ID]"), new TddId("[SAMPLE-TDD-ID-2]")),
+                List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
+                e2e1);
+        YamlFeatureStory story3 = new YamlFeatureStory(
+                "story that failed to be created",
+                new YamlJira("", ""),
+                singletonList(new TddId("[SAMPLE-TDD-ID]")),
+                singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
+                e2e3);
+
         return List.of(
                 new JiraStory(
-                        new YamlFeatureStory(
-                                "story that should be created",
-                                new YamlJira("", ""),
-                                List.of(new TddId("[SAMPLE-TDD-ID]"), new TddId("[SAMPLE-TDD-ID-2]")),
-                                List.of(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
-                                null),
+                        story1,
                         List.of(
                                 new JiraTdd(
                                         new TddId("[SAMPLE-TDD-ID]"),
@@ -497,12 +507,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
                                         singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
                 new JiraStory(
-                        new YamlFeatureStory(
-                                "story that failed to be created",
-                                new YamlJira("", ""),
-                                singletonList(new TddId("[SAMPLE-TDD-ID]")),
-                                singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
-                                null),
+                        story3,
                         singletonList(new JiraTdd(
                                 new TddId("[SAMPLE-TDD-ID]"),
                                 new YamlTdd("[SAMPLE TDD TEXT]", null),
@@ -513,15 +518,23 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))));
+                                        singletonList(new TddId("[SAMPLE-TDD-ID]")))))),
+                new JiraE2E(e2e1, functionalArea),
+                new JiraE2E(e2e3, functionalArea));
     }
 
-    private static List<JiraStory> getExpectedJiraStoriesWithTddContentToCreate() {
+    private static List<JiraIssueConvertible> getExpectedJiraStoriesWithTddContentToCreate() {
         final var tddContent = new TddContent(
                 "## TDD Content for Typical Component\n" +
                         "**TDD 1.0**\n",
                 "TDD 1.0 : Component-29.md");
         final var tdd = new YamlTdd(null, "TDD 1.0 : Component-29.md").withContent(tddContent);
+
+        List<YamlAttribute> attributes = singletonList(new YamlAttribute("Accessible", "User interface functions should be accessible", new YamlJira("AU-77", "https://jira.devfactory.com/browse/AU-77")));
+        YamlFunctionalArea functionalArea = new YamlFunctionalArea("Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s", new YamlJira("AU-76", "https://jira.devfactory.com/browse/AU-76"));
+        FunctionalAreaId functionalAreaId = new FunctionalAreaId("AU-76");
+        YamlE2E e2e1 = new YamlE2E("Title of E2E 1", "Some useful business goals", functionalAreaId, null, attributes);
+        YamlE2E e2e2 = new YamlE2E("Title of E2E 2", "Some useful business goals", functionalAreaId, null, attributes);
 
         return asList(new JiraStory(
                         new YamlFeatureStory(
@@ -529,7 +542,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 new YamlJira("", ""),
                                 singletonList(new TddId("TDD 1.0")),
                                 singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
-                                null),
+                                e2e1),
                         singletonList(new JiraTdd(
                                 new TddId("TDD 1.0"),
                                 tdd,
@@ -547,7 +560,7 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 new YamlJira("", ""),
                                 singletonList(TddId.noPr()),
                                 singletonList(new FunctionalRequirementId("[SAMPLE-REQUIREMENT-ID]")),
-                                null),
+                                e2e2),
                         singletonList(new JiraTdd(
                                 TddId.noPr(),
                                 null,
@@ -558,7 +571,9 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
                                 new YamlFunctionalRequirement(
                                         "[SAMPLE REQUIREMENT TEXT]",
                                         "[SAMPLE REQUIREMENT SOURCE TEXT]",
-                                        singletonList(new TddId("TDD 1.0")))))));
+                                        singletonList(new TddId("TDD 1.0")))))),
+                       new JiraE2E(e2e1, functionalArea),
+                       new JiraE2E(e2e2, functionalArea));
     }
 
     private YamlArchitectureUpdate auFromYaml() throws IOException {

@@ -37,10 +37,12 @@ decisions:
       - "[SAMPLE-TDD-ID]"
 tdds-per-component:
   - component-id: "[SAMPLE-COMPONENT-ID]"
+    component-path: "c4://Internet Banking System/API Application/Reset Password Controller"
     tdds:
       '[SAMPLE-TDD-ID]':
         text: "[SAMPLE TDD TEXT]"
   - component-id: "DELETED-COMPONENT-ID"
+    component-path: "c4://Internet Banking System/API Application/E-mail Component"
     deleted: true
     tdds:
       '[SAMPLE-TDD-ID-2]':
@@ -51,6 +53,12 @@ functional-requirements:
     source: "[SAMPLE REQUIREMENT SOURCE TEXT]"
     tdd-references:
       - "[SAMPLE-TDD-ID]"
+functional-areas:
+  AU-76:
+    title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
+    jira:
+      ticket: AU-76
+      link: https://jira.devfactory.com/browse/AU-76
 capabilities:
   epic:
     title: "[SAMPLE EPIC TITLE]"
@@ -69,6 +77,16 @@ capabilities:
         - "[SAMPLE-TDD-ID-2]"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
+      e2e:
+        title: Title of E2E 1
+        business-goal: Some useful business goals
+        functional-area-id: AU-76
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: AU-77
+              link: https://jira.devfactory.com/browse/AU-77
 
     - title: "story that should be updated"
       jira:
@@ -78,6 +96,19 @@ capabilities:
         - "[SAMPLE-TDD-ID]"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
+      e2e:
+        title: Title of E2E 2
+        business-goal: Some useful business goals
+        functional-area-id: AU-76
+        jira:
+          ticket: "existing"
+          link: "existing link"
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: AU-77
+              link: https://jira.devfactory.com/browse/AU-77
 
     - title: "story that failed to be created"
       jira:
@@ -87,4 +118,13 @@ capabilities:
         - "[SAMPLE-TDD-ID]"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
-
+      e2e:
+        title: Title of E2E 3
+        business-goal: Some useful business goals
+        functional-area-id: AU-76
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: AU-77
+              link: https://jira.devfactory.com/browse/AU-77

@@ -37,6 +37,7 @@ decisions:
       - "[SAMPLE-TDD-ID]"
 tdds-per-component:
   - component-id: "29"
+    component-path: "c4://Internet Banking System/API Application/Sign In Controller"
     tdds:
       'TDD 1.0':
         file: "TDD 1.0 : Component-29.md"
@@ -46,6 +47,12 @@ functional-requirements:
     source: "[SAMPLE REQUIREMENT SOURCE TEXT]"
     tdd-references:
       - "TDD 1.0"
+functional-areas:
+  AU-76:
+    title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
+    jira:
+      ticket: AU-76
+      link: https://jira.devfactory.com/browse/AU-76
 capabilities:
   epic:
     title: "[SAMPLE EPIC TITLE]"
@@ -62,6 +69,16 @@ capabilities:
         - "TDD 1.0"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
+      e2e:
+        title: Title of E2E 1
+        business-goal: Some useful business goals
+        functional-area-id: AU-76
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: AU-77
+              link: https://jira.devfactory.com/browse/AU-77
     - title: "story that should be created for no pr"
       jira:
         ticket: ""
@@ -70,3 +87,13 @@ capabilities:
         - "no-PR"
       functional-requirement-references:
         - "[SAMPLE-REQUIREMENT-ID]"
+      e2e:
+        title: Title of E2E 2
+        business-goal: Some useful business goals
+        functional-area-id: AU-76
+        attributes:
+          - name: Accessible
+            rationale: User interface functions should be accessible
+            jira:
+              ticket: AU-77
+              link: https://jira.devfactory.com/browse/AU-77
