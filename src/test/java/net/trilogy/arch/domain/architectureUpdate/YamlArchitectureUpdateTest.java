@@ -20,13 +20,22 @@ public class YamlArchitectureUpdateTest {
     @Test
     public void shouldAddJiraToFeatureStory() {
         // GIVEN:
-        final var storyToChange = YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 2", "OLD JIRA LINK 2")).build();
+        final var storyToChange = YamlFeatureStory.blank().toBuilder()
+                .title("Ticket 2")
+                .jira(new YamlJira("OLD JIRA TICKET 2", "OLD JIRA LINK 2"))
+                .build();
 
         final var originalAu = getAuWithStories(
                 List.of(
-                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 1", "OLD JIRA LINK 1")).build(),
+                        YamlFeatureStory.blank().toBuilder()
+                                .jira(new YamlJira("OLD JIRA TICKET 1", "OLD JIRA LINK 1"))
+                                .title("Ticket 1")
+                                .build(),
                         storyToChange,
-                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 3", "OLD JIRA LINK 3")).build()
+                        YamlFeatureStory.blank().toBuilder()
+                                .title("Ticket 3")
+                                .jira(new YamlJira("OLD JIRA TICKET 3", "OLD JIRA LINK 3")) 
+                                .build()
                 )
         );
 
@@ -36,9 +45,9 @@ public class YamlArchitectureUpdateTest {
         // THEN:
         final var expected = getAuWithStories(
                 List.of(
-                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 1", "OLD JIRA LINK 1")).build(),
-                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK")).build(),
-                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 3", "OLD JIRA LINK 3")).build()
+                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 1", "OLD JIRA LINK 1")).title("Ticket 1").build(),
+                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK")).title("Ticket 2").build(),
+                        YamlFeatureStory.blank().toBuilder().jira(new YamlJira("OLD JIRA TICKET 3", "OLD JIRA LINK 3")).title("Ticket 3").build()
                 )
         );
 
