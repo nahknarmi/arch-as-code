@@ -47,6 +47,7 @@ public class ArchitectureUpdateObjectMapperTest {
                 , "    - '[SAMPLE-TDD-ID]'"
                 , "tdds-per-component:"
                 , "- component-id: '[SAMPLE-COMPONENT-ID]'"
+                , "  component-path: c4://DevSpaces/DevSpaces-DevSpaces API/DevSpaces-DevSpaces API-E-mail Component Duplicate"
                 , "  deleted: false"
                 , "  tdds:"
                 , "    '[SAMPLE-TDD-ID]':"
