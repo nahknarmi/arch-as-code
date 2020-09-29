@@ -127,7 +127,7 @@ public class JiraApi {
                     final var input = it.asNewIssueInput(epicKey, projectId);
                     try {
                         BasicIssue basicIssue = jiraClient.getIssueClient().createIssue(input).get();
-                        return succeeded(basicIssue.getKey(), basicIssue.getSelf().getPath(), it);
+                        return succeeded(basicIssue.getKey(), basicIssue.getSelf().toString(), it);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return failed(e.getMessage(), it);

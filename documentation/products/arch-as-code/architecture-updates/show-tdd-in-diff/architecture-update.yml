@@ -62,12 +62,6 @@ functional-requirements:
     source: '[SAMPLE REQUIREMENT SOURCE TEXT]'
     tdd-references:
     - no-PR
-functional-areas:
-  AU-76:
-    title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
-    jira:
-      ticket: AU-76
-      link: https://jira.devfactory.com/browse/AU-76
 capabilities:
   epic:
     title: Use this epic to track Jira integration
@@ -75,19 +69,22 @@ capabilities:
       ticket: AU-1
       link: https://jira.devfactory.com/browse/AU-1
   feature-stories:
-  - title: "[SAMPLE FEATURE STORY TITLE]"
+  - title: '[SAMPLE FEATURE STORY TITLE]'
     jira:
       ticket: AU-70
       link: https://jira.devfactory.com/browse/AU-70
     tdd-references:
     - no-PR
     functional-requirement-references:
-    - "[SAMPLE-REQUIREMENT-ID]"
+    - '[SAMPLE-REQUIREMENT-ID]'
     e2e:
       title: Title of E2E 1
       business-goal: |
         Some useful business goals
       functional-area-id: AU-76
+      jira:
+        ticket: AU-116
+        link: https://jira.devfactory.com/rest/api/latest/issue/8148780
       attributes:
       - name: Accessible
         rationale: User interface functions should be accessible
@@ -108,6 +105,9 @@ capabilities:
       business-goal: |
         Some useful business goals
       functional-area-id: AU-76
+      jira:
+        ticket: AU-117
+        link: https://jira.devfactory.com/rest/api/latest/issue/8148781
       attributes:
       - name: Accessible
         rationale: User interface functions should be accessible
@@ -127,10 +127,18 @@ capabilities:
       business-goal: |
         Some useful business goals
       functional-area-id: AU-76
+      jira:
+        ticket: AU-118
+        link: https://jira.devfactory.com/rest/api/latest/issue/8148782
       attributes:
       - name: Accessible
         rationale: User interface functions should be accessible
         jira:
           ticket: AU-77
           link: https://jira.devfactory.com/browse/AU-77
-
+functional-areas:
+  AU-76:
+    title: Multiple Nodes and Dynamic Routing (SMC, MQ and workbench)s
+    jira:
+      ticket: AU-76
+      link: https://jira.devfactory.com/browse/AU-76
