@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import static com.google.common.collect.Streams.stream;
 import static java.lang.System.err;
 import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
@@ -131,7 +132,8 @@ public class JiraApi {
                     } catch (Exception e) {
                         e.printStackTrace();
                         return failed(e.getMessage(), it);
-                    } })
+                    }
+                })
                 .collect(toList());
     }
 
@@ -192,44 +194,31 @@ public class JiraApi {
         out.println();
 
         final var storyInEpic = issues.getIssue(STORY_KEY).get();
-        Streams.stream(storyInEpic.getFields())
+        stream(storyInEpic.getFields())
                 .filter(it -> isLinkToEpic(it, epicIssue))
                 .forEach(it -> out.println("linked story field -> " + it));
 
         final var projectId = epicIssue.getProject().getId();
 
-        // Remove card from Epic example -- does NOT delete the card, just unlinks from Epic
-
-        // Note: Setting to "null" does not seem to actually do anything
-        var deleteIssueInput = new IssueInputBuilder()
-                .setFieldValue(EPIC_KEY_FIELD, (String) null)
-                .build();
-        // Note: The more complex construction throws an exception
-        // Is this because the AU project requires cards to be part of an Epic as a business rule?
-        deleteIssueInput = new IssueInputBuilder()
-                .setFieldValue(EPIC_KEY_FIELD, new IssueField(EPIC_KEY_FIELD, "Epic Link", null, ""))
-                .build();
-        issues.updateIssue(STORY_KEY, deleteIssueInput).get();
-
         final var updatedIssue = issues.getIssue(STORY_KEY).get();
         out.println("updatedIssue.epic-link = " + updatedIssue.getField(EPIC_KEY_FIELD));
 
-        System.exit(0); // Do NOT update the "real" example!
-
         // Create NEW Issue example
-        //BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
+        // BasicProject{self=https://jira.devfactory.com/rest/api/2/project/43900, key=AU, id=43900, name=Arch-as-Code AU}
         final var issueInput = new IssueInputBuilder()
                 .setFieldValue(EPIC_KEY_FIELD, epicKey)
                 .setProjectKey("AU")
                 // It seems like this used to work with just the id, but now we seem to need a whole BasicProject instance
                 // maybe we used to use projectId? or some other thing?
                 .setFieldValue("project", ComplexIssueInputFieldValue.with("id", projectId))
-                .setFieldValue("summary", "Story Creation saying project is required :-(")
+                .setFieldValue("summary", "Brian and Deluan pairing on QA")
                 .setFieldValue("issuetype", ComplexIssueInputFieldValue.with("name", "Feature Story"))
                 .setFieldValue("description", "makeDescription call goes here()")
                 .build();
 
-        issues.createIssue(issueInput).get();
+        final var createdIssue = issues.createIssue(issueInput).get();
+
+        out.println(issues.getIssue(createdIssue.getKey()).get());
     }
 
     private static boolean isLinkToEpic(
