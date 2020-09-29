@@ -225,6 +225,9 @@ When prompted for Jira credentials, such as publishing stories, use your
 Trilogy email with no `@` suffix, and your Jira password.  An example:
 `brian.oxley` rather than `brian.oxley@trilogy.com`.
 
+See `samples/config` for example files to place under your `~/.arch-as-code`
+directory.
+
 ## TODO
 
 * Instructions for obtaining various credential files
