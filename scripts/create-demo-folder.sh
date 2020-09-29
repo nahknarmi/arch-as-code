@@ -93,10 +93,12 @@ echo "Working..."
 
 mkdir -p "$aac_dir"
 
-if [[ -r "$aac_dir"/.arch-as-code ]]; then
+if [[ -f "$aac_dir"/.arch-as-code ]]; then
     : # Keep existing
 elif [[ -d ~/.arch-as-code ]]; then
     ln -s ~/.arch-as-code "$aac_dir"
+elif [[ -d "$repo_dir"/.arch-as-code ]]; then
+    ln -s ~/.arch-as-code "$repo_dir"/.arch-as-code
 else
     echo "$0: No $HOME/.arch-as-code configuration files" >&2
     exit 1
@@ -143,5 +145,5 @@ If there were already a '$PWD' directory, we overwrite the AaC
 parts only.
 If there were already a 'test' branch for architecture updates, we left it be.
 If there were already a '.arch-as-code/' directory, we left it be, else we
-linked to the one in your home directory, if present.
+linked to the one in your home directory or your project root, if present.
 EOM
