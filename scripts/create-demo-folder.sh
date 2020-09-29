@@ -26,7 +26,6 @@ EOH
 }
 
 function maybe-setup-git() {
-    pwd
     [[ -d .git ]] && return
 
     run git init
