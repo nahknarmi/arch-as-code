@@ -25,9 +25,6 @@ import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants
 import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_REDIRECT_URN;
 import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_GOOGLE_API_TOKEN_URI;
 import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_BASE_URI;
-import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_BULK_CREATE_ENDPOINT;
-import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_GET_STORY_ENDPOINT;
-import static net.trilogy.arch.commands.architectureUpdate.AuInitializeConstants.INITIAL_JIRA_LINK_PREFIX;
 
 @Command(name = "initialize", aliases = "init", mixinStandardHelpOptions = true, description = "Initialize the architecture updates work space within a single product's existing workspace. Sets up Google API credentials to import P1 documents.")
 @RequiredArgsConstructor
@@ -44,7 +41,7 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     @Option(names = {"-s", "--secret"}, description = "Google API secret", required = true)
     private String googleApiSecret;
 
-    @Parameters(index = "0", description = "Product workspace directory, containng the product's architecture")
+    @Parameters(index = "0", description = "Product workspace directory, containing the product's architecture")
     private File productArchitectureDirectory;
 
     @Getter
@@ -65,7 +62,9 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     }
 
     private boolean makeJiraSettingsFile() {
-        File file = productArchitectureDirectory.toPath().resolve(JIRA_API_SETTINGS_FILE_PATH).toFile();
+        final var file = productArchitectureDirectory.toPath()
+                .resolve(JIRA_API_SETTINGS_FILE_PATH)
+                .toFile();
         if (!file.getParentFile().mkdirs()) return false;
         try {
             filesFacade.writeString(file.toPath(), buildJiraSettingsJsonString());
@@ -77,8 +76,11 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     }
 
     private boolean createGoogleApiClientCredentialsFile(String clientId, String projectId, String secret) {
-        File file = productArchitectureDirectory.toPath().resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME).toFile();
-        String credentialJsonString = buildCredentialJsonString(clientId, projectId, secret);
+        final var file = productArchitectureDirectory.toPath()
+                .resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)
+                .resolve(GOOGLE_DOCS_API_CLIENT_CREDENTIALS_FILE_NAME)
+                .toFile();
+        String credentialJsonString = buildGoogleCredentialJsonString(clientId, projectId, secret);
         try {
             filesFacade.writeString(file.toPath(), credentialJsonString);
             return true;
@@ -88,16 +90,13 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
         }
     }
 
-    private String buildJiraSettingsJsonString() {
+    private static String buildJiraSettingsJsonString() {
         return "{\n" +
-                "    \"base_uri\": \"" + INITIAL_JIRA_BASE_URI + "\",\n" +
-                "    \"link_prefix\": \"" + INITIAL_JIRA_LINK_PREFIX + "\",\n" +
-                "    \"get_story_endpoint\": \"" + INITIAL_JIRA_GET_STORY_ENDPOINT + "\",\n" +
-                "    \"bulk_create_endpoint\": \"" + INITIAL_JIRA_BULK_CREATE_ENDPOINT + "\"\n" +
+                "    \"base_uri\": \"" + INITIAL_JIRA_BASE_URI + "\"\n" +
                 "}";
     }
 
-    private String buildCredentialJsonString(String clientId, String projectId, String secret) {
+    private static String buildGoogleCredentialJsonString(String clientId, String projectId, String secret) {
         return "{\n" +
                 "  \"installed\": {\n" +
                 "    \"client_id\": \"" + clientId.strip() + "\",\n" +
@@ -115,7 +114,9 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
     }
 
     private boolean makeAuFolder() {
-        File auFolder = productArchitectureDirectory.toPath().resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER).toFile();
+        final var auFolder = productArchitectureDirectory.toPath()
+                .resolve(AuCommand.ARCHITECTURE_UPDATES_ROOT_FOLDER)
+                .toFile();
 
         boolean succeeded = true;
         if (Files.exists(auFolder.toPath())) {
@@ -134,7 +135,8 @@ public class AuInitializeCommand implements Callable<Integer>, DisplaysOutputMix
 
     private boolean makeGoogleApiCredentialsFolder() {
         File auCredentialFolder = productArchitectureDirectory.toPath()
-                .resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH).toFile();
+                .resolve(GOOGLE_DOCS_API_CREDENTIALS_FOLDER_PATH)
+                .toFile();
 
         boolean credSucceeded = auCredentialFolder.mkdirs();
         if (!credSucceeded) {

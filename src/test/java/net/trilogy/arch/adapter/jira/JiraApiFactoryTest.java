@@ -27,10 +27,7 @@ public class JiraApiFactoryTest {
         final var rootDir = Path.of("a", "random", "root", "directory");
         final var json = "" +
                 "{\n" +
-                "    \"base_uri\": \"" + expectedBaseUri + "\",\n" +
-                "    \"link_prefix\": \"" + expectedLinkPrefix + "\",\n" +
-                "    \"get_story_endpoint\": \"" + expectedGetStoryEndpoint + "\",\n" +
-                "    \"bulk_create_endpoint\": \"" + expectedBulkCreateEndpoint + "\"\n" +
+                "    \"base_uri\": \"" + expectedBaseUri + "\"\n" +
                 "}";
         final var mockedFiles = mock(FilesFacade.class);
 
