@@ -25,6 +25,15 @@ Options:
 EOH
 }
 
+function maybe-setup-git() {
+    pwd
+    [[ -d .git ]] && return
+
+    run git init
+    run git add .
+    run git commit -m Init
+}
+
 function maybe-create-init-au-yaml() {
     # ASSUMES running from within the create demo folder, not the repo dir
     for br in $(git for-each-ref --format='%(refname:short)'); do
@@ -86,9 +95,9 @@ echo "Working..."
 mkdir -p "$aac_dir"
 
 if [[ -r "$aac_dir"/.arch-as-code ]]; then
-    :  # Keep existing
-elif [[ -r ~/.arch-as-code ]]; then
-    cp -a ~/.arch-as-code "$aac_dir"
+    : # Keep existing
+elif [[ -d ~/.arch-as-code ]]; then
+    ln -s ~/.arch-as-code "$aac_dir"
 else
     echo "$0: No $HOME/.arch-as-code configuration files" >&2
     exit 1
@@ -115,31 +124,20 @@ chmod a+rx $aac_dir/.install/bin/arch-as-code
 
 cd $aac_dir
 
+maybe-setup-git
+
 # shellcheck disable=SC2016
 ln -fs .install/bin/arch-as-code .
 
-# This file is optional
-# TODO: Stop replacing user-edited files
-[[ -r product-architecture.yml ]] && {
-    mv product-architecture.yml product-architecture.yml.bak || {
-        echo "$0: WARNING: No locally edited product-architecture.yml; ignoring" >&2
-    }
-}
+# Install a sample
+[[ -r product-architecture.yml ]] \
+    || cp "$repo_dir"/documentation/products/arch-as-code/product-architecture.yml .
 
 # TODO: Check if:
 # 1) Credentials already exist, and use them
 # 2) If NOT, prompt user for the 3 needed values
 run .install/bin/arch-as-code init -i i -k i -s s .
 run .install/bin/arch-as-code au init -c c -p p -s s .
-
-# TODO: Do not destroy the existing file
-[[ -r product-architecture.yml.bak ]] && mv product-architecture.yml.bak product-architecture.yml
-
-if [[ ! -d .git ]]; then
-    run git init
-    run git add .
-    run git commit -m Init
-fi
 
 maybe-create-init-au-yaml
 
@@ -152,5 +150,5 @@ If there were already a '$PWD' directory, we overwrite the AaC
 parts only.
 If there were already a 'test' branch for architecture updates, we left it be.
 If there were already a '.arch-as-code/' directory, we left it be, else we
-copied one from your home directory.
+linked to the one in your home directory, if present.
 EOM
