@@ -2,6 +2,7 @@ package net.trilogy.arch.adapter.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
@@ -15,7 +16,6 @@ import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -25,7 +25,6 @@ import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
 import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.failed;
 import static net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus.succeeded;
 import static net.trilogy.arch.adapter.jira.JiraStory.EPIC_KEY_FIELD;
@@ -116,39 +115,24 @@ public class JiraApi {
             final var x = new JiraApiException(e.getMessage(), e);
             x.setStackTrace(e.getStackTrace());
             throw x;
-        } catch (InterruptedException e) {
-            final var x = new JiraApiException("INTERRUPTED", e);
-            x.setStackTrace(e.getStackTrace());
-            throw x;
-        } catch (ExecutionException e) {
-            final var x = new JiraApiException("FAILED", e.getCause());
-            x.setStackTrace(e.getStackTrace());
-            throw x;
         }
     }
 
     private List<JiraRemoteStoryStatus> getJiraCreateStoryStatuses(
             List<? extends JiraIssueConvertible> jiraStories,
             String epicKey,
-            Long projectId) throws InterruptedException, ExecutionException {
-        final var jiraIssues = jiraStories.stream()
-                .map(it -> it.asNewIssueInput(epicKey, projectId))
+            Long projectId) {
+        return jiraStories.stream()
+                .map(it -> {
+                    final var input = it.asNewIssueInput(epicKey, projectId);
+                    try {
+                        BasicIssue basicIssue = jiraClient.getIssueClient().createIssue(input).get();
+                        return succeeded(basicIssue.getKey(), basicIssue.getSelf().getPath(), it);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return failed(e.getMessage(), it);
+                    } })
                 .collect(toList());
-        final var bulkResponse = jiraClient.getIssueClient()
-                .createIssues(jiraIssues)
-                .get();
-
-        final var succeeded = stream(bulkResponse.getIssues().spliterator(), false)
-                .map(it -> succeeded(it.getKey(), it.getSelf().toString()))
-                .collect(toList());
-        final var failed = stream(bulkResponse.getErrors().spliterator(), false)
-                .map(it -> failed(it.toString()))
-                .collect(toList());
-
-        final var result = new ArrayList<JiraRemoteStoryStatus>(succeeded.size() + failed.size());
-        result.addAll(succeeded);
-        result.addAll(failed);
-        return result;
     }
 
     public List<JiraRemoteStoryStatus> updateExistingStories(
@@ -165,12 +149,12 @@ public class JiraApi {
         try {
             final var input = story.asExistingIssueInput(epicKey);
             jiraClient.getIssueClient().updateIssue(story.key(), input).get();
-            return succeeded(story.key(), story.link());
+            return succeeded(story.key(), story.link(), story);
         } catch (final InterruptedException e) {
             currentThread().interrupt();
-            return failed(e.toString());
+            return failed(e.toString(), story);
         } catch (final ExecutionException e) {
-            return failed(e.getCause().toString());
+            return failed(e.getCause().toString(), story);
         }
     }
 

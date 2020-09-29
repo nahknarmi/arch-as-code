@@ -159,29 +159,36 @@ public class YamlArchitectureUpdate {
     }
 
     public YamlArchitectureUpdate amendJiraTicketsInAu(
-            final List<JiraIssueConvertible> stories,
+            final List<? extends JiraIssueConvertible> stories,
             final List<JiraRemoteStoryStatus> statuses) {
         var updatedAu = this;
-        for (int i = 0; i < statuses.size(); ++i) {
-            final var status = statuses.get(i);
+
+        for (final JiraRemoteStoryStatus status : statuses) {
             if (status.isSuccess()) {
-                updatedAu = addJiraToFeatureStory(
-                        stories.get(i),
+                updatedAu = addJiraToFeatureStory(updatedAu,
+                        status.getIssue(),
                         new YamlJira(status.getIssueKey(), status.getIssueLink()));
             }
         }
         return updatedAu;
     }
 
-    public YamlArchitectureUpdate addJiraToFeatureStory(JiraIssueConvertible storyToChange, YamlJira jiraToAdd) {
-        YamlCapabilitiesContainer updatedContainer = getCapabilityContainer().toBuilder()
-                .featureStories(getCapabilityContainer().getFeatureStories().stream()
-                        .map(story -> story.getTitle().equals(storyToChange.title())
-                                ? story.toBuilder().jira(jiraToAdd).build()
-                                : story)
+    public YamlArchitectureUpdate addJiraToFeatureStory(YamlArchitectureUpdate au, JiraIssueConvertible storyToChange, YamlJira jiraToAdd) {
+        YamlCapabilitiesContainer updatedContainer = au.getCapabilityContainer().toBuilder()
+                .featureStories(au.getCapabilityContainer().getFeatureStories().stream()
+                        .map(story -> {
+                            if (story.getTitle().equals(storyToChange.title()) && !story.hasJiraKeyAndLink()) {
+                                return story.toBuilder().jira(jiraToAdd).build();
+                            }
+                            if (story.getE2e().getTitle().equals(storyToChange.title()) && !story.getE2e().hasJiraKeyAndLink()) {
+                                YamlE2E e2E = story.getE2e().toBuilder().jira(jiraToAdd).build();
+                                return story.toBuilder().e2e(e2E).build();
+                            }
+                            return story;
+                        })
                         .collect(toList()))
                 .build();
-        return toBuilder().capabilityContainer(updatedContainer)
+        return au.toBuilder().capabilityContainer(updatedContainer)
                 .build();
     }
 }

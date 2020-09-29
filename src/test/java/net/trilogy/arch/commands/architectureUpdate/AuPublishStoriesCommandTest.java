@@ -32,7 +32,6 @@ import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static net.trilogy.arch.TestHelper.ROOT_PATH_TO_TEST_AU_PUBLISH;
 import static net.trilogy.arch.TestHelper.execute;
 import static net.trilogy.arch.Util.first;
@@ -281,10 +280,11 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
+        YamlArchitectureUpdate au = YamlArchitectureUpdate.blank();
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
-                        succeeded("ABC-123", "link-to-ABC-123"),
-                        succeeded("ABC-223", "link-to-ABC-223")));
+                        succeeded("ABC-123", "link-to-ABC-123", new JiraStory(YamlFeatureStory.blank(), au)),
+                        succeeded("ABC-223", "link-to-ABC-223", new JiraStory(YamlFeatureStory.blank(), au))));
         mockGitInterface();
 
         // WHEN:
@@ -311,21 +311,27 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final var epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
+        final YamlArchitectureUpdate originalAu = auFromYaml();
+        JiraStory jiraStory = new JiraStory(first(originalAu.getCapabilityContainer().getFeatureStories()), originalAu);
+        JiraE2E jiraE2E = new JiraE2E(jiraStory.getFeatureStory().getE2e(), first(originalAu.getFunctionalAreas().values()));
+        JiraStory failed = new JiraStory(originalAu.getCapabilityContainer().getFeatureStories().get(2), originalAu);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong())).thenReturn(List.of(
-                succeeded("ABC-123", "link-to-ABC-123"),
-                failed("error-message")));
+                succeeded("ABC-123", "link-to-ABC-123", jiraStory),
+                succeeded("ABC-456", "link-to-ABC-456", jiraE2E),
+                failed("error-message", failed)));
         mockGitInterface();
 
         // WHEN:
         execute(app, genericCommand());
 
         // THEN:
-        // TODO: How do actual and original differ?
         final YamlArchitectureUpdate actualAu = auFromYaml();
-        final YamlArchitectureUpdate originalAu = auFromYaml();
-        final var expectedAu = originalAu.addJiraToFeatureStory(
-                first(originalAu.getCapabilityContainer().getFeatureStories().stream().map( s -> new JiraStory(s, originalAu)).collect(toList())),
+
+        final var auWithUpdatedStory = originalAu.addJiraToFeatureStory(originalAu,
+                jiraStory,
                 new YamlJira("ABC-123", "link-to-ABC-123"));
+
+        YamlArchitectureUpdate expectedAu = auWithUpdatedStory.addJiraToFeatureStory(auWithUpdatedStory, jiraE2E, new YamlJira("ABC-456", "link-to-ABC-456"));
 
         collector.checkThat(actualAu, equalTo(expectedAu));
     }
@@ -335,11 +341,12 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         // GIVEN:
         final var epic = YamlJira.blank();
         final var epicInformation = new JiraQueryResult(123L, "[SAMPLE JIRA TICKET]", epic.getTicket());
+        final YamlArchitectureUpdate au = auFromYaml();
         when(mockedJiraApi.getStory(epic)).thenReturn(epicInformation);
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
-                        succeeded("ABC-123", "link-to-ABC-123"),
-                        failed("error-message")));
+                        succeeded("ABC-123", "link-to-ABC-123", new JiraStory(au.getCapabilityContainer().getFeatureStories().get(0), au)),
+                        failed("error-message", new JiraStory(au.getCapabilityContainer().getFeatureStories().get(2), au))));
         mockGitInterface();
 
         // WHEN:
@@ -423,10 +430,11 @@ public class AuPublishStoriesCommandTest extends CommandTestBase {
         final JiraQueryResult epicInformation = new JiraQueryResult(1L, "PROJ_KEY", epic.getTicket());
         when(mockedJiraApi.getStory(epic))
                 .thenReturn(epicInformation);
+        YamlArchitectureUpdate au = YamlArchitectureUpdate.blank();
         when(mockedJiraApi.createJiraIssues(anyList(), anyString(), anyLong()))
                 .thenReturn(List.of(
-                        succeeded("ABC-123", "link-to-ABC-123"),
-                        succeeded("ABC-223", "link-to-ABC-223")));
+                        succeeded("ABC-123", "link-to-ABC-123", new JiraStory(YamlFeatureStory.blank(), au)),
+                        succeeded("ABC-223", "link-to-ABC-223", new JiraStory(YamlFeatureStory.blank(), au))));
         mockGitInterface();
         doThrow(new RuntimeException("ERROR", new RuntimeException("Boom!"))).when(spiedFiles).writeString(any(), any());
 

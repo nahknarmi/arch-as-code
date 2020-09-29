@@ -22,7 +22,7 @@ public class YamlArchitectureUpdateTest {
         // GIVEN:
         final var storyToChange = YamlFeatureStory.blank().toBuilder()
                 .title("Ticket 2")
-                .jira(new YamlJira("OLD JIRA TICKET 2", "OLD JIRA LINK 2"))
+                .jira(new YamlJira(null, null))
                 .build();
 
         final var originalAu = getAuWithStories(
@@ -40,7 +40,7 @@ public class YamlArchitectureUpdateTest {
         );
 
         // WHEN:
-        final var actual = originalAu.addJiraToFeatureStory(new JiraStory(storyToChange, originalAu), new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK"));
+        final var actual = originalAu.addJiraToFeatureStory(originalAu, new JiraStory(storyToChange, originalAu), new YamlJira("NEW JIRA TICKET", "NEW JIRA LINK"));
 
         // THEN:
         final var expected = getAuWithStories(

@@ -1,6 +1,7 @@
 package net.trilogy.arch.domain.architectureUpdate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import net.trilogy.arch.domain.architectureUpdate.YamlFunctionalArea.FunctionalA
 import java.util.List;
 
 @Getter
+@Builder(toBuilder = true)
 @ToString
 @EqualsAndHashCode
 public class YamlE2E {

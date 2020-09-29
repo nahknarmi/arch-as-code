@@ -1,5 +1,5 @@
 {
-  "base_uri": "http://jira.devfactory.com",
+  "base_uri": "https://jira.devfactory.com",
   "get_story_endpoint": "/rest/api/2/issue/",
   "bulk_create_endpoint": "/rest/api/2/issue/bulk",
   "link_prefix": "/browse/"

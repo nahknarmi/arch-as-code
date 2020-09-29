@@ -15,13 +15,14 @@ public class JiraRemoteStoryStatus {
     private final String issueKey;
     private final String issueLink;
     private final String error;
+    private final JiraIssueConvertible issue;
 
-    public static JiraRemoteStoryStatus failed(String error) {
-        return new JiraRemoteStoryStatus(null, null, error);
+    public static JiraRemoteStoryStatus failed(String error, JiraIssueConvertible issue) {
+        return new JiraRemoteStoryStatus(null, null, error, issue);
     }
 
-    public static JiraRemoteStoryStatus succeeded(String issueKey, String issueLink) {
-        return new JiraRemoteStoryStatus(issueKey, issueLink, null);
+    public static JiraRemoteStoryStatus succeeded(String issueKey, String issueLink, JiraIssueConvertible issue) {
+        return new JiraRemoteStoryStatus(issueKey, issueLink, null, issue);
     }
 
     public boolean isSuccess() {

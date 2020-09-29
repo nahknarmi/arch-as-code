@@ -13,7 +13,6 @@ import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
 import net.trilogy.arch.domain.architectureUpdate.YamlJira;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -60,20 +59,11 @@ public class StoryPublishingService {
 
         out.println();
         printStoriesThatSucceeded(storiesToCreate, createStoriesResults, "created");
-        printStoriesThatFailed(storiesToCreate, createStoriesResults);
+        printStoriesThatFailed(createStoriesResults);
         printStoriesThatSucceeded(storiesToUpdate, updateStoriesResults, "updated");
-        printStoriesThatFailed(storiesToUpdate, updateStoriesResults);
+        printStoriesThatFailed(updateStoriesResults);
 
-        final var processedStories = new ArrayList<JiraIssueConvertible>(
-                storiesToCreate.size() + storiesToUpdate.size());
-        processedStories.addAll(storiesToCreate);
-        processedStories.addAll(storiesToUpdate);
-        final var processResults = new ArrayList<JiraRemoteStoryStatus>(
-                createStoriesResults.size() + updateStoriesResults.size());
-        processResults.addAll(createStoriesResults);
-        processResults.addAll(updateStoriesResults);
-
-        return au.amendJiraTicketsInAu(processedStories, processResults);
+        return au.amendJiraTicketsInAu(storiesToCreate, createStoriesResults);
     }
 
     private List<JiraRemoteStoryStatus> createStories(
@@ -127,15 +117,14 @@ public class StoryPublishingService {
     }
 
     private void printStoriesThatFailed(
-            List<? extends JiraIssueConvertible> stories,
             List<JiraRemoteStoryStatus> createStoriesResults) {
         StringBuilder errors = new StringBuilder();
-        for (int i = 0, x = createStoriesResults.size(); i < x; ++i) {
-            if (createStoriesResults.get(i).isSuccess()) continue;
+        for (JiraRemoteStoryStatus createStoriesResult : createStoriesResults) {
+            if (createStoriesResult.isSuccess()) continue;
             errors.append("Story: \"")
-                    .append(stories.get(i).title())
+                    .append(createStoriesResult.getIssue().title())
                     .append("\":\n  - ")
-                    .append(createStoriesResults.get(i).getError());
+                    .append(createStoriesResult.getError());
         }
         String heading = "Error! Some stories failed to publish. Please retry. Errors reported by Jira:";
         if (!errors.toString().isBlank()) {

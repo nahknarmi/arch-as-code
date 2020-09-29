@@ -108,22 +108,20 @@ public class JiraApiTest {
         final var mockJiraClient = mock(JiraRestClient.class);
         final var mockIssueClient = mock(IssueRestClient.class);
         final var mockCreateReturn =
-                (Promise<BulkOperationResult<BasicIssue>>) mock(Promise.class);
+                (Promise<BasicIssue>) mock(Promise.class);
 
         final var epicKey = "BOB-UNCLE-1234567890";
         final var newCardKey = "new key created by call";
         final var newCardLink = URI.create("");
         final var projectId = 314159L;
 
-        when(mockCreateReturn.get()).thenReturn(new BulkOperationResult<>(
-                singletonList(new BasicIssue(newCardLink, newCardKey, projectId)),
-                emptyList()));
+        when(mockCreateReturn.get()).thenReturn(new BasicIssue(newCardLink, newCardKey, projectId));
 
         when(mockJiraClient.getIssueClient()).thenReturn(mockIssueClient);
 
         final var jiraStory = createJiraStoryFixture();
 
-        when(mockIssueClient.createIssues(anyList()))
+        when(mockIssueClient.createIssue(any()))
                 .thenReturn(mockCreateReturn);
 
         final var results = new JiraApi(mockJiraClient).createJiraIssues(
@@ -131,7 +129,7 @@ public class JiraApiTest {
                 epicKey,
                 projectId);
 
-        assertEquals(singletonList(succeeded(newCardKey, newCardLink.toString())), results);
+        assertEquals(singletonList(succeeded(newCardKey, newCardLink.toString(), jiraStory)), results);
     }
 
     @Test
@@ -161,7 +159,7 @@ public class JiraApiTest {
                 epicKey
         );
 
-        assertEquals(singletonList(succeeded(jiraStory.getKey(), jiraStory.getLink())), results);
+        assertEquals(singletonList(succeeded(jiraStory.getKey(), jiraStory.getLink(), jiraStory)), results);
     }
 
     @Test
