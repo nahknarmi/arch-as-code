@@ -42,8 +42,8 @@ function maybe-create-init-au-yaml() {
     done
 
     run git checkout -q -b test
-    mkdir -p architecture-update/test
-    cp "$repo_dir/documentation/products/arch-as-code/architecture-updates/show-tdd-in-diff/architecture-update.yml" architecture-update/test
+    mkdir -p architecture-updates/test
+    cp "$repo_dir/documentation/products/arch-as-code/architecture-updates/show-tdd-in-diff/architecture-update.yml" architecture-updates/test
     git add .
     git commit -q -m 'Set up demonstration AU'
     # TODO: The script leaves you in 'test' branch if exists, but in 'master'
@@ -108,7 +108,7 @@ mkdir -p $aac_dir/.install
 cp ./scripts/demo-git-ignore "$aac_dir"/.gitignore
 echo "/arch-as-code" >>"$aac_dir"/.gitignore
 cp ./.java-version "$aac_dir"
-mkdir -p $aac_dir/.install/bin
+mkdir -p "$aac_dir"/.install/bin
 
 run ./gradlew bootJar
 cp ./build/libs/arch-as-code-*.jar $aac_dir/.install/bin
@@ -132,16 +132,10 @@ ln -fs .install/bin/arch-as-code .
 [[ -r product-architecture.yml ]] \
     || cp "$repo_dir"/documentation/products/arch-as-code/product-architecture.yml .
 
-# TODO: Check if:
-# 1) Credentials already exist, and use them
-# 2) If NOT, prompt user for the 3 needed values
-run .install/bin/arch-as-code init -i i -k i -s s .
-run .install/bin/arch-as-code au init -c c -p p -s s .
-
 maybe-create-init-au-yaml
 
 cat <<EOM
-Demo folder created in '$PWD'.
+${pbold}Demo folder created in '$PWD'.${preset}
 Change to that directory, and use ./arch-as-code or "aac" alias.
 (Once there, you may find 'alias aac=\$PWD/arch-as-code' helpful.)
 This is setup as a Git repo (or there was already one present).
