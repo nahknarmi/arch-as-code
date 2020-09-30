@@ -107,9 +107,17 @@ fi
 rm -rf $aac_dir/.install
 mkdir -p $aac_dir/.install
 
-cp ./scripts/demo-git-ignore "$aac_dir"/.gitignore
-echo "/arch-as-code" >>"$aac_dir"/.gitignore
-cp ./.java-version "$aac_dir"
+# TODO: Create script as `aac` rather than use an alias
+cat <<EOF >"$aac_dir"/.gitignore
+.install/
+# This is a symlink to your AaC configs in home or project dir
+.arch-as-code
+# This is a local symlink for execution
+/arch-as-code
+EOF
+cat <<EOF >"$aac_dir"/.java-version
+11
+EOF
 mkdir -p "$aac_dir"/.install/bin
 
 run ./gradlew bootJar
@@ -131,7 +139,7 @@ maybe-setup-git
 ln -fs .install/bin/arch-as-code .
 
 # Install a sample
-[[ -r product-architecture.yml ]] \
+[[ -f product-architecture.yml ]] \
     || cp "$repo_dir"/documentation/products/arch-as-code/product-architecture.yml .
 
 maybe-create-init-au-yaml
