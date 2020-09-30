@@ -35,16 +35,17 @@ documentation.
 ### 0. Use Java 11 locally
 
 The build currently assumes Java 11. Several tools exist to manage multiple
-JDK versions. A good choice is [jEnv](https://www.jenv.be/). See the
-[section on jEnv](#jenv).
+JDK versions. A good choice for Linux or MacOS is
+[jEnv](https://www.jenv.be/). The project includes a "dot" file to set your
+build to Java 11 when in the project root.
 
-If unsure of installing a current JDK patch for version 11, use
+If unsure about of installing a current JDK version for version 11, use
 [AdoptOpenJdk](https://adoptopenjdk.net/).
 
 ### 1. Use IntelliJ
 
 Use a 2020+ version of "Ultimate" edition.  "Community Edition" may work, but
-YMMV.
+YMMV. This is *not* a requirement: it is a suggestion.
 
 Ensure your Project Structure is using Java 11.
 
@@ -56,34 +57,33 @@ Ensure that underneath the "Setting"/"Preferences" of
 "Build, Execution, Deployment|Compiler|Annotation Processors" that "Enable
 annotation processing" is enabled.
 
-### 2. Create Structurizr account
+### 2. Structurizr account
 
-First you'll need to create a Structurizr account. You can do this by
-following the Structurizr
+First you will need a Structurizr account. If you do not have one, you can
+create one by following the Structurizr
 [getting started](https://structurizr.com/help/getting-started) guide that
 describes how to set up a new account and get a **free** workspace.
 
 ### 3. Save credentials files to your home directory
 
 ```shell script
-$ cd  # Take you home from where you are
-$ mkdir .arch-as-code/{google,jira,structurizer}
+cp -a <project root>/samples/config ~/.arch-as-code
+chmod -R go= ~/.arch-as-code
 ```
 
-Save each credential file type to it's related directory name. Then:
+These files *need updating* to match your actual credentials.
 
-```shell script
-$ chmod -R go= .arch-as-code  # Credentials should be readable only by you
-```
+For Google, log into the
+[Google Console](https://console.developers.google.com/), pick
+"arch-as-code" from the project dropdown, and download a credentials JSON
+file. For Structurizer, log into Structurizer, and find your API key and
+secret.
 
 ### 4. Install arch-as-code CLI
 
-Arch as code requires Java 11 or greater to be installed.
-
-You can download the latest arch-as-code tarball
-[here](https://github.com/trilogy-group/arch-as-code/releases/latest) or you
-can run commands for your respective OS below to install the latest version of
-arch-as-code CLI.
+Arch as code requires Java 11.
+Consider [AdoptOpenJDK](https://adoptopenjdk.net/) if you do not have a JDK 11
+installed.
 
 #### Mac OS
 
