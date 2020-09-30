@@ -93,7 +93,7 @@ echo "Working..."
 
 mkdir -p "$aac_dir"
 
-if [[ -f "$aac_dir"/.arch-as-code ]]; then
+if [[ -e "$aac_dir"/.arch-as-code ]]; then
     : # Keep existing
 elif [[ -d ~/.arch-as-code ]]; then
     ln -s ~/.arch-as-code "$aac_dir"
