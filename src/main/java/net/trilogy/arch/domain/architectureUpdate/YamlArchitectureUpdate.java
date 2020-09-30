@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.toList;
         "decisions",
         "tdds-per-component",
         "functional-requirements",
+        "functional-areas",
         "capabilities"
 })
 public class YamlArchitectureUpdate {

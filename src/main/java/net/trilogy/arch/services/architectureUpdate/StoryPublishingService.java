@@ -1,19 +1,13 @@
 package net.trilogy.arch.services.architectureUpdate;
 
 import lombok.RequiredArgsConstructor;
-import net.trilogy.arch.adapter.jira.JiraApi;
-import net.trilogy.arch.adapter.jira.JiraApiException;
-import net.trilogy.arch.adapter.jira.JiraE2E;
-import net.trilogy.arch.adapter.jira.JiraIssueConvertible;
-import net.trilogy.arch.adapter.jira.JiraQueryResult;
-import net.trilogy.arch.adapter.jira.JiraRemoteStoryStatus;
+import net.trilogy.arch.adapter.jira.*;
 import net.trilogy.arch.adapter.jira.JiraStory.InvalidStoryException;
-import net.trilogy.arch.domain.architectureUpdate.YamlArchitectureUpdate;
-import net.trilogy.arch.domain.architectureUpdate.YamlFeatureStory;
-import net.trilogy.arch.domain.architectureUpdate.YamlJira;
+import net.trilogy.arch.domain.architectureUpdate.*;
 
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
@@ -21,6 +15,9 @@ import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 public class StoryPublishingService {
+    public static final String TESTS_WRITING = "Tests Writing";
+    public static final String FUNCTIONAL_AREA_COVERAGE = "Functional Area Coverage";
+
     private final PrintWriter out;
     private final PrintWriter err;
     private final JiraApi api;
@@ -52,6 +49,8 @@ public class StoryPublishingService {
                 yamlEpicJira,
                 informationAboutTheEpic);
 
+        linkJiraIssues(createStoriesResults);
+
         final var updateStoriesResults = updateStories(
                 storiesToUpdate,
                 yamlEpicJira,
@@ -64,6 +63,32 @@ public class StoryPublishingService {
         printStoriesThatFailed(updateStoriesResults);
 
         return au.amendJiraTicketsInAu(storiesToCreate, createStoriesResults);
+    }
+
+    void linkJiraIssues(List<JiraRemoteStoryStatus> createStoriesResults) {
+        createStoriesResults.forEach(res -> {
+            JiraIssueConvertible issue = res.getIssue();
+            if (issue instanceof JiraStory) {
+                YamlE2E e2e = ((JiraStory) issue).getFeatureStory().getE2e();
+                if (e2e.hasJiraKeyAndLink()) {
+                    api.linkIssue(res.getIssueKey(), e2e.getJira().getTicket(), TESTS_WRITING);
+                } else {
+                    Optional<JiraRemoteStoryStatus> e2eResult = createStoriesResults.stream().filter(c -> c.getIssue().title().equals(e2e.getTitle())).findFirst();
+                    e2eResult.ifPresent(jiraRemoteStoryStatus ->
+                            api.linkIssue(res.getIssueKey(), jiraRemoteStoryStatus.getIssueKey(), TESTS_WRITING));
+                }
+            }
+
+            if (issue instanceof JiraE2E) {
+                YamlE2E e2e = ((JiraE2E) issue).getE2e();
+                YamlFunctionalArea functionalArea = ((JiraE2E) issue).getFunctionalArea();
+                api.linkIssue(functionalArea.getJira().getTicket(), res.getIssueKey(), FUNCTIONAL_AREA_COVERAGE);
+
+                e2e.getAttributes().forEach(a -> {
+                    api.linkIssue(a.getJira().getTicket(), res.getIssueKey(), FUNCTIONAL_AREA_COVERAGE);
+                });
+            }
+        });
     }
 
     private List<JiraRemoteStoryStatus> createStories(

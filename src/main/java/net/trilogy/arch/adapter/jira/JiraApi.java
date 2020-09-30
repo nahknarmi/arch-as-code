@@ -7,6 +7,7 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.api.domain.input.LinkIssuesInput;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import lombok.Generated;
 import lombok.RequiredArgsConstructor;
@@ -244,5 +245,13 @@ public class JiraApi {
             return true;
 
         return false;
+    }
+
+    public void linkIssue(String fromIssueKey, String toIssueKey, String linkType) {
+        try {
+            jiraClient.getIssueClient().linkIssue(new LinkIssuesInput(fromIssueKey, toIssueKey, linkType)).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

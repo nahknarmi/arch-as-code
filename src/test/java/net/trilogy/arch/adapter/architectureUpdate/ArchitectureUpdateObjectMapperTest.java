@@ -61,6 +61,12 @@ public class ArchitectureUpdateObjectMapperTest {
                 , "    source: '[SAMPLE REQUIREMENT SOURCE TEXT]'"
                 , "    tdd-references:"
                 , "    - '[SAMPLE-TDD-ID]'"
+                , "functional-areas:"
+                , "  '[Sample Functional Area Id]':"
+                , "    title: Sample title"
+                , "    jira:"
+                , "      ticket: '[SAMPLE JIRA TICKET]'"
+                , "      link: '[SAMPLE JIRA TICKET LINK]'"
                 , "capabilities:"
                 , "  epic:"
                 , "    title: Please enter epic title from Jira"
@@ -89,12 +95,6 @@ public class ArchitectureUpdateObjectMapperTest {
                 , "        jira:"
                 , "          ticket: '[SAMPLE JIRA TICKET]'"
                 , "          link: '[SAMPLE JIRA TICKET LINK]'"
-                , "functional-areas:"
-                , "  '[Sample Functional Area Id]':"
-                , "    title: Sample title"
-                , "    jira:"
-                , "      ticket: '[SAMPLE JIRA TICKET]'"
-                , "      link: '[SAMPLE JIRA TICKET LINK]'"
         );
     }
 
